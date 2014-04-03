@@ -1,0 +1,47 @@
+K 25
+svn:wc:ra_dav:version-url
+V 78
+/svn/xnat-dao~xnat-dao-repository/!svn/ver/217/XNAT_DAO/src/obselete/resources
+END
+DICOM_dictionary.xml
+K 25
+svn:wc:ra_dav:version-url
+V 99
+/svn/xnat-dao~xnat-dao-repository/!svn/ver/217/XNAT_DAO/src/obselete/resources/DICOM_dictionary.xml
+END
+vis3mr_newNEMA_codes.dat
+K 25
+svn:wc:ra_dav:version-url
+V 103
+/svn/xnat-dao~xnat-dao-repository/!svn/ver/217/XNAT_DAO/src/obselete/resources/vis3mr_newNEMA_codes.dat
+END
+XNAT_DICOM_import_rule.xml
+K 25
+svn:wc:ra_dav:version-url
+V 105
+/svn/xnat-dao~xnat-dao-repository/!svn/ver/217/XNAT_DAO/src/obselete/resources/XNAT_DICOM_import_rule.xml
+END
+minimal_DICOM_dictionary.xml
+K 25
+svn:wc:ra_dav:version-url
+V 107
+/svn/xnat-dao~xnat-dao-repository/!svn/ver/217/XNAT_DAO/src/obselete/resources/minimal_DICOM_dictionary.xml
+END
+reduced_DICOM_dictionary.xml.old
+K 25
+svn:wc:ra_dav:version-url
+V 111
+/svn/xnat-dao~xnat-dao-repository/!svn/ver/217/XNAT_DAO/src/obselete/resources/reduced_DICOM_dictionary.xml.old
+END
+reduced_DICOM_dictionary.xml
+K 25
+svn:wc:ra_dav:version-url
+V 107
+/svn/xnat-dao~xnat-dao-repository/!svn/ver/217/XNAT_DAO/src/obselete/resources/reduced_DICOM_dictionary.xml
+END
+vis3mr.dat
+K 25
+svn:wc:ra_dav:version-url
+V 89
+/svn/xnat-dao~xnat-dao-repository/!svn/ver/217/XNAT_DAO/src/obselete/resources/vis3mr.dat
+END

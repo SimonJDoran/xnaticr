@@ -1,0 +1,747 @@
+C FIELD PARAMETERS FILE FOR SIEMENS 'VISION-3' FILE - MR DATA
+C ***********************************************************
+C Ty Start End   Description :
+C pe   Pos   Pos Comment                Nema Ref. Index
+C -- ----- ----- ---------------------- --------- -----
+B -      1  1024 Block 1
+f I      1     4 Study   Date, Year     0008-0020 (  1)
+f I      5     8 Study   Date, Month    0008-0020 (  2)
+f I      9    12 Study   Date, Day      0008-0020 (  3)
+f I     13    16 Acquis. Date, Year     0008-0022 (  1)
+f I     17    20 Acquis. Date, Month    0008-0022 (  2)
+f I     21    24 Acquis. Date, Day      0008-0022 (  3)
+f I     25    28 Image   Date, Year     0008-0023 (  1)
+f I     29    32 Image   Date, Month    0008-0023 (  2)
+f I     33    36 Image   Date, Day      0008-0023 (  3)
+f I     37    40 Study   Time, Hour     0008-0030 (  1)
+f I     41    44 Study   Time, Minute   0008-0030 (  2)
+f I     45    48 Study   Time, Second   0008-0030 (  3)
+f I     49    52 Study   Time, Fraction 0008-0030 (  4)
+f I     53    56 Acquis. Time, Hour     0008-0032 (  1)
+f I     57    60 Acquis. Time, Minute   0008-0032 (  2)
+f I     61    64 Acquis. Time, Second   0008-0032 (  3)
+f I     65    68 Acquis. Time, Fraction 0008-0032 (  4)
+f I     69    72 Image   Time, Hour     0008-0033 (  1)
+f I     73    76 Image   Time, Minute   0008-0033 (  2)
+f I     77    80 Image   Time, Second   0008-0033 (  3)
+f I     81    84 Image   Time, Fraction 0008-0033 (  4)
+f I     85    88 Data Set Subtype   (1) 0008-0041 (  1)
+f I     89    92 Data Set Subtype   (2) 0008-0041 (  2)
+f I     93    96 Modality               0008-0060
+f ct    97   105 Scanner Manufacturer   0008-0070
+f ct   106   132 Hospital               0008-0080
+f ct   133   159 Referring Physician    0008-0090
+f ct   160   186 Station Ident.         0008-1010
+f ct   187   213 Procedure Descrip. (1) 0008-1030 (  1)
+f ct   214   240 Procedure Descrip. (2) 0008-1030 (  2)
+f ct   241   281 Admitting Diagnosis    0008-1080
+f ct   282   308 Manufacturer Model     0008-1090
+f ct   309   333 Attending Physician    0008-1050
+f ct   334   358 Radiologist            0008-1060
+f ct   359   383 Operator Ident.        0008-1070
+f s    384   384
+f I    385   388 Data Obj. Type (Main)  0009-0041 (  1)
+f I    389   392 Data Obj. Sub-Type (1) 0009-0041 (  2)
+f I    393   396 Data Obj. Sub-Type (2) 0009-0041 (  3)
+f I    397   400 Tot. Measurements      0009-1200
+f I    401   404 Storage Mode           0009-1210
+f I    405   408 Evaluation Mask        0009-1212 (  1)
+f I    409   412 Gap                    0009-1212 (  2)
+f I    413   416 Last Move Date, Year   0009-1226 (  1)
+f I    417   420 Last Move Date, Month  0009-1226 (  2)
+f I    421   424 Last Move Date, Day    0009-1226 (  3)
+f I    425   428 Last Move Time, Hour   0009-1227 (  1)
+f I    429   432 Last Move Time, Minute 0009-1227 (  2)
+f I    433   436 Last Move Time, Second 0009-1227 (  3)
+f I    437   440 Last Move Time, Fract. 0009-1227 (  4)
+f ct   441   467 Generator Ident. Label 0009-1310
+f ct   468   494 Gantry    Ident. Label 0009-1311
+f ct   495   521 X-RayTube Ident. Label 0009-1312
+f ct   522   548 Detector  Ident. Label 0009-1313
+f ct   549   575 DAS Ident. Label       0009-1314
+f ct   576   602 SMI Ident. Label       0009-1315
+f ct   603   629 CPU ID  Number         0009-1316
+f ct   630   638 Header  Version        0009-1320
+C                Note 4 Items below 
+C                form End of Group 0013
+f ct   639   663 Operator Ident.        0013-1053
+f ct   664   690 Organ                  0013-1054
+f ct   691   717 Case    Ident.         0013-1055
+f ct   718   744 Request Ident.         0013-1056
+f s    745   768
+f ct   769   795 Patient Name           0010-0010
+f cg   796   808 Patient Id Number      0010-0020
+f I    809   812 Patient Birth Year     0010-0030 (  1)
+f I    813   816 Patient Birth Month    0010-0030 (  2)
+f I    817   820 Patient Birth Day      0010-0030 (  3)
+f I    821   824 Patient Sex            0010-0040
+f ct   825   851 Patient Maiden Name    0010-1005
+f ct   852   856 Patient Age            0010-1010
+f Fd   857   864 Patient Size (Height)  0010-1020
+f I    865   868 Patient Weight    (Kg) 0010-1030
+f s    869  1024
+C -- ----- ----- ---------------------- --------- -----
+C Ty Start End   Description :
+C pe   Pos   Pos Comment                Nema Ref. Index
+C -- ----- ----- ---------------------- --------- -----
+B -      1  1024 Block 2
+f ct     1    27 Organ                  0011-1010
+f s     28    28
+f I     29    32 Registr. Date, Year    0011-1110 (  1)
+f I     33    36 Registr. Date, Month   0011-1110 (  2)
+f I     37    40 Registr. Date, Day     0011-1110 (  3)
+f I     41    44 Registr. Time, Hour    0011-1111 (  1)
+f I     45    48 Registr. Time, Minute  0011-1111 (  2)
+f I     49    52 Registr. Time, Second  0011-1111 (  3)
+f I     53    56 Registr. Time, Fract.  0011-1111 (  4)
+f I     57    60 Used Pat. Weight  (Kg) 0011-1123
+f I     61    64 Organ Code             0011-1140
+f ct    65    91 Case    Ident.         0011-110A
+f ct    92   118 Request Ident.         0011-1122
+f s    119   128
+f ct   129   156 Modifying Physician    0013-1000
+f I    157   160 Modifict. Date, Year   0013-1010 (  1)
+f I    161   164 Modifict. Date, Month  0013-1010 (  2)
+f I    165   168 Modifict. Date, Day    0013-1010 (  3)
+f I    169   172 Modifict. Time, Hour   0013-1012 (  1)
+f I    173   176 Modifict. Time, Minute 0013-1012 (  2)
+f I    177   180 Modifict. Time, Second 0013-1012 (  3)
+f I    181   184 Modifict. Time, Fract. 0013-1012 (  4)
+f ct   185   211 Former Patient Name    0013-1020
+f ct   212   224 Former Pat. Id Number  0013-1022
+f I    225   228 Former Pat. Birth Year 0013-1030 (  1)
+f I    229   232 Former Pat. Birth Mth. 0013-1030 (  2)
+f I    233   236 Former Pat. Birth Day  0013-1030 (  3)
+f I    237   240 Former Pat. Wght. (Kg) 0013-1031
+f ct   241   267 Former Pat. Maid. Name 0013-1032
+f ct   268   294 Former Ref. Physician  0013-1033
+f ct   295   335 Former Admit. Diagnos. 0013-1034
+f s    336   336
+f I    337   340 Former Patient Sex     0013-1035
+f ct   341   367 Former Proc. Desc. (1) 0013-1040 (  1)
+f ct   368   394 Former Proc. Desc. (2) 0013-1040 (  2)
+f s    395   396
+f I    397   400 Former Rest Direction  0013-1042
+f I    401   404 Former Pat. Position   0013-1044
+f I    405   408 Former View Direction  0013-1046
+f ct   409   433 Attending Physician    0013-1050
+f ct   434   458 Radiologist            0013-1051
+f ct   459   511 Procedure Desc. New    0013-1052
+C                Note 4 extra End Items
+C                at End of Group 0009
+f s    512   512
+f I    513   516 Contrast               0018-0010
+f I    517   520 Scanning Sequence      0018-0020
+f Fd   521   528 Slice Thickness   (mm) 0018-0050
+f I    529   532 Nomin. Genr. Volts (1) 0018-0060 (  1)
+f I    533   536 Nomin. Genr. Volts (2) 0018-0060 (  2)
+f Fd   537   544 Repetition Time   (ms) 0018-0080
+f Fd   545   552 Echo       Time   (ms) 0018-0081
+f Fd   553   560 Inversion  Time   (ms) 0018-0082
+f I    561   564 Number of Averages     0018-0083
+f s    565   568
+f Fd   569   576 Imaging Freq.    (MHz) 0018-0084
+f I    577   580 Gap                    0018-0085
+f I    581   584 Echo Number            0018-0086
+f I    585   588 Data Collec. Dia. (mm) 0018-0090
+f cj   589   615 Device Serial No.      0018-1000
+f ct   616   624 Software Version       0018-1020
+f I    625   628 Source-Detector   (mm) 0018-1110
+f I    629   632 Source-Patient    (mm) 0018-1111
+f I    633   636 Gantry Tilt      (deg) 0018-1120
+f I    637   640 Table Height      (mm) 0018-1130
+f I    641   644 Rotation Direction     0018-1140
+f I    645   648 Nominal Exp. Time (ms) 0018-1150
+f I    649   652 Nominal Exposure (mAs) 0018-1152
+f ct   653   665 Filter Ident. Label    0018-1160
+f s    666   672
+f Fd   673   680 Nomin. Gen. Power (Kw) 0018-1170
+f Fd   681   688 Focal Spot (mm)        0018-1190
+f I    689   692 Calibration Year       0018-1200 (  1)
+f I    693   696 Calibration Month      0018-1200 (  2)
+f I    697   700 Calibration Day        0018-1200 (  3)
+f I    701   704 Calibration Hour       0018-1201 (  1)
+f I    705   708 Calibration Minute     0018-1201 (  2)
+f I    709   712 Calibration Second     0018-1201 (  3)
+f I    713   716 Calibration Fraction   0018-1201 (  4)
+f ct   717   743 Convolution Kernel     0018-1210
+f ct   744   770 Receiving Coil         0018-1250
+f ct   771   800 Gap                    0018-1251
+f I    801   804 Patient Position       0018-5100
+f ct   805   813 Imaged Nucleus         0018-0085
+f ct   814   866 Procedure Desc. New    0018-1030
+f s    867   896
+f I    897   900 Net Frequency (Hz)     0019-1010
+f I    901   904 Measurement Mode       0019-1020 (  1)
+f I    905   908 Measur. Mode Subreason 0019-1020 (  2)
+f I    909   912 Calculation Mode       0019-1030 (  1)
+f I    913   916 Calc. Mode Susidiary   0019-1030 (  2)
+f I    917   920 Gap                    0019-1040
+f I    921   924 Noise Level            0019-1050
+f I    925   928 Total Data Bytes       0019-1060
+f s    929  1024
+C -- ----- ----- ---------------------- --------- -----
+C Ty Start End   Description :
+C pe   Pos   Pos Comment                Nema Ref. Index
+C -- ----- ----- ---------------------- --------- -----
+B -      1  1152 Block 3
+f Fd     1     8 Total Meas. Time   (s) 0019-1210
+f Fd     9    16 Start Delay Time   (s) 0019-1212
+f I     17    20 Total Phases           0019-1214
+f I     21    24 Seq. Control Mask 1    0019-1216 (  1)
+f I     25    28 Seq. Control Mask 2    0019-1216 (  2)
+f I     29    32 Gap 1                  0019-1216 (  3)
+f I     33    36 Gap 2                  0019-1216 (  4)
+f I     37    40 Nominal Fourrier Lines 0019-1220
+f I     41    44 Current Fourrier Lines 0019-1221
+f I     45    48 After 0 Fourrier Lines 0019-1226
+f I     49    52 First   Fourrier Lines 0019-1228
+f I     53    56 Acquisition Columns    0019-1230
+f I     57    60 Reconstruction Cols.   0019-1231
+f I     61    64 Number of Averages     0019-1250
+f Fd    65    72 Flip Angle (deg.)      0019-1260
+f I     73    76 Number of Prescans     0019-1270
+f I     77    80 Filter Type Raw Data   0019-1281
+f Fd    81    88 Filt. Parm. Raw Data   0019-1282 (  1)
+f Fd    89    96 Filt. Parm. Raw Data   0019-1282 (  2)
+f Fd    97   104 Filt. Parm. Raw Data   0019-1282 (  3)
+f Fd   105   112 Filt. Parm. Raw Data   0019-1282 (  4)
+f I    113   116 Filter Type Ima Data   0019-1283
+f s    117   120
+f Fd   121   128 Filt. Parm. Ima. Data  0019-1284 (  1)
+f Fd   129   136 Filt. Parm. Ima. Data  0019-1284 (  2)
+f Fd   137   144 Filt. Parm. Ima. Data  0019-1284 (  3)
+f Fd   145   152 Filt. Parm. Ima. Data  0019-1284 (  4)
+f I    153   156 Filt. Type Phase Corr. 0019-1285
+f s    157   160
+f Fd   161   168 Filt. Phase Correction 0019-1286 (  1)
+f Fd   169   176 Filt. Phase Correction 0019-1286 (  2)
+f Fd   177   184 Filt. Phase Correction 0019-1286 (  3)
+f Fd   185   192 Filt. Phase Correction 0019-1286 (  4)
+f I    193   196 Tot. Satur. Regions    0019-1290
+f s    197   200
+f Fd   201   208 Image Rot. Ang.   (rd) 0019-1294
+f Fd   209   216 Dwell Time        (Ms) 0019-1213
+f I    217   220 Coil ID Mask (1)       0019-1296 (  1)
+f I    221   224 Coil ID Mask (2)       0019-1296 (  2)
+f I    225   228 Coil ID Mask (3)       0019-1296 (  3)
+f I    229   232 Gap (1)                0019-1296 (  4)
+f I    233   236 Gap (2)                0019-1296 (  5)
+f s    237   240
+f Fd   241   248 Coil Pos. Sag.    (mm) 0019-1298 (  1)
+f Fd   249   256 Coil Pos. Cor.    (mm) 0019-1298 (  2)
+f Fd   257   264 Coil Pos. Tra.    (mm) 0019-1298 (  3)
+f Fd   265   272 Tot. Measr. Time   (s) 0019-1211
+f I    273   276 Measr. Status Mask     0019-1218
+f I    277   280 Filt. Type Norm. Ima.  0019-1287
+f Fs   281   284 Filt. Parm. Norm Ima.  0019-1288 (  1)
+f Fs   285   288 Filt. Parm. Norm Ima.  0019-1288 (  2)
+f Fs   289   292 Filt. Parm. Norm Ima.  0019-1288 (  3)
+f Fs   293   296 Filt. Parm. Norm Ima.  0019-1288 (  4)
+f I    297   300 AC ADC Pair Number     0019-1245
+f I    301   304 Coil Class Mask (1)    0019-1297 (  1)
+f I    305   308 Coil Class Mask (2)    0019-1297 (  2)
+f I    309   312 AC Combin. Mask        0019-1246
+f I    313   316 AC Element Number      0019-1240
+f I    317   320 AC Elem. Select Mask   0019-1241
+f I    321   324 AC Elem. Data Mask     0019-1242
+f I    325   328 AC Elem.-ADC Con. ( 1) 0019-1243 (  1)
+f I    329   332 AC Elem.-ADC Con. ( 2) 0019-1243 (  2)
+f I    333   336 AC Elem.-ADC Con. ( 3) 0019-1243 (  3)
+f I    337   340 AC Elem.-ADC Con. ( 4) 0019-1243 (  4)
+f I    341   344 AC Elem.-ADC Con. ( 5) 0019-1243 (  5)
+f I    345   348 AC Elem.-ADC Con. ( 6) 0019-1243 (  6)
+f I    349   352 AC Elem.-ADC Con. ( 7) 0019-1243 (  7)
+f I    353   356 AC Elem.-ADC Con. ( 8) 0019-1243 (  8)
+f I    357   360 AC Elem.-ADC Con. ( 9) 0019-1243 (  9)
+f I    361   364 AC Elem.-ADC Con. (10) 0019-1243 ( 10)
+f I    365   368 AC Elem.-ADC Con. (11) 0019-1243 ( 11)
+f I    369   372 AC Elem.-ADC Con. (12) 0019-1243 ( 12)
+f I    373   376 AC Elem.-ADC Con. (13) 0019-1243 ( 13)
+f I    377   380 AC Elem.-ADC Con. (14) 0019-1243 ( 14)
+f I    381   384 AC Elem.-ADC Con. (15) 0019-1243 ( 15)
+f I    385   388 AC Elem.-ADC Con. (16) 0019-1243 ( 16)
+f Fs   389   392 AC Elem. Noise Level   0019-1244 (  1)
+f Fs   393   396 AC Elem. Noise Level   0019-1244 (  2)
+f Fs   397   400 AC Elem. Noise Level   0019-1244 (  3)
+f Fs   401   404 AC Elem. Noise Level   0019-1244 (  4)
+f Fs   405   408 AC Elem. Noise Level   0019-1244 (  5)
+f Fs   409   412 AC Elem. Noise Level   0019-1244 (  6)
+f Fs   413   416 AC Elem. Noise Level   0019-1244 (  7)
+f Fs   417   420 AC Elem. Noise Level   0019-1244 (  8)
+f Fs   421   424 AC Elem. Noise Level   0019-1244 (  9)
+f Fs   425   428 AC Elem. Noise Level   0019-1244 ( 10)
+f Fs   429   432 AC Elem. Noise Level   0019-1244 ( 11)
+f Fs   433   436 AC Elem. Noise Level   0019-1244 ( 12)
+f Fs   437   440 AC Elem. Noise Level   0019-1244 ( 13)
+f Fs   441   444 AC Elem. Noise Level   0019-1244 ( 14)
+f Fs   445   448 AC Elem. Noise Level   0019-1244 ( 15)
+f Fs   449   452 AC Elem. Noise Level   0019-1244 ( 16)
+f Fs   453   456 Sat. PhsEnc. Vec. Sag. 0019-1291 (  1)
+f Fs   457   460 Sat. PhsEnc. Vec. Sag. 0019-1291 (  2)
+f Fs   461   464 Sat. PhsEnc. Vec. Sag. 0019-1291 (  3)
+f Fs   465   468 Sat. PhsEnc. Vec. Sag. 0019-1291 (  4)
+f Fs   469   472 Sat. PhsEnc. Vec. Sag. 0019-1291 (  5)
+f Fs   473   476 Sat. PhsEnc. Vec. Sag. 0019-1291 (  6)
+f Fs   477   480 Sat. Readout Vec. Sag. 0019-1292 (  1)
+f Fs   481   484 Sat. Readout Vec. Sag. 0019-1292 (  2)
+f Fs   485   488 Sat. Readout Vec. Sag. 0019-1292 (  3)
+f Fs   489   492 Sat. Readout Vec. Sag. 0019-1292 (  4)
+f Fs   493   496 Sat. Readout Vec. Sag. 0019-1292 (  5)
+f Fs   497   500 Sat. Readout Vec. Sag. 0019-1292 (  6)
+f I    501   504 EPI Strim. Mon. Mode   0019-1293
+f s    505   512
+f Fd   513   520 Mag. Field Stren.  (T) 0019-1412
+f Fd   521   528 ADC Voltage        (V) 0019-1414
+f Fd   529   536 Transmitr. Amplit. (V) 0019-1420
+f I    537   540 Tot. Transmtr. Amplit. 0019-1421
+f s    541   544
+f Fd   545   552 Transmitr. Calibr. (V) 0019-1424
+f Fd   553   560 Recv. Total Gain  (dB) 0019-1450
+f Fd   561   568 Recv. Ampl. Gain  (dB) 0019-1451
+f Fd   569   576 Recv. PreA. Gain  (dB) 0019-1452
+f Fd   577   584 Recv. Cable Atn.  (dB) 0019-1454
+f Fd   585   592 Reconstr. Scale Factor 0019-1460
+f Fd   593   600 Phase   Grad.   (mT/m) 0019-1470
+f Fd   601   608 Readout Grad.   (mT/m) 0019-1471
+f Fd   609   616 Select. Grad.   (mT/m) 0019-1472
+f Fd   617   624 Grad. Delay Time X     0019-1480 (  1)
+f Fd   625   632 Grad. Delay Time Y     0019-1480 (  2)
+f Fd   633   640 Grad. Delay Time Z     0019-1480 (  3)
+f ct   641   667 Sensit. Correct. Label 0019-1490
+f s    668   672
+f Fd   673   680 ADC Offset Real  Part  0019-1416 (  1)
+f Fd   681   688 ADC Offset Imag. Part  0019-1416 (  2)
+f Fd   689   696 Transmt. Attenut. (dB) 0019-1422
+f Fd   697   704 Transmt. Ref.      (V) 0019-1426
+f Fd   705   712 Transmt. Ref. Gain (V) 0019-1455
+f I    713   716 Recv. Filt. Freq. (Hz) 0019-1456
+f s    717   720
+f Fd   721   728 Ref. Scale Factor      0019-1462
+f Fd   729   736 Tot. Gradn. Delay (us) 0019-1482
+f I    737   740 RF Watchdog Mask       0019-14A0
+f s    741   744
+f Fd   745   752 RF Power Err. Indicat. 0019-14A2
+f Fd   753   760 Spec. Aborb. Rate Lim. 0019-14A5 (  1)
+f Fd   761   768 Aborb. Rate     (W/Kg) 0019-14A5 (  2)
+f Fd   769   776 Aborb. Rate Detected   0019-14A5 (  3)
+f Fd   777   784 Energy Dose Limit      0019-14A6 (  1)
+f Fd   785   792 Energy Dose  (Wmin/Kg) 0019-14A6 (  2)
+f Fd   793   800 Ener. Dose Detected    0019-14A6 (  3)
+f I    801   804 Adjustmt. Status Mask  0019-14B0
+f Fs   805   808 Flow Sensitiv.  (cm/s) 0019-14D1
+f I    809   812 Calculation Submode    0019-14D2
+f Fs   813   816 Field of View Ration   0019-14D3
+f I    817   820 Base Raw Matrix Size   0019-14D4
+f I    821   824 2D Phase Osampl. Lines 0019-14D5
+f I    825   828 3D Phase Osampl. Part  0019-14D6
+f I    829   832 Echo Line   Position   0019-14D7
+f I    833   836 Echo Column Position   0019-14D8
+f I    837   840 Lines per Segment      0019-14D9
+f I    841   844 Phase Coding Direction 0019-14DA
+f Fs   845   848 Sat. PhsEnc. Vec. Cor. 0019-1491 (  1)
+f Fs   849   852 Sat. PhsEnc. Vec. Cor. 0019-1491 (  2)
+f Fs   853   856 Sat. PhsEnc. Vec. Cor. 0019-1491 (  3)
+f Fs   857   860 Sat. PhsEnc. Vec. Cor. 0019-1291 (  4)
+f Fs   861   864 Sat. PhsEnc. Vec. Cor. 0019-1491 (  5)
+f Fs   865   868 Sat. PhsEnc. Vec. Cor. 0019-1491 (  6)
+f Fs   869   872 Sat. Readout Vec. Cor. 0019-1492 (  1)
+f Fs   873   876 Sat. Readout Vec. Cor. 0019-1492 (  2)
+f Fs   877   880 Sat. Readout Vec. Cor. 0019-1492 (  3)
+f Fs   881   884 Sat. Readout Vec. Cor. 0019-1292 (  4)
+f Fs   885   888 Sat. Readout Vec. Cor. 0019-1492 (  5)
+f Fs   889   892 Sat. Readout Vec. Cor. 0019-1492 (  6)
+f s    893   896
+f ct   897   961 Parameter File Name    0019-1510
+f ct   962  1026 Sequence  File Name    0019-1511
+f ct  1027  1035 Sequence  File Owner   0019-1512
+f ct  1036  1044 Sequence  File Descr.  0019-1513 (  1)
+f s   1045  1152
+C -- ----- ----- ---------------------- --------- -----
+C Ty Start End   Description :
+C pe   Pos   Pos Comment                Nema Ref. Index
+C -- ----- ----- ---------------------- --------- -----
+B -      1  1024 Block 4
+f I      1     4 Study                  0020-0010
+f I      5     8 Gap                    0020-0011
+f I      9    12 Acquisition            0020-0012
+f I     13    16 Image                  0020-0013
+f I     17    20 Image Position, x (mm) 0020-0030 (  1)
+f I     21    24 Image Position, y (mm) 0020-0030 (  2)
+f I     25    28 Image Position, z (mm) 0020-0030 (  3)
+f s     29    32
+f Fd    33    40 Ima. Orient. R Axis, x 0020-0035 (  1)
+f Fd    41    48 Ima. Orient. R Axis, y 0020-0035 (  2)
+f Fd    49    56 Ima. Orient. R Axis, z 0020-0035 (  3)
+f Fd    57    64 Ima. Orient. C Axis, x 0020-0035 (  4)
+f Fd    65    72 Ima. Orient. C Axis, y 0020-0035 (  5)
+f Fd    73    80 Ima. Orient. C Axis, z 0020-0035 (  6)
+f I     81    84 Location          (mm) 0020-0050
+f I     85    88 Laterality             0020-0060
+f I     89    92 Image Geometry Type    0020-0070
+f I     93    96 Acquisitions in Series 0020-1001
+f ct    97   123 Ref. 1 Gap             0020-   - (  1)
+f ct   124   150 Ref. 1 Patient Name    0020-   - (  2)
+f cg   151   177 Ref. 1 Patient Id No.  0020-   - (  3)
+f s    178   180
+f I    181   184 Ref. 1 Image           0020-1020
+f ct   185   211 Ref. 2 Gap             0020-   - (  1)
+f ct   212   238 Ref. 2 Patient Name    0020-   - (  2)
+f cg   239   265 Ref. 2 Patient Id No.  0020-   - (  3)
+f s    266   268
+f I    269   272 Ref. 2 Image           0020-   - (  4)
+f ct   273   299 Ref. 3 Gap             0020-   - (  1)
+f ct   300   326 Ref. 3 Patient Name    0020-   - (  2)
+f cg   327   353 Ref. 3 Patient Id No.  0020-   - (  3)
+f s    354   356
+f I    357   360 Ref. 3 Image           0020-   - (  4)
+f s    361   512
+f Fd   513   520 CT Zoom                0021-1010
+f Fd   521   528 Target 'X'             0021-1011 (  1)
+f Fd   529   536 Target 'Y'             0021-1011 (  2)
+f I    537   538 ROI Mask               0021-1020
+f s    539   544
+f Fd   545   552 Field View Height (mm) 0021-1120 (  1)
+f Fd   553   560 Field View Width  (mm) 0021-1120 (  2)
+f I    561   564 View Direction         0021-1130
+f I    565   568 Rest Direction         0021-1132
+f Fd   569   576 Image Pos. Sag.   (mm) 0021-1160 (  1)
+f Fd   577   584 Image Pos. Cor.   (mm) 0021-1160 (  2)
+f Fd   585   592 Image Pos. Tra.   (mm) 0021-1160 (  3)
+f Fd   593   600 Ima. Nor. Cos Dr. Sag. 0021-1161 (  1)
+f Fd   601   608 Ima. Nor. Cos Dr. Cor. 0021-1161 (  2)
+f Fd   609   616 Ima. Nor. Cos Dr. Tra. 0021-1161 (  3)
+f Fd   617   624 Image Distance    (mm) 0021-1163
+f I    625   626 Ima. Pos. History Mask 0021-1165
+f s    627   632 
+f Fd   633   640 Ima. Row. Cos Dr. Sag. 0021-116A (  1)
+f Fd   641   648 Ima. Row. Cos Dr. Cor. 0021-116A (  2)
+f Fd   649   656 Ima. Row. Cos Dr. Tra. 0021-116A (  3)
+f Fd   657   664 Ima. Col. Cos Dr. Sag. 0021-116B (  1)
+f Fd   665   672 Ima. Col. Cos Dr. Cor. 0021-116B (  2)
+f Fd   673   680 Ima. Col. Cos Dr. Tra. 0021-116B (  3)
+f ct   681   684 Patient Orien. Set 1 Y 0021-1170 (  1)
+f ct   685   688 Patient Orien. Set 1 X 0021-1170 (  2)
+f ct   689   692 Patient Orien. Set 1 Z 0021-1170 (  3)
+f ct   693   696 Patient Orien. Set 2 Y 0021-1171 (  1)
+f ct   697   700 Patient Orien. Set 2 X 0021-1171 (  2)
+f ct   701   704 Patient Orien. Set 2 Z 0021-1171 (  3)
+f ct   705   731 Study Name             0021-1180
+f s    732   732
+f I    733   736 Study Type             0021-1180
+f Fd   737   744 Image Magnif. Factor   0021-1122
+f Fd   745   752 Ima. Scroll OfRow (mm) 0021-1124 (  1)
+f Fd   753   760 Ima. Scroll OfCol (mm) 0021-1124 (  2)
+f I    761   764 Image Pixel Offset     0021-1126
+f s    765   768
+f I    769   772 Seqn. Phase Cor. Rows  0021-1320
+f I    773   776 Seqn. Phase Cor. Cols. 0021-1321
+f I    777   780 Recn. Phase Cor. Rows  0021-1322
+f I    781   784 Recn. Phase Cor. Cols. 0021-1324
+f I    785   788 Nominal 3D Raw Partit. 0021-1330
+f I    789   792 Current 3D Raw Partit. 0021-1331
+f I    793   796 Tot. 3D Ima. Partitns. 0021-1334
+f I    797   800 Actual 3D Ima. Partit. 0021-1336
+f I    801   804 Gap                    0021-1338
+f I    805   808 Nominal Total Slices   0021-1340
+f I    809   812 Current Total Slices   0021-1341
+f I    813   816 Current Slice Number   0021-1342
+f I    817   820 Current Group Number   0021-1343
+f I    821   824 MIP Start Row          0021-1345
+f I    825   828 MIP Stop  Row          0021-1346
+f I    829   832 MIP Start Column       0021-1347
+f I    833   836 MIP Stop  Column       0021-1348
+f I    837   840 MIP Start Slice        0021-1349
+f I    841   844 MIP Stop  Slice        0021-134A
+f I    845   848 Signal Mask            0021-1350 (  1)
+f I    849   852 Gap                    0021-1350 (  2)
+f I    853   856 Trigger Delay     (ms) 0021-1352
+f I    857   860 RR Interval       (ms) 0021-1353
+f s    861   864 
+f Fd   865   872 Tot. Trigger Pulses    0021-1354
+f Fd   873   880 Effect. Rep. Time (ms) 0021-1356
+f I    881   884 Gate Phase             0021-1357
+f s    885   888
+f Fd   889   896 Gate Threshold     (%) 0021-1358
+f Fd   897   904 Gate Ratio         (%) 0021-1359
+f I    905   908 Tot. Interpolt. Images 0021-1360
+f I    909   912 Tot. Echoes            0021-1370
+f Fd   913   920 Second Echo  Time (ms) 0021-1372
+f Fd   921   928 Second Rept. Time (ms) 0021-1373
+f I    929   932 Cardiac Code           0021-1380
+f s    933   936
+f Fd   937   944 Curr. Sli. Dist. Fact. 0021-1344
+f I    945   948 Order of Slices        0021-134F
+f s    949   952
+f Fd   953   960 Slab Thickness    (mm) 0021-1339
+f Fs   961   964 Sat. PhsEnc. Vec. Tra. 0021-1391 (  1)
+f Fs   965   968 Sat. PhsEnc. Vec. Tra. 0021-1391 (  2)
+f Fs   969   972 Sat. PhsEnc. Vec. Tra. 0021-1391 (  3)
+f Fs   973   976 Sat. PhsEnc. Vec. Tra. 0021-1391 (  4)
+f Fs   977   980 Sat. PhsEnc. Vec. Tra. 0021-1391 (  5)
+f Fs   981   984 Sat. PhsEnc. Vec. Tra. 0021-1391 (  6)
+f Fs   985   988 Sat. Readout Vec. Tra. 0021-1392 (  1)
+f Fs   989   992 Sat. Readout Vec. Tra. 0021-1392 (  2)
+f Fs   993   996 Sat. Readout Vec. Tra. 0021-1392 (  3)
+f Fs   997  1000 Sat. Readout Vec. Tra. 0021-1392 (  4)
+f Fs  1001  1004 Sat. Readout Vec. Tra. 0021-1392 (  5)
+f Fs  1005  1008 Sat. Readout Vec. Tra. 0021-1392 (  6)
+f Fs  1009  1012 EPI Change Magnitude   0021-1393
+f Fs  1013  1016 EPI Change X Coord.    0021-1394
+f Fs  1017  1020 EPI Change Y Coord.    0021-1395
+f Fs  1021  1024 EPI Change Z Coord.    0021-1396
+C -- ----- ----- ---------------------- --------- -----
+C Ty Start End   Description :
+C pe   Pos   Pos Comment                Nema Ref. Index
+C -- ----- ----- ---------------------- --------- -----
+B -      1  1024 Block 5
+f Fd     1     8 EPI Reconstruc. Phase  0019-12A0
+f Fd     9    16 EPI Reconstruc. Slope  0019-12A1
+f Fd    17    24 EPI Capacity 1    (nF) 0019-14C1 (  1)
+f Fd    25    32 EPI Capacity 2    (nF) 0019-14C1 (  2)
+f Fd    33    40 EPI Capacity 3    (nF) 0019-14C1 (  3)
+f Fd    41    48 EPI Capacity 4    (nF) 0019-14C1 (  4)
+f Fd    49    56 EPI Capacity 5    (nF) 0019-14C1 (  5)
+f Fd    57    64 EPI Capacity 6    (nF) 0019-14C1 (  6)
+f Fd    65    72 EPI Inductance 1  (nF) 0019-14C2 (  1)
+f Fd    73    80 EPI Inductance 2  (nF) 0019-14C2 (  2)
+f Fd    81    88 EPI Inductance 3  (nF) 0019-14C2 (  3)
+f I     89    92 EPI Switch Config.   1 0019-14C3 (  1)
+f I     93    96 EPI Switch Config.   2 0019-14C3 (  2)
+f I     97   100 EPI Switch Config.   3 0019-14C3 (  3)
+f I    101   104 EPI Switch Hardware  1 0019-14C4 (  1)
+f I    105   108 EPI Switch Hardware  2 0019-14C4 (  2)
+f I    109   112 EPI Switch Hardware  3 0019-14C4 (  3)
+f I    113   116 EPI Switch Delay  (ns) 0019-14C5 (  1)
+f I    117   120 EPI Switch Delay  (ns) 0019-14C5 (  2)
+f I    121   124 EPI Switch Delay  (ns) 0019-14C5 (  3)
+f I    125   128 EPI Switch Delay  (ns) 0019-14C5 (  4)
+f I    129   132 EPI Switch Delay  (ns) 0019-14C5 (  5)
+f I    133   136 EPI Switch Delay  (ns) 0019-14C5 (  6)
+f ct   137   201 EPI File Name          0019-1514
+f s    202   204
+f I    205   208 Satu. Regn. Type Cde 1 0021-2350 (  1)
+f I    209   212 Satu. Regn. Type Cde 2 0021-2350 (  2)
+f I    213   216 Satu. Regn. Type Cde 3 0021-2350 (  3)
+f I    217   220 Satu. Regn. Type Cde 4 0021-2350 (  4)
+f I    221   224 Satu. Regn. Type Cde 5 0021-2350 (  5)
+f I    225   228 Satu. Regn. Type Cde 6 0021-2350 (  6)
+f Fs   229   232 Satu. Normal Vec.    1 0021-2351 (  1)
+f Fs   233   236 Satu. Normal Vec.    2 0021-2351 (  2)
+f Fs   237   240 Satu. Normal Vec.    3 0021-2351 (  3)
+f Fs   241   244 Satu. Normal Vec.    4 0021-2351 (  4)
+f Fs   245   248 Satu. Normal Vec.    5 0021-2351 (  5)
+f Fs   249   252 Satu. Normal Vec.    6 0021-2351 (  6)
+f Fs   253   256 Satu. Normal Vec.    7 0021-2351 (  7)
+f Fs   257   260 Satu. Normal Vec.    8 0021-2351 (  8)
+f Fs   261   264 Satu. Normal Vec.   19 0021-2351 (  9)
+f Fs   265   268 Satu. Normal Vec.   10 0021-2351 ( 10)
+f Fs   269   272 Satu. Normal Vec.   11 0021-2351 ( 11)
+f Fs   273   276 Satu. Normal Vec.   12 0021-2351 ( 12)
+f Fs   277   280 Satu. Normal Vec.   13 0021-2351 ( 13)
+f Fs   281   284 Satu. Normal Vec.   14 0021-2351 ( 14)
+f Fs   285   288 Satu. Normal Vec.   15 0021-2351 ( 15)
+f Fs   289   292 Satu. Normal Vec.   16 0021-2351 ( 16)
+f Fs   293   296 Satu. Normal Vec.   17 0021-2351 ( 17)
+f Fs   297   300 Satu. Normal Vec.   18 0021-2351 ( 18)
+f Fs   301   304 Satu. Posit. Vec.    1 0021-2352 (  1)
+f Fs   305   308 Satu. Posit. Vec.    2 0021-2352 (  2)
+f Fs   309   312 Satu. Posit. Vec.    3 0021-2352 (  3)
+f Fs   313   316 Satu. Posit. Vec.    4 0021-2352 (  4)
+f Fs   317   320 Satu. Posit. Vec.    5 0021-2352 (  5)
+f Fs   321   324 Satu. Posit. Vec.    6 0021-2352 (  6)
+f Fs   325   328 Satu. Posit. Vec.    7 0021-2352 (  7)
+f Fs   329   332 Satu. Posit. Vec.    8 0021-2352 (  8)
+f Fs   333   336 Satu. Posit. Vec.   19 0021-2352 (  9)
+f Fs   337   340 Satu. Posit. Vec.   10 0021-2352 ( 10)
+f Fs   341   344 Satu. Posit. Vec.   11 0021-2352 ( 11)
+f Fs   345   348 Satu. Posit. Vec.   12 0021-2352 ( 12)
+f Fs   349   352 Satu. Posit. Vec.   13 0021-2352 ( 13)
+f Fs   353   356 Satu. Posit. Vec.   14 0021-2352 ( 14)
+f Fs   357   360 Satu. Posit. Vec.   15 0021-2352 ( 15)
+f Fs   361   364 Satu. Posit. Vec.   16 0021-2352 ( 16)
+f Fs   365   368 Satu. Posit. Vec.   17 0021-2352 ( 17)
+f Fs   369   372 Satu. Posit. Vec.   18 0021-2352 ( 18)
+f Fs   373   376 Satu. Region Thickn. 1 0021-2353 (  1)
+f Fs   377   380 Satu. Region Thickn. 2 0021-2353 (  2)
+f Fs   381   384 Satu. Region Thickn. 3 0021-2353 (  3)
+f Fs   385   388 Satu. Region Thickn. 4 0021-2353 (  4)
+f Fs   389   392 Satu. Region Thickn. 5 0021-2353 (  5)
+f Fs   393   396 Satu. Region Thickn. 6 0021-2353 (  6)
+f Fs   397   400 Satu. Region Width   1 0021-2354 (  1)
+f Fs   401   404 Satu. Region Width   2 0021-2354 (  2)
+f Fs   405   408 Satu. Region Width   3 0021-2354 (  3)
+f Fs   409   412 Satu. Region Width   4 0021-2354 (  4)
+f Fs   413   416 Satu. Region Width   5 0021-2354 (  5)
+f Fs   417   420 Satu. Region Width   6 0021-2354 (  6)
+f Fs   421   424 Satu. Region Distan. 1 0021-2355 (  1)
+f Fs   425   428 Satu. Region Distan. 2 0021-2355 (  2)
+f Fs   429   432 Satu. Region Distan. 3 0021-2355 (  3)
+f Fs   433   436 Satu. Region Distan. 4 0021-2355 (  4)
+f Fs   437   440 Satu. Region Distan. 5 0021-2355 (  5)
+f Fs   441   444 Satu. Region Distan. 6 0021-2355 (  6)
+f Fs   445   448 ADC Offset  1          0021-2330 (  1)
+f Fs   449   452 ADC Offset  2          0021-2330 (  2)
+f Fs   453   456 ADC Offset  3          0021-2330 (  3)
+f Fs   457   460 ADC Offset  4          0021-2330 (  4)
+f Fs   461   464 ADC Offset  5          0021-2330 (  5)
+f Fs   465   468 ADC Offset  6          0021-2330 (  6)
+f Fs   469   472 ADC Offset  7          0021-2330 (  7)
+f Fs   473   476 ADC Offset  8          0021-2330 (  8)
+f Fs   477   480 ADC Offset  9          0021-2330 (  9)
+f Fs   481   484 ADC Offset 10          0021-2330 ( 10)
+f Fs   485   488 ADC Offset 11          0021-2330 ( 11)
+f Fs   489   492 ADC Offset 12          0021-2330 ( 12)
+f Fs   493   496 ADC Offset 13          0021-2330 ( 13)
+f Fs   497   500 ADC Offset 14          0021-2330 ( 14)
+f Fs   501   504 ADC Offset 15          0021-2330 ( 15)
+f Fs   505   508 ADC Offset 16          0021-2330 ( 16)
+f Fs   509   512 ADC Offset 17          0021-2330 ( 17)
+f Fs   513   516 ADC Offset 18          0021-2330 ( 18)
+f Fs   517   520 ADC Offset 19          0021-2330 ( 19)
+f Fs   521   524 ADC Offset 20          0021-2330 ( 20)
+f Fs   525   528 ADC Offset 21          0021-2330 ( 21)
+f Fs   529   532 ADC Offset 22          0021-2330 ( 22)
+f Fs   533   536 ADC Offset 23          0021-2330 ( 23)
+f Fs   537   540 ADC Offset 24          0021-2330 ( 24)
+f Fs   541   544 ADC Offset 25          0021-2330 ( 25)
+f Fs   545   548 ADC Offset 26          0021-2330 ( 26)
+f Fs   549   552 ADC Offset 27          0021-2330 ( 27)
+f Fs   553   556 ADC Offset 28          0021-2330 ( 28)
+f Fs   557   560 ADC Offset 29          0021-2330 ( 29)
+f Fs   561   564 ADC Offset 30          0021-2330 ( 30)
+f Fs   565   568 ADC Offset 31          0021-2330 ( 31)
+f Fs   569   572 ADC Offset 32          0021-2330 ( 32)
+f Fs   573   576 AC Preamp Gain  1      0021-   - (  1)
+f Fs   577   580 AC Preamp Gain  2      0021-   - (  2)
+f Fs   581   584 AC Preamp Gain  3      0021-   - (  3)
+f Fs   585   588 AC Preamp Gain  4      0021-   - (  4)
+f Fs   589   592 AC Preamp Gain  5      0021-   - (  5)
+f Fs   593   596 AC Preamp Gain  6      0021-   - (  6)
+f Fs   597   600 AC Preamp Gain  7      0021-   - (  7)
+f Fs   601   604 AC Preamp Gain  8      0021-   - (  8)
+f Fs   605   608 AC Preamp Gain  9      0021-   - (  9)
+f Fs   609   612 AC Preamp Gain 10      0021-   - ( 10)
+f Fs   613   616 AC Preamp Gain 11      0021-   - ( 11)
+f Fs   617   620 AC Preamp Gain 12      0021-   - ( 12)
+f Fs   621   624 AC Preamp Gain 13      0021-   - ( 13)
+f Fs   625   628 AC Preamp Gain 14      0021-   - ( 14)
+f Fs   629   632 AC Preamp Gain 15      0021-   - ( 15)
+f Fs   633   636 AC Preamp Gain 16      0021-   - ( 16)
+f I    637   640 Sequence Type          0021-2300
+f I    641   644 Original Vector Size   0021-2301
+f I    645   648 Extended Vector Size   0021-2302
+f Fs   649   652 Acqrd. Spectral Range  0021-2303
+f Fs   653   656 VOI Position Sagittal  0021-   -
+f Fs   657   660 VOI Position Coronal   0021-   -
+f Fs   661   664 VOI Position Trans.    0021-   -
+f Fs   665   668 VOI Size     Sagittal  0021-   -
+f Fs   669   672 VOI Size     Coronal   0021-   -
+f Fs   673   676 VOI Size     Trans.    0021-   -
+f I    677   680 Orig. CSI Matrix Lines 0021-   -
+f I    681   684 Orig. CSI Matrix Cols. 0021-   -
+f I    685   688 Orig. CSI Matrix Part. 0021-   -
+f I    689   692 Extd. CSI Matrix Lines 0021-   -
+f I    693   696 Extd. CSI Matrix Cols. 0021-   -
+f I    697   700 Extd. CSI Matrix Part. 0021-   -
+f Fs   701   704 Spat. Grd. Shift Lines 0021-   -
+f Fs   705   708 Spat. Grd. Shift Cols. 0021-   -
+f Fs   709   712 Spat. Grd. Shift Part. 0021-   -
+f Fs   713   716 Signal Limits Min.     0021-2309
+f Fs   717   720 Signal Limits Max.     0021-2310
+f I    721   724 Spectroscopy Info Mask 0021-2311
+f Fs   725   728 EPI Time Rate Change   0021-2312
+f Fs   729   732 EPI Time Rate X Coord. 0021-2313
+f Fs   733   736 EPI Time Rate Y Coord. 0021-2314
+f Fs   737   740 EPI Time Rate Z Coord. 0021-2315
+f Fs   741   744 EPI Time Rate Mimit    0021-2316
+f I    745   748 EPI Op. Mode Flag      0021-2317
+f Fs   749   752 EPI Safety Factor      0021-2318
+f Fs   753   756 EPI Rate Legal Limit 1 0021-2319
+f Fs   757   760 EPI Rate Legal Limit 2 0021-2320
+f Fs   761   764 EPI Rise Time          0021-2321
+f s    765   768
+f I    769   770 Image Dimensions       0028-0005
+f I    771   772 Image Rows             0028-0010
+f I    773   774 Image Columns          0028-0011
+f s    775   776
+f Fd   777   784 Pixel Size (Rows) (mm) 0028-0030 (  1)
+f Fd   785   792 Pixel Size (Col.) (mm) 0028-0030 (  2)
+f I    793   796 Image Format           0028-0040
+f I    797   800 Compression Code       0028-0060
+f I    801   802 Bits Allocated         0028-0100
+f I    803   804 Bits Stored            0028-0101
+f I    805   806 High Bit               0028-0102
+f I    807   808 Pixel Representation   0028-0103
+f I    809   812 Window Center 1        0028-1050 (  1)
+f I    813   816 Window Center 2        0028-1050 (  2)
+f I    817   820 Window Width  1        0028-1051 (  1)
+f I    821   824 Window Width  2        0028-1051 (  2)
+f I    825   828 Rescale Intercept      0028-1052
+f I    829   832 Rescale Slope          0028-1053
+f s    833  1024
+C -- ----- ----- ---------------------- --------- -----
+C Ty Start End   Description :
+C pe   Pos   Pos Comment                Nema Ref. Index
+C -- ----- ----- ---------------------- --------- -----
+B -      1   896 Block 6
+f I      1     4 Window Style           0029-1110
+f I      5     8 Pixel Qualt. Code Min. 0029-1120 (  1)
+f I      9    12 Pixel Qualt. Code Mean 0029-1120 (  2)
+f I     13    16 Pixel Qualt. Code Max. 0029-1120 (  3)
+f I     17    20 Pixel Qualt. Val. Min. 0029-1122 (  1)
+f I     21    24 Pixel Qualt. Val. Mean 0029-1122 (  2)
+f I     25    28 Pixel Qualt. Val. Max. 0029-1122 (  3)
+f I     29    32 Archive Code           0029-1150
+f I     33    36 Exposure Code          0029-1151
+f I     37    40 Sort Code              0029-1152
+f I     41    44 Splash                 0029-1160
+f s     45   256
+f cg   257   269 Patient Id Number      0051-   - (  1)
+f ct   270   281 Patient Sex and Age    0051-   - (  2)
+f ct   282   293 Patient Position       0051-   - (  3)
+f ct   294   305 Image Number           0051-   - (  4)
+f ct   306   311 Label                  0051-   - (  5)
+f ct   312   323 Measurement Date       0051-   - (  6)
+f ct   324   329 Measurement Time       0051-   - (  7)
+f ct   330   341 Time of Acquisition    0051-   - (  8)
+f ct   342   353 Number of Acquisition  0051-   - (  9)
+f ct   354   380 Comment Number 1       0051-   - ( 10)
+f ct   381   407 Comment Number 2       0051-   - ( 11)
+f ct   408   434 Installation Name      0051-   - ( 12)
+f ct   435   443 Software Version       0051-   - ( 13)
+f s    444   446
+f ct   447   458 Matrix                 0051-   - ( 14)
+f ct   459   470 Type of Measurement    0051-   - ( 15)
+f ct   471   482 Scan Number            0051-   - ( 16)
+f ct   483   494 Repetition Time   (ms) 0051-   - ( 17)
+f ct   495   506 Echo Time         (ms) 0051-   - ( 18)
+f ct   507   518 Gating and Trigger     0051-   - ( 19)
+f ct   519   530 Tube Current           0051-   - ( 20)
+f ct   531   542 Tube Current           0051-   - ( 21)
+f ct   543   554 Slice Thickness   (mm) 0051-   - ( 22)
+f ct   555   566 Slice Position    (mm) 0051-   - ( 23)
+f ct   567   578 Slice Orientation 1    0051-   - ( 24)
+f ct   579   590 Slice Orientation 2    0051-   - ( 25)
+f ct   591   602 Field of View     (mm) 0051-   - ( 26)
+f ct   603   614 Zoom Center            0051-   - ( 27)
+f ct   615   626 Gantry Tilt            0051-   - ( 28)
+f ct   627   638 Table Position    (mm) 0051-   - ( 29)
+f ct   639   642 Mip Head Line          0051-   - ( 30)
+f ct   643   658 Mip Line               0051-   - ( 31)
+f ct   659   674 Mip Column             0051-   - ( 32)
+f ct   675   690 Mip Slice              0051-   - ( 33)
+f ct   691   702 Study Number           0051-   - ( 34)
+f ct   703   708 Contrast               0051-   - ( 35)
+f ct   709   720 Patient Birth Date     0051-   - ( 36)
+f ct   721   732 Sequence Information   0051-   - ( 37)
+f ct   733   744 Saturation Regions     0051-   - ( 38)
+f ct   745   771 Dataset Ident.         0051-   - ( 39)
+f ct   772   783 Magnification Factor   0051-   - ( 40)
+f ct   784   810 Manufacturer Model     0051-   - ( 41)
+f ct   811   837 Patient Name           0051-   - ( 42)
+f ct   838   846 Scan Time              0051-   - ( 43)
+f s    847   896
+C -- ----- ----- ---------------------- --------- -----
+E
+

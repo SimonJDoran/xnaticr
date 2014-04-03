@@ -1,0 +1,1146 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<!--
+    Document   : treeTableRenderings.xml
+    Created on : April 13, 2010, 10:10 AM
+    Author     : simon
+    Description:
+        Defines the properties of the icon and tooltip for rendering icons
+        in the DAO TreeTable.
+-->
+
+<XNATIconRenderings>
+
+   <renderProperties element="No valid data">
+      <property name="Letter">?</property>
+      <property name="Colour">ICR red</property>
+      <property name="tooltip">Perform a query first</property>
+   </renderProperties>
+   
+   <renderProperties element="Please wait. Fetching data...">
+      <property name="Letter">?</property>
+      <property name="Colour">light grey</property>
+      <property name="tooltip">Data for node expansion not yet available.</property>
+   </renderProperties>
+
+   <renderProperties element="XNAT database">
+      <property name="Letter">X</property>
+      <property name="Colour">XNAT green</property>
+      <property name="tooltip">Data from XNAT database</property>
+   </renderProperties>
+
+<!-- MR properties -->
+
+   <renderProperties element="xnat:mrSessionData/project">
+      <property name="Letter">X</property>
+      <property name="Colour">XNAT green</property>
+      <property name="tooltip">ID of the XNAT project under which this MR scan is stored</property>
+   </renderProperties>
+   
+   <renderProperties element="xnat:mrSessionData/subject_ID">
+      <property name="Letter">X</property>
+      <property name="Colour">XNAT green</property>
+      <property name="tooltip">ID of the XNAT subject under which this MR scan is stored</property>
+   </renderProperties>
+   
+   <renderProperties element="xnat:mrScanData/image_session_ID">
+      <property name="Letter">X</property>
+      <property name="Colour">XNAT green</property>
+      <property name="tooltip">Session ID in XNAT database</property>
+   </renderProperties>
+
+   <renderProperties element="xnat:mrSessionData/label">
+      <property name="Letter">X</property>
+      <property name="Colour">XNAT green</property>
+      <property name="tooltip">Session label in XNAT database</property>
+   </renderProperties>
+   
+   <renderProperties element="xnat:mrScanData/ID">
+      <property name="Letter">X</property>
+      <property name="Colour">XNAT green</property>
+      <property name="tooltip">Scan ID in XNAT database</property>
+   </renderProperties>
+   
+   <renderProperties element="xnat:mrScanData">
+      <property name="Letter">S</property>
+      <property name="Colour">XNAT blue</property>
+      <property name="tooltip">Scan</property>
+   </renderProperties>
+
+   <renderProperties element="xnat:mrScanData/type">
+      <property name="Letter">P</property>
+      <property name="Colour">XNAT blue</property>
+      <property name="tooltip">MR examination protocol: scan type</property>
+   </renderProperties>
+
+   <renderProperties element="xnat:mrSessionData/dcmPatientName">
+      <property name="Letter">D</property>
+      <property name="Colour">orange</property>
+      <property name="tooltip">Subject demographics: name</property>
+   </renderProperties>
+
+   <renderProperties element="xnat:mrScanData/scanner/manufacturer">
+      <property name="Letter">E</property>
+      <property name="Colour">cyan</property>
+      <property name="tooltip">Equipment: scanner manufacturer</property>
+   </renderProperties>
+
+   <renderProperties element="xnat:mrScanData/scanner/model">
+      <property name="Letter">E</property>
+      <property name="Colour">cyan</property>
+      <property name="tooltip">Equipment: scanner model</property>
+   </renderProperties>
+
+   <renderProperties element="xnat:mrScanData/modality">
+      <property name="Letter">E</property>
+      <property name="Colour">cyan</property>
+      <property name="tooltip">Equipment: imaging modality</property>
+   </renderProperties>
+
+   <renderProperties element="xnat:mrScanData/coil">
+      <property name="Letter">E</property>
+      <property name="Colour">cyan</property>
+      <property name="tooltip">Equipment: MR coil</property>
+   </renderProperties>
+
+   <renderProperties element="xnat:mrScanData/fieldStrength">
+      <property name="Letter">E</property>
+      <property name="Colour">cyan</property>
+      <property name="tooltip">Equipment: magnetic field strength</property>
+   </renderProperties>
+
+   <renderProperties element="xnat:mrScanData/parameters/voxelRes/units">
+      <property name="Letter">P</property>
+      <property name="Colour">XNAT blue</property>
+      <property name="tooltip">MR examination protocol: units of voxel size</property>
+   </renderProperties>
+
+   <renderProperties element="xnat:mrScanData/parameters/voxelRes/x">
+      <property name="Letter">P</property>
+      <property name="Colour">XNAT blue</property>
+      <property name="tooltip">MR examination protocol: voxel size (x)</property>
+   </renderProperties>
+
+   <renderProperties element="xnat:mrScanData/parameters/voxelRes/y">
+      <property name="Letter">P</property>
+      <property name="Colour">XNAT blue</property>
+      <property name="tooltip">MR examination protocol: voxel size (y)</property>
+   </renderProperties>
+
+   <renderProperties element="xnat:mrScanData/parameters/voxelRes/z">
+      <property name="Letter">P</property>
+      <property name="Colour">XNAT blue</property>
+      <property name="tooltip">MR examination protocol: voxel size (z)</property>
+   </renderProperties>
+
+   <renderProperties element="xnat:mrScanData/parameters/partitions">
+      <property name="Letter">P</property>
+      <property name="Colour">XNAT blue</property>
+      <property name="tooltip">MR examination protocol: number of partitions</property>
+   </renderProperties>
+
+   <renderProperties element="xnat:mrScanData/parameters/orientation">
+      <property name="Letter">P</property>
+      <property name="Colour">XNAT blue</property>
+      <property name="tooltip">MR examination protocol: image orientation</property>
+   </renderProperties>
+
+   <renderProperties element="xnat:mrScanData/parameters/fov/x">
+      <property name="Letter">P</property>
+      <property name="Colour">XNAT blue</property>
+      <property name="tooltip">MR examination protocol: matrix size (x)</property>
+   </renderProperties>
+
+   <renderProperties element="xnat:mrScanData/parameters/fov/y">
+      <property name="Letter">P</property>
+      <property name="Colour">XNAT blue</property>
+      <property name="tooltip">MR examination protocol: matrix size (y)</property>
+   </renderProperties>
+
+   <renderProperties element="xnat:mrScanData/parameters/tr">
+      <property name="Letter">P</property>
+      <property name="Colour">XNAT blue</property>
+      <property name="tooltip">MR examination protocol: repetition time (TR)</property>
+   </renderProperties>
+
+   <renderProperties element="xnat:mrScanData/parameters/te">
+      <property name="Letter">P</property>
+      <property name="Colour">XNAT blue</property>
+      <property name="tooltip">MR examination protocol: echo time (TE)</property>
+   </renderProperties>
+
+   <renderProperties element="xnat:mrScanData/parameters/ti">
+      <property name="Letter">P</property>
+      <property name="Colour">XNAT blue</property>
+      <property name="tooltip">MR examination protocol: inversion time (TI)</property>
+   </renderProperties>
+   
+   <renderProperties element="xnat:mrScanData/parameters/flip">
+      <property name="Letter">P</property>
+      <property name="Colour">XNAT blue</property>
+      <property name="tooltip">MR examination protocol: pulse flip angle</property>
+   </renderProperties>
+
+   <renderProperties element="xnat:mrScanData/frames">
+      <property name="Letter">P</property>
+      <property name="Colour">XNAT blue</property>
+      <property name="tooltip">MR examination protocol: no. of frames</property>
+   </renderProperties>
+
+   <renderProperties element="xnat:mrScanData/parameters/sequence">
+      <property name="Letter">P</property>
+      <property name="Colour">XNAT blue</property>
+      <property name="tooltip">MR examination protocol: sequence name</property>
+   </renderProperties>
+
+   <renderProperties element="xnat:mrSessionData/date">
+      <property name="Letter">A</property>
+      <property name="Colour">ICR red</property>
+      <property name="tooltip">Administration: scan date</property>
+   </renderProperties>
+
+   <renderProperties element="xnat:mrScanData/startTime">
+      <property name="Letter">A</property>
+      <property name="Colour">ICR red</property>
+      <property name="tooltip">Administration: scan time</property>
+   </renderProperties>
+
+   <renderProperties element="xnat:mrScanData/parameters/scanSequence">
+      <property name="Letter">P</property>
+      <property name="Colour">XNAT blue</property>
+      <property name="tooltip">MR examination protocol: scan sequence</property>
+   </renderProperties>
+
+   <renderProperties element="xnat:mrScanData/parameters/seqVariant">
+      <property name="Letter">P</property>
+      <property name="Colour">XNAT blue</property>
+      <property name="tooltip">MR examination protocol: sequence variant</property>
+   </renderProperties>
+
+   <renderProperties element="xnat:mrScanData/series_description">
+      <property name="Letter">P</property>
+      <property name="Colour">XNAT blue</property>
+      <property name="tooltip">MR examination protocol: series description</property>
+   </renderProperties>
+
+   <renderProperties element="xnat:mrScanData/parameters/imageType">
+      <property name="Letter">P</property>
+      <property name="Colour">XNAT blue</property>
+      <property name="tooltip">MR examination protocol: image type</property>
+   </renderProperties>
+
+      <renderProperties element="xnat:mrScanData/UID">
+      <property name="Letter">U</property>
+      <property name="Colour">magenta</property>
+      <property name="tooltip">DICOM series UID</property>
+   </renderProperties>
+
+   <renderProperties element="xnat:mrSessionData/UID">
+      <property name="Letter">U</property>
+      <property name="Colour">magenta</property>
+      <property name="tooltip">DICOM session UID</property>
+   </renderProperties>
+
+   <renderProperties element="xnat:mrSessionData/dcmPatientID">
+      <property name="Letter">U</property>
+      <property name="Colour">magenta</property>
+      <property name="tooltip">DICOM patient UID</property>
+   </renderProperties>
+   
+   <renderProperties element="xnat:mrSessionData/acquisition_site">
+      <property name="Letter">A</property>
+      <property name="Colour">ICR red</property>
+      <property name="tooltip">Administration: acquisition site</property>
+   </renderProperties>
+
+
+<!-- PET properties -->
+
+   <renderProperties element="xnat:petSessionData/dcmPatientName">
+      <property name="Letter">D</property>
+      <property name="Colour">orange</property>
+      <property name="tooltip">Subject demographics/administration: name</property>
+   </renderProperties>
+
+   <renderProperties element="xnat:petScanData/type">
+      <property name="Letter">P</property>
+      <property name="Colour">XNAT blue</property>
+      <property name="tooltip">PET examination protocol: scan type</property>
+   </renderProperties>
+
+   <renderProperties element="xnat:petSessionData/date">
+      <property name="Letter">A</property>
+      <property name="Colour">ICR red</property>
+      <property name="tooltip">Administration: scan date</property>
+   </renderProperties>
+
+   <renderProperties element="xnat:petScanData/startTime">
+      <property name="Letter">A</property>
+      <property name="Colour">ICR red</property>
+      <property name="tooltip">Administration: scan time</property>
+   </renderProperties>
+   
+   <renderProperties element="xnat:petScanData/scanner/manufacturer">
+      <property name="Letter">E</property>
+      <property name="Colour">cyan</property>
+      <property name="tooltip">Equipment: scanner manufacturer</property>
+   </renderProperties>
+
+   <renderProperties element="xnat:petScanData/scanner/model">
+      <property name="Letter">E</property>
+      <property name="Colour">cyan</property>
+      <property name="tooltip">Equipment: scanner model</property>
+   </renderProperties>
+
+   <renderProperties element="xnat:petSessionData/tracer/name">
+      <property name="Letter">P</property>
+      <property name="Colour">XNAT blue</property>
+      <property name="tooltip">PET examination protocol: tracer name</property>
+   </renderProperties>
+
+   <renderProperties element="xnat:petSessionData/tracer/dose">
+      <property name="Letter">P</property>
+      <property name="Colour">XNAT blue</property>
+      <property name="tooltip">PET examination protocol: tracer dose</property>
+   </renderProperties>
+   
+   <renderProperties element="xnat:petSessionData/tracer/specificActivity">
+      <property name="Letter">P</property>
+      <property name="Colour">XNAT blue</property>
+      <property name="tooltip">PET examination protocol: tracer specific activity</property>
+   </renderProperties>
+   
+   <renderProperties element="xnat:petSessionData/tracer/isotope">
+      <property name="Letter">P</property>
+      <property name="Colour">XNAT blue</property>
+      <property name="tooltip">PET examination protocol: tracer isotope</property>
+   </renderProperties>
+   
+   <renderProperties element="xnat:petScanData/frames">
+      <property name="Letter">P</property>
+      <property name="Colour">XNAT blue</property>
+      <property name="tooltip">PET examination protocol: no. of frames</property>
+   </renderProperties>
+
+   <renderProperties element="xnat:petScanData/parameters/orientation">
+      <property name="Letter">P</property>
+      <property name="Colour">XNAT blue</property>
+      <property name="tooltip">PET examination protocol: image orientation</property>
+   </renderProperties>
+   
+   <renderProperties element="xnat:petScanData/parameters/fileType">
+      <property name="Letter">P</property>
+      <property name="Colour">XNAT blue</property>
+      <property name="tooltip">PET examination protocol: file type</property>
+   </renderProperties>
+
+   <renderProperties element="xnat:petScanData/parameters/transaxialFOV">
+      <property name="Letter">P</property>
+      <property name="Colour">XNAT blue</property>
+      <property name="tooltip">PET examination protocol: axial field-of-view</property>
+   </renderProperties>
+
+   <renderProperties element="xnat:petScanData/parameters/acqType">
+      <property name="Letter">P</property>
+      <property name="Colour">XNAT blue</property>
+      <property name="tooltip">PET examination protocol: acquisition type</property>
+   </renderProperties>
+   
+   <renderProperties element="xnat:petScanData/parameters/numPlanes">
+      <property name="Letter">P</property>
+      <property name="Colour">XNAT blue</property>
+      <property name="tooltip">PET examination protocol: number of planes</property>
+   </renderProperties>
+
+   <renderProperties element="xnat:petScanData/parameters/planeSeparation">
+      <property name="Letter">P</property>
+      <property name="Colour">XNAT blue</property>
+      <property name="tooltip">PET examination protocol: plane separation</property>
+   </renderProperties>
+
+   <renderProperties element="xnat:petScanData/parameters/numPlanes">
+      <property name="Letter">P</property>
+      <property name="Colour">XNAT blue</property>
+      <property name="tooltip">PET examination protocol: number of planes</property>
+   </renderProperties>
+
+   <renderProperties element="xnat:petScanData/parameters/dimensions/x">
+      <property name="Letter">P</property>
+      <property name="Colour">XNAT blue</property>
+      <property name="tooltip">PET examination protocol: matrix size x</property>
+   </renderProperties>
+
+   <renderProperties element="xnat:petScanData/parameters/dimensions/y">
+      <property name="Letter">P</property>
+      <property name="Colour">XNAT blue</property>
+      <property name="tooltip">PET examination protocol: matrix size y</property>
+   </renderProperties>
+   
+   <renderProperties element="xnat:petScanData/parameters/dimensions/z">
+      <property name="Letter">P</property>
+      <property name="Colour">XNAT blue</property>
+      <property name="tooltip">PET examination protocol: matrix size z</property>
+   </renderProperties>
+   
+   <renderProperties element="xnat:petScanData/parameters/pixelSize/x">
+      <property name="Letter">P</property>
+      <property name="Colour">XNAT blue</property>
+      <property name="tooltip">PET examination protocol: voxel size x</property>
+   </renderProperties>
+
+   <renderProperties element="xnat:petScanData/parameters/pixelSize/y">
+      <property name="Letter">P</property>
+      <property name="Colour">XNAT blue</property>
+      <property name="tooltip">PET examination protocol: voxel size y</property>
+   </renderProperties>
+
+   <renderProperties element="xnat:petScanData/parameters/pixelSize/z">
+      <property name="Letter">P</property>
+      <property name="Colour">XNAT blue</property>
+      <property name="tooltip">PET examination protocol: voxel size z</property>
+   </renderProperties>
+
+   <renderProperties element="xnat:petScanData/series_description">
+      <property name="Letter">P</property>
+      <property name="Colour">XNAT blue</property>
+      <property name="tooltip">PET examination protocol: series description</property>
+   </renderProperties>
+
+   <renderProperties element="xnat:petScanData">
+      <property name="Letter">S</property>
+      <property name="Colour">ICR red</property>
+      <property name="tooltip">Scan</property>
+   </renderProperties>
+
+   <renderProperties element="xnat:petSessionData/project">
+      <property name="Letter">X</property>
+      <property name="Colour">XNAT green</property>
+      <property name="tooltip">ID of the XNAT project under which this PET scan is stored</property>
+   </renderProperties>
+   
+   <renderProperties element="xnat:petSessionData/subject_ID">
+      <property name="Letter">X</property>
+      <property name="Colour">XNAT green</property>
+      <property name="tooltip">ID of the XNAT subject under which this PET scan is stored</property>
+   </renderProperties>
+   
+   <renderProperties element="xnat:petScanData/image_session_ID">
+      <property name="Letter">X</property>
+      <property name="Colour">XNAT green</property>
+      <property name="tooltip">Session ID in XNAT database</property>
+   </renderProperties>
+
+   <renderProperties element="xnat:petSessionData/label">
+      <property name="Letter">X</property>
+      <property name="Colour">XNAT green</property>
+      <property name="tooltip">Session label in XNAT database</property>
+   </renderProperties>
+
+   <renderProperties element="xnat:petScanData/ID">
+      <property name="Letter">X</property>
+      <property name="Colour">XNAT green</property>
+      <property name="tooltip">Scan ID in XNAT database</property>
+   </renderProperties>
+
+   <renderProperties element="xnat:petScanData/UID">
+      <property name="Letter">U</property>
+      <property name="Colour">magenta</property>
+      <property name="tooltip">DICOM series UID</property>
+   </renderProperties>
+
+   <renderProperties element="xnat:petSessionData/UID">
+      <property name="Letter">U</property>
+      <property name="Colour">magenta</property>
+      <property name="tooltip">DICOM session UID</property>
+   </renderProperties>
+
+   <renderProperties element="xnat:petSessionData/dcmPatientId">
+      <property name="Letter">U</property>
+      <property name="Colour">magenta</property>
+      <property name="tooltip">DICOM patient UID</property>
+   </renderProperties>
+   
+   <renderProperties element="xnat:petSessionData/acquisition_site">
+      <property name="Letter">A</property>
+      <property name="Colour">ICR red</property>
+      <property name="tooltip">Administration: acquisition site</property>
+   </renderProperties>
+
+
+<!-- CT properties -->
+
+   <renderProperties element="xnat:ctScanData">
+      <property name="Letter">S</property>
+      <property name="Colour">XNAT green</property>
+      <property name="tooltip">Scan</property>
+   </renderProperties>
+
+   <renderProperties element="xnat:ctSessionData/dcmPatientName">
+      <property name="Letter">D</property>
+      <property name="Colour">orange</property>
+      <property name="tooltip">Subject demographics/administration: name</property>
+   </renderProperties>
+
+   <renderProperties element="xnat:ctScanData/type">
+      <property name="Letter">P</property>
+      <property name="Colour">XNAT blue</property>
+      <property name="tooltip">CT examination protocol: scan type</property>
+   </renderProperties>
+
+   <renderProperties element="xnat:ctScanData/scanner/manufacturer">
+      <property name="Letter">E</property>
+      <property name="Colour">cyan</property>
+      <property name="tooltip">Equipment: scanner manufacturer</property>
+   </renderProperties>
+
+   <renderProperties element="xnat:ctScanData/scanner/model">
+      <property name="Letter">E</property>
+      <property name="Colour">cyan</property>
+      <property name="tooltip">Equipment: scanner model</property>
+   </renderProperties>
+
+   <renderProperties element="xnat:ctScanData/frames">
+      <property name="Letter">P</property>
+      <property name="Colour">XNAT blue</property>
+      <property name="tooltip">CT examination protocol: no. of frames</property>
+   </renderProperties>
+
+   <renderProperties element="xnat:ctScanData/parameters/voxelRes/x">
+      <property name="Letter">P</property>
+      <property name="Colour">XNAT blue</property>
+      <property name="tooltip">CT examination protocol: voxel size (x)</property>
+   </renderProperties>
+
+   <renderProperties element="xnat:ctScanData/parameters/voxelRes/y">
+      <property name="Letter">P</property>
+      <property name="Colour">XNAT blue</property>
+      <property name="tooltip">CT examination protocol: voxel size (y)</property>
+   </renderProperties>
+
+   <renderProperties element="xnat:ctScanData/parameters/voxelRes/z">
+      <property name="Letter">P</property>
+      <property name="Colour">XNAT blue</property>
+      <property name="tooltip">CT examination protocol: voxel size (z)</property>
+   </renderProperties>
+
+   <renderProperties element="xnat:ctScanData/parameters/orientation">
+      <property name="Letter">P</property>
+      <property name="Colour">XNAT blue</property>
+      <property name="tooltip">CT examination protocol: image orientation</property>
+   </renderProperties>
+
+   <renderProperties element="xnat:ctScanData/parameters/fov/x">
+      <property name="Letter">P</property>
+      <property name="Colour">XNAT blue</property>
+      <property name="tooltip">CT examination protocol: matrix size (x)</property>
+   </renderProperties>
+
+   <renderProperties element="xnat:ctScanData/parameters/fov/y">
+      <property name="Letter">P</property>
+      <property name="Colour">XNAT blue</property>
+      <property name="tooltip">CT examination protocol: matrix size (y)</property>
+   </renderProperties>
+
+   <renderProperties element="xnat:ctScanData/image_session_ID">
+      <property name="Letter">X</property>
+      <property name="Colour">XNAT green</property>
+      <property name="tooltip">Session ID in XNAT database</property>
+   </renderProperties>
+
+   <renderProperties element="xnat:ctScanData/parameters/kvp">
+      <property name="Letter">P</property>
+      <property name="Colour">XNAT blue</property>
+      <property name="tooltip">CT examination protocol: kVp</property>
+   </renderProperties>
+
+   <renderProperties element="xnat:ctScanData/parameters/xrayTubeCurrent">
+      <property name="Letter">P</property>
+      <property name="Colour">XNAT blue</property>
+      <property name="tooltip">CT examination protocol: tube current</property>
+   </renderProperties>
+
+   <renderProperties element="xnat:ctScanData/parameters/contrastBolus/agent">
+      <property name="Letter">P</property>
+      <property name="Colour">XNAT blue</property>
+      <property name="tooltip">CT examination protocol: tube CTFI volume</property>
+   </renderProperties>
+
+   <renderProperties element="xnat:ctScanData/parameters/contrastBolus/agent">
+      <property name="Letter">P</property>
+      <property name="Colour">XNAT blue</property>
+      <property name="tooltip">CT examination protocol: tube CTDI volume</property>
+   </renderProperties>
+
+   <renderProperties element="xnat:ctScanData/parameters/ctDIvol">
+      <property name="Letter">P</property>
+      <property name="Colour">XNAT blue</property>
+      <property name="tooltip">CT examination protocol: CTDI volume</property>
+   </renderProperties>
+
+   <renderProperties element="xnat:ctScanData/parameters/contrastBolus/route">
+      <property name="Letter">P</property>
+      <property name="Colour">XNAT blue</property>
+      <property name="tooltip">CT examination protocol: contrast agent administration route</property>
+   </renderProperties>
+
+   <renderProperties element="xnat:ctScanData/parameters/contrastBolus/volume">
+      <property name="Letter">P</property>
+      <property name="Colour">XNAT blue</property>
+      <property name="tooltip">CT examination protocol: contrast agent volume</property>
+   </renderProperties>
+
+   <renderProperties element="xnat:ctScanData/series_description">
+      <property name="Letter">P</property>
+      <property name="Colour">XNAT blue</property>
+      <property name="tooltip">CT examination protocol: series description</property>
+   </renderProperties>
+
+   <renderProperties element="xnat:ctSessionData/project">
+      <property name="Letter">X</property>
+      <property name="Colour">XNAT green</property>
+      <property name="tooltip">ID of the XNAT project under which this PET scan is stored</property>
+   </renderProperties>
+   
+   <renderProperties element="xnat:ctSessionData/subject_ID">
+      <property name="Letter">X</property>
+      <property name="Colour">XNAT green</property>
+      <property name="tooltip">ID of the XNAT subject under which this PET scan is stored</property>
+   </renderProperties>
+   
+   <renderProperties element="xnat:ctScanData/ID">
+      <property name="Letter">X</property>
+      <property name="Colour">XNAT green</property>
+      <property name="tooltip">Scan ID in XNAT database</property>
+   </renderProperties>
+
+   <renderProperties element="xnat:ctSessionData/label">
+      <property name="Letter">X</property>
+      <property name="Colour">XNAT green</property>
+      <property name="tooltip">Session label in XNAT database</property>
+   </renderProperties>
+
+   <renderProperties element="xnat:ctScanData/image_session_ID">
+      <property name="Letter">X</property>
+      <property name="Colour">XNAT green</property>
+      <property name="tooltip">Session ID in XNAT database</property>
+   </renderProperties>
+
+   <renderProperties element="xnat:ctScanData/UID">
+      <property name="Letter">U</property>
+      <property name="Colour">magenta</property>
+      <property name="tooltip">DICOM series UID</property>
+   </renderProperties>
+
+   <renderProperties element="xnat:ctSessionData/UID">
+      <property name="Letter">U</property>
+      <property name="Colour">magenta</property>
+      <property name="tooltip">DICOM session UID</property>
+   </renderProperties>
+
+   <renderProperties element="xnat:ctSessionData/dcmPatientId">
+      <property name="Letter">U</property>
+      <property name="Colour">magenta</property>
+      <property name="tooltip">DICOM patient UID</property>
+   </renderProperties>
+
+   <renderProperties element="xnat:ctSessionData/date">
+      <property name="Letter">A</property>
+      <property name="Colour">ICR red</property>
+      <property name="tooltip">Administration: scan date</property>
+   </renderProperties>
+
+   <renderProperties element="xnat:ctScanData/startTime">
+      <property name="Letter">A</property>
+      <property name="Colour">ICR red</property>
+      <property name="tooltip">Administration: scan time</property>
+   </renderProperties>
+   
+   <renderProperties element="xnat:ctSessionData/acquisition_site">
+      <property name="Letter">A</property>
+      <property name="Colour">ICR red</property>
+      <property name="tooltip">Administration: acquisition site</property>
+   </renderProperties>
+
+<!-- US properties -->
+
+   <renderProperties element="xnat:usScanData">
+      <property name="Letter">S</property>
+      <property name="Colour">magenta</property>
+      <property name="tooltip">Scan</property>
+   </renderProperties>
+
+
+<!-- General imageScan properties -->
+  
+   <renderProperties element="xnat:imageScanData">
+      <property name="Letter">S</property>
+      <property name="Colour">grey</property>
+      <property name="tooltip">Scan</property>
+   </renderProperties>
+   
+   <renderProperties element="xnat:imageSessionData/dcmPatientName">
+      <property name="Letter">U</property>
+      <property name="Colour">magenta</property>
+      <property name="tooltip">Subject demographics: name</property>
+   </renderProperties>
+   
+   <renderProperties element="xnat:imageSessionData/date">
+      <property name="Letter">A</property>
+      <property name="Colour">ICR red</property>
+      <property name="tooltip">Administration: scan date</property>
+   </renderProperties>
+
+   <renderProperties element="xnat:imageScanData/startTime">
+      <property name="Letter">A</property>
+      <property name="Colour">ICR red</property>
+      <property name="tooltip">Administration: scan time</property>
+   </renderProperties>
+
+   <renderProperties element="xnat:imageScanData/scanner/manufacturer">
+      <property name="Letter">E</property>
+      <property name="Colour">cyan</property>
+      <property name="tooltip">Equipment: scanner manufacturer</property>
+   </renderProperties>
+
+   <renderProperties element="xnat:imageScanData/scanner/model">
+      <property name="Letter">E</property>
+      <property name="Colour">cyan</property>
+      <property name="tooltip">Equipment: scanner model</property>
+   </renderProperties>
+
+   <renderProperties element="xnat:imageScanData/modality">
+      <property name="Letter">E</property>
+      <property name="Colour">cyan</property>
+      <property name="tooltip">Equipment: modality</property>
+   </renderProperties>
+   
+   <renderProperties element="xnat:ctScanData/frames">
+      <property name="Letter">P</property>
+      <property name="Colour">XNAT blue</property>
+      <property name="tooltip">image examination protocol: no. of frames</property>
+   </renderProperties>
+
+   <renderProperties element="xnat:imageScanData/series_description">
+      <property name="Letter">P</property>
+      <property name="Colour">XNAT blue</property>
+      <property name="tooltip">Image examination protocol: series description</property>
+   </renderProperties>
+
+<renderProperties element="xnat:imageSessionData/project">
+      <property name="Letter">X</property>
+      <property name="Colour">XNAT green</property>
+      <property name="tooltip">ID of the XNAT project under which this MR scan is stored</property>
+   </renderProperties>
+   
+   <renderProperties element="xnat:imageSessionData/subject_ID">
+      <property name="Letter">X</property>
+      <property name="Colour">XNAT green</property>
+      <property name="tooltip">ID of the XNAT subject under which this MR scan is stored</property>
+   </renderProperties>
+   
+   <renderProperties element="xnat:imageScanData/ID">
+      <property name="Letter">X</property>
+      <property name="Colour">XNAT green</property>
+      <property name="tooltip">Scan ID in XNAT database</property>
+   </renderProperties>
+
+   <renderProperties element="xnat:imageScanData/image_session_ID">
+      <property name="Letter">X</property>
+      <property name="Colour">XNAT green</property>
+      <property name="tooltip">Session ID in XNAT database</property>
+   </renderProperties>
+
+   <renderProperties element="xnat:imageSessionData/label">
+      <property name="Letter">X</property>
+      <property name="Colour">XNAT green</property>
+      <property name="tooltip">Session label in XNAT database</property>
+   </renderProperties>
+   
+   <renderProperties element="xnat:imageScanData/UID">
+      <property name="Letter">U</property>
+      <property name="Colour">magenta</property>
+      <property name="tooltip">DICOM series UID</property>
+   </renderProperties>
+
+   <renderProperties element="xnat:imageSessionData/UID">
+      <property name="Letter">U</property>
+      <property name="Colour">magenta</property>
+      <property name="tooltip">DICOM session UID</property>
+   </renderProperties>
+
+   <renderProperties element="xnat:imageSessionData/dcmPatientID">
+      <property name="Letter">U</property>
+      <property name="Colour">magenta</property>
+      <property name="tooltip">DICOM patient UID</property>
+   </renderProperties>
+   
+   <renderProperties element="xnat:imageSessionData/acquisition_site">
+      <property name="Letter">A</property>
+      <property name="Colour">ICR red</property>
+      <property name="tooltip">Administration: acquisition site</property>
+   </renderProperties>
+
+<!-- qcAssessment properties -->
+
+   <renderProperties element="xnat:qcAssessmentData/imageSessionID">
+      <property name="Letter">X</property>
+      <property name="Colour">XNAT green</property>
+      <property name="tooltip">ID of the session in the XNAT database with which this object is linked</property>
+   </renderProperties>
+
+   <renderProperties element="xnat:qcAssessmentData/project">
+      <property name="Letter">X</property>
+      <property name="Colour">XNAT green</property>
+      <property name="tooltip">ID of the project XNAT database under which this object is stored</property>
+   </renderProperties>
+
+   <renderProperties element="xnat:qcAssessmentData/ID">
+      <property name="Letter">X</property>
+      <property name="Colour">XNAT green</property>
+      <property name="tooltip">The XNAT ID of a piece of analysis of some experiment or scan data</property>
+   </renderProperties>
+
+   <renderProperties element="xnat:qcAssessmentData/label">
+      <property name="Letter">X</property>
+      <property name="Colour">XNAT green</property>
+      <property name="tooltip">XNAT assessment label</property>
+   </renderProperties>
+   
+      <renderProperties element="xnat:qcAssessmentData/note">
+      <property name="Letter">X</property>
+      <property name="Colour">XNAT green</property>
+      <property name="tooltip">XNAT assessment note</property>
+   </renderProperties>
+
+   <renderProperties element="xnat:qcAssessmentData/investigator/firstname">
+      <property name="Letter">A</property>
+      <property name="Colour">ICR red</property>
+      <property name="tooltip">Administration: Investigator first name</property>
+   </renderProperties>
+      
+   <renderProperties element="xnat:qcAssessmentData/investigator/lastname">
+      <property name="Letter">A</property>
+      <property name="Colour">ICR red</property>
+      <property name="tooltip">Administration: Investigator last name</property>
+   </renderProperties>
+   
+   <renderProperties element="xnat:qcAssessmentData/investigator/institution">
+      <property name="Letter">A</property>
+      <property name="Colour">ICR red</property>
+      <property name="tooltip">Administration: Investigator institution</property>
+   </renderProperties>
+   
+   <renderProperties element="xnat:qcAssessmentData/investigator/department">
+      <property name="Letter">A</property>
+      <property name="Colour">ICR red</property>
+      <property name="tooltip">Investigator department</property>
+   </renderProperties>
+   
+   <renderProperties element="xnat:qcAssessmentData/provenance/process/processStep/program">
+      <property name="Letter">O</property>
+      <property name="Colour">light blue</property>
+      <property name="tooltip">Application output: provenance (program)</property>
+   </renderProperties>
+   
+   <renderProperties element="xnat:qcAssessmentData/provenance/process/processStep/program/version">
+      <property name="Letter">O</property>
+      <property name="Colour">light blue</property>
+      <property name="tooltip">Application output: provenance (version)</property>
+   </renderProperties>
+   
+   <renderProperties element="xnat:qcAssessmentData/provenance/process/processStep/program/arguments">
+      <property name="Letter">O</property>
+      <property name="Colour">light blue</property>
+      <property name="tooltip">Application output: provenance (arguments)</property>
+   </renderProperties>
+   
+   <renderProperties element="xnat:qcAssessmentData/provenance/process/processStep/user">
+      <property name="Letter">O</property>
+      <property name="Colour">light blue</property>
+      <property name="tooltip">Application output: provenance (user)</property>
+   </renderProperties>
+   
+   <renderProperties element="xnat:qcAssessmentData/provenance/process/processStep/machine">
+      <property name="Letter">O</property>
+      <property name="Colour">light blue</property>
+      <property name="tooltip">Application output: provenance (machine)</property>
+   </renderProperties>
+   
+   <renderProperties element="xnat:qcAssessmentData/provenance/process/processStep/platform">
+      <property name="Letter">O</property>
+      <property name="Colour">light blue</property>
+      <property name="tooltip">Application output: provenance (platform)</property>
+   </renderProperties>
+
+
+<!-- mriwOutput properties -->
+
+   <renderProperties element="icr:mriwOutputData/dcmPatientName">
+      <property name="Letter">D</property>
+      <property name="Colour">orange</property>
+      <property name="tooltip">Subject demographics/administration: name</property>
+   </renderProperties>
+   
+   <renderProperties element="icr:mriwOutputData/note">
+      <property name="Letter">X</property>
+      <property name="Colour">XNAT green</property>
+      <property name="tooltip">XNAT assessment note</property>
+   </renderProperties>
+
+   <renderProperties element="icr:mriwOutputData/label">
+      <property name="Letter">X</property>
+      <property name="Colour">XNAT green</property>
+      <property name="tooltip">XNAT assessment label</property>
+   </renderProperties>
+
+   <renderProperties element="icr:mriwOutputData/subjectID">
+      <property name="Letter">X</property>
+      <property name="Colour">XNAT green</property>
+      <property name="tooltip">ID of the XNAT subject for which this ROI is stored</property>
+   </renderProperties>
+   
+   <renderProperties element="icr:mriwOutputData/ID">
+      <property name="Letter">X</property>
+      <property name="Colour">XNAT green</property>
+      <property name="tooltip">XNAT assessment ID</property>
+   </renderProperties>
+
+   <renderProperties element="icr:mriwOutputData/outputType">
+      <property name="Letter">O</property>
+      <property name="Colour">light blue</property>
+      <property name="tooltip">Application output: MRIW output type</property>
+   </renderProperties>
+
+   <renderProperties element="icr:mriwOutputData/converterClass">
+      <property name="Letter">O</property>
+      <property name="Colour">light blue</property>
+      <property name="tooltip">Application output: MRIW converter class</property>
+   </renderProperties>
+
+   <renderProperties element="icr:mriwOutputData/modelClass">
+      <property name="Letter">O</property>
+      <property name="Colour">light blue</property>
+      <property name="tooltip">Application output: MRIW model class</property>
+   </renderProperties>
+
+   <renderProperties element="icr:mriwOutputData/solverClass">
+      <property name="Letter">O</property>
+      <property name="Colour">light blue</property>
+      <property name="tooltip">Application output: MRIW solver class</property>
+   </renderProperties>
+
+   <renderProperties element="icr:mriwOutputData/contrastAgent">
+      <property name="Letter">E</property>
+      <property name="Colour">cyan</property>
+      <property name="tooltip">Acquisition condition: contrast agent</property>
+   </renderProperties>
+
+   <renderProperties element="icr:mriwOutputData/patientCode">
+      <property name="Letter">D</property>
+      <property name="Colour">orange</property>
+      <property name="tooltip">Subject demographics/administration: trial code</property>
+   </renderProperties>
+
+   <renderProperties element="icr:mriwOutputData/measurementCode">
+      <property name="Letter">D</property>
+      <property name="Colour">orange</property>
+      <property name="tooltip">Subject demographics/administration: measurement code</property>
+   </renderProperties>
+
+   <renderProperties element="icr:mriwOutputData/sessionDate">
+      <property name="Letter">D</property>
+      <property name="Colour">orange</property>
+      <property name="tooltip">Subject demographics/administration: session date</property>
+   </renderProperties>
+
+   <renderProperties element="icr:mriwOutputData/sessionTime">
+      <property name="Letter">D</property>
+      <property name="Colour">orange</property>
+      <property name="tooltip">Subject demographics/administration: session time</property>
+   </renderProperties>
+
+   <renderProperties element="icr:mriwOutputData/sliceLocation">
+      <property name="Letter">O</property>
+      <property name="Colour">light blue</property>
+      <property name="tooltip">Application output: slice examined by MRIW</property>
+   </renderProperties>
+
+   <renderProperties element="icr:mriwOutputData/date">
+      <property name="Letter">O</property>
+      <property name="Colour">light blue</property>
+      <property name="tooltip">Application output: MRIW output date</property>
+   </renderProperties>
+
+   <renderProperties element="icr:mriwOutputData/time">
+      <property name="Letter">O</property>
+      <property name="Colour">light blue</property>
+      <property name="tooltip">Application output: MRIW output time</property>
+   </renderProperties>
+
+<!-- roiSet properties -->
+
+   <renderProperties element="icr:roiSetData/dcmPatientName">
+      <property name="Letter">D</property>
+      <property name="Colour">orange</property>
+      <property name="tooltip">Subject demographics/administration: name</property>
+   </renderProperties>
+   
+   <renderProperties element="icr:roiSetData/label">
+      <property name="Letter">X</property>
+      <property name="Colour">XNAT green</property>
+      <property name="tooltip">XNAT assessment label</property>
+   </renderProperties>
+   
+   <renderProperties element="icr:roiSetData/note">
+      <property name="Letter">X</property>
+      <property name="Colour">XNAT green</property>
+      <property name="tooltip">XNAT assessment note</property>
+   </renderProperties>
+   
+   <renderProperties element="icr:roiSetData/nROIs">
+      <property name="Letter">O</property>
+      <property name="Colour">light blue</property>
+      <property name="tooltip">Application output: number of ROIs contained in this set</property>
+   </renderProperties>
+   
+   <renderProperties element="icr:roiSetData/structureSetLabel">
+      <property name="Letter">O</property>
+      <property name="Colour">light blue</property>
+      <property name="tooltip">Application output: structure set label</property>
+   </renderProperties>
+   
+   <renderProperties element="icr:roiSetData/structureSetName">
+      <property name="Letter">O</property>
+      <property name="Colour">light blue</property>
+      <property name="tooltip">Application output: structure set name</property>
+   </renderProperties>
+   
+   <renderProperties element="icr:roiSetData/structureSetDescription">
+      <property name="Letter">O</property>
+      <property name="Colour">light blue</property>
+      <property name="tooltip">Application output: structure set description</property>
+   </renderProperties>
+   
+   <renderProperties element="icr:roiSetData/structureSetDate">
+      <property name="Letter">O</property>
+      <property name="Colour">light blue</property>
+      <property name="tooltip">Application output: structure set creation date</property>
+   </renderProperties>
+   
+   <renderProperties element="icr:roiSetData/structureSetTime">
+      <property name="Letter">O</property>
+      <property name="Colour">light blue</property>
+      <property name="tooltip">Application output: structure set creation time</property>
+   </renderProperties>
+   
+   <renderProperties element="icr:roiSetData/structureSetLabel">
+      <property name="Letter">O</property>
+      <property name="Colour">light blue</property>
+      <property name="tooltip">Application output: structure set label</property>
+   </renderProperties>
+   
+   <renderProperties element="icr:roiSetData/subjectID">
+      <property name="Letter">X</property>
+      <property name="Colour">XNAT green</property>
+      <property name="tooltip">ID of the XNAT subject for which this ROI is stored</property>
+   </renderProperties>
+   
+   <renderProperties element="icr:roiSetData/ID">
+      <property name="Letter">X</property>
+      <property name="Colour">XNAT green</property>
+      <property name="tooltip">XNAT assessment ID</property>
+   </renderProperties>
+   
+   <renderProperties element="icr:roiSetData/project">
+      <property name="Letter">X</property>
+      <property name="Colour">XNAT green</property>
+      <property name="tooltip">Associated XNAT project</property>
+   </renderProperties>
+   
+   <!-- roi properties -->
+
+   <renderProperties element="icr:roiData/dcmPatientName">
+      <property name="Letter">D</property>
+      <property name="Colour">orange</property>
+      <property name="tooltip">Subject demographics/administration: name</property>
+   </renderProperties>
+   
+   <renderProperties element="icr:roiData/label">
+      <property name="Letter">X</property>
+      <property name="Colour">XNAT green</property>
+      <property name="tooltip">XNAT assessment label</property>
+   </renderProperties>
+   
+   <renderProperties element="icr:roiData/note">
+      <property name="Letter">X</property>
+      <property name="Colour">XNAT green</property>
+      <property name="tooltip">XNAT assessment label</property>
+   </renderProperties>
+   
+   <renderProperties element="icr:roiData/roiName">
+      <property name="Letter">O</property>
+      <property name="Colour">light blue</property>
+      <property name="tooltip">Application output: ROI name</property>
+   </renderProperties>
+   
+   <renderProperties element="icr:roiData/roiDescription">
+      <property name="Letter">O</property>
+      <property name="Colour">light blue</property>
+      <property name="tooltip">Application output: ROI description</property>
+   </renderProperties>
+   
+   <renderProperties element="icr:roiData/roiVolume">
+      <property name="Letter">O</property>
+      <property name="Colour">light blue</property>
+      <property name="tooltip">Application output: ROI volume</property>
+   </renderProperties>
+   
+   <renderProperties element="icr:roiData/roiGenerationAlgorithm">
+      <property name="Letter">O</property>
+      <property name="Colour">light blue</property>
+      <property name="tooltip">Application output: algorithm used to generate ROI</property>
+   </renderProperties>
+   
+   <renderProperties element="icr:roiData/roiGenerationDescription">
+      <property name="Letter">O</property>
+      <property name="Colour">light blue</property>
+      <property name="tooltip">Application output: description of algorithm used to generate ROI</property>
+   </renderProperties>
+   
+   <renderProperties element="icr:roiData/contourGeometricType">
+      <property name="Letter">O</property>
+      <property name="Colour">light blue</property>
+      <property name="tooltip">Application output: type of DICOM contour</property>
+   </renderProperties>
+   
+   <renderProperties element="icr:roiData/nDICOMContours">
+      <property name="Letter">O</property>
+      <property name="Colour">light blue</property>
+      <property name="tooltip">Application output: number of DICOM contours</property>
+   </renderProperties>
+   
+   <renderProperties element="icr:roiData/subjectID">
+      <property name="Letter">X</property>
+      <property name="Colour">XNAT green</property>
+      <property name="tooltip">ID of the XNAT subject for which this ROI is stored</property>
+   </renderProperties>
+   
+   <renderProperties element="icr:roiData/ID">
+      <property name="Letter">X</property>
+      <property name="Colour">XNAT green</property>
+      <property name="tooltip">XNAT assessment ID</property>
+   </renderProperties>
+   
+   <renderProperties element="icr:roiData/icr:roiData/definingDICOMStructureSetLabel">
+      <property name="Letter">X</property>
+      <property name="Colour">XNAT green</property>
+      <property name="tooltip">Label of definining structure set within XNAT</property>
+   </renderProperties>
+     
+   <renderProperties element="icr:roiData/project">
+      <property name="Letter">X</property>
+      <property name="Colour">XNAT green</property>
+      <property name="tooltip">Associated XNAT project</property>
+   </renderProperties>
+     
+</XNATIconRenderings>

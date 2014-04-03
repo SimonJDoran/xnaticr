@@ -1,0 +1,288 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<!--
+    Document   : searchableXNATElements.xml
+    Created on : March 29, 2010, 1:47 PM
+    Author     : Simon J Doran
+    Description: Store a list of the XNAT elements that can be used for searching.
+                 Because of the way the XNAT search engine currently works, there
+                 are limitations on what data can be returned with each "rootElement".
+
+    Note that only a minimal set of elements has been coded up for non MR searches and
+    for reconstructed images and regions of interest.
+-->
+
+<XNATSearchRootElements>
+
+	<XNATSearchRootElement element="xnat:mrScanData">
+      <searchableXNATElement alias="Patient name">xnat:mrSessionData/dcmPatientName</searchableXNATElement>
+      <searchableXNATElement alias="Scan type">xnat:mrScanData/type</searchableXNATElement>
+      <searchableXNATElement alias="Scan time">xnat:mrScanData/startTime</searchableXNATElement>
+      <searchableXNATElement alias="Scan date">xnat:mrSessionData/date</searchableXNATElement>
+      <searchableXNATElement alias="Matrix x">xnat:mrScanData/parameters/fov/x</searchableXNATElement>
+      <searchableXNATElement alias="Matrix y">xnat:mrScanData/parameters/fov/y</searchableXNATElement>
+      <searchableXNATElement alias="TR">xnat:mrScanData/parameters/tr</searchableXNATElement>
+      <searchableXNATElement alias="TE">xnat:mrScanData/parameters/te</searchableXNATElement>
+      <searchableXNATElement alias="TI">xnat:mrScanData/parameters/ti</searchableXNATElement>
+      <searchableXNATElement alias="Flip angle">xnat:mrScanData/parameters/flip</searchableXNATElement>
+      <searchableXNATElement alias="#Frames">xnat:mrScanData/frames</searchableXNATElement>
+      <searchableXNATElement alias="Scanner manufacturer">xnat:mrScanData/scanner/manufacturer</searchableXNATElement>
+      <searchableXNATElement alias="Scanner model">xnat:mrScanData/scanner/model</searchableXNATElement>
+      <searchableXNATElement alias="Modality">xnat:mrScanData/modality</searchableXNATElement>
+      <searchableXNATElement alias="RF coil">xnat:mrScanData/coil</searchableXNATElement>
+      <searchableXNATElement alias="MR field strength">xnat:mrScanData/fieldStrength</searchableXNATElement>
+      <searchableXNATElement alias="Voxel res units">xnat:mrScanData/parameters/voxelRes/units</searchableXNATElement>
+      <searchableXNATElement alias="Voxel size x">xnat:mrScanData/parameters/voxelRes/x</searchableXNATElement>
+      <searchableXNATElement alias="Voxel size y">xnat:mrScanData/parameters/voxelRes/y</searchableXNATElement>
+      <searchableXNATElement alias="Voxel size z">xnat:mrScanData/parameters/voxelRes/z</searchableXNATElement>
+      <searchableXNATElement alias="Partitions">xnat:mrScanData/parameters/partitions</searchableXNATElement>
+      <searchableXNATElement alias="Orientation">xnat:mrScanData/parameters/orientation</searchableXNATElement>
+      <searchableXNATElement alias="Sequence name">xnat:mrScanData/parameters/sequence</searchableXNATElement>
+      <searchableXNATElement alias="Image type">xnat:mrScanData/parameters/imageType</searchableXNATElement>
+      <searchableXNATElement alias="Scan sequence">xnat:mrScanData/parameters/scanSequence</searchableXNATElement>
+      <searchableXNATElement alias="Sequence variant">xnat:mrScanData/parameters/seqVariant</searchableXNATElement>
+      <searchableXNATElement alias="Series description">xnat:mrScanData/series_description</searchableXNATElement>
+      <searchableXNATElement alias="XNAT project">xnat:mrSessionData/project</searchableXNATElement>
+      <searchableXNATElement alias="XNAT Subject ID">xnat:mrSessionData/subject_ID</searchableXNATElement>
+      <searchableXNATElement alias="XNAT scan ID">xnat:mrScanData/ID</searchableXNATElement>
+      <searchableXNATElement alias="XNAT image session ID">xnat:mrScanData/image_session_ID</searchableXNATElement>
+      <searchableXNATElement alias="XNAT image session label">xnat:mrSessionData/label</searchableXNATElement>
+      <searchableXNATElement alias="DICOM series UID">xnat:mrScanData/UID</searchableXNATElement>
+      <searchableXNATElement alias="DICOM session UID">xnat:mrSessionData/UID</searchableXNATElement>
+      <searchableXNATElement alias="DICOM patient ID">xnat:mrSessionData/dcmPatientID</searchableXNATElement>
+      <searchableXNATElement alias="Acquisition site">xnat:mrSessionData/acquisition_site</searchableXNATElement>       
+   </XNATSearchRootElement>
+
+   <XNATSearchRootElement element="xnat:petScanData">
+      <searchableXNATElement alias="Patient name">xnat:petSessionData/dcmPatientName</searchableXNATElement>
+      <searchableXNATElement alias="Scan type">xnat:petScanData/type</searchableXNATElement>
+      <searchableXNATElement alias="Scan time">xnat:petScanData/startTime</searchableXNATElement>
+      <searchableXNATElement alias="Scan date">xnat:petSessionData/date</searchableXNATElement>
+      <searchableXNATElement alias="Scanner manufacturer">xnat:petScanData/scanner/manufacturer</searchableXNATElement>
+      <searchableXNATElement alias="Scanner model">xnat:petScanData/scanner/model</searchableXNATElement>
+      <searchableXNATElement alias="Tracer">xnat:petSessionData/tracer/name</searchableXNATElement>
+      <searchableXNATElement alias="Dose">xnat:petSessionData/tracer/dose</searchableXNATElement>
+      <searchableXNATElement alias="Spec. Activity">xnat:petSessionData/tracer/specificActivity</searchableXNATElement>
+      <searchableXNATElement alias="Isotope">xnat:petSessionData/tracer/isotope</searchableXNATElement>
+      <searchableXNATElement alias="#Frames">xnat:petScanData/frames</searchableXNATElement>
+      <searchableXNATElement alias="Orientation">xnat:petScanData/parameters/orientation</searchableXNATElement>
+      <searchableXNATElement alias="Filetype">xnat:petScanData/parameters/fileType</searchableXNATElement>
+      <searchableXNATElement alias="FOV">xnat:petScanData/parameters/transaxialFOV</searchableXNATElement>
+      <searchableXNATElement alias="Acquisition type">xnat:petScanData/parameters/acqType</searchableXNATElement>
+      <searchableXNATElement alias="Number of planes">xnat:petScanData/parameters/numPlanes</searchableXNATElement>
+      <searchableXNATElement alias="Plane separation">xnat:petScanData/parameters/planeSeparation</searchableXNATElement>
+      <searchableXNATElement alias="Matrix x">xnat:petScanData/parameters/dimensions/x</searchableXNATElement>
+      <searchableXNATElement alias="Matrix y">xnat:petScanData/parameters/dimensions/y</searchableXNATElement>
+      <searchableXNATElement alias="Matrix z">xnat:petScanData/parameters/dimensions/z</searchableXNATElement>
+      <searchableXNATElement alias="Voxel size x">xnat:petScanData/parameters/pixelSize/x</searchableXNATElement>
+      <searchableXNATElement alias="Voxel size y">xnat:petScanData/parameters/pixelSize/y</searchableXNATElement>
+      <searchableXNATElement alias="Voxel size z">xnat:petScanData/parameters/pixelSize/z</searchableXNATElement>
+      <searchableXNATElement alias="Series description">xnat:petScanData/series_description</searchableXNATElement>
+      <searchableXNATElement alias="XNAT project">xnat:petSessionData/project</searchableXNATElement>
+      <searchableXNATElement alias="XNAT Subject ID">xnat:petSessionData/subject_ID</searchableXNATElement>
+      <searchableXNATElement alias="XNAT image session ID">xnat:petScanData/image_session_ID</searchableXNATElement>
+      <searchableXNATElement alias="XNAT image session label">xnat:petSessionData/label</searchableXNATElement>
+      <searchableXNATElement alias="XNAT scan ID">xnat:petScanData/ID</searchableXNATElement>
+      <searchableXNATElement alias="DICOM series UID">xnat:petScanData/UID</searchableXNATElement>
+      <searchableXNATElement alias="DICOM session UID">xnat:petSessionData/UID</searchableXNATElement>
+      <searchableXNATElement alias="DICOM patient ID">xnat:petSessionData/dcmPatientId</searchableXNATElement>
+      <searchableXNATElement alias="Acquisition site">xnat:petSessionData/acquisition_site</searchableXNATElement>       
+   </XNATSearchRootElement>
+
+   <XNATSearchRootElement element="xnat:ctScanData">
+      <searchableXNATElement alias="Patient name">xnat:ctSessionData/dcmPatientName</searchableXNATElement>
+      <searchableXNATElement alias="Scan type">xnat:ctScanData/type</searchableXNATElement>
+      <searchableXNATElement alias="Scan time">xnat:ctScanData/startTime</searchableXNATElement>
+      <searchableXNATElement alias="Scan date">xnat:ctSessionData/date</searchableXNATElement>
+      <searchableXNATElement alias="Scanner manufacturer">xnat:ctScanData/scanner/manufacturer</searchableXNATElement>
+      <searchableXNATElement alias="Scanner model">xnat:ctScanData/scanner/model</searchableXNATElement>
+      <searchableXNATElement alias="#Frames">xnat:ctScanData/frames</searchableXNATElement>
+      <searchableXNATElement alias="Voxel size x">xnat:ctScanData/parameters/voxelRes/x</searchableXNATElement>
+      <searchableXNATElement alias="Voxel size y">xnat:ctScanData/parameters/voxelRes/y</searchableXNATElement>
+      <searchableXNATElement alias="Voxel size z">xnat:ctScanData/parameters/voxelRes/z</searchableXNATElement>
+      <searchableXNATElement alias="Orientation">xnat:ctScanData/parameters/orientation</searchableXNATElement>
+      <searchableXNATElement alias="Matrix x">xnat:ctScanData/parameters/fov/x</searchableXNATElement>
+      <searchableXNATElement alias="Matrix y">xnat:ctScanData/parameters/fov/y</searchableXNATElement>
+      <searchableXNATElement alias="kVp">xnat:ctScanData/parameters/kvp</searchableXNATElement>
+      <searchableXNATElement alias="mA">xnat:ctScanData/parameters/xrayTubeCurrent</searchableXNATElement>
+      <searchableXNATElement alias="CTDI_vol">xnat:ctScanData/parameters/ctDIvol</searchableXNATElement>
+      <searchableXNATElement alias="Contrast agent">xnat:ctScanData/parameters/contrastBolus/agent</searchableXNATElement>
+      <searchableXNATElement alias="Contrast route">xnat:ctScanData/parameters/contrastBolus/route</searchableXNATElement>
+      <searchableXNATElement alias="Contrast volume">xnat:ctScanData/parameters/contrastBolus/volume</searchableXNATElement>
+      <searchableXNATElement alias="Series description">xnat:ctScanData/series_description</searchableXNATElement>
+      <searchableXNATElement alias="XNAT project">xnat:ctSessionData/project</searchableXNATElement>
+      <searchableXNATElement alias="XNAT Subject ID">xnat:ctSessionData/subject_ID</searchableXNATElement>
+      <searchableXNATElement alias="XNAT scan ID">xnat:ctScanData/ID</searchableXNATElement>
+      <searchableXNATElement alias="XNAT image session ID">xnat:ctScanData/image_session_ID</searchableXNATElement>
+      <searchableXNATElement alias="XNAT image session label">xnat:ctSessionData/label</searchableXNATElement>
+      <searchableXNATElement alias="DICOM series UID">xnat:ctScanData/UID</searchableXNATElement>
+      <searchableXNATElement alias="DICOM session UID">xnat:ctSessionData/UID</searchableXNATElement>
+      <searchableXNATElement alias="DICOM patient ID">xnat:ctSessionData/dcmPatientId</searchableXNATElement>      
+      <searchableXNATElement alias="Acquisition site">xnat:ctSessionData/acquisition_site</searchableXNATElement>       
+   </XNATSearchRootElement>
+
+   <XNATSearchRootElement element="xnat:usScanData">
+      <searchableXNATElement alias="Patient name">xnat:usSessionData/dcmPatientName</searchableXNATElement>
+      <searchableXNATElement alias="Scanner manufacturer">xnat:usScanData/scanner/manufacturer</searchableXNATElement>
+      <searchableXNATElement alias="Scanner model">xnat:usScanData/scanner/model</searchableXNATElement>
+      <searchableXNATElement alias="XNAT image session ID">xnat:usScanData/image_session_ID</searchableXNATElement>
+      <searchableXNATElement alias="DICOM series UID">xnat:usScanData/UID</searchableXNATElement>
+      <searchableXNATElement alias="DICOM session UID">xnat:usSessionData/UID</searchableXNATElement>
+      <searchableXNATElement alias="DICOM patient ID">xnat:usSessionData/dcmPatientId</searchableXNATElement>
+   </XNATSearchRootElement>
+
+   <XNATSearchRootElement element="xnat:imageScanData">
+      <searchableXNATElement alias="Patient name">xnat:imageSessionData/dcmPatientName</searchableXNATElement>
+      <searchableXNATElement alias="Scan type">xnat:imageScanData/type</searchableXNATElement>
+      <searchableXNATElement alias="Scan time">xnat:imageScanData/startTime</searchableXNATElement>
+      <searchableXNATElement alias="Scan date">xnat:imageSessionData/date</searchableXNATElement>
+      <searchableXNATElement alias="Scanner manufacturer">xnat:imageScanData/scanner/manufacturer</searchableXNATElement>
+      <searchableXNATElement alias="Scanner model">xnat:imageScanData/scanner/model</searchableXNATElement>
+      <searchableXNATElement alias="Modality">xnat:imageScanData/modality</searchableXNATElement>
+      <searchableXNATElement alias="#Frames">xnat:imageScanData/frames</searchableXNATElement>
+      <searchableXNATElement alias="Series description">xnat:imageScanData/series_description</searchableXNATElement>
+      <searchableXNATElement alias="XNAT project">xnat:imageSessionData/project</searchableXNATElement>
+      <searchableXNATElement alias="XNAT Subject ID">xnat:imageSessionData/subject_ID</searchableXNATElement>
+      <searchableXNATElement alias="XNAT scan ID">xnat:imageScanData/ID</searchableXNATElement>
+      <searchableXNATElement alias="XNAT image session ID">xnat:imageScanData/image_session_ID</searchableXNATElement>
+      <searchableXNATElement alias="XNAT image session label">xnat:imageSessionData/label</searchableXNATElement>
+      <searchableXNATElement alias="DICOM series UID">xnat:imageScanData/UID</searchableXNATElement>
+      <searchableXNATElement alias="DICOM session UID">xnat:imageSessionData/UID</searchableXNATElement>
+      <searchableXNATElement alias="DICOM patient ID">xnat:imageSessionData/dcmPatientId</searchableXNATElement>
+      <searchableXNATElement alias="Acquisition site">xnat:imageSessionData/acquisition_site</searchableXNATElement>       
+   </XNATSearchRootElement>
+
+   <XNATSearchRootElement element="xnat:mrsScanData">
+      <searchableXNATElement alias="Patient name">xnat:imageSessionData/dcmPatientName</searchableXNATElement>
+      <searchableXNATElement alias="Scanner manufacturer">xnat:imageScanData/scanner/manufacturer</searchableXNATElement>
+      <searchableXNATElement alias="Scanner model">xnat:imageScanData/scanner/model</searchableXNATElement>
+      <searchableXNATElement alias="XNAT image session ID">xnat:imageScanData/image_session_ID</searchableXNATElement>
+      <searchableXNATElement alias="DICOM series UID">xnat:imageScanData/UID</searchableXNATElement>
+      <searchableXNATElement alias="DICOM session UID">xnat:imageSessionData/UID</searchableXNATElement>
+      <searchableXNATElement alias="DICOM patient ID">xnat:imageSessionData/dcmPatientId</searchableXNATElement>
+   </XNATSearchRootElement>
+
+   <XNATSearchRootElement element="xnat:reconstructedImageData">
+      <searchableXNATElement alias="Associated XNAT image session ID">xnat:reconstructedImageData/image_session_ID</searchableXNATElement>
+      <searchableXNATElement alias="Investigator first name">xnat:qcAssessmentData/investigator/firstname</searchableXNATElement>
+      <searchableXNATElement alias="Investigator last name">xnat:qcAssessmentData/investigator/lastname</searchableXNATElement>
+      <searchableXNATElement alias="Investigator institution">xnat:qcAssessmentData/investigator/institution</searchableXNATElement>
+      <searchableXNATElement alias="Investigator department">xnat:qcAssessmentData/investigator/department</searchableXNATElement>
+
+   </XNATSearchRootElement>
+
+   <XNATSearchRootElement element="xnat:qcAssessmentData">
+      <searchableXNATElement alias="Label">xnat:qcAssessmentData/label</searchableXNATElement>
+      <searchableXNATElement alias="Note">xnat:qcAssessmentData/note</searchableXNATElement>
+      <searchableXNATElement alias="Creation date">xnat:qcAssessmentData/date</searchableXNATElement>
+      <searchableXNATElement alias="Creation time">xnat:qcAssessmentData/time</searchableXNATElement>
+      <searchableXNATElement alias="Investigator first name">xnat:qcAssessmentData/investigator/firstname</searchableXNATElement>
+      <searchableXNATElement alias="Investigator last name">xnat:qcAssessmentData/investigator/lastname</searchableXNATElement>
+      <searchableXNATElement alias="Investigator institution">xnat:qcAssessmentData/investigator/institution</searchableXNATElement>
+      <searchableXNATElement alias="Investigator department">xnat:qcAssessmentData/investigator/department</searchableXNATElement>
+      <searchableXNATElement alias="Associated XNAT image session ID">xnat:qcAssessmentData/imageSessionID</searchableXNATElement>
+      <searchableXNATElement alias="Provenance: program">xnat:qcAssessmentData/provenance/process/processStep/program</searchableXNATElement>
+      <searchableXNATElement alias="Provenance: version">xnat:qcAssessmentData/provenance/process/processStep/program/version</searchableXNATElement>
+      <searchableXNATElement alias="Provenance: arguments">xnat:qcAssessmentData/provenance/process/processStep/program/arguments</searchableXNATElement>
+      <searchableXNATElement alias="Provenance: user">xnat:qcAssessmentData/provenance/process/processStep/user</searchableXNATElement>
+      <searchableXNATElement alias="Provenance: machine">xnat:qcAssessmentData/provenance/process/processStep/machine</searchableXNATElement>
+      <searchableXNATElement alias="Provenance: platform">xnat:qcAssessmentData/provenance/process/processStep/platform</searchableXNATElement>
+      <searchableXNATElement alias="XNAT assessment ID">xnat:qcAssessmentData/ID</searchableXNATElement>
+      <searchableXNATElement alias="Associated project">xnat:qcAssessmentData/project</searchableXNATElement>
+   </XNATSearchRootElement>
+   
+   <XNATSearchRootElement element="icr:mriwOutputData">
+      <searchableXNATElement alias="Patient name">icr:mriwOutputData/dcmPatientName</searchableXNATElement>
+      <searchableXNATElement alias="Label">icr:mriwOutputData/label</searchableXNATElement>
+      <searchableXNATElement alias="Note">icr:mriwOutputData/note</searchableXNATElement>
+      <searchableXNATElement alias="Investigator first name">xnat:qcAssessmentData/investigator/firstname</searchableXNATElement>
+      <searchableXNATElement alias="Investigator last name">xnat:qcAssessmentData/investigator/lastname</searchableXNATElement>
+      <searchableXNATElement alias="Investigator institution">xnat:qcAssessmentData/investigator/institution</searchableXNATElement>
+      <searchableXNATElement alias="Investigator department">xnat:qcAssessmentData/investigator/department</searchableXNATElement>
+      <searchableXNATElement alias="Type">icr:mriwOutputData/outputType</searchableXNATElement>
+      <searchableXNATElement alias="Modality name">icr:mriwOutputData/modality</searchableXNATElement>
+      <searchableXNATElement alias="Modality subtype">icr:mriwOutputData/subtype</searchableXNATElement>
+      <searchableXNATElement alias="Converter class">icr:mriwOutputData/converterClass</searchableXNATElement>
+      <searchableXNATElement alias="Converter keys">icr:mriwOutputData/converterKeys</searchableXNATElement>
+      <searchableXNATElement alias="Converter values">icr:mriwOutputData/converterValues</searchableXNATElement>
+      <searchableXNATElement alias="Model class">icr:mriwOutputData/modelClass</searchableXNATElement>
+      <searchableXNATElement alias="Model keys">icr:mriwOutputData/modelKeys</searchableXNATElement>
+      <searchableXNATElement alias="Model values">icr:mriwOutputData/modelValues</searchableXNATElement>
+      <searchableXNATElement alias="Solver class">icr:mriwOutputData/solverClass</searchableXNATElement>
+      <searchableXNATElement alias="Solver keys">icr:mriwOutputData/solverKeys</searchableXNATElement>
+      <searchableXNATElement alias="Solver values">icr:mriwOutputData/solverValues</searchableXNATElement>
+      <searchableXNATElement alias="Curve extractor">icr:mriwOutputData/curveExtractor</searchableXNATElement>
+      <searchableXNATElement alias="Onset locator">icr:mriwOutputData/onsetLocator</searchableXNATElement>
+      <searchableXNATElement alias="ROI curve extractor">icr:mriwOutputData/roiCurveExtractor</searchableXNATElement>
+      <searchableXNATElement alias="Contrast agent">icr:mriwOutputData/contrastAgent</searchableXNATElement>
+      <searchableXNATElement alias="Contrast agent volume">icr:mriwOutputData/contrastAgentVolume</searchableXNATElement>
+      <searchableXNATElement alias="Patient weight">icr:mriwOutputData/patientWeight</searchableXNATElement>
+      <searchableXNATElement alias="Patient code">icr:mriwOutputData/patientCode</searchableXNATElement>
+      <searchableXNATElement alias="Measurement code">icr:mriwOutputData/measurementCode</searchableXNATElement>
+      <searchableXNATElement alias="Imaging session date">icr:mriwOutputData/sessionDate</searchableXNATElement>
+      <searchableXNATElement alias="Imaging session time">icr:mriwOutputData/sessionTime</searchableXNATElement>
+      <searchableXNATElement alias="Slice location">icr:mriwOutputData/sliceLocation</searchableXNATElement>
+      <searchableXNATElement alias="Computed maps present">icr:mriwOutputData/computedMapsPresent</searchableXNATElement>
+      <searchableXNATElement alias="MRIW output date">icr:mriwOutputData/date</searchableXNATElement>
+      <searchableXNATElement alias="Aggregate keys">icr:mriwOutputData/aggregateKeys</searchableXNATElement>
+      <searchableXNATElement alias="Aggregate values">icr:mriwOutputData/aggregateValues</searchableXNATElement>
+      <searchableXNATElement alias="MRIW output time">icr:mriwOutputData/time</searchableXNATElement>
+      <searchableXNATElement alias="Associated XNAT image session ID">xnat:qcAssessmentData/imageSession_ID</searchableXNATElement>
+      <searchableXNATElement alias="Provenance: program">xnat:qcAssessmentData/provenance/process/processStep/program</searchableXNATElement>
+      <searchableXNATElement alias="Provenance: version">xnat:qcAssessmentData/provenance/process/processStep/program/version</searchableXNATElement>
+      <searchableXNATElement alias="Provenance: arguments">xnat:qcAssessmentData/provenance/process/processStep/program/arguments</searchableXNATElement>
+      <searchableXNATElement alias="Provenance: user">xnat:qcAssessmentData/provenance/process/processStep/user</searchableXNATElement>
+      <searchableXNATElement alias="Provenance: machine">xnat:qcAssessmentData/provenance/process/processStep/machine</searchableXNATElement>
+      <searchableXNATElement alias="Provenance: platform">xnat:qcAssessmentData/provenance/process/processStep/platform</searchableXNATElement>
+      <searchableXNATElement alias="XNAT subject ID">icr:mriwOutputData/subjectID</searchableXNATElement>
+      <searchableXNATElement alias="XNAT assessment ID">icr:mriwOutputData/ID</searchableXNATElement>
+      <searchableXNATElement alias="Associated project">xnat:qcAssessmentData/project</searchableXNATElement>
+   </XNATSearchRootElement>
+   
+   <XNATSearchRootElement element="icr:roiSetData">
+      <searchableXNATElement alias="Patient name">icr:roiSetData/dcmPatientName</searchableXNATElement>
+      <searchableXNATElement alias="Label">icr:roiSetData/label</searchableXNATElement>
+      <searchableXNATElement alias="Note">icr:roiSetData/note</searchableXNATElement>
+      <searchableXNATElement alias="Number of ROIs contained">icr:roiSetData/nROIs</searchableXNATElement>
+      <searchableXNATElement alias="Structure set label">icr:roiSetData/structureSetLabel</searchableXNATElement>
+      <searchableXNATElement alias="Structure set name">icr:roiSetData/structureSetName</searchableXNATElement>
+      <searchableXNATElement alias="Structure set description">icr:roiData/structureSetDescription</searchableXNATElement>
+      <searchableXNATElement alias="Structure set date">icr:roiSetData/structureSetDate</searchableXNATElement>
+      <searchableXNATElement alias="Structure set time">icr:roiData/structureSetTime</searchableXNATElement>
+      <searchableXNATElement alias="Data acquisition date">xnat:qcAssessmentData/structureSetDate</searchableXNATElement>
+      <searchableXNATElement alias="Data acquisition time">xnat:qcAssessmentData</searchableXNATElement>
+      <searchableXNATElement alias="Investigator first name">xnat:qcAssessmentData/investigator/firstname</searchableXNATElement>
+      <searchableXNATElement alias="Investigator last name">xnat:qcAssessmentData/investigator/lastname</searchableXNATElement>
+      <searchableXNATElement alias="Investigator institution">xnat:qcAssessmentData/investigator/institution</searchableXNATElement>
+      <searchableXNATElement alias="Investigator department">xnat:qcAssessmentData/investigator/department</searchableXNATElement>
+      <searchableXNATElement alias="Associated XNAT image session ID">xnat:qcAssessmentData/imageSessionID</searchableXNATElement>
+      <searchableXNATElement alias="Provenance: program">xnat:qcAssessmentData/provenance/process/processStep/program</searchableXNATElement>
+      <searchableXNATElement alias="Provenance: version">xnat:qcAssessmentData/provenance/process/processStep/program/version</searchableXNATElement>
+      <searchableXNATElement alias="Provenance: arguments">xnat:qcAssessmentData/provenance/process/processStep/program/arguments</searchableXNATElement>
+      <searchableXNATElement alias="Provenance: timestamp">xnat:qcAssessmentData/provenance/process/processStep/timestamp</searchableXNATElement>
+      <searchableXNATElement alias="Provenance: user">xnat:qcAssessmentData/provenance/process/processStep/user</searchableXNATElement>
+      <searchableXNATElement alias="Provenance: machine">xnat:qcAssessmentData/provenance/process/processStep/machine</searchableXNATElement>
+      <searchableXNATElement alias="Provenance: platform">xnat:qcAssessmentData/provenance/process/processStep/platform</searchableXNATElement>
+      <searchableXNATElement alias="XNAT subject ID">icr:roiSetData/subjectID</searchableXNATElement>
+      <searchableXNATElement alias="XNAT assessment ID">icr:roiSetData/ID</searchableXNATElement>
+      <searchableXNATElement alias="Associated project">icr:roiSetData/project</searchableXNATElement>
+   </XNATSearchRootElement>
+   
+   <XNATSearchRootElement element="icr:roiData">
+      <searchableXNATElement alias="Patient name">icr:roiData/dcmPatientName</searchableXNATElement>
+      <searchableXNATElement alias="Label">icr:roiData/label</searchableXNATElement>
+      <searchableXNATElement alias="Note">icr:roiData/note</searchableXNATElement>
+      <searchableXNATElement alias="ROI name">icr:roiData/roiName</searchableXNATElement>
+      <searchableXNATElement alias="Description">icr:roiData/roiDescription</searchableXNATElement>
+      <searchableXNATElement alias="Volume">icr:roiData/roiVolume</searchableXNATElement>
+      <searchableXNATElement alias="Generation algorithm">icr:roiData/roiGenerationAlgorithm</searchableXNATElement>
+      <searchableXNATElement alias="Generation description">icr:roiData/roiGenerationDescription</searchableXNATElement>
+      <searchableXNATElement alias="Contour type">icr:roiData/contourGeometricType</searchableXNATElement>
+      <searchableXNATElement alias="nContours">icr:roiData/nDICOMContours</searchableXNATElement>
+      <searchableXNATElement alias="XNAT subject ID">icr:roiData/subjectID</searchableXNATElement>
+      <searchableXNATElement alias="XNAT assessment ID">icr:roiData/ID</searchableXNATElement>
+      <searchableXNATElement alias="Defining structure set label">icr:roiData/definingDICOMStructureSetLabel</searchableXNATElement>
+      <searchableXNATElement alias="Associated project">icr:roiData/project</searchableXNATElement>
+   </XNATSearchRootElement>
+
+</XNATSearchRootElements>

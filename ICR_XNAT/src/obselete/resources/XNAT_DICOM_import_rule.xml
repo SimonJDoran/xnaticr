@@ -1,0 +1,262 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+    Document    : XNAT_DICOM_import_rule.xml
+    Imported on : March 12, 2009, 2:27 PM
+    Author      : Simon J Doran, modified from original file created by the XNAT team
+    Description : Describes the rule used to import DICOM data into the XNAT
+                  database without user interaction
+-->
+
+<rule>
+
+   <tag name="Acquisition_Matrix_Size" defaultValue="Undefined acquisition matrix size">
+		<DICOMTag group="0018" element="1310" alias="Acquisition Matrix" priority="1" />
+	</tag>
+
+
+	<tag name="Date" defaultValue="Undefined date">
+		<DICOMTag group="0008" element="0020" alias="Study Date" priority="1" />
+		<DICOMTag group="0008" element="0021" alias="Series Date" priority="2" />
+		<DICOMTag group="0008" element="0023" alias="Content Date" priority="3" />
+		<DICOMTag group="0008" element="0022" alias="Acquisition Date" priority="4" />
+	</tag>
+
+
+   <tag name="Echo_Time_TE" defaultValue="Undefined TE">
+		<DICOMTag group="0018" element="0081" alias="Echo Time" priority="1" />
+      <DICOMTag group="0018" element="9082" alias="Effective Echo Time" priority="2" />
+	</tag>
+
+
+	<tag name="Experiment" defaultValue="Undefined experiment">
+		<DICOMTag group="0008" element="1030" alias="Study Description" priority="1" />
+		<DICOMTag group="0032" element="4000" alias="Study Comments" priority="2" />
+		<DICOMTag group="0020" element="0010" alias="Study ID" priority="3" />
+		<DICOMTag group="0020" element="000d" alias="Study Instance UID" priority="4" />
+	</tag>
+
+
+   <tag name="Field_Strength" defaultValue="Undefined field strength">
+		<DICOMTag group="0018" element="0087" alias="Magnetic Field Strength" priority="1" />
+	</tag>
+
+
+   <tag name="Flip_Angle" defaultValue="Undefined flip angle">
+		<DICOMTag group="0018" element="1314" alias="Flip Angle" priority="1" />
+	</tag>
+
+
+   <tag name="FOV" defaultValue="Undefined FOV">
+		<DICOMTag group="0018" element="1149" alias="Field of View Dimension(s)" priority="1" />
+		<DICOMTag group="0018" element="9317" alias="Reconstruction Field of View" priority="2" />
+		<DICOMTag group="0018" element="9461" alias="Field of View Dimension(s) in Float" priority="3" />
+	</tag>
+
+
+   <tag name="Image_Type" defaultValue="Undefined number of columns">
+		<DICOMTag group="0008" element="0010" alias="Image Type" priority="1" />
+	</tag>
+
+
+   <tag name="Inversion_Time_TI" defaultValue="Undefined TI">
+		<DICOMTag group="0018" element="9079" alias="Inversion Times" priority="1" />
+	</tag>
+
+
+   <tag name="MR_Acquisition_Type" defaultValue="Undefined MR acquisition type">
+		<DICOMTag group="0018" element="0023" alias="MR Acquisition Type" priority="1" />
+	</tag>
+
+
+   <tag name="Number_of_Columns" defaultValue="Undefined number of columns">
+		<DICOMTag group="0028" element="0011" alias="Columns" priority="1" />
+	</tag>
+
+
+   <tag name="Number_of_Planes" defaultValue="Undefined number of planes">
+		<DICOMTag group="0028" element="0012" alias="Planes" priority="1" />
+	</tag>
+
+
+   <tag name="Number_of_Rows" defaultValue="Undefined number of rows">
+		<DICOMTag group="0028" element="0010" alias="Rows" priority="1" />
+	</tag>
+
+
+   <tag name="Modality" defaultValue="Undefined modality">
+		<DICOMTag group="0008" element="0060" alias="Series Modality" priority="1" />
+		<DICOMTag group="0008" element="0061" alias="Modalities in Study" priority="2" />
+	</tag>
+
+
+   <tag name="Orientation" defaultValue="Undefined orientation">
+		<DICOMTag group="0020" element="0037" alias="Image Orientation (Patient)" priority="1" />
+	</tag>
+
+
+   <tag name="Operator" defaultValue="Undefined scanner operator">
+		<DICOMTag group="0008" element="1070" alias="Operator's Name" priority="1" />
+      <DICOMTag group="0008" element="1072" alias="Operator Identification Sequence" priority="2" />
+	</tag>
+
+
+   <tag name="Pixel_Spacing" defaultValue="Undefined pixel spacing">
+		<DICOMTag group="0028" element="0030" alias="Pixel Spacing" priority="1" />
+      <DICOMTag group="0018" element="9322" alias="Reconstruction Pixel Spacing" priority="2" />
+	</tag>
+
+
+   <tag name="Receive_Coil" defaultValue="Undefined receive coil">
+		<DICOMTag group="0018" element="1250" alias="Receive Coil Name" priority="1" />
+      <DICOMTag group="0018" element="9043" alias="Receive Coil Type" priority="2" />
+      <DICOMTag group="0018" element="9044" alias="Quadrature Receive Coil" priority="3" />
+      <DICOMTag group="0018" element="9048" alias="Multi-Coil Element Used" priority="4" />
+	</tag>
+
+
+   <tag name="Repetition_Time_TR" defaultValue="Undefined TR">
+		<DICOMTag group="0018" element="0080" alias="Repetition Time" priority="1" />
+	</tag>
+
+
+   <tag name="Scan" defaultValue="Undefined scan">
+		<DICOMTag group="0020" element="0011" alias="Series Number" priority="1" />
+		<DICOMTag group="0020" element="000e" alias="Series Instance UID" priority="2" />
+	</tag>
+
+
+	<tag name="Scan_Date" defaultValue="Undefined scan date">
+		<DICOMTag group="0008" element="0021" alias="Series Date" priority="1" />
+		<DICOMTag group="0008" element="0020" alias="Study Date" priority="2" />
+		<DICOMTag group="0008" element="0023" alias="Content Date" priority="3" />
+		<DICOMTag group="0008" element="0022" alias="Acquisition Date" priority="4" />
+	</tag>
+
+
+	<tag name="Scan_Time" defaultValue="Undefined time">
+		<DICOMTag group="0008" element="0031" alias="Series Date" priority="1" />
+		<DICOMTag group="0008" element="0030" alias="Study Date" priority="2" />
+		<DICOMTag group="0008" element="0033" alias="Content Date" priority="3" />
+		<DICOMTag group="0008" element="0032" alias="Acquisition Date" priority="4" />
+	</tag>
+
+
+	<tag name="Scan_Type" defaultValue="Undefined scan type">
+		<DICOMTag group="0008" element="103e" alias="Series Description" priority="1" />
+		<DICOMTag group="0018" element="1030" alias="Protocol Name" priority="2" />
+	</tag>
+
+
+   <tag name="Scanner_Manufacturer" defaultValue="Undefined scanner manufacturer">
+		<DICOMTag group="0008" element="0070" alias="Manufacturer" priority="1" />
+	</tag>
+
+
+   <tag name="Scanner_Model" defaultValue="Undefined scanner model">
+		<DICOMTag group="0008" element="1090" alias="Manufacturer’s Model Name" priority="1" />
+	</tag>
+
+
+   <tag name="Scanner_Name" defaultValue="Undefined scanner name">
+		<DICOMTag group="0008" element="1010" alias="Station Name" priority="1" />
+	</tag>
+
+
+   <tag name="Scanning_Sequence" defaultValue="Undefined scanning sequence">
+		<DICOMTag group="0018" element="0020" alias="Scanning Sequence" priority="1" />
+	</tag>
+
+
+   <tag name="Scan_Options" defaultValue="Undefined scan options">
+		<DICOMTag group="0018" element="0022" alias="Scan Options" priority="1" />
+	</tag>
+
+
+   <tag name="Sequence_Name" defaultValue="Undefined sequence name">
+      <DICOMTag group="0018" element="0024" alias="Sequence Name" priority="1" />
+   </tag>
+
+
+   <tag name="Sequence_Variant" defaultValue="Undefined sequence variant">
+		<DICOMTag group="0018" element="0021" alias="Sequence Variant" priority="1" />
+	</tag>
+
+
+   <tag name="Series_Description" defaultValue="Undefined series description">
+      <DICOMTag group="0008" element="103e" alias="Series Description" priority="1" />
+   </tag>
+
+
+	<tag name="Series_Date" defaultValue="Undefined series date">
+		<DICOMTag group="0008" element="0021" alias="Series Date" priority="1" />
+		<DICOMTag group="0008" element="0020" alias="Study Date" priority="2" />
+		<DICOMTag group="0008" element="0023" alias="Content Date" priority="3" />
+		<DICOMTag group="0008" element="0022" alias="Acquisition Date" priority="4" />
+	</tag>
+
+
+	<tag name="Series_Time" defaultValue="Time_undefined">
+		<DICOMTag group="0008" element="0031" alias="Series Date" priority="1" />
+		<DICOMTag group="0008" element="0030" alias="Study Date" priority="2" />
+		<DICOMTag group="0008" element="0033" alias="Content Date" priority="3" />
+		<DICOMTag group="0008" element="0032" alias="Acquisition Date" priority="4" />
+	</tag>
+
+
+   <tag name="SeriesUID" defaultValue="Undefined series UID">
+      <DICOMTag group="0020" element="000e" alias="Series Instance UID" priority="1" />
+   </tag>
+
+
+   <tag name="Slab_Thickness" defaultValue="Undefined slab thickness">
+		<DICOMTag group="0018" element="9104" alias="Slab Thickness" priority="1" />
+	</tag>
+
+
+   <tag name="Slice_Thickness" defaultValue="Undefined slice thickness">
+		<DICOMTag group="0018" element="0050" alias="Slice Thickness" priority="1" />
+	</tag>
+
+
+   <tag name="SOPInstanceUID" defaultValue="Undefined SOP Instance UID">
+      <DICOMTag group="0008" element="0018" alias="SOP Instance UID" priority="1" />
+   </tag>
+
+
+	<tag name="Study_Date" defaultValue="Undefined study date">
+		<DICOMTag group="0008" element="0020" alias="Study Date" priority="1" />
+		<DICOMTag group="0008" element="0021" alias="Series Date" priority="2" />
+		<DICOMTag group="0008" element="0023" alias="Content Date" priority="3" />
+		<DICOMTag group="0008" element="0022" alias="Acquisition Date" priority="4" />
+	</tag>
+
+
+	<tag name="Study_Time" defaultValue="Undefined study time">
+		<DICOMTag group="0008" element="0030" alias="Study Time" priority="1" />
+		<DICOMTag group="0008" element="0031" alias="Series Time" priority="2" />
+		<DICOMTag group="0008" element="0033" alias="Content Time" priority="3" />
+		<DICOMTag group="0008" element="0032" alias="Acquisition Time" priority="4" />
+	</tag>
+
+
+   <tag name="StudyUID" defaultValue="Undefined study UID">
+      <DICOMTag group="0020" element="000D" alias="Study Instance UID" priority="1" />
+   </tag>
+
+
+	<tag name="Subject" defaultValue="Undefined subject">
+		<DICOMTag group="0010" element="0010" alias="Patient Name" priority="1" />
+		<DICOMTag group="0010" element="0020" alias="Patient ID" priority="2" />
+	</tag>
+
+
+	<tag name="Time" defaultValue="Undefined time">
+		<DICOMTag group="0008" element="0031" alias="Series Time" priority="1" />
+		<DICOMTag group="0008" element="0030" alias="Study Time" priority="2" />
+		<DICOMTag group="0008" element="0033" alias="Content Time" priority="3" />
+		<DICOMTag group="0008" element="0032" alias="Acquisition Time" priority="4" />
+	</tag>
+
+
+</rule>

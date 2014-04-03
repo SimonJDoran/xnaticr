@@ -1,0 +1,439 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<!--
+    Document   : defaultTableSettings.xml
+    Created on : April 12, 2010, 9:53 AM
+    Author     : simond
+    Description:
+        Define the default table columns that will be returned by the system.
+-->
+
+<XNAT_DAO_TreeTableSettingsList>
+   
+   <PreferredSettings>Defaults</PreferredSettings>
+   
+   <TreeTableSettings name="Defaults">
+      
+      <SettingsForSubtype DAO_subtype="MR image set">
+         
+         <leafDisplayAlias>Scan type</leafDisplayAlias>
+         <Column>
+            <JTableIndex>0</JTableIndex>
+            <Identifier>XNAT virtual directory</Identifier>
+            <ModelIndex>0</ModelIndex>
+            <Width>270</Width>
+         </Column>
+         <Column>
+            <JTableIndex>1</JTableIndex>
+            <Identifier>Scanner model</Identifier>
+            <ModelIndex>13</ModelIndex>
+            <Width>93</Width>
+         </Column>
+         <Column>
+            <JTableIndex>2</JTableIndex>
+            <Identifier>Scan time</Identifier>
+            <ModelIndex>3</ModelIndex>
+            <Width>78</Width>
+         </Column>
+         <Column>
+            <JTableIndex>3</JTableIndex>
+            <Identifier>#Frames</Identifier>
+            <ModelIndex>11</ModelIndex>
+            <Width>60</Width>
+         </Column>
+         <Column>
+            <JTableIndex>4</JTableIndex>
+            <Identifier>Orientation</Identifier>
+            <ModelIndex>22</ModelIndex>
+            <Width>78</Width>
+         </Column>
+         <Column>
+            <JTableIndex>5</JTableIndex>
+            <Identifier>Matrix x</Identifier>
+            <ModelIndex>5</ModelIndex>
+            <Width>61</Width>
+         </Column>
+         <Column>
+            <JTableIndex>6</JTableIndex>
+            <Identifier>Matrix y</Identifier>
+            <ModelIndex>6</ModelIndex>
+            <Width>60</Width>
+         </Column>
+         <Column>
+            <JTableIndex>7</JTableIndex>
+            <Identifier>TR</Identifier>
+            <ModelIndex>7</ModelIndex>
+            <Width>65</Width>
+         </Column>
+         <Column>
+            <JTableIndex>8</JTableIndex>
+            <Identifier>TE</Identifier>
+            <ModelIndex>8</ModelIndex>
+            <Width>53</Width>
+         </Column>
+         <Column>
+            <JTableIndex>9</JTableIndex>
+            <Identifier>Flip angle</Identifier>
+            <ModelIndex>10</ModelIndex>
+            <Width>66</Width>
+         </Column>
+         <Column>
+            <JTableIndex>10</JTableIndex>
+            <Identifier>TI</Identifier>
+            <ModelIndex>9</ModelIndex>
+            <Width>50</Width>
+         </Column>
+         <Column>
+            <JTableIndex>11</JTableIndex>
+            <Identifier>RF coil</Identifier>
+            <ModelIndex>15</ModelIndex>
+            <Width>95</Width>
+         </Column>
+         <Column>
+            <JTableIndex>12</JTableIndex>
+            <Identifier>Voxel size x</Identifier>
+            <ModelIndex>18</ModelIndex>
+            <Width>83</Width>
+         </Column>
+         <Column>
+            <JTableIndex>13</JTableIndex>
+            <Identifier>Voxel size y</Identifier>
+            <ModelIndex>19</ModelIndex>
+            <Width>78</Width>
+         </Column>
+         <Column>
+            <JTableIndex>14</JTableIndex>
+            <Identifier>Voxel size z</Identifier>
+            <ModelIndex>20</ModelIndex>
+            <Width>78</Width>
+         </Column>
+         <Column>
+            <JTableIndex>15</JTableIndex>
+            <Identifier>MR field strength</Identifier>
+            <ModelIndex>16</ModelIndex>
+            <Width>87</Width>
+         </Column>
+         <Column>
+            <JTableIndex>16</JTableIndex>
+            <Identifier>Sequence name</Identifier>
+            <ModelIndex>23</ModelIndex>
+            <Width>100</Width>
+         </Column>
+         <Column>
+            <JTableIndex>17</JTableIndex>
+            <Identifier>Scanner manufacturer</Identifier>
+            <ModelIndex>12</ModelIndex>
+            <Width>83</Width>
+         </Column>
+         <Column><JTableIndex>18</JTableIndex>
+            <Identifier>Partitions</Identifier>
+            <ModelIndex>21</ModelIndex>
+            <Width>62</Width>
+         </Column>
+         <Column><JTableIndex>19</JTableIndex>
+            <Identifier>Image type</Identifier>
+            <ModelIndex>24</ModelIndex>
+            <Width>293</Width>
+         </Column>
+      </SettingsForSubtype>
+    
+      <SettingsForSubtype DAO_subtype="PET image set">
+         <leafDisplayAlias>Scan type</leafDisplayAlias>
+         <Column>
+            <JTableIndex>0</JTableIndex>
+            <Identifier>XNAT virtual directory</Identifier>
+            <ModelIndex>0</ModelIndex>
+            <Width>306</Width>
+         </Column>
+         <Column>
+            <JTableIndex>1</JTableIndex>
+            <Identifier>Scan time</Identifier>
+            <ModelIndex>3</ModelIndex>
+            <Width>100</Width>
+         </Column>
+         <Column>
+            <JTableIndex>2</JTableIndex>
+            <Identifier>Scanner manufacturer</Identifier>
+            <ModelIndex>5</ModelIndex>
+            <Width>100</Width>
+         </Column>
+         <Column>
+            <JTableIndex>3</JTableIndex>
+            <Identifier>Scanner model</Identifier>
+            <ModelIndex>6</ModelIndex>
+            <Width>100</Width>
+         </Column>
+         <Column>
+            <JTableIndex>4</JTableIndex>
+            <Identifier>#Frames</Identifier>
+            <ModelIndex>11</ModelIndex>
+            <Width>100</Width>
+         </Column>
+         <Column>
+            <JTableIndex>5</JTableIndex>
+            <Identifier>Tracer</Identifier>
+            <ModelIndex>7</ModelIndex>
+            <Width>62</Width>
+         </Column>
+         <Column>
+            <JTableIndex>6</JTableIndex>
+            <Identifier>Dose</Identifier>
+            <ModelIndex>8</ModelIndex>
+            <Width>69</Width>
+         </Column>
+         <Column>
+            <JTableIndex>7</JTableIndex>
+            <Identifier>XNAT project</Identifier>
+            <ModelIndex>24</ModelIndex>
+            <Width>100</Width>
+         </Column>
+         <Column>
+            <JTableIndex>8</JTableIndex>
+            <Identifier>Spec. Activity</Identifier>
+            <ModelIndex>9</ModelIndex>
+            <Width>100</Width>
+         </Column>
+         <Column><JTableIndex>9</JTableIndex>
+            <Identifier>Isotope</Identifier>
+            <ModelIndex>10</ModelIndex>
+            <Width>65</Width>
+         </Column>
+         <Column>
+            <JTableIndex>10</JTableIndex>
+            <Identifier>Orientation</Identifier>
+            <ModelIndex>12</ModelIndex>
+            <Width>100</Width>
+         </Column>
+         <Column>
+            <JTableIndex>11</JTableIndex>
+            <Identifier>Matrix x</Identifier>
+            <ModelIndex>18</ModelIndex>
+            <Width>100</Width>
+         </Column>
+         <Column>
+            <JTableIndex>12</JTableIndex>
+            <Identifier>Matrix y</Identifier>
+            <ModelIndex>19</ModelIndex>
+            <Width>100</Width>
+         </Column>
+         <Column>
+            <JTableIndex>13</JTableIndex>
+            <Identifier>Filetype</Identifier>
+            <ModelIndex>13</ModelIndex>
+            <Width>100</Width>
+         </Column>
+         <Column>
+            <JTableIndex>14</JTableIndex>
+            <Identifier>FOV</Identifier>
+            <ModelIndex>14</ModelIndex>
+            <Width>100</Width>
+         </Column>
+         <Column>
+            <JTableIndex>15</JTableIndex>
+            <Identifier>Acquisition type</Identifier>
+            <ModelIndex>15</ModelIndex>
+            <Width>100</Width>
+         </Column>
+         <Column>
+            <JTableIndex>16</JTableIndex>
+            <Identifier>Number of planes</Identifier>
+            <ModelIndex>16</ModelIndex>
+            <Width>100</Width>
+         </Column>
+         <Column>
+            <JTableIndex>17</JTableIndex>
+            <Identifier>Plane separation</Identifier>
+            <ModelIndex>17</ModelIndex>
+            <Width>100</Width>
+         </Column>
+         <Column>
+            <JTableIndex>18</JTableIndex>
+            <Identifier>Matrix z</Identifier>
+            <ModelIndex>20</ModelIndex>
+            <Width>100</Width>
+         </Column>
+         <Column>
+            <JTableIndex>19</JTableIndex>
+            <Identifier>Voxel size x</Identifier>
+            <ModelIndex>21</ModelIndex>
+            <Width>100</Width>
+         </Column>
+         <Column>
+            <JTableIndex>20</JTableIndex>
+            <Identifier>Voxel size y</Identifier>
+            <ModelIndex>22</ModelIndex>
+            <Width>100</Width>
+         </Column>
+         <Column>
+            <JTableIndex>21</JTableIndex>
+            <Identifier>Voxel size z</Identifier>
+            <ModelIndex>23</ModelIndex>
+            <Width>100</Width>
+         </Column>
+         <Column>
+            <JTableIndex>22</JTableIndex>
+            <Identifier>XNAT Subject ID</Identifier>
+            <ModelIndex>25</ModelIndex>
+            <Width>100</Width>
+         </Column>
+         <Column>
+            <JTableIndex>23</JTableIndex>
+            <Identifier>XNAT image session ID</Identifier>
+            <ModelIndex>26</ModelIndex>
+            <Width>100</Width>
+         </Column>
+         <Column>
+            <JTableIndex>24</JTableIndex>
+            <Identifier>XNAT image session label</Identifier>
+            <ModelIndex>27</ModelIndex>
+            <Width>100</Width>
+         </Column>
+         <Column>
+            <JTableIndex>25</JTableIndex>
+            <Identifier>XNAT scan ID</Identifier>
+            <ModelIndex>28</ModelIndex>
+            <Width>100</Width>
+         </Column>
+         <Column>
+            <JTableIndex>26</JTableIndex>
+            <Identifier>DICOM series UID</Identifier>
+            <ModelIndex>29</ModelIndex>
+            <Width>100</Width>
+         </Column>
+         <Column><JTableIndex>27</JTableIndex>
+            <Identifier>DICOM session UID</Identifier>
+            <ModelIndex>30</ModelIndex>
+            <Width>100</Width>
+         </Column>
+         <Column>
+            <JTableIndex>28</JTableIndex>
+            <Identifier>DICOM patient ID</Identifier>
+            <ModelIndex>31</ModelIndex>
+            <Width>100</Width>
+         </Column>
+      </SettingsForSubtype>
+
+      <SettingsForSubtype DAO_subtype="CT image set">
+         <leafDisplayAlias>Scan type</leafDisplayAlias>
+         <Column>
+            <JTableIndex>0</JTableIndex>
+            <Identifier>XNAT virtual directory</Identifier>
+            <ModelIndex>0</ModelIndex>
+            <Width>236</Width>
+         </Column>
+         <Column>
+            <JTableIndex>1</JTableIndex>
+            <Identifier>Scan time</Identifier>
+            <ModelIndex>3</ModelIndex>
+            <Width>88</Width>
+         </Column>
+         <Column>
+            <JTableIndex>2</JTableIndex>
+            <Identifier>Scanner model</Identifier>
+            <ModelIndex>6</ModelIndex>
+            <Width>100</Width>
+         </Column>
+         <Column>
+            <JTableIndex>3</JTableIndex>
+            <Identifier>#Frames</Identifier>
+            <ModelIndex>7</ModelIndex>
+            <Width>65</Width>
+         </Column>
+         <Column>
+            <JTableIndex>4</JTableIndex>
+            <Identifier>Matrix x</Identifier>
+            <ModelIndex>12</ModelIndex>
+            <Width>60</Width>
+         </Column>
+         <Column>
+            <JTableIndex>5</JTableIndex>
+            <Identifier>Matrix y</Identifier>
+            <ModelIndex>13</ModelIndex>
+            <Width>58</Width>
+         </Column>
+         <Column>
+            <JTableIndex>6</JTableIndex>
+            <Identifier>Voxel size x</Identifier>
+            <ModelIndex>8</ModelIndex>
+            <Width>81</Width>
+         </Column>
+         <Column>
+            <JTableIndex>7</JTableIndex>
+            <Identifier>Voxel size y</Identifier>
+            <ModelIndex>9</ModelIndex>
+            <Width>73</Width>
+         </Column>
+         <Column>
+            <JTableIndex>8</JTableIndex>
+            <Identifier>Voxel size z</Identifier>
+            <ModelIndex>10</ModelIndex>
+            <Width>100</Width>
+         </Column>
+         <Column>
+            <JTableIndex>9</JTableIndex>
+            <Identifier>Orientation</Identifier>
+            <ModelIndex>11</ModelIndex>
+            <Width>73</Width>
+         </Column>
+         <Column>
+            <JTableIndex>10</JTableIndex>
+            <Identifier>kVp</Identifier>
+            <ModelIndex>14</ModelIndex>
+            <Width>52</Width>
+         </Column>
+         <Column>
+            <JTableIndex>11</JTableIndex>
+            <Identifier>mA</Identifier>
+            <ModelIndex>15</ModelIndex>
+            <Width>35</Width>
+         </Column>
+         <Column>
+            <JTableIndex>12</JTableIndex>
+            <Identifier>Contrast agent</Identifier>
+            <ModelIndex>17</ModelIndex>
+            <Width>97</Width>
+         </Column>
+         <Column>
+            <JTableIndex>13</JTableIndex>
+            <Identifier>Contrast route</Identifier>
+            <ModelIndex>18</ModelIndex>
+            <Width>96</Width>
+         </Column>
+         <Column>
+            <JTableIndex>14</JTableIndex>
+            <Identifier>Contrast volume</Identifier>
+            <ModelIndex>19</ModelIndex>
+            <Width>100</Width>
+         </Column>
+         <Column>
+            <JTableIndex>15</JTableIndex>
+            <Identifier>XNAT project</Identifier>
+            <ModelIndex>20</ModelIndex>
+            <Width>100</Width>
+         </Column>
+         <Column>
+            <JTableIndex>16</JTableIndex>
+            <Identifier>XNAT scan ID</Identifier>
+            <ModelIndex>22</ModelIndex>
+            <Width>92</Width>
+         </Column>
+         <Column>
+            <JTableIndex>17</JTableIndex>
+            <Identifier>XNAT image session label</Identifier>
+            <ModelIndex>24</ModelIndex>
+            <Width>100</Width>
+         </Column>
+         <Column>
+            <JTableIndex>18</JTableIndex>
+            <Identifier>Acquisition site</Identifier>
+            <ModelIndex>28</ModelIndex>
+            <Width>100</Width>
+         </Column>
+    </SettingsForSubtype>     
+      
+   </TreeTableSettings>
+
+
+
+</XNAT_DAO_TreeTableSettingsList>
+
