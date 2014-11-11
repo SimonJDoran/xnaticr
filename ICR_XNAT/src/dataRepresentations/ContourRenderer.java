@@ -172,7 +172,23 @@ public class ContourRenderer
    }
    
    
-   public ArrayList<BufferedImage> createImages() throws Exception
+   /**
+    * Constructor creates a new renderer of a given MRIWOutput object.
+    * @param adept ADEPTOutput that contains most of the
+    * information necessary for rendering a contour. Note that the ADEPT format
+    * does not have a number of the contour-related features of DICOM-RT on
+    * which these developments were originally based, so various default
+    * values need to be supplied and in addition, the data that are present
+    * need to be manipulated to get the correct format.
+    */
+   public ContourRenderer(ADEPTOutput adept)
+   {
+      this.dr = adept;          
+   }
+	
+	
+	
+	public ArrayList<BufferedImage> createImages() throws Exception
    {
 
       ArrayList<BufferedImage> result = new ArrayList<BufferedImage>();

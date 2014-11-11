@@ -45,6 +45,8 @@
 package xnatUploader;
 
 import com.generationjava.io.xml.SimpleXmlWriter;
+import dataRepresentations.ADEPTOutput;
+import dataRepresentations.ContourRenderer;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileWriter;
@@ -52,12 +54,15 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import javax.imageio.ImageIO;
+import org.apache.log4j.Logger;
 import xmlUtilities.DelayedPrettyPrinterXmlWriter;
 import xnatDAO.XNATProfile;
-
+import xnatDAO.XNATGUI;
 
 public class AdeptDataUploader extends QCAssessmentDataUploader
 {
+	static  Logger                        logger = Logger.getLogger(AdeptDataUploader.class);
+   private ADEPTOutput                   adept;
    public AdeptDataUploader(XNATProfile xnprf)
    {
       super(xnprf);
@@ -66,104 +71,104 @@ public class AdeptDataUploader extends QCAssessmentDataUploader
    @Override
    public boolean parseFile()
    {
-      // Find information on all the studies in the database.
-      try
-      {
-         studyUIDs       = (XMLUtil.getAttributeA(doc, XNATns, "input",
-                                 "study-uid"));
-         seriesUIDs      = XMLUtil.getAttributeA(doc, XNATns, "image",
-                                 "series-uid");
-         SOPInstanceUIDs = XMLUtil.getAttributeA(doc, XNATns, "image",
-                                 "sop-instance-uid");
-
-         RESTCommand = "/REST/projects/" + XNATProject + "/experiments"
-                       + "?xsiType=xnat:imageSessionData"
-                       + "&columns=xnat:imageSessionData/UID,xnat:imageSessionData/subject_ID"
-                       + "&format=xml";
-         result      = xnrt.RESTGetResultSet(RESTCommand);
-      }
-      catch (Exception ex)
-      {
-         errorOccurred = true;
-         errorMessage  = "Unable to open selected file.\n"
-                    + "It appears not to be a valid ADEPT result set file.\n\n";
-                    
-         if (ex.getMessage() != null)
-            errorMessage += "The detailed error message was:\n" + ex.getMessage();
-         return false;
-      }
-
-
-      // Does the DICOM study from the uploaded ADEPT file match any of the
-      // studies in the database? At present, we expect the ADEPT file to be
-      // based on only one study. This might change in future.
-      if (studyUIDs.size() != 1)
-      {
-         errorOccurred = true;
-         errorMessage  = "Unable to open selected file.\n"
-           + "The ADEPT result set file appears to refer to more than one study.\n\n";
-         return false;
-      }
-
-      boolean allPresent = false;
-      if (result.columnContains(1, studyUIDs.get(0)))
-      {
-         // If so, then are the relevant series present?
-         // For simplicity, I currently assume that if the series is loaded
-         // then so are the individual images.
-         try
-         {
-            int row = result.indexOfForCol(1, studyUIDs.get(0));
-            XNATExperimentID = result.atom(0, row);
-            XNATSubjectID    = result.atom(2, row);
-
-            RESTCommand = "/REST/projects/" + XNATProject
-                          + "/subjects/"    + XNATSubjectID
-                          + "/experiments/" + XNATExperimentID
-                          + "?format=xml";
-            resultDoc   = xnrt.RESTGetDoc(RESTCommand);
-            parseResult = XMLUtil.getAttributes(resultDoc, XNATns, "xnat:scan",
-                                                   new String[] {"ID", "UID"});
-         }
-         catch (Exception ex)
-         {
-            errorOccurred = true;
-            errorMessage  = "Error retrieving data from XNAT\n\n" + ex.getMessage();
-            return false;
-         }
-
-         // Iterate only over unique series, so that we repeat the various
-         // checks only as often as we need to.
-         HashSet<String> uniqueSeries = new HashSet<String>();
-         for (int i=0; i<seriesUIDs.size(); i++)
-            if (!uniqueSeries.contains(seriesUIDs.get(i)))
-               uniqueSeries.add(seriesUIDs.get(i));
-
-         allPresent = true;
-         XNATScanID = new ArrayList<String>();
-         for (String seriesUID : uniqueSeries)
-         {
-            boolean seriesPresent = false;
-            for (int i=0; i<parseResult.length; i++)
-            {
-               if (parseResult[i][1].equals(seriesUID))
-               {
-                  seriesPresent = true;
-                  XNATScanID.add(parseResult[i][0]);
-               }
-            }
-            allPresent = allPresent && seriesPresent;
-         }
-      }
-
-      if (!allPresent)
-      {
-         errorOccurred = true;
-         errorMessage  = "The DICOM series associated with the Adept result set file \n"
-            + "are not all present in the chosen XNAT database.\n\n"
-            + "Please archive the dataset to XNAT before continuing.";
-         return false;
-      }
+//      // Find information on all the studies in the database.
+//      try
+//      {
+//         studyUIDs       = (XMLUtil.getAttributeA(doc, XNATns, "input",
+//                                 "study-uid"));
+//         seriesUIDs      = XMLUtil.getAttributeA(doc, XNATns, "image",
+//                                 "series-uid");
+//         SOPInstanceUIDs = XMLUtil.getAttributeA(doc, XNATns, "image",
+//                                 "sop-instance-uid");
+//
+//         RESTCommand = "/REST/projects/" + XNATProject + "/experiments"
+//                       + "?xsiType=xnat:imageSessionData"
+//                       + "&columns=xnat:imageSessionData/UID,xnat:imageSessionData/subject_ID"
+//                       + "&format=xml";
+//         result      = xnrt.RESTGetResultSet(RESTCommand);
+//      }
+//      catch (Exception ex)
+//      {
+//         errorOccurred = true;
+//         errorMessage  = "Unable to open selected file.\n"
+//                    + "It appears not to be a valid ADEPT result set file.\n\n";
+//                    
+//         if (ex.getMessage() != null)
+//            errorMessage += "The detailed error message was:\n" + ex.getMessage();
+//         return false;
+//      }
+//
+//
+//      // Does the DICOM study from the uploaded ADEPT file match any of the
+//      // studies in the database? At present, we expect the ADEPT file to be
+//      // based on only one study. This might change in future.
+//      if (studyUIDs.size() != 1)
+//      {
+//         errorOccurred = true;
+//         errorMessage  = "Unable to open selected file.\n"
+//           + "The ADEPT result set file appears to refer to more than one study.\n\n";
+//         return false;
+//      }
+//
+//      boolean allPresent = false;
+//      if (result.columnContains(1, studyUIDs.get(0)))
+//      {
+//         // If so, then are the relevant series present?
+//         // For simplicity, I currently assume that if the series is loaded
+//         // then so are the individual images.
+//         try
+//         {
+//            int row = result.indexOfForCol(1, studyUIDs.get(0));
+//            XNATExperimentID = result.atom(0, row);
+//            XNATSubjectID    = result.atom(2, row);
+//
+//            RESTCommand = "/REST/projects/" + XNATProject
+//                          + "/subjects/"    + XNATSubjectID
+//                          + "/experiments/" + XNATExperimentID
+//                          + "?format=xml";
+//            resultDoc   = xnrt.RESTGetDoc(RESTCommand);
+//            parseResult = XMLUtil.getAttributes(resultDoc, XNATns, "xnat:scan",
+//                                                   new String[] {"ID", "UID"});
+//         }
+//         catch (Exception ex)
+//         {
+//            errorOccurred = true;
+//            errorMessage  = "Error retrieving data from XNAT\n\n" + ex.getMessage();
+//            return false;
+//         }
+//
+//         // Iterate only over unique series, so that we repeat the various
+//         // checks only as often as we need to.
+//         HashSet<String> uniqueSeries = new HashSet<String>();
+//         for (int i=0; i<seriesUIDs.size(); i++)
+//            if (!uniqueSeries.contains(seriesUIDs.get(i)))
+//               uniqueSeries.add(seriesUIDs.get(i));
+//
+//         allPresent = true;
+//         XNATScanID = new ArrayList<String>();
+//         for (String seriesUID : uniqueSeries)
+//         {
+//            boolean seriesPresent = false;
+//            for (int i=0; i<parseResult.length; i++)
+//            {
+//               if (parseResult[i][1].equals(seriesUID))
+//               {
+//                  seriesPresent = true;
+//                  XNATScanID.add(parseResult[i][0]);
+//               }
+//            }
+//            allPresent = allPresent && seriesPresent;
+//         }
+//      }
+//
+//      if (!allPresent)
+//      {
+//         errorOccurred = true;
+//         errorMessage  = "The DICOM series associated with the Adept result set file \n"
+//            + "are not all present in the chosen XNAT database.\n\n"
+//            + "Please archive the dataset to XNAT before continuing.";
+//         return false;
+//      }
       return true;
    }
    
@@ -202,12 +207,6 @@ public class AdeptDataUploader extends QCAssessmentDataUploader
       mdsp.populateJTextField("Label",                            "", true);
    }
    
-   
-   @Override
-   public String getFileFormat()
-   {
-      return "ADEPT_XML";
-   }
    
 
 
@@ -254,40 +253,61 @@ public class AdeptDataUploader extends QCAssessmentDataUploader
          reportError(ex, "create input catalog file");
       }
       
-      auxiliaryFiles.add(catFile);
-      auxFileFormats.add("INPUT_CATALOG_XML");
+      if (!errorOccurred)
+		{
+			XNATResourceFile rf	= new XNATResourceFile();
+			rf.content				= "FILE_CATALOGUE";
+			rf.description			= "catalogue of primary data files contributing to this region-of-interest";
+			rf.format				= "XML";
+			rf.file					= catFile;
+			rf.label					= "INPUT_CATALOGUE";
+			auxiliaryFiles.add(rf);
+		}
    }
    
    
    
-   /**
+   @Override
+	public void createPrimaryResourceFile()
+	{
+		primaryFile					= new XNATResourceFile();
+		primaryFile.content		= "EXTERNAL";
+		primaryFile.description	= "ADEPT file created in an external application";
+		primaryFile.format		= "XML";
+		primaryFile.file			= uploadFile;
+		primaryFile.label			= "ADEPT_OUTPUT";
+	}
+	
+	
+	/**
     * Create additional thumbnail files for upload with the ADEPT object set.
     */
    @Override
-   public void createAuxiliaryFiles()
+   public void createAuxiliaryResourceFiles()
    {
-      // TODO Create ADEPT renderer.
-      // MRIWRenderer r = new MRIWRenderer();
-      //BufferedImage[] thumbnails     = r.createImages();
-      BufferedImage[] thumbnails = null;
-      
-      String          homeDir        = System.getProperty("user.home");
-      String          fileSep        = System.getProperty("file.separator");
-      String          XNAT_DAO_HOME  = homeDir + fileSep + ".XNAT_DAO" + fileSep;
-      String          filePrefix     = XNAT_DAO_HOME + "temp" + fileSep 
-                                       + XNATAccessionID + "_ADEPT_thumbnail_";
-
+      String fileSep    = System.getProperty("file.separator");
+      String filePrefix = XNATGUI.getHomeDir() + "temp" + fileSep + XNATAccessionID;
       try
       {
-         for (int i=0; i<thumbnails.length; i++)
+			ContourRenderer cr = new ContourRenderer(adept);
+         ArrayList<BufferedImage> thumbnails = cr.createImages();
+			String thumbnailFile = filePrefix + "_ADEPT_ROI_thumbnail_";
+
+         for (int i=0; i<thumbnails.size(); i++)
          {
-            File outputFile = new File(filePrefix + i);
-            ImageIO.write(thumbnails[i], "png", outputFile);
-            auxiliaryFiles.add(outputFile);
-            auxFileFormats.add("ADEPT_THUMBNAIL_PNG");
+            File outputFile = new File(thumbnailFile + i);
+            ImageIO.write(thumbnails.get(i), "png", outputFile);
+            XNATResourceFile rf	= new XNATResourceFile();
+				rf.content				= "GENERATED";
+				rf.description			= "thumbnail image containing ROI contour";
+				rf.format				= "PNG";
+				rf.file					= outputFile;
+				rf.label					= "MRIW_THUMBNAIL";
+            auxiliaryFiles.add(rf);
          }
       }
-      catch (IOException exIO)
+
+      catch (Exception exIO)
       {
          reportError(exIO, "create ADEPT thumbnail file");
       }

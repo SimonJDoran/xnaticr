@@ -411,6 +411,9 @@ public class XNATServerConnection
          while ((b = is.read()) != -1) sb.append((char) b);
 
          XNATVersion = sb.toString();
+			// Temporary kludge.
+			if (XNATVersion.equals("Unknown version")) XNATVersion = "1.6.4";
+			
       }
       catch (IOException exIO)
       {

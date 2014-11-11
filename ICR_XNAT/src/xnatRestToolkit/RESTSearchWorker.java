@@ -56,7 +56,6 @@ import java.util.ArrayList;
 import java.util.Vector;
 import javax.swing.SwingWorker;
 import javax.swing.tree.TreeNode;
-import javax.swing.tree.TreePath;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 import org.apache.log4j.Logger;
@@ -70,17 +69,17 @@ import xnatDAO.XNATDAO;
 
 public class RESTSearchWorker extends SwingWorker<Vector2D<String>, Void>
 {
-   static  Logger                logger = Logger.getLogger(RESTSearchWorker.class);
-   private XNATDAO               xnd;
-   private XNATServerConnection  xnsc;
-   private String                rootElement;
-   private XNATReturnedField[]   returnedFields;
-   private String                combinationOperator;
-   private XNATSearchCriterion[] searchCriteria;
-   private ArrayList<String>     projectList;
-   private TreeNode[]            expansionNodePath;
-   private Vector2D              RESTResult;
-   private Vector<String>        columnHeadings;;
+   static  Logger                      logger = Logger.getLogger(RESTSearchWorker.class);
+   private final XNATDAO               xnd;
+   private final XNATServerConnection  xnsc;
+   private final String                rootElement;
+   private final XNATReturnedField[]   returnedFields;
+   private final String                combinationOperator;
+   private final XNATSearchCriterion[] searchCriteria;
+   private final ArrayList<String>     projectList;
+   private final TreeNode[]            expansionNodePath;
+   private Vector2D                    RESTResult;
+   private Vector<String>              columnHeadings;;
 
    
    public RESTSearchWorker(
@@ -146,24 +145,6 @@ public class RESTSearchWorker extends SwingWorker<Vector2D<String>, Void>
       finally
       {
          try {is.close();} catch (IOException exIOignore) {}
-      }
-
-      // Currently, there is a problem with obtaining results from fields that
-      // might have multiple results. For example, provenance fields are the
-      // result of multiple process steps:
-      // xnat:qcAssessmentData/provenance/process/processStep/machine
-      //
-      // For the moment, the search simply fails to return anything and this
-      // screws up the number of columns in the output. The following kludge
-      // inserts a blank column where each of the provenance results should be.
-      Vector<String> blankCol = new Vector<String>();
-      for (int i=0; i<RESTResult.size(); i++) blankCol.add("");
-      for (int i=0; i<returnedFields.length; i++)
-      {
-         if (returnedFields[i].fieldID.contains("provenance"))
-         {
-            RESTResult.insertColumn(blankCol, i);
-         }
       }
       
       return RESTResult;

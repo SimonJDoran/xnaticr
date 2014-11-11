@@ -91,7 +91,7 @@ public class RTStructureSetUploader extends QCAssessmentDataUploader
     * Open and read the specified file.
     * This method will be overrides the default (which reads XML), to allow
     * us to open an RT Structure Set DICOM file.
-    * @return a boolean variable with true if the file was opened successfuly
+    * @return a boolean variable with true if the file was opened successfully
     *         and false otherwise.
     */
    @Override
@@ -118,15 +118,12 @@ public class RTStructureSetUploader extends QCAssessmentDataUploader
    
    /**
     * Parse a DICOM RT-Structure Set file to extract the relevant metadata.
+	 * @return 
     */
    @Override
    public boolean parseFile()
    {  
-      studyUIDs       = new ArrayList<String>();
-      seriesUIDs      = new ArrayList<String>();
-      SOPInstanceUIDs = new ArrayList<String>();
-      
-      try
+		try
       {
          rts                  = RTStruct.getInstanceFromDICOM(bdo, xnprf);
          rts.version          = version;
@@ -256,14 +253,7 @@ public class RTStructureSetUploader extends QCAssessmentDataUploader
       mdsp.populateJTextField("Provenance: platform",             "");
    }
 
-   
-   
-   @Override
-   public String getFileFormat()
-   {
-      return "DICOM_RT-STRUCT";
-   }
-   
+
    
    /**
     * Uploading data to XNAT is a two-stage process. First the data file
@@ -315,10 +305,7 @@ public class RTStructureSetUploader extends QCAssessmentDataUploader
             
       try
       {
-         RESTCommand = "/data/archive/projects/" + XNATProject
-                       + "/subjects/"    + XNATSubjectID
-                       + "/experiments/" + XNATExperimentID
-                       + "/assessors/"   + XNATAccessionID;
+         RESTCommand = getMetadataUploadCommand();
          
          InputStream is = xnprf.doRESTPut(RESTCommand, metaDoc);
          int         n  = is.available();
@@ -418,7 +405,8 @@ public class RTStructureSetUploader extends QCAssessmentDataUploader
             ppXML.delayedWriteEntity("cat:entry")
                .delayedWriteAttribute("URI", rts.fileSOPMap.get(s))
                .delayedWriteAttribute("format", "DICOM")
-               .delayedWriteAttribute("content", "referenced contour image")
+               .delayedWriteAttribute("content", "RAW")
+					.delayedWriteAttribute("description", "referenced contour image")	  
             .delayedEndEntity();
          }
          ppXML.delayedEndEntity();
@@ -431,10 +419,28 @@ public class RTStructureSetUploader extends QCAssessmentDataUploader
       
       if (XNATAccessionID != null)
       {
-         auxiliaryFiles.add(catFile);
-         auxFileFormats.add("ICR_XNAT_UPLOADER_INPUT_CATALOG_XML");
+			XNATResourceFile rf	= new XNATResourceFile();
+			rf.content				= "FILE_CATALOGUE";
+			rf.description			= "catalogue of primary data files contributing to uploaded RT-STRUCT file";
+			rf.format				= "XML";
+			rf.file					= catFile;
+			rf.label					= "INPUT_CATALOGUE";
+         auxiliaryFiles.add(rf);
       }
    }
+	
+	
+	
+	@Override
+	public void createPrimaryResourceFile()
+	{
+		primaryFile					= new XNATResourceFile();
+		primaryFile.content		= "EXTERNAL";
+		primaryFile.description	= "DICOM RT-STRUCT file created in an external application";
+		primaryFile.format		= "DICOM";
+		primaryFile.file			= uploadFile;
+		primaryFile.label			= "RT-STRUCT";
+	}
    
    
    
@@ -442,7 +448,7 @@ public class RTStructureSetUploader extends QCAssessmentDataUploader
     * Create additional thumbnail files for upload with the DICOM-RT structure set.
     */
    @Override
-   public void createAuxiliaryFiles()
+   public void createAuxiliaryResourceFiles()
    {
       // In the first instance, no auxiliary files are needed, since the
       // referenced ROI objects contain the required thumbnails.
@@ -649,6 +655,8 @@ public class RTStructureSetUploader extends QCAssessmentDataUploader
          }
       }
    }
+	
+	
    
    protected void createTempRtStructFile(RtStructWriter rtsw) throws Exception
    {

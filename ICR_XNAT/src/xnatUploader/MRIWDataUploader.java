@@ -68,6 +68,8 @@ import java.util.Map;
 import java.util.zip.DataFormatException;
 import javax.imageio.ImageIO;
 import org.apache.log4j.Logger;
+import org.dcm4che2.data.DicomObject;
+import org.dcm4che2.data.TransferSyntax;
 import org.dcm4che2.io.DicomOutputStream;
 import org.w3c.dom.Document;
 import xmlUtilities.DelayedPrettyPrinterXmlWriter;
@@ -470,46 +472,87 @@ public class MRIWDataUploader extends QCAssessmentDataUploader
          reportError(ex, "create input catalog file");
       }
       
-      auxiliaryFiles.add(catFile);
-      auxFileFormats.add("INPUT_CATALOG_XML");
+      if (!errorOccurred)
+		{
+			XNATResourceFile rf	= new XNATResourceFile();
+			rf.content				= "FILE_CATALOGUE";
+			rf.description			= "catalogue of primary data files contributing to this region-of-interest";
+			rf.format				= "XML";
+			rf.file					= catFile;
+			rf.label					= "INPUT_CATALOGUE";
+			auxiliaryFiles.add(rf);
+		}
    }
    
    
    
-   /**
-    * Create additional thumbnail files for upload with the MRIW object set.
+   @Override
+	public void createPrimaryResourceFile()
+	{
+		primaryFile					= new XNATResourceFile();
+		primaryFile.content		= "EXTERNAL";
+		primaryFile.description	= "MRIW file created in an external application";
+		primaryFile.format		= "XML";
+		primaryFile.file			= uploadFile;
+		primaryFile.label			= "MRIW_OUTPUT";
+	}
+   
+	
+	
+	/**
+    * Create additional thumbnail files and RTStruct file for upload with the
+	 * MRIW object.
     */
    @Override
-   public void createAuxiliaryFiles()
-   {      
+   public void createAuxiliaryResourceFiles()
+   {
+		String fileSep    = System.getProperty("file.separator");
+      String filePrefix = XNATGUI.getHomeDir() + "temp" + fileSep + XNATAccessionID;
       try
       {
          ContourRenderer cr = new ContourRenderer(mriw);
          ArrayList<BufferedImage> thumbnails = cr.createImages();
-      
-         String fileSep    = System.getProperty("file.separator");
-         String filePrefix = XNATGUI.getHomeDir() + "temp" + fileSep 
-                                       + XNATAccessionID + "_MRIW_ROI_thumbnail_";
+			String thumbnailFile = filePrefix + "_MRIW_ROI_thumbnail_";
+
          for (int i=0; i<thumbnails.size(); i++)
          {
-            File outputFile = new File(filePrefix + i);
+            File outputFile = new File(thumbnailFile + i);
             ImageIO.write(thumbnails.get(i), "png", outputFile);
-            auxiliaryFiles.add(outputFile);
-            auxFileFormats.add("MRIW_THUMBNAIL_PNG");
+            XNATResourceFile rf	= new XNATResourceFile();
+				rf.content				= "GENERATED";
+				rf.description			= "thumbnail image containing ROI contour";
+				rf.format				= "PNG";
+				rf.file					= outputFile;
+				rf.label					= "MRIW_THUMBNAIL";
+            auxiliaryFiles.add(rf);
          }
       }
       catch (Exception ex)
       {
          reportError(ex, "create MRIW thumbnail file");
-      }     
+      }
+		
+		DicomOutputStream dos = null;
+		DicomObject       rts;
+		try
+		{
+			dos = new DicomOutputStream(
+						new FileOutputStream(
+							new File(filePrefix + "MRIW_RT-STRUCT.dcm")));
+			rts = mriw.createDICOM();
+			dos.writeItem(rts, TransferSyntax.ExplicitVRLittleEndian);
+		}
+		catch (Exception ex)
+		{
+			reportError(ex, "create RT-STRUCT from DICOM");
+		}
+		finally
+		{
+			try {if (dos != null) dos.close();} catch (IOException exIO) {}
+		}
    }
       
    
-   @Override
-   public String getFileFormat()
-   {
-      return "MRIW_XML";
-   }
    
    
    @Override

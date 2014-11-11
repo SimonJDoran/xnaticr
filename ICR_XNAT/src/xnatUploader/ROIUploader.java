@@ -82,6 +82,8 @@ public class ROIUploader extends QCAssessmentDataUploader
    protected RTROIObservation             roiObs;
    protected SortedMap<String, String>    fileSOPMap;
    protected ArrayList<String>            associatedRoiSetIDs;
+	protected ArrayList<String>				seriesUIDs;      
+   protected ArrayList<String>				SOPInstanceUIDs;
    
    /**
     * Constructor for the ROIUploader. Note that the XNAT profile
@@ -154,7 +156,7 @@ public class ROIUploader extends QCAssessmentDataUploader
       // SOPInstanceUID to the list. However, this is very inefficient for our purposes
       // here. Most of the structureSetTime, the line below is just fine.
       seriesUIDs      = rts.seriesUIDs;      
-      SOPInstanceUIDs = new ArrayList<String>();
+      SOPInstanceUIDs = new ArrayList<>();
       
       for (int i=0; i<roiCont.contourList.length; i++)
          for (int j=0; j<roiCont.contourList[i].imageList.length; j++)
@@ -250,7 +252,8 @@ public class ROIUploader extends QCAssessmentDataUploader
             ppXML.delayedWriteEntity("cat:entry")
                .delayedWriteAttribute("URI", fileSOPMap.get(s))
                .delayedWriteAttribute("format", "DICOM")
-               .delayedWriteAttribute("content", "referenced contour image")
+               .delayedWriteAttribute("content", "RAW")
+					.delayedWriteAttribute("description", "referenced contour image")
             .delayedEndEntity();
          }
          ppXML.endEntity();
@@ -263,11 +266,25 @@ public class ROIUploader extends QCAssessmentDataUploader
       }
       
       if (!errorOccurred)
-      {
-         auxiliaryFiles.add(catFile);
-         auxFileFormats.add("ICR_UPLOADER_INPUT_CATALOG_XML");
-      }
+		{
+			XNATResourceFile rf	= new XNATResourceFile();
+			rf.content				= "FILE_CATALOGUE";
+			rf.description			= "catalogue of primary data files contributing to this region-of-interest";
+			rf.format				= "XML";
+			rf.file					= catFile;
+			rf.label					= "INPUT_CATALOGUE";
+			auxiliaryFiles.add(rf);
+		}
    }
+   
+   
+
+	@Override
+	public void createPrimaryResourceFile()
+	{
+		// There is no primary data file, because every ROI is the "child" of an
+		// ROISet, which is where the primary file is uploaded.
+	}
    
    
    
@@ -275,7 +292,7 @@ public class ROIUploader extends QCAssessmentDataUploader
     * Create additional thumbnail files for upload with the DICOM-RT structure set.
     */
    @Override
-   public void createAuxiliaryFiles()
+   public void createAuxiliaryResourceFiles()
    {
       try
       {
@@ -292,8 +309,14 @@ public class ROIUploader extends QCAssessmentDataUploader
          {
             File outputFile = new File(filePrefix + i + ".png");
             ImageIO.write(thumbnails.get(i), "png", outputFile);
-            auxiliaryFiles.add(outputFile);
-            auxFileFormats.add("RT_THUMBNAIL_PNG");
+				
+				XNATResourceFile rf	= new XNATResourceFile();
+				rf.content				= "GENERATED";
+				rf.description			= "thumbnail image containing ROI contour";
+				rf.format				= "PNG";
+				rf.file					= outputFile;
+				rf.label					= "RT_THUMBNAIL";
+            auxiliaryFiles.add(rf);
          }
       }
       catch (Exception ex)
@@ -340,7 +363,7 @@ public class ROIUploader extends QCAssessmentDataUploader
             dppXML.delayedWriteEntity("associatedRoiSetIDs");
             for (String s : associatedRoiSetIDs)
             {
-               dppXML.delayedWriteEntity("ID")
+               dppXML.delayedWriteEntity("assocRoiSetID")
                         .delayedWriteText(s)
                      .delayedEndEntity();
             }
@@ -478,14 +501,7 @@ public class ROIUploader extends QCAssessmentDataUploader
       catch (IOException exIO){{reportError(exIO, "write RT-STRUCT specific elements");}}
    }
    
-   
-   
-   @Override
-   public String getFileFormat()
-   {
-      return "ROI_XML";
-   }
-   
+	 
    
    @Override
    public String getRootElement()

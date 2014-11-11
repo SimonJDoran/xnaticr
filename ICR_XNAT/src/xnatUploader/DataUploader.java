@@ -54,8 +54,10 @@ import java.io.FileInputStream;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.Set;
 import java.util.zip.DataFormatException;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
@@ -74,8 +76,25 @@ import xnatUploader.InvestigatorList.Investigator;
 
 public abstract class DataUploader
 {
-   static    Logger                        logger = Logger.getLogger(DataUploader.class);
-   protected XMLUtilities                  XMLUtil;
+	static    Logger                        logger = Logger.getLogger(DataUploader.class);
+	
+	public class XNATResourceFile
+	{
+		protected File		file;
+		protected String	label;
+		protected String	format;
+		protected String	content;
+		protected String	description;
+		
+		public File getFile()
+		{
+			return file;
+		}
+	}
+	
+	protected XNATResourceFile					 primaryFile;
+	protected ArrayList<XNATResourceFile>   auxiliaryFiles;
+	protected XMLUtilities                  XMLUtil;
    protected XNATNamespaceContext          XNATns;
    protected XNATProfile                   xnprf;
    protected XNATRESTToolkit               xnrt;
@@ -85,11 +104,6 @@ public abstract class DataUploader
    protected Document                      resultDoc;
    protected Document                      doc;
    protected File                          uploadFile;
-   protected ArrayList<File>               auxiliaryFiles;
-   protected ArrayList<String>             auxFileFormats;
-   protected ArrayList<String>             studyUIDs;
-   protected ArrayList<String>             seriesUIDs;
-   protected ArrayList<String>             SOPInstanceUIDs;
    protected String                        date;
    protected String                        time;
    protected String                        XNATExperimentID;
@@ -121,8 +135,7 @@ public abstract class DataUploader
       XNATns          = new XNATNamespaceContext();
       xnrt            = new XNATRESTToolkit(this.xnprf);
       uploadStructure = new UploadStructure(getRootComplexType());
-      auxiliaryFiles  = new ArrayList<File>();
-      auxFileFormats  = new ArrayList<String>();
+      auxiliaryFiles  = new ArrayList<>();
    }
    
    
@@ -171,6 +184,50 @@ public abstract class DataUploader
    
    
    /**
+	 * Return the URL needed to create the relevant XNAT "object" (scan, assessor, etc.)
+    * @return a String containing the REST URL to which upload will occur
+	 */
+	public String getMetadataUploadCommand()
+	{
+		return getUploadRootCommand(XNATAccessionID) + "?inbody=true";
+	}
+	
+	
+	/**
+	 * Return a URL that defines the XNAT resource on the server into which
+	 * a given XNATResourceFile will be loaded.
+	 * @param rf the XNAT resource file to be uploaded
+    * @return a String containing the REST URL to which upload will occur
+	 */
+	protected String getResourceCreationCommand(XNATResourceFile rf)
+	{
+		return getUploadRootCommand(XNATAccessionID) + "/resources/"
+				  + rf.label
+				  + "?content="		+ rf.content
+				  + "&description="	+ rf.description
+				  + "@format="			+ rf.format
+				  + "&label="			+ rf.label
+				  + "&xsiType=xnat:resource";
+	}
+	
+
+	
+	/**
+	 * Create the XNAT resources on the server that form the structure into which
+ the primaryFile and auxiliary files are placed.
+	 * @param rf the XNAT resource file to be uploaded
+    * @return a String containing the REST URL to which upload will occur
+	 */
+	public String getRepositoryUploadCommand(XNATResourceFile rf)
+   {
+      return getUploadRootCommand(XNATAccessionID)
+					+ "/resources/"	+ rf.label
+					+ "/files/"			+ rf.file.getName()
+					+ "?inbody=true";
+   }
+	
+	
+	/**
     * Uploading data to XNAT is a two-stage process. First the metadata
     * are placed in the SQL tables of the PostgreSQL database, by uploading
     * a metadata XML document using REST. Then the data file itself is
@@ -194,11 +251,7 @@ public abstract class DataUploader
       
       try
       {
-         RESTCommand   = "/data/archive/projects/" + XNATProject
-                         + "/subjects/"            + XNATSubjectID
-                         + "/experiments/"         + XNATExperimentID
-                         + "/assessors/"           + XNATAccessionID;
-         
+         RESTCommand    = getMetadataUploadCommand();
          InputStream is = xnprf.doRESTPut(RESTCommand, metaDoc);
          int         n  = is.available();
          byte[]      b  = new byte[n];
@@ -222,18 +275,16 @@ public abstract class DataUploader
          errorOccurred = true;
          errorMessage = ex.getMessage();
          throw new XNATException(XNATException.FILE_UPLOAD, ex.getMessage());
-      }
-      
-              
+      }             
    }
    
    
    
-   public void uploadFileToRepository(File f, String format) throws XNATException
+   public void uploadResourceFileToRepository(XNATResourceFile rf) throws XNATException
    {
       try
       {
-         InputStream is = xnprf.doRESTPut(createRepositoryUploadCommand(f, format), f);
+         InputStream is = xnprf.doRESTPut(getRepositoryUploadCommand(rf));
          int         n  = is.available( );
          byte[]      b  = new byte[n];
          is.read(b, 0, n);
@@ -242,8 +293,7 @@ public abstract class DataUploader
          if (xnrt.XNATRespondsWithError(XNATUploadMessage))
             throw new XNATException(XNATException.FILE_UPLOAD,
                                     "XNAT generated the message:\n"
-                                    + XNATUploadMessage);
-         
+                                    + XNATUploadMessage);         
       }
       catch (Exception ex)
       {
@@ -256,12 +306,65 @@ public abstract class DataUploader
                   
          // TODO If there is an error here, what do we do about the XNAT
          // PostgreSQL database?
-      }
-              
+      }             
    }
    
    
-   /**
+  	/**
+	 * Create the XNAT resources corresponding to the types of data being
+	 * uploaded. This call will create a resource for the primaryFile data file
+ being uploaded and then a separate resource for each of the auxiliary
+ data formats. 
+	 */
+	public void createXNATResources() throws XNATException
+   {
+		ArrayList<XNATResourceFile> rfs = new ArrayList<>();
+		rfs.add(primaryFile);
+		for (XNATResourceFile rf: auxiliaryFiles) rfs.add(rf);
+		
+		Set<String> labels = new HashSet<>();
+
+		// Create a resource for each unique label in the set of files to be
+		// uploaded.
+		for (XNATResourceFile rf: rfs)
+		{
+			if (!labels.contains(rf.label))
+			{
+				labels.add(rf.label);
+				
+				try
+				{
+					InputStream is = xnprf.doRESTPut(getResourceCreationCommand(rf));
+					int         n  = is.available( );
+					byte[]      b  = new byte[n];
+					is.read(b, 0, n);
+					String XNATUploadMessage = new String(b);
+
+					if (xnrt.XNATRespondsWithError(XNATUploadMessage))
+						throw new XNATException(XNATException.RESOURCE_CREATE,
+														"XNAT generated the message:\n"
+														+ XNATUploadMessage);         
+				}
+				catch (Exception ex)
+				{
+					// Here we cater both for reporting the error by throwing an exception
+					// and by setting the error variables. When performing the upload via
+					// a SwingWorker, it is not easy to retrieve an Exception.
+					errorOccurred = true;
+					errorMessage = ex.getMessage();
+					throw new XNATException(XNATException.RESOURCE_CREATE, errorMessage);
+
+					// TODO If there is an error here, what do we do about the XNAT
+					// PostgreSQL database?
+				}              
+			}
+		}
+   }
+   
+
+
+   
+	/**
     * This is the method called by the upload worker thread.
     * @throws XNATException 
     */
@@ -269,21 +372,24 @@ public abstract class DataUploader
    {
       try
       {
+			if (uploadFile != null) createPrimaryResourceFile();
+			createAuxiliaryResourceFiles();
+			createXNATResources();
+			
+			
          if (uploadFile != null)
          {
-            uploadFileToRepository(uploadFile, getFileFormat());
+            uploadResourceFileToRepository(primaryFile);
             if (errorOccurred)
                throw new XNATException(XNATException.FILE_UPLOAD, errorMessage);
          }
-         
-         createAuxiliaryFiles();
-         for (int i=0; i<auxiliaryFiles.size(); i++)
-         {
-            uploadFileToRepository(auxiliaryFiles.get(i), auxFileFormats.get(i));
-            if (errorOccurred)
-               throw new XNATException(XNATException.FILE_UPLOAD, errorMessage);
-            auxiliaryFiles.get(i).delete();
-         }
+			
+			for (XNATResourceFile af : auxiliaryFiles) {
+				uploadResourceFileToRepository(af);
+				af.getFile().delete();
+				if (errorOccurred)
+					throw new XNATException(XNATException.FILE_UPLOAD, errorMessage);
+			}
       }
       catch (Exception ex)
       {
@@ -291,9 +397,9 @@ public abstract class DataUploader
       }
       
    }
-
-
-   
+	
+	
+	
    /**
     * Open and read the specified file.
     * Note that the default type of file is XML, but this method will be over-
@@ -510,13 +616,24 @@ public abstract class DataUploader
 
    
    /**
-    * Create auxiliary files. These are additional files generated by the
-    * uploader - typically snapshots for quick visualisation - and will be
-    * uploaded to XNAT at the same time as the actual data object.
+    * Create primaryFile files. All files uploaded to the XNAT repository need to
+ be created within the context of an XNAT resource. This method manages
+ the setting of resource attributes label, format, content and description
+ for the primaryFile file being uploaded.
     */
-   protected abstract void createAuxiliaryFiles();
-   
-   
+   protected abstract void createPrimaryResourceFile();
+	
+	
+	/**
+    * Create auxiliary resource files. These are additional files generated by the
+    * uploader - typically snapshots for quick visualisation - and will be
+    * uploaded to XNAT at the same time as the actual data object. This method
+	 * both creates the auxiliary files and manages the setting of resource
+	 * attributes label, format, content and description
+    */
+   protected abstract void createAuxiliaryResourceFiles();
+	
+	
    /**
     * Add listeners for the editable fields. Allow the flexibility for each
     * concrete class to define its own fields to watch.
@@ -537,51 +654,23 @@ public abstract class DataUploader
     */
    public abstract String getRootComplexType();
    
-   
-   /**
-    * Return an identifier for the format in which data will be uploaded.
-    * This will appear in the relevant XNAT catalog file.
-    * @return format name as a String
-    */
-   public abstract String getFileFormat();
-   
-   
   
    /**
-    * Create the REST command required for uploading a data file.
-    * @param f the file to be uploaded
-    * @param fmt the name of the format
-    * @return a String containing the REST URL to which upload will occur
+    * Create the root of the REST command required for uploading a data file,
+	 * creating resources, etc.
+    * @param uploadItem the name of the item being processed
+    * @return a String containing the root of the REST URL to which upload will occur
     */
-   public String createRepositoryUploadCommand(File f, String fmt)
-   {
-      return "/REST/projects/" + XNATProject
-             + "/subjects/"    + XNATSubjectID
-             + "/experiments/" + XNATExperimentID
-             + "/assessors/"   + currentLabel
-             + "/files/"       + f.getName()
-             + "?format="      + fmt
-             + "&inbody=true";
-   }
-   
-   
-   /**
-    * Create the REST command required for uploading the XML metadata.
-    * Uploading data files into XNAT has two stages: (1) upload the file to
-    * the repository; (2) upload the metadata as an XML file, which is transformed
-    * by XNAT into entries in the various SQL tables.
-    * 
-    * @return the required REST URL (minus the hostname) as a String
-    */
-   public abstract String createMetadataUploadCommand();
-
-
+   public abstract String getUploadRootCommand(String uploadItem);
+	
+  
    
    /**
     * Create the XML that is uploaded to XNAT and contains all the metadata
     * that will go into the PostgreSQL database.
     * 
     * @return an XNAT-compatible metadata XML Document
+	 * @throws java.util.zip.DataFormatException
     */
    public abstract Document createMetadataXML() throws DataFormatException;
    

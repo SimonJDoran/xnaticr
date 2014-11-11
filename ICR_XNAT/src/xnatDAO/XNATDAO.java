@@ -66,6 +66,8 @@ import java.util.Vector;
 import java.util.concurrent.ExecutionException;
 import javax.swing.*;
 import javax.swing.event.*;
+import javax.swing.table.TableColumnModel;
+import javax.swing.table.TableModel;
 import javax.swing.tree.MutableTreeNode;
 import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
@@ -86,6 +88,8 @@ public final class XNATDAO extends XNATGUI
    static  XNATDAO                    singletonXNATDAO     = null;
    static  Logger                     logger               = Logger.getLogger(XNATDAO.class);
    private String[]                   tableColumns         = null;
+	private String[]                   outputColumnHeadings;
+	private String[][]                 outputColumnValues;
    private int                        nTableColumns;
    private int                        returnCode;
    private RESTSearchWorker           searchWorker;
@@ -479,9 +483,42 @@ public final class XNATDAO extends XNATGUI
 
       return dir;
    }
+	
+	
+	/**
+	 * External API: retrieve the entries in the tree table for the nth selection
+	 * @param n the number of the selection
+	 * @return a String array containing all the table entries
+	 */
+	public String[] getTableEntriesForSelection(int n)
+	{
+		return outputColumnValues[n];
+	}
 
+	
 
-   
+/**
+	 * External API: retrieve the entries in the tree table for the items selected
+	 * @return a String array containing all the table entries
+	 */
+	public String[][] getTableEntriesForAllSelections()
+	{
+		return outputColumnValues;
+	}
+
+	
+
+/**
+	 * External API: retrieve the column headings for the tree table
+	 * @return a String array containing all the table entries.
+	 */
+	public String[] getTableColumnHeadings()
+	{
+		return outputColumnHeadings;
+	}
+	
+	
+	
    /**
     * External API: Set profile programmatically
     * Returns silently if the supplied profile does not match any in the list.
@@ -1711,10 +1748,11 @@ public final class XNATDAO extends XNATGUI
       // 2. When we sort the columns the row number in the user view is not
       // the same as the row number in the model and we do not want to get
       // all the files again just because the position of the row has changed.
-      int firstModelRow = dAOTreeTable1.getOutline()
-                                  .convertRowIndexToModel(evt.getFirstIndex());
-      int lastModelRow  = dAOTreeTable1.getOutline()
-                                  .convertRowIndexToModel(evt.getLastIndex());
+		Outline     outline = dAOTreeTable1.getOutline();
+		TableModel  model = outline.getModel();
+		
+      int        firstModelRow = outline.convertRowIndexToModel(evt.getFirstIndex());
+      int        lastModelRow  = outline.convertRowIndexToModel(evt.getLastIndex());
       
       if ((oldFirstRow == firstModelRow) && (oldLastRow  == lastModelRow))
       {
@@ -1723,6 +1761,20 @@ public final class XNATDAO extends XNATGUI
       }
       oldFirstRow = firstModelRow;
       oldLastRow  = lastModelRow;
+		
+		// Set variables to be returned as part of the external API.
+		int nCols   = model.getColumnCount();
+		int nRows   = lastModelRow - firstModelRow + 1;
+		outputColumnHeadings = new String[nCols];
+		outputColumnValues   = new String[nRows][nCols];
+		for (int i=0; i<nCols; i++)
+		{
+			outputColumnHeadings[i] = model.getColumnName(i);
+			for (int j=0; j<nRows; j++)
+			{
+				outputColumnValues[j][i] = model.getValueAt(j+firstModelRow, i).toString();
+			}
+		}
       
       if (downloadJProgressBar.isVisible()
           && (!daoo.getStatus().equals("Download cancelled")))
@@ -1730,7 +1782,8 @@ public final class XNATDAO extends XNATGUI
          daoo.cancel(true);
       }
       
-      XNATProfile xnprf = profileList.getCurrentProfile();
+      // Retrieve the data.
+		XNATProfile xnprf = profileList.getCurrentProfile();
       if (!xnprf.isConnected()) xnprf.connectWithAuthentication(XNATDAO.this);
       if (!xnprf.isConnected()) return;
       populateProfileJComboBox();

@@ -453,6 +453,7 @@ public abstract class QCAssessmentDataUploader extends DataUploader
              (!XNATScanID.get(0).equals(""));
    }
    
+	
    
    @Override
    public String[] getRequiredFields()
@@ -460,13 +461,15 @@ public abstract class QCAssessmentDataUploader extends DataUploader
       return new String[]{"Label", "Note"};
    }
    
+	
    
    @Override
-   public String createMetadataUploadCommand()
+   public String getUploadRootCommand(String uploadItem)
    {
-      return "/data/archive/projects" + XNATProject
-             + "/experiments/"        + XNATExperimentID
-             + "/assessors/"          + currentLabel;
+		return "/data/archive/projects/" + XNATProject
+             + "/subjects/"            + XNATSubjectID
+             + "/experiments/"         + XNATExperimentID
+             + "/assessors/"           + uploadItem;
    }
 
 

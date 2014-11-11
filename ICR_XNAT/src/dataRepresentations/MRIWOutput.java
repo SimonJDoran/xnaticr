@@ -38,7 +38,7 @@
 * Java class: MRIWResultSet.java
 * First created on Jul 26, 2012 at 3:58:38 PM
 * 
-* Define a representation of the MRIResultSet, including methods to
+* Defines a representation of the MRIResultSet, including methods to
 * read the data in from an XML file.
 *********************************************************************/
 
@@ -270,7 +270,7 @@ public class MRIWOutput extends DataRepresentation implements RtStructWriter
    
    /**
     * This constructor is private, because the public creation of these objects
-    * occurs via a call to MRIOutput.getInstanceFromFile.
+    * occurs via a call to MRIOutput.getInstanceFromXML.
     */
    private MRIWOutput()
    {

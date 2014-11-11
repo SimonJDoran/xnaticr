@@ -97,22 +97,6 @@ public class ParametricImageUploader extends DataUploader
    }
 
 
-   @Override
-   public String getFileFormat()
-   {
-      return "PARAMETRIC_IMAGE_XML";
-   }
-   
-
-
-   @Override
-   public String createMetadataUploadCommand()
-   {
-      return "/REST/projects"  + XNATProject
-             + "/experiments/" + XNATExperimentID
-             + "/assessors/"   + getStringField("xnat:qcAssessmentData/label");
-   }
-
 
    /**
     * Create the XML that is uploaded to XNAT and contains all the metadata
@@ -127,7 +111,29 @@ public class ParametricImageUploader extends DataUploader
    
    
    @Override
-   public void createAuxiliaryFiles()
+	public void createPrimaryResourceFile()
+	{
+		primaryFile					= new XNATResourceFile();
+		primaryFile.content		= "EXTERNAL";
+		primaryFile.description	= "parametric image file created in an external application";
+		primaryFile.format		= "???";
+		primaryFile.file			= uploadFile;
+		primaryFile.label			= "Defined in subclass";
+	}
+	
+	
+	   @Override
+   public String getUploadRootCommand(String uploadItem)
+   {
+		return "/data/archive/projects/" + XNATProject
+             + "/subjects/"            + XNATSubjectID
+             + "/experiments/"         + XNATExperimentID
+             + "/?????/"           + uploadItem;
+   }
+	
+	
+	@Override
+   public void createAuxiliaryResourceFiles()
    {
       
    }
