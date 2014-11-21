@@ -319,24 +319,24 @@ public abstract class QCAssessmentDataUploader extends DataUploader
          // create new files (such as thumbnails) and these are placed in the
          // repository by the XNAT Uploader. XNAT automatically records all
          // new files uploaded in its own catalog file.
-         createInputCatalogFile();
-         dppXML.writeEntity("in")
-                  .writeEntity("file")
-                     .writeEntity("tags")
-                        .writeEntity("tag")
-                           .writeAttribute("name", "URI")
-                           .writeText("input_file_catalog.xml")
-                        .endEntity()
-                        .writeEntity("tag")
-                           .writeAttribute("name", "format")
-                           .writeText("ICR_XNAT_UPLOADER_INPUT_CATALOG_XML")
-                        .endEntity()
-                     .endEntity()
-                  .endEntity()
-               .endEntity()
-               .writeEntity("imageSession_ID")
-                  .writeText(XNATExperimentID)
-               .endEntity();
+//         createInputCatalogFile();
+//         dppXML.writeEntity("in")
+//                  .writeEntity("file")
+//                     .writeEntity("tags")
+//                        .writeEntity("tag")
+//                           .writeAttribute("name", "URI")
+//                           .writeText(XNATAccessionID +"_input_catalogue.xml")
+//                        .endEntity()
+//                        .writeEntity("tag")
+//                           .writeAttribute("name", "format")
+//                           .writeText("XML")
+//                        .endEntity()
+//                     .endEntity()
+//                  .endEntity()
+//               .endEntity()
+//               .writeEntity("imageSession_ID")
+//                  .writeText(XNATExperimentID)
+//               .endEntity();
                                 
       } 
    
@@ -344,15 +344,87 @@ public abstract class QCAssessmentDataUploader extends DataUploader
    }
              
            
-   /**
-    * Allow subclasses of QCAssessmentData to write out data on the input files used
-    * by the application whose data we are uploading.
+	
+	/**
+    * Create an XML representation of the metadata relating to the input files
+    * referred to and output files created by the application whose data we are
+    * uploading.
     */
-   protected abstract void createInputCatalogFile();
+   protected void createInputCatalogueFile(String format, String content, String description)
+   {      
+      String homeDir       = System.getProperty("user.home");
+      String fileSep       = System.getProperty("file.separator");
+      String XNAT_DAO_HOME = homeDir + fileSep + ".XNAT_DAO" + fileSep;
+      String catFilename   = XNAT_DAO_HOME + "temp" + fileSep 
+                              + XNATAccessionID + "_input_catalogue.xml";
+      File   catFile       = new File(catFilename);
+      
+      try
+      {
+         File parent = catFile.getParentFile();
+         if (!parent.exists()) parent.mkdirs();
+         
+         DelayedPrettyPrinterXmlWriter ppXML
+              = new DelayedPrettyPrinterXmlWriter(
+                   new SimpleXmlWriter(
+                      new FileWriter(catFile)));
+         
+         ppXML.setIndent("   ")
+               .writeXmlVersion()
+               .writeEntity("cat:Catalog")
+               .writeAttribute("xmlns:cat", "http://nrg.wustl.edu/catalog")
+               .writeAttribute("xmlns:xsi", "http://www.w3.org/2001/XMLSchema-instance");
+               
+              
+         // Now add the files, using the "delayed" method so that an empty
+         // "cat:entries" section is not written if there are not files.
+         ArrayList<String> catEntries = getInputCatEntries();
+			ppXML.writeEntity("cat:entries");
+         
+         for (String fileURI : catEntries)
+         {         
+            ppXML.delayedWriteEntity("cat:entry")
+               .delayedWriteAttribute("URI", fileURI)
+               .delayedWriteAttribute("format", format)
+               .delayedWriteAttribute("content", content)
+					.delayedWriteAttribute("description", description)
+            .delayedEndEntity();
+         }
+         ppXML.endEntity();
+         ppXML.endEntity();
+         ppXML.close();
+      }
+      catch (Exception ex)
+      {
+         reportError(ex, "create input catalogue file");
+      }
+      
+      if (!errorOccurred)
+		{
+			XNATResourceFile rf	= new XNATResourceFile();
+			rf.content				= "FILE_CATALOGUE";
+			rf.description			= "catalogue of primary data files contributing to this region-of-interest";
+			rf.format				= "XML";
+			rf.file					= catFile;
+			rf.name					= "INPUT_CATALOGUE";
+			rf.inOut					= "in";
+			auxiliaryFiles.add(rf);
+		}
+   }
    
+
+	
+	/**
+	 * Get the list of files containing the input data used in the creation of this
+	 * XNAT assessor. Each subclass implements its own method for populating the
+	 * list returned.
+	 * @return 
+	 */
+   protected abstract ArrayList<String> getInputCatEntries();
    
-   
-   /**
+	
+	
+	/**
     *  Add the list of scans (which might potentially be empty).
     */
    protected void createScanListXML()

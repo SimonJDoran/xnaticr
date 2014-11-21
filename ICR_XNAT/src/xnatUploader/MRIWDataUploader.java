@@ -413,79 +413,21 @@ public class MRIWDataUploader extends QCAssessmentDataUploader
    }
    
    
-   /**
-    * Create an XML representation of the metadata relating to the input files
-    * referred to and output files created by the application whose data we are
-    * uploading.
-    */
-   @Override
-   protected void createInputCatalogFile()
-   {      
-      String homeDir        = System.getProperty("user.home");
-      String fileSep        = System.getProperty("file.separator");
-      String XNAT_DAO_HOME  = homeDir + fileSep + ".XNAT_DAO" + fileSep;
-      String catFilename    = XNAT_DAO_HOME + "temp" + fileSep 
-                              + XNATAccessionID + "_input_catalog.xml";
-      File   catFile        = new File(catFilename);
-      
-      try
-      {
-         DelayedPrettyPrinterXmlWriter ppXML
-              = new DelayedPrettyPrinterXmlWriter(
-                   new SimpleXmlWriter(
-                      new FileWriter(catFile)));
-         
-         ppXML.setIndent("   ")
-               .writeXmlVersion()
-               .writeEntity("cat:Catalog")
-               .writeAttribute("xmlns:cat", "http://nrg.wustl.edu/catalog")
-               .writeAttribute("xmlns:xsi", "http://www.w3.org/2001/XMLSchema-instance");
-               
-              
-         // Now add the files, using the "delayed" method so that an empty
-         // "cat:entries" section is not written if there are not files.
-         ppXML.delayedWriteEntity("cat:entries");
-         
-        
-         ppXML.delayedWriteEntity("cat:entry")
-            .delayedWriteAttribute("URI", mriw.inp.refFilename)
-            .delayedWriteAttribute("format", "DICOM")
-            .delayedWriteAttribute("content", "MRIW reference image")
-            .delayedWriteAttribute("ID", mriw.inp.refSOPInstanceUID)
-         .delayedEndEntity();
-         
-         for (int i=0; i<mriw.inp.dynFilenames.size(); i++)
-         {         
-            ppXML.delayedWriteEntity("cat:entry")
-               .delayedWriteAttribute("URI", mriw.inp.dynFilenames.get(i))
-               .delayedWriteAttribute("format", "DICOM")
-               .delayedWriteAttribute("content", "MRIW dynamic image")
-               .delayedWriteAttribute("ID", mriw.inp.dynSOPInstanceUIDs.get(i))
-            .delayedEndEntity();
-         }
-         
-         ppXML.delayedEndEntity();
-         ppXML.close();
-      }
-      catch (Exception ex)
-      {
-         reportError(ex, "create input catalog file");
-      }
-      
-      if (!errorOccurred)
-		{
-			XNATResourceFile rf	= new XNATResourceFile();
-			rf.content				= "FILE_CATALOGUE";
-			rf.description			= "catalogue of primary data files contributing to this region-of-interest";
-			rf.format				= "XML";
-			rf.file					= catFile;
-			rf.label					= "INPUT_CATALOGUE";
-			auxiliaryFiles.add(rf);
-		}
-   }
    
    
-   
+	/**
+	 * Get the list of files containing the input data used in the creation of this
+	 * XNAT assessor. 
+	 * @return ArrayList of String file names
+	 */
+	@Override
+   protected ArrayList<String> getInputCatEntries()
+	{
+		return mriw.inp.dynFilenames;
+	}
+	
+	
+	
    @Override
 	public void createPrimaryResourceFile()
 	{
@@ -494,7 +436,7 @@ public class MRIWDataUploader extends QCAssessmentDataUploader
 		primaryFile.description	= "MRIW file created in an external application";
 		primaryFile.format		= "XML";
 		primaryFile.file			= uploadFile;
-		primaryFile.label			= "MRIW_OUTPUT";
+		primaryFile.name			= "MRIW_OUTPUT";
 	}
    
 	
@@ -506,6 +448,8 @@ public class MRIWDataUploader extends QCAssessmentDataUploader
    @Override
    public void createAuxiliaryResourceFiles()
    {
+      createInputCatalogueFile("DICOM", "RAW", "image referenced by MRIW");
+		
 		String fileSep    = System.getProperty("file.separator");
       String filePrefix = XNATGUI.getHomeDir() + "temp" + fileSep + XNATAccessionID;
       try
@@ -523,7 +467,7 @@ public class MRIWDataUploader extends QCAssessmentDataUploader
 				rf.description			= "thumbnail image containing ROI contour";
 				rf.format				= "PNG";
 				rf.file					= outputFile;
-				rf.label					= "MRIW_THUMBNAIL";
+				rf.name					= "MRIW_THUMBNAIL";
             auxiliaryFiles.add(rf);
          }
       }

@@ -118,7 +118,7 @@ public class ParametricImageUploader extends DataUploader
 		primaryFile.description	= "parametric image file created in an external application";
 		primaryFile.format		= "???";
 		primaryFile.file			= uploadFile;
-		primaryFile.label			= "Defined in subclass";
+		primaryFile.name			= "Defined in subclass";
 	}
 	
 	

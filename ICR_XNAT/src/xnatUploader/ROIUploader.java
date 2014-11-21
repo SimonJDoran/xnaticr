@@ -169,6 +169,7 @@ public class ROIUploader extends QCAssessmentDataUploader
    {
       // Not needed.
    }
+	
    
    /**
     * Abstract method, so must be implemented. No support for reading from file.
@@ -212,73 +213,6 @@ public class ROIUploader extends QCAssessmentDataUploader
    }
    
    
-   /**
-    * Create an XML representation of the metadata relating to the input files
-    * referred to and output files created by the application whose data we are
-    * uploading.
-    */
-   @Override
-   protected void createInputCatalogFile()
-   {      
-      String homeDir       = System.getProperty("user.home");
-      String fileSep       = System.getProperty("file.separator");
-      String XNAT_DAO_HOME = homeDir + fileSep + ".XNAT_DAO" + fileSep;
-      String catFilename   = XNAT_DAO_HOME + "temp" + fileSep + "input_catalog.xml";
-      File   catFile       = new File(catFilename);
-      
-      try
-      {
-         File parent = catFile.getParentFile();
-         if (!parent.exists()) parent.mkdirs();
-         
-         DelayedPrettyPrinterXmlWriter ppXML
-              = new DelayedPrettyPrinterXmlWriter(
-                   new SimpleXmlWriter(
-                      new FileWriter(catFile)));
-         
-         ppXML.setIndent("   ")
-               .writeXmlVersion()
-               .writeEntity("cat:Catalog")
-               .writeAttribute("xmlns:cat", "http://nrg.wustl.edu/catalog")
-               .writeAttribute("xmlns:xsi", "http://www.w3.org/2001/XMLSchema-instance");
-               
-              
-         // Now add the files, using the "delayed" method so that an empty
-         // "cat:entries" section is not written if there are not files.
-         ppXML.writeEntity("cat:entries");
-         
-         for (String s : SOPInstanceUIDs)
-         {         
-            ppXML.delayedWriteEntity("cat:entry")
-               .delayedWriteAttribute("URI", fileSOPMap.get(s))
-               .delayedWriteAttribute("format", "DICOM")
-               .delayedWriteAttribute("content", "RAW")
-					.delayedWriteAttribute("description", "referenced contour image")
-            .delayedEndEntity();
-         }
-         ppXML.endEntity();
-         ppXML.endEntity();
-         ppXML.close();
-      }
-      catch (Exception ex)
-      {
-         reportError(ex, "create input catalog file");
-      }
-      
-      if (!errorOccurred)
-		{
-			XNATResourceFile rf	= new XNATResourceFile();
-			rf.content				= "FILE_CATALOGUE";
-			rf.description			= "catalogue of primary data files contributing to this region-of-interest";
-			rf.format				= "XML";
-			rf.file					= catFile;
-			rf.label					= "INPUT_CATALOGUE";
-			auxiliaryFiles.add(rf);
-		}
-   }
-   
-   
-
 	@Override
 	public void createPrimaryResourceFile()
 	{
@@ -294,7 +228,9 @@ public class ROIUploader extends QCAssessmentDataUploader
    @Override
    public void createAuxiliaryResourceFiles()
    {
-      try
+      createInputCatalogueFile("DICOM", "RAW", "referenced contour image");
+		
+		try
       {
          ContourRenderer cr = new ContourRenderer(rts, ssRoi.correspondingROIContour);
          ArrayList<BufferedImage> thumbnails = cr.createImages();
@@ -315,7 +251,8 @@ public class ROIUploader extends QCAssessmentDataUploader
 				rf.description			= "thumbnail image containing ROI contour";
 				rf.format				= "PNG";
 				rf.file					= outputFile;
-				rf.label					= "RT_THUMBNAIL";
+				rf.name					= "RT_THUMBNAIL";
+				rf.inOut					= "out";
             auxiliaryFiles.add(rf);
          }
       }
@@ -324,11 +261,24 @@ public class ROIUploader extends QCAssessmentDataUploader
          reportError(ex, "create RT thumbnail file");
       }      
    }
+	
+	
+	
+	/**
+	 * Get the list of files containing the input data used in the creation of this
+	 * XNAT assessor. 
+	 * @return Array list of String filenames
+	 */
+   protected ArrayList<String> getInputCatEntries()
+	{
+		ArrayList<String> fileURIs = new ArrayList<>();
+		for (String s : SOPInstanceUIDs) fileURIs.add(fileSOPMap.get(s));
+		
+		return fileURIs;
+	}
    
-           
    
-   
-   
+            
    /**
     * Create parts of the metadata XML file that are specific to this
     * particular subclass. Common parts of the XML file are handled by

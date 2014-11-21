@@ -364,70 +364,22 @@ public class RTStructureSetUploader extends QCAssessmentDataUploader
          
    }
    
-
-
-   /**
-    * Create an XML representation of the metadata relating to the input files
-    * referred to and output files created by the application whose data we are
-    * uploading.
-    */
-   @Override
-   protected void createInputCatalogFile()
-   {      
-      String homeDir        = System.getProperty("user.home");
-      String fileSep        = System.getProperty("file.separator");
-      String XNAT_DAO_HOME  = homeDir + fileSep + ".XNAT_DAO" + fileSep;
-      String catFilename    = XNAT_DAO_HOME + "temp" + fileSep 
-                              + XNATAccessionID + "_input_catalog.xml";
-      File   catFile        = new File(catFilename);
-      
-      try
-      {
-         DelayedPrettyPrinterXmlWriter ppXML
-              = new DelayedPrettyPrinterXmlWriter(
-                   new SimpleXmlWriter(
-                      new FileWriter(catFile)));
-         
-         ppXML.setIndent("   ")
-               .writeXmlVersion()
-               .writeEntity("cat:Catalog")
-               .writeAttribute("xmlns:cat", "http://nrg.wustl.edu/catalog")
-               .writeAttribute("xmlns:xsi", "http://www.w3.org/2001/XMLSchema-instance");
-               
-              
-         // Now add the files, using the "delayed" method so that an empty
-         // "cat:entries" section is not written if there are not files.
-         ppXML.delayedWriteEntity("cat:entries");
-         
-         Set<String> ks = rts.fileSOPMap.keySet();
-         for (String s : ks)
-         {         
-            ppXML.delayedWriteEntity("cat:entry")
-               .delayedWriteAttribute("URI", rts.fileSOPMap.get(s))
-               .delayedWriteAttribute("format", "DICOM")
-               .delayedWriteAttribute("content", "RAW")
-					.delayedWriteAttribute("description", "referenced contour image")	  
-            .delayedEndEntity();
-         }
-         ppXML.delayedEndEntity();
-         ppXML.close();
-      }
-      catch (Exception ex)
-      {
-         reportError(ex, "create input catalog file");
-      }
-      
-      if (XNATAccessionID != null)
-      {
-			XNATResourceFile rf	= new XNATResourceFile();
-			rf.content				= "FILE_CATALOGUE";
-			rf.description			= "catalogue of primary data files contributing to uploaded RT-STRUCT file";
-			rf.format				= "XML";
-			rf.file					= catFile;
-			rf.label					= "INPUT_CATALOGUE";
-         auxiliaryFiles.add(rf);
-      }
-   }
+	
+	
+	/**
+	 * Get the list of files containing the input data used in the creation of this
+	 * XNAT assessor. 
+	 * @return ArrayList of String file names
+	 */
+	@Override
+   protected ArrayList<String> getInputCatEntries()
+	{
+		ArrayList<String>	fileURIs	= new ArrayList<>();
+		Set<String>			ks			= rts.fileSOPMap.keySet();
+      for (String s : ks) fileURIs.add(rts.fileSOPMap.get(s));
+		
+		return fileURIs;
+	}
 	
 	
 	
@@ -439,7 +391,8 @@ public class RTStructureSetUploader extends QCAssessmentDataUploader
 		primaryFile.description	= "DICOM RT-STRUCT file created in an external application";
 		primaryFile.format		= "DICOM";
 		primaryFile.file			= uploadFile;
-		primaryFile.label			= "RT-STRUCT";
+		primaryFile.name			= "RT-STRUCT";
+		primaryFile.inOut			= "out";
 	}
    
    
@@ -450,12 +403,13 @@ public class RTStructureSetUploader extends QCAssessmentDataUploader
    @Override
    public void createAuxiliaryResourceFiles()
    {
-      // In the first instance, no auxiliary files are needed, since the
-      // referenced ROI objects contain the required thumbnails.
+      // In the first instance, the only auxiliary file needed is the
+		// input catalogue, since the referenced ROI objects already contain
+		// the required thumbnails.
       // TODO: Consider whether some composite visualisation is needed to
       // summarise all the ROI's making up the ROISet object.
+		createInputCatalogueFile("DICOM", "RAW", "referenced contour image");
    }
-   
    
    
    

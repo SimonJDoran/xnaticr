@@ -81,7 +81,8 @@ public abstract class DataUploader
 	public class XNATResourceFile
 	{
 		protected File		file;
-		protected String	label;
+		protected String  inOut;
+		protected String	name;
 		protected String	format;
 		protected String	content;
 		protected String	description;
@@ -201,13 +202,17 @@ public abstract class DataUploader
 	 */
 	protected String getResourceCreationCommand(XNATResourceFile rf)
 	{
-		return getUploadRootCommand(XNATAccessionID) + "/resources/"
-				  + rf.label
+		String s = getUploadRootCommand(XNATAccessionID) + "/resources/"
+				//  + rf.inOut			+ '/'
+				  + rf.name
 				  + "?content="		+ rf.content
 				  + "&description="	+ rf.description
-				  + "@format="			+ rf.format
-				  + "&label="			+ rf.label
-				  + "&xsiType=xnat:resource";
+				  + "&format="			+ rf.format
+				  + "&name="			+ rf.name;
+		
+		// Replace spaces in any of the query string parameters with + signs,
+		// conforming to the requirements in RFC3986.
+		return s.replace(" ", "+");
 	}
 	
 
@@ -221,7 +226,7 @@ public abstract class DataUploader
 	public String getRepositoryUploadCommand(XNATResourceFile rf)
    {
       return getUploadRootCommand(XNATAccessionID)
-					+ "/resources/"	+ rf.label
+					+ "/resources/"	+ rf.name
 					+ "/files/"			+ rf.file.getName()
 					+ "?inbody=true";
    }
@@ -284,7 +289,7 @@ public abstract class DataUploader
    {
       try
       {
-         InputStream is = xnprf.doRESTPut(getRepositoryUploadCommand(rf));
+         InputStream is = xnprf.doRESTPut(getRepositoryUploadCommand(rf), rf.getFile());
          int         n  = is.available( );
          byte[]      b  = new byte[n];
          is.read(b, 0, n);
@@ -319,18 +324,18 @@ public abstract class DataUploader
 	public void createXNATResources() throws XNATException
    {
 		ArrayList<XNATResourceFile> rfs = new ArrayList<>();
-		rfs.add(primaryFile);
+		if (primaryFile != null) rfs.add(primaryFile);
 		for (XNATResourceFile rf: auxiliaryFiles) rfs.add(rf);
 		
-		Set<String> labels = new HashSet<>();
+		Set<String> names = new HashSet<>();
 
 		// Create a resource for each unique label in the set of files to be
 		// uploaded.
 		for (XNATResourceFile rf: rfs)
 		{
-			if (!labels.contains(rf.label))
+			if (!names.contains(rf.name))
 			{
-				labels.add(rf.label);
+				names.add(rf.name);
 				
 				try
 				{

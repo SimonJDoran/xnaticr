@@ -205,68 +205,24 @@ public class AdeptDataUploader extends QCAssessmentDataUploader
       mdsp.populateJTextField("Associated XNAT image session ID", "");
       mdsp.populateJTextField("Note",                             "", true);
       mdsp.populateJTextField("Label",                            "", true);
-   }
-   
+   }   
    
 
 
   /**
-    * Create an XML representation of the metadata relating to the input files
-    * referred to and output files created by the application whose data we are
-    * uploading.
-    */
-   @Override
-   protected void createInputCatalogFile()
-   {      
-      String homeDir        = System.getProperty("user.home");
-      String fileSep        = System.getProperty("file.separator");
-      String XNAT_DAO_HOME  = homeDir + fileSep + ".XNAT_DAO" + fileSep;
-      String catFilename    = XNAT_DAO_HOME + "temp" + fileSep 
-                              + XNATAccessionID + "_input_catalog.xml";
-      File   catFile        = new File(catFilename);
-      
-      try
-      {
-         DelayedPrettyPrinterXmlWriter ppXML
-              = new DelayedPrettyPrinterXmlWriter(
-                   new SimpleXmlWriter(
-                      new FileWriter(catFile)));
-         
-         ppXML.setIndent("   ")
-               .writeXmlVersion()
-               .writeEntity("cat:Catalog")
-               .writeAttribute("xmlns:cat", "http://nrg.wustl.edu/catalog")
-               .writeAttribute("xmlns:xsi", "http://www.w3.org/2001/XMLSchema-instance");
-               
-              
-         // Now add the files, using the "delayed" method so that an empty
-         // "cat:entries" section is not written if there are not files.
-         ppXML.delayedWriteEntity("cat:entries");
-         
-         // TODO Implement the input catalog for ADEPT.
-         
-         ppXML.delayedEndEntity();
-         ppXML.close();
-      }
-      catch (Exception ex)
-      {
-         reportError(ex, "create input catalog file");
-      }
-      
-      if (!errorOccurred)
-		{
-			XNATResourceFile rf	= new XNATResourceFile();
-			rf.content				= "FILE_CATALOGUE";
-			rf.description			= "catalogue of primary data files contributing to this region-of-interest";
-			rf.format				= "XML";
-			rf.file					= catFile;
-			rf.label					= "INPUT_CATALOGUE";
-			auxiliaryFiles.add(rf);
-		}
-   }
-   
-   
-   
+	 * Get the list of files containing the input data used in the creation of this
+	 * XNAT assessor. 
+	 * @return ArrayList of String file names
+	 */
+	@Override
+   protected ArrayList<String> getInputCatEntries()
+	{
+		// TODO
+		return new ArrayList<>();
+	}
+	
+	
+	
    @Override
 	public void createPrimaryResourceFile()
 	{
@@ -275,7 +231,7 @@ public class AdeptDataUploader extends QCAssessmentDataUploader
 		primaryFile.description	= "ADEPT file created in an external application";
 		primaryFile.format		= "XML";
 		primaryFile.file			= uploadFile;
-		primaryFile.label			= "ADEPT_OUTPUT";
+		primaryFile.name			= "ADEPT_OUTPUT";
 	}
 	
 	
@@ -285,6 +241,8 @@ public class AdeptDataUploader extends QCAssessmentDataUploader
    @Override
    public void createAuxiliaryResourceFiles()
    {
+		createInputCatalogueFile("DICOM", "RAW", "image referenced by ADEPT");
+		
       String fileSep    = System.getProperty("file.separator");
       String filePrefix = XNATGUI.getHomeDir() + "temp" + fileSep + XNATAccessionID;
       try
@@ -302,7 +260,7 @@ public class AdeptDataUploader extends QCAssessmentDataUploader
 				rf.description			= "thumbnail image containing ROI contour";
 				rf.format				= "PNG";
 				rf.file					= outputFile;
-				rf.label					= "MRIW_THUMBNAIL";
+				rf.name					= "MRIW_THUMBNAIL";
             auxiliaryFiles.add(rf);
          }
       }
