@@ -274,6 +274,7 @@
       <searchableXNATElement alias="Note">icr:roiData/note</searchableXNATElement>
       <searchableXNATElement alias="ROI name">icr:roiData/roiName</searchableXNATElement>
       <searchableXNATElement alias="Description">icr:roiData/roiDescription</searchableXNATElement>
+		<searchableXNATElement alias="No. in structure set">icr:roiData/roiNumberInStructureSet</searchableXNATElement>
       <searchableXNATElement alias="Volume">icr:roiData/roiVolume</searchableXNATElement>
       <searchableXNATElement alias="Generation algorithm">icr:roiData/roiGenerationAlgorithm</searchableXNATElement>
       <searchableXNATElement alias="Generation description">icr:roiData/roiGenerationDescription</searchableXNATElement>

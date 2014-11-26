@@ -132,7 +132,7 @@ public class DAOOutput
       map.put("xnat:petScanData",   DICOMFileListWorker.class);
       map.put("icr:mriwOutputData", MRIWOutputFileListWorker.class);
 //      map.put("icr:roiSetData",     ROIFileListWorker.class);
-//      map.put("icr:roiData",        ROIFileListWorker.class);
+      map.put("icr:roiData",        ROIFileListWorker.class);
       
 //      if ((rootElement.equals("xnat:mrScanData"))  ||
 //          (rootElement.equals("xnat:ctScanData"))  ||

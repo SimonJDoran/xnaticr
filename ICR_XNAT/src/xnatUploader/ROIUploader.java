@@ -69,9 +69,19 @@ import dataRepresentations.RTStruct;
 import dataRepresentations.RTStruct.ROIContour;
 import dataRepresentations.RTStruct.RTROIObservation;
 import dataRepresentations.RTStruct.StructureSetROI;
+import exceptions.XNATException;
+import generalUtilities.Vector2D;
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.FileOutputStream;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.SortedMap;
+import java.util.Vector;
 import xmlUtilities.DelayedPrettyPrinterXmlWriter;
 import xnatDAO.XNATProfile;
+import xnatRestToolkit.XNATRESTToolkit;
+import static xnatUploader.RTStructureSetUploader.logger;
 
 
 public class ROIUploader extends QCAssessmentDataUploader
@@ -229,10 +239,10 @@ public class ROIUploader extends QCAssessmentDataUploader
    public void createAuxiliaryResourceFiles()
    {
       createInputCatalogueFile("DICOM", "RAW", "referenced contour image");
-		
+		Map<String, File> cachedImages = retrieveBaseImagesToCache();
 		try
       {
-         ContourRenderer cr = new ContourRenderer(rts, ssRoi.correspondingROIContour);
+         ContourRenderer cr = new ContourRenderer(rts, ssRoi.correspondingROIContour, cachedImages);
          ArrayList<BufferedImage> thumbnails = cr.createImages();
       
          String          homeDir        = System.getProperty("user.home");
@@ -451,7 +461,104 @@ public class ROIUploader extends QCAssessmentDataUploader
       catch (IOException exIO){{reportError(exIO, "write RT-STRUCT specific elements");}}
    }
    
-	 
+
+	protected Map<String, File> retrieveBaseImagesToCache()
+	{
+		ArrayList<String>     filenames = getInputCatEntries();
+		HashMap<String, File> fileMap   = new HashMap<>();
+		
+		String homeDir   = System.getProperty("user.home");
+      String fileSep   = System.getProperty("file.separator");
+		String cacheDir  = homeDir + fileSep + ".XNAT_DAO";
+
+		// Notice that we need to cater explicitly for the allowed possibility
+		// that a single structure set can reference base data from more than
+		// one scan.
+		int nDownloadFailures = 0;
+		for (int j=0; j<XNATScanID.size(); j++)
+		{
+			RESTCommand = "/data/archive/experiments/" + XNATExperimentID
+						         + "/scans/"              + XNATScanID.get(j)
+						         + "/resources/DICOM"
+						         + "/files"
+						         + "?format=xml";
+
+			Vector2D  resultSet;
+			try
+			{
+				resultSet = (new XNATRESTToolkit(xnprf)).RESTGetResultSet(RESTCommand);
+			}
+			catch(XNATException exXNAT)
+			{
+				return null;
+			}
+			
+			Vector<String> URI  = resultSet.getColumn(2);
+			for (int i=0; i<URI.size(); i++)
+			{
+				int pos     = URI.elementAt(i).lastIndexOf(fileSep);
+				String name = URI.elementAt(i).substring(pos+1);
+				if (filenames.contains(name))
+				{
+					// Build the local cache filename where the data will be stored.
+					// The directory structure is a bit long-winded, but should be
+					// easy to manage.
+					StringBuilder sb = new StringBuilder(cacheDir);
+					sb.append(URI.elementAt(i));
+					File cacheFile = new File(sb.toString());
+					File parent    = new File(cacheFile.getParent());
+
+					boolean success = true;
+					if (!(cacheFile.exists()))
+					{
+						// Retrieve the actual data and store it in the cache.
+						try
+						{
+							parent.mkdirs();
+							BufferedOutputStream bos
+								= new BufferedOutputStream(new FileOutputStream(cacheFile, true));
+
+							BufferedInputStream  bis
+								= new BufferedInputStream(xnprf.doRESTGet(URI.elementAt(i)));
+
+							byte[] buf = new byte[8192];
+
+							while (true)
+							{
+								int length = bis.read(buf);
+								if (length < 0) break;
+								bos.write(buf, 0, length);
+							}
+
+							logger.debug("Worker ID = " + this.toString() + " Downloaded " + cacheFile.toString());
+
+							try{bis.close();}
+							catch (IOException ignore) {;}
+
+							try{bos.close();}
+							catch (IOException ignore) {;}                                 
+
+						}
+						catch (Exception ex)
+						{
+							logger.warn("Failed to download " + cacheFile.getName());
+							nDownloadFailures++;
+							success = false;
+						}
+					}
+					
+					if (success) fileMap.put(name, cacheFile);
+				}				
+			}
+		}
+		if (nDownloadFailures != 0)
+		{
+			errorOccurred = true;
+			errorMessage  = "Problem retrieving " + nDownloadFailures +
+								 "base images from XNAT to generate required thumbnails";
+		}
+      return fileMap;
+	}	 
    
    @Override
    public String getRootElement()

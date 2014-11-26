@@ -64,9 +64,13 @@ import dataRepresentations.MRIWOutput;
 import dataRepresentations.RtStructWriter;
 import dataRepresentations.RTStruct;
 import generalUtilities.UIDGenerator;
+import generalUtilities.Vector2D;
+import java.util.Vector;
 import org.apache.log4j.Logger;
 import xmlUtilities.DelayedPrettyPrinterXmlWriter;
+import xnatDAO.DAOOutput;
 import xnatDAO.XNATGUI;
+import xnatRestToolkit.XNATRESTToolkit;
 
 
 public class RTStructureSetUploader extends QCAssessmentDataUploader
@@ -342,6 +346,11 @@ public class RTStructureSetUploader extends QCAssessmentDataUploader
       //         each ROI referred to by the structure set.
       // ----------------------------------------------------------    
       
+		if (errorOccurred)
+		{
+			throw new XNATException(XNATException.FILE_UPLOAD, errorMessage);
+		}
+		
       for (int i=0; i<rts.roiList.length; i++)
       {
          ru = new ROIUploader(rts, i, labelPrefix, uploadStructure);
@@ -363,7 +372,6 @@ public class RTStructureSetUploader extends QCAssessmentDataUploader
       }
          
    }
-   
 	
 	
 	/**
@@ -591,24 +599,25 @@ public class RTStructureSetUploader extends QCAssessmentDataUploader
    }
    
    
-   
-   protected void debugContourOutput() throws Exception
-   {
-      for (int i=0; i<rts.roiList.length; i++)
-      {
-         ContourRenderer cr = new ContourRenderer(rts,
-                 rts.roiContourList[rts.roiList[i].correspondingROIContour].referencedRoiNumber);
-         
-         ArrayList<BufferedImage> bi = cr.createImages();
-         for (int j=0; j<bi.size(); j++)
-         {
-            File outputFile = new File("/Users/simond/temp/ROI_test/ROI" + i
-                                       + "/contour_" + j + ".png");
-            outputFile.mkdirs();
-            ImageIO.write(bi.get(j), "png", outputFile);
-         }
-      }
-   }
+// This routine doesn't now work with the latest definition of ContourRenderer.
+//
+//   protected void debugContourOutput() throws Exception
+//   {
+//      for (int i=0; i<rts.roiList.length; i++)
+//      {
+//         ContourRenderer cr = new ContourRenderer(rts,
+//                 rts.roiContourList[rts.roiList[i].correspondingROIContour].referencedRoiNumber);
+//         
+//         ArrayList<BufferedImage> bi = cr.createImages();
+//         for (int j=0; j<bi.size(); j++)
+//         {
+//            File outputFile = new File("/Users/simond/temp/ROI_test/ROI" + i
+//                                       + "/contour_" + j + ".png");
+//            outputFile.mkdirs();
+//            ImageIO.write(bi.get(j), "png", outputFile);
+//         }
+//      }
+//   }
 	
 	
    

@@ -68,7 +68,9 @@ import dataRepresentations.RTStruct.ROIContour;
 import exceptions.XNATException;
 import java.awt.BasicStroke;
 import java.awt.geom.GeneralPath;
+import java.io.File;
 import java.util.ArrayList;
+import java.util.Map;
 import java.util.zip.DataFormatException;
 import org.dcm4che2.data.DicomObject;
 import xnatDAO.XNATProfile;
@@ -88,6 +90,7 @@ public class ContourRenderer
    static    Logger              logger = Logger.getLogger(ContourRenderer.class);
    private   static final int    THUMBNAIL_SIZE = 128;
    protected DataRepresentation  dr;
+	protected Map<String, File>   cachedImageFiles;
    protected float[]             pixelSpacing;
    protected float[]             dirCosines;
    protected float[]             topLeftPos;
@@ -95,8 +98,7 @@ public class ContourRenderer
    protected String              frameOfReferenceUID;
    protected boolean             coordsAsPixel;
    protected ArrayList<RContour> rcList;   
-
-      
+     
    
    /**
     * Constructor creates a new renderer of a given RTStruct object.
@@ -105,12 +107,14 @@ public class ContourRenderer
     * @param contourNumber integer value containing the number of the contour
     * to be rendered in list of contours represented by rts.
     */
-   public ContourRenderer(RTStruct rts, int contourNumber)
+   public ContourRenderer(RTStruct rts, int contourNumber,
+			                 Map<String, File> cachedImageFiles)
                          throws DataFormatException
    {
-      this.dr       = rts;
-      
-      ROIContour roiContour = rts.roiContourList[contourNumber];
+      this.dr               = rts;
+		this.cachedImageFiles = cachedImageFiles;
+		
+		ROIContour roiContour = rts.roiContourList[contourNumber];
       displayColour         = roiContour.roiDisplayColour;
       frameOfReferenceUID   = roiContour.frameOfReferenceUID;
       coordsAsPixel         = false;
@@ -187,7 +191,6 @@ public class ContourRenderer
    }
 	
 	
-	
 	public ArrayList<BufferedImage> createImages() throws Exception
    {
 
@@ -222,21 +225,11 @@ public class ContourRenderer
    {
       DicomObject bdo	= new BasicDicomObject();
       
-      try
+
+		try
       {
          String imageFilename = dr.fileSOPMap.get(imageUID);
-
-         String RESTCommand = "/data/archive/projects/" + dr.XNATProjectID
-                                 + "/subjects/"         + dr.XNATSubjectID
-                                 + "/experiments/"      + dr.XNATExperimentID
-                                 + "/scans/"            + dr.fileScanMap.get(imageUID)
-                                 + "/resources/DICOM"
-                                 + "/files/"            + imageFilename;
-
-         BufferedInputStream  bis
-                  = new BufferedInputStream(dr.xnprf.doRESTGet(RESTCommand));
-
-         DicomInputStream dis = new DicomInputStream(bis);
+         DicomInputStream dis = new DicomInputStream(cachedImageFiles.get(imageFilename));
          dis.readDicomObject(bdo, -1);
       }
       catch(Exception ex)
