@@ -17,14 +17,6 @@
       <DAO_subtype alias="Arbitrary image set">xnat:imageScanData</DAO_subtype>
    </DAO_datatype>
 
-   <DAO_datatype alias="2-D image">
-      <DAO_subtype alias="MR image">xnat:mrScanData</DAO_subtype>
-      <DAO_subtype alias="PET image">xnat:petScanData</DAO_subtype>
-      <DAO_subtype alias="CT image">xnat:ctScanData</DAO_subtype>
-      <DAO_subtype alias="Ultrasound image">xnat:usScanData</DAO_subtype>
-      <DAO_subtype alias="Any image">xnat:imageScanData</DAO_subtype>
-   </DAO_datatype>
-
    <DAO_datatype alias="MR Spectrum">
       <DAO_subtype alias="Any spectrum">xnat:mrsScanData</DAO_subtype>
       <DAO_subtype alias="1-D spectrum">xnat:mrsScanData</DAO_subtype>
@@ -45,25 +37,8 @@
    </DAO_datatype>
 
    <DAO_datatype alias="Regions-of-interest">
-      <DAO_subtype alias="DICOM-RT structure set">icr:roiSetData</DAO_subtype>
+      <DAO_subtype alias="Set of ROIs">icr:roiSetData</DAO_subtype>
       <DAO_subtype alias="Single ROI">icr:roiData</DAO_subtype>
-      <DAO_subtype alias="3D Slicer label map">icr:roiData</DAO_subtype>
-   </DAO_datatype>
-
-   <DAO_datatype alias="XNAT XML output">
-      <DAO_subtype alias="MR image scan XML">xnat:mrScanData</DAO_subtype>
-      <DAO_subtype alias="MR image session XML">xnat:mrSessionData</DAO_subtype>
-      <DAO_subtype alias="PET image scan XML">xnat:petScanData</DAO_subtype>
-      <DAO_subtype alias="PET image session XML">xnat:petSessionData</DAO_subtype>
-      <DAO_subtype alias="CT image scan XML">xnat:ctScanData</DAO_subtype>
-      <DAO_subtype alias="CT image session XML">xnat:ctSessionData</DAO_subtype>
-      <DAO_subtype alias="US image scan XML">xnat:usScanData</DAO_subtype>
-      <DAO_subtype alias="US image session XML">xnat:usSessionData</DAO_subtype>
-      <DAO_subtype alias="Image scan XML">xnat:imageScanData</DAO_subtype>
-      <DAO_subtype alias="Image session XML">xnat:imageSessionData</DAO_subtype>
-      <DAO_subtype alias="Reconstruction XML">xnat:reconstructedImageData</DAO_subtype>
-      <DAO_subtype alias="Reconstruction XML">xnat:qcAssessmentxnatData</DAO_subtype>
-      <DAO_subtype alias="Region-of-Interest XML">volumetricRegion</DAO_subtype>
    </DAO_datatype>
 
 </XNAT_DAO_returnDataTypes>

@@ -121,6 +121,7 @@ public final class XNATDAO extends XNATGUI
       downloadIcon = new DownloadIcon(submitQueryJButton);
       submitQueryJButton.setIcon(downloadIcon);
       populateCommonComponents();
+		populateOutputFormatsJComboBox();
       populateSettingsJComboBox();
       updateLeafComboBox();
       implementRestrictions();
@@ -1235,6 +1236,54 @@ public final class XNATDAO extends XNATGUI
 
 
    /**
+    * Using the contents of the file dataOutputFormats.xml included in the project JAR
+    * insert the different formats of output data that can be returned by the
+	 * Data Access Object into the combo box.
+    */
+	protected void populateOutputFormatsJComboBox()
+	{
+      DefaultComboBoxModel formatDcbm       = new DefaultComboBoxModel();
+      ArrayList<String>    forbiddenFormats = new ArrayList<String>(); 
+      outputFormatJComboBox.setModel(formatDcbm);
+
+      DAOOutputFormatsList ofl;
+      try
+      {
+         ofl = DAOOutputFormatsList.getSingleton();
+      }
+      catch (IOException exIO)
+      {
+         throw new RuntimeException(exIO.getMessage());
+      }
+
+      LinkedHashMap<String, Vector<String>> aliasMap = ofl.getDAOOutputAliases();
+
+      String subtype = (String) getDataSubtypeJComboBox().getSelectedItem();
+      Vector<String> formatAliases = aliasMap.get(subtype);
+      for (String format : formatAliases)
+      {
+         formatDcbm.addElement(format);
+         if (!formatIsSelectable(format)) forbiddenFormats.add(format); 
+      }
+      
+      // Now we need to grey out elements that are not selectable. This is mainly
+      // because various datatypes have not yet been implemented.
+      ColouredCellRenderer ccr =
+           new ColouredCellRenderer<String>(DAOConstants.NON_SELECTABLE_COLOUR);
+      ccr.setElementsForType(0, forbiddenFormats);
+      outputFormatJComboBox.setRenderer(ccr);
+      
+      // Select the first of the allowed elements.
+      for (int i=0; i<formatDcbm.getSize(); i++)
+         if (formatIsSelectable((String) formatDcbm.getElementAt(i)))
+         {            
+            outputFormatJComboBox.setSelectedIndex(i);
+            break;
+         }
+   }
+	
+	
+	/**
     * Take appropriate action when the chosen table settings change.
     * This involves either selecting different settings, adding new settings,
     * updating the current settings, or deleting the current settings.
@@ -1485,6 +1534,7 @@ public final class XNATDAO extends XNATGUI
    {
       dAOSearchCriteria1.changeSearchRootElement(subtype);
       leafDAOElementsComboBox.resetModel(subtype);
+		populateOutputFormatsJComboBox();
       updateLeafComboBox();
       setDefaultSearch();
       dAOTreeTable1.clearTreeTable();
@@ -1523,12 +1573,26 @@ public final class XNATDAO extends XNATGUI
           (subtype.equals("PET image set")) ||
           (subtype.equals("CT image set"))  ||
           (subtype.equals("MRIW output"))   ||
-          (subtype.equals("DICOM-RT structure set"))   ||
+          (subtype.equals("Set of ROIs"))   ||
           (subtype.equals("Single ROI")))
          return true;
       else return false;
    }
    
+
+	
+	public boolean formatIsSelectable(String format)
+   {
+      if ((format.equals("Source DICOM"))  ||
+          (format.equals("DICOM-RT structure set (one per ROI selected)")) ||
+          (format.equals("DICOM-RT structure set (all ROIs in single RT-STRUCT)"))  ||
+          (format.equals("DICOM-RT structure set"))   ||
+          (format.equals("Set of ROIs"))   ||
+          (format.equals("Single ROI")))
+         return true;
+      else return false;
+   }
+
 
 
    /**
@@ -1857,6 +1921,8 @@ public final class XNATDAO extends XNATGUI
       jScrollPane1 = new javax.swing.JScrollPane();
       jPanel4 = new javax.swing.JPanel();
       dAOSearchCriteria1 = new xnatDAO.DAOSearchCriteria();
+      outputFormatJComboBox = new javax.swing.JComboBox();
+      outputFormatJLabel = new javax.swing.JLabel();
       jPanel6 = new javax.swing.JPanel();
       jScrollPane2 = new javax.swing.JScrollPane();
       dAOTreeTable1 = new treeTable.DAOTreeTable();
@@ -1898,28 +1964,29 @@ public final class XNATDAO extends XNATGUI
       jPanel2Layout.setHorizontalGroup(
          jPanel2Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
          .add(jPanel2Layout.createSequentialGroup()
-            .add(31, 31, 31)
+            .add(16, 16, 16)
             .add(jLabel2)
-            .add(30, 30, 30)
-            .add(jPanel2Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.TRAILING)
+            .add(jPanel2Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
                .add(jPanel2Layout.createSequentialGroup()
+                  .add(18, 18, 18)
+                  .add(jPanel2Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                     .add(jPanel2Layout.createSequentialGroup()
+                        .add(6, 6, 6)
+                        .add(versionJLabel))
+                     .add(titleLabel)))
+               .add(jPanel2Layout.createSequentialGroup()
+                  .add(33, 33, 33)
                   .add(selectDataJButton)
                   .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                  .add(cancelJButton))
-               .add(jPanel2Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                  .add(versionJLabel)
-                  .add(titleLabel)))
-            .add(37, 37, 37)
+                  .add(cancelJButton)))
+            .add(29, 29, 29)
             .add(thumbnailPreview1, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 142, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-            .addContainerGap(227, Short.MAX_VALUE))
+            .addContainerGap(256, Short.MAX_VALUE))
       );
       jPanel2Layout.setVerticalGroup(
          jPanel2Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
          .add(jPanel2Layout.createSequentialGroup()
             .add(jPanel2Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-               .add(jPanel2Layout.createSequentialGroup()
-                  .add(38, 38, 38)
-                  .add(jLabel2))
                .add(jPanel2Layout.createSequentialGroup()
                   .add(28, 28, 28)
                   .add(jPanel2Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
@@ -1931,7 +1998,10 @@ public final class XNATDAO extends XNATGUI
                         .add(32, 32, 32)
                         .add(jPanel2Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
                            .add(selectDataJButton)
-                           .add(cancelJButton))))))
+                           .add(cancelJButton)))))
+               .add(jPanel2Layout.createSequentialGroup()
+                  .add(36, 36, 36)
+                  .add(jLabel2)))
             .addContainerGap(29, Short.MAX_VALUE))
       );
 
@@ -1989,6 +2059,10 @@ public final class XNATDAO extends XNATGUI
 
       jScrollPane1.setViewportView(jPanel4);
 
+      outputFormatJComboBox.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+
+      outputFormatJLabel.setText("Output format");
+
       org.jdesktop.layout.GroupLayout jPanel5Layout = new org.jdesktop.layout.GroupLayout(jPanel5);
       jPanel5.setLayout(jPanel5Layout);
       jPanel5Layout.setHorizontalGroup(
@@ -1997,23 +2071,27 @@ public final class XNATDAO extends XNATGUI
             .addContainerGap()
             .add(jPanel5Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
                .add(jScrollPane1, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 508, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-               .add(jPanel5Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.TRAILING)
-                  .add(submitQueryJButton, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 177, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                  .add(org.jdesktop.layout.GroupLayout.LEADING, jPanel5Layout.createSequentialGroup()
-                     .add(jLabel13)
-                     .add(18, 18, 18)
-                     .add(jLabel10))
-                  .add(org.jdesktop.layout.GroupLayout.LEADING, jPanel5Layout.createSequentialGroup()
-                     .add(jPanel5Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                        .add(dataSubtypeJLabel)
-                        .add(dataTypeJLabel)
-                        .add(profileJLabel))
-                     .add(28, 28, 28)
-                     .add(jPanel5Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                        .add(profileJComboBox, 0, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .add(dataTypeJComboBox, 0, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .add(dataSubtypeJComboBox, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 272, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)))))
+               .add(jPanel5Layout.createSequentialGroup()
+                  .add(jLabel13)
+                  .add(18, 18, 18)
+                  .add(jLabel10))
+               .add(jPanel5Layout.createSequentialGroup()
+                  .add(jPanel5Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                     .add(dataSubtypeJLabel)
+                     .add(dataTypeJLabel)
+                     .add(profileJLabel)
+                     .add(outputFormatJLabel))
+                  .add(18, 18, 18)
+                  .add(jPanel5Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                     .add(dataTypeJComboBox, 0, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                     .add(profileJComboBox, 0, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                     .add(dataSubtypeJComboBox, 0, 272, Short.MAX_VALUE)
+                     .add(outputFormatJComboBox, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 272, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))))
             .addContainerGap(20, Short.MAX_VALUE))
+         .add(org.jdesktop.layout.GroupLayout.TRAILING, jPanel5Layout.createSequentialGroup()
+            .addContainerGap(org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .add(submitQueryJButton, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 177, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+            .add(42, 42, 42))
       );
 
       jPanel5Layout.linkSize(new java.awt.Component[] {dataSubtypeJComboBox, dataTypeJComboBox, profileJComboBox}, org.jdesktop.layout.GroupLayout.HORIZONTAL);
@@ -2028,24 +2106,25 @@ public final class XNATDAO extends XNATGUI
                .add(jPanel5Layout.createSequentialGroup()
                   .add(32, 32, 32)
                   .add(jLabel10)))
-            .add(jPanel5Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-               .add(jPanel5Layout.createSequentialGroup()
-                  .add(22, 22, 22)
-                  .add(profileJLabel))
-               .add(jPanel5Layout.createSequentialGroup()
-                  .add(18, 18, 18)
-                  .add(profileJComboBox, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)))
             .add(18, 18, 18)
+            .add(jPanel5Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
+               .add(profileJLabel)
+               .add(profileJComboBox, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
+            .add(6, 6, 6)
             .add(jPanel5Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
                .add(dataTypeJComboBox, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
                .add(dataTypeJLabel))
-            .addPreferredGap(org.jdesktop.layout.LayoutStyle.UNRELATED)
+            .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
             .add(jPanel5Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
                .add(dataSubtypeJComboBox, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
                .add(dataSubtypeJLabel))
-            .add(18, 18, 18)
+            .add(3, 3, 3)
+            .add(jPanel5Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
+               .add(outputFormatJComboBox, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+               .add(outputFormatJLabel))
+            .addPreferredGap(org.jdesktop.layout.LayoutStyle.UNRELATED)
             .add(submitQueryJButton, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 29, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-            .add(18, 18, 18)
+            .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
             .add(jScrollPane1, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
       );
 
@@ -2058,7 +2137,7 @@ public final class XNATDAO extends XNATGUI
                .add(jPanel1Layout.createSequentialGroup()
                   .add(jPanel5, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
                   .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                  .add(jPanel3, 0, 204, Short.MAX_VALUE))
+                  .add(jPanel3, 0, 213, Short.MAX_VALUE))
                .add(jPanel2, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
             .addContainerGap())
       );
@@ -2205,6 +2284,8 @@ public final class XNATDAO extends XNATGUI
    private javax.swing.JSplitPane jSplitPane1;
    private xnatDAO.DAOElementsComboBox leafDAOElementsComboBox;
    private javax.swing.JLabel leafJLabel;
+   private javax.swing.JComboBox outputFormatJComboBox;
+   private javax.swing.JLabel outputFormatJLabel;
    private javax.swing.JComboBox profileJComboBox;
    private javax.swing.JLabel profileJLabel;
    private javax.swing.JButton selectDataJButton;

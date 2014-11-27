@@ -93,7 +93,7 @@ public abstract class XNATGUI extends javax.swing.JDialog implements ActionListe
    protected String            log4jProps;
    protected boolean           authenticationInProgress = false;
    protected boolean           selectedProfileDidChange = false;
-   protected String            version          = "1.0 beta (first Git attempt)";
+   protected String            version          = "2.0 alpha 27/11/2014";
    
    protected static final boolean REQUIRE_AUTHENTICATION = true;           
    

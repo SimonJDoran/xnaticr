@@ -134,15 +134,6 @@ public class DAOOutput
 //      map.put("icr:roiSetData",     ROIFileListWorker.class);
       map.put("icr:roiData",        ROIFileListWorker.class);
       
-//      if ((rootElement.equals("xnat:mrScanData"))  ||
-//          (rootElement.equals("xnat:ctScanData"))  ||
-//          (rootElement.equals("xnat:petScanData")))
-//              fileListWorker = new DICOMFileListWorker(xndao, this, xnsc, outline,
-//                                      thumbnailPreview, rootElement, cacheDirName);
-//
-//      else if (rootElement.equals("icr:mriwOutputData"))
-//              fileListWorker = new MRIWOutputFileListWorker(xndao, this, xnsc, outline,
-//                                      thumbnailPreview, rootElement, cacheDirName);
       if (map.containsKey(rootElement))
       {
          try
