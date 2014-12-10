@@ -68,7 +68,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import org.apache.log4j.Logger;
-import xnatDAO.DAOSearchableElementList;
+import configurationLists.DAOSearchableElementsList;
 import xnatDAO.DAOConstants;
 
 
@@ -97,13 +97,13 @@ public class MetadataPanel extends JPanel
     * Build a new JScrollPane complete with fields ready to receive the metadata
     * of the file being uploaded
     * 
-    * @param sel DAOSearchableElementList containing the contents of the
-    * configuration XML file in an appropriate structure
+    * @param sel DAOSearchableElementsList containing the contents of the
+ configuration XML file in an appropriate structure
     * @param rootElement a string containing the .xsd element name of the "type"
     * of the data object being uploaded
     * @param panel a JPanel inside which all the components sit
     */
-   public MetadataPanel(DAOSearchableElementList sel, String rootElement, JPanel panel)
+   public MetadataPanel(DAOSearchableElementsList sel, String rootElement, JPanel panel)
    {
       fieldMap = new HashMap<String, Component>();
       initialiseUI();
@@ -143,14 +143,14 @@ public class MetadataPanel extends JPanel
 
    private JPanel initialiseContentPanel(String rootElement)
    {
-      DAOSearchableElementList sel = null;
+      DAOSearchableElementsList sel = null;
       try
       {
-         // The DAOSearchableElementList (sel) is an object that maps the contents of the
+         // The DAOSearchableElementsList (sel) is an object that maps the contents of the
          // searchableXNATElements.xml file into an easy format for the program to
          // interrogate. It is used here when creating the tabs and in a variety of
          // other places around XNAT_DAO.
-         sel = DAOSearchableElementList.getSingleton();
+         sel = DAOSearchableElementsList.getSingleton();
       }
       catch (IOException exIO)
       {

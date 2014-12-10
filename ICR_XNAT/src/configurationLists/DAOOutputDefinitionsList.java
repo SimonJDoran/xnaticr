@@ -1,24 +1,24 @@
-/*******************************************************************
+/********************************************************************
 * Copyright (c) 2014, Institute of Cancer Research
 * All rights reserved.
-*
+* 
 * Redistribution and use in source and binary forms, with or without
 * modification, are permitted provided that the following conditions
 * are met:
-*
+* 
 * (1) Redistributions of source code must retain the above copyright
 *     notice, this list of conditions and the following disclaimer.
-*
+* 
 * (2) Redistributions in binary form must reproduce the above
 *     copyright notice, this list of conditions and the following
 *     disclaimer in the documentation and/or other materials provided
 *     with the distribution.
-*
+* 
 * (3) Neither the name of the Institute of Cancer Research nor the
 *     names of its contributors may be used to endorse or promote
 *     products derived from this software without specific prior
 *     written permission.
-*
+* 
 * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
 * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
 * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
@@ -35,40 +35,41 @@
 
 /********************************************************************
 * @author Simon J Doran
-* Java class: DAOOutputFormatsList.java
-* First created on Nov 27, 2014 at 3:51:44 PM
-*
-* Object representing a list of output data formats that can be
-* returned by the DataChooser, with method for reading this list from
-* an XML file.
+* Java class: DAOOutputDefinitionsList.java
+* First created on Dec 5, 2014 at 11:40:02 AM
+* 
+* Object representing a list of the output formats that can be
+* produced from the XNAT database, with method for reading this list
+* from the associated XML file.
 *********************************************************************/
 
-package xnatDAO;
+package configurationLists;
 
 import java.io.IOException;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Vector;
 import xmlUtilities.SingletonListFromTwoLevelXML;
 
-public class DAOOutputFormatsList extends SingletonListFromTwoLevelXML
+public class DAOOutputDefinitionsList extends SingletonListFromTwoLevelXML
 {
-   protected static DAOOutputFormatsList singletonList = null;
-
-   /** Creates a new instance of DAOReturnTypesList.
+   protected static DAOOutputDefinitionsList singletonList = null;
+   
+   /** Creates a new instance of DAOSearchableElementList
     *  Note that this is never called directly - but rather via getSingleton().
 	 */
-	protected DAOOutputFormatsList() throws IOException
+	protected DAOOutputDefinitionsList() throws IOException
 	{
       super();
    }
 
-   public static DAOOutputFormatsList getSingleton() throws IOException
+   public static DAOOutputDefinitionsList getSingleton() throws IOException
 	{
 		if ( singletonList == null )
 		{
-			try
+         try
          {
-            singletonList = new DAOOutputFormatsList();
+            singletonList = new DAOOutputDefinitionsList();
          }
 			catch (IOException exIO) {throw exIO;}
 		}
@@ -80,24 +81,37 @@ public class DAOOutputFormatsList extends SingletonListFromTwoLevelXML
    @Override
    public void setVariables()
    {
-      XMLResourceName = "projectResources/dataOutputFormats.xml";
-      rootName        = "XNAT_DAO_outputDataFormats";
-      outer           = "DAO_subtype";
-      outAttr         = "alias";
-      inner           = "DAO_outputFormat";
-      inAttr          = "alias";
-      errorMessageIOE = "Unable to retrieve list of data output formats";
-      errorMessageLog = "The dataOutputFormats.xml file did not contain the correct data.";
+      XMLResourceName = "projectResources/DAOOutputDefinitionsList.xml";
+      rootName        = "XNAT_DAO_outputDefinitions";
+      outer           = "DAO_outputFormat";
+      outAttr         = "code";
+      inner           = "DAO_outputFormatProperty";
+      inAttr          = "name";
+
+      errorMessageLog = "The output definitions file did not contain the correct data.";
+      errorMessageIOE = "Unable to retrieve list of definitions of the data output formats";
    }
 
-   public LinkedHashMap<String, Vector<String>> getDAOOutputFormats()
+   public LinkedHashMap<String, Vector<String>> getOutputDefinitions()
    {
       return getInnerTextMap();
    }
 
-   public LinkedHashMap<String, Vector<String>> getDAOOutputAliases()
+   public LinkedHashMap<String, Vector<String>> getOutputDefinitionCodes()
    {
       return getInnerAttrTextMap();
    }
 
+   // Utility function for stripping out multiple occurrences in a vector.
+   public Vector<String> getDistinctEntries(Vector<String> inVec)
+   {
+      HashSet<String> elementSet       = new HashSet<String>();
+      Vector<String>  distinctElements = new Vector<String>();
+
+		for (int i=0; i<inVec.size(); i++)
+         if (elementSet.add(inVec.elementAt(i)))
+            distinctElements.add(inVec.elementAt(i));
+
+      return distinctElements;
+   }
 }

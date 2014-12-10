@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+* Copyright (c) 2014, Institute of Cancer Research
+* All rights reserved.
+* 
+* Redistribution and use in source and binary forms, with or without
+* modification, are permitted provided that the following conditions
+* are met:
+* 
+* (1) Redistributions of source code must retain the above copyright
+*     notice, this list of conditions and the following disclaimer.
+* 
+* (2) Redistributions in binary form must reproduce the above
+*     copyright notice, this list of conditions and the following
+*     disclaimer in the documentation and/or other materials provided
+*     with the distribution.
+* 
+* (3) Neither the name of the Institute of Cancer Research nor the
+*     names of its contributors may be used to endorse or promote
+*     products derived from this software without specific prior
+*     written permission.
+* 
+* THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+* "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+* LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
+* FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+* COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT,
+* INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+* (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+* SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+* HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
+* STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+* ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
+* OF THE POSSIBILITY OF SUCH DAMAGE.
+-->
+
+
+<XNAT_DAO_storedResources>
+
+	<DAO_subtype alias="MR session">
+   </DAO_subtype>
+	
+	<DAO_subtype alias="CT session">
+   </DAO_subtype>
+	
+	<DAO_subtype alias="Arbitrary session">
+   </DAO_subtype>
+	
+	<DAO_subtype alias="MR image set">
+      <DAO_resource code="Source DICOM">DicomImage</DAO_resource>
+   </DAO_subtype>
+
+   <DAO_subtype alias="PET image set">
+      <DAO_resource alias="Source DICOM">DICOM</DAO_resource>
+		<DAO_resource alias="Single zipped DICOM">zDICOM</DAO_resource>
+		<DAO_resource alias="NIFTI .nii">niiNIFTI</DAO_resource>
+		<DAO_resource alias="XNAT scan XML">XNATscanXML</DAO_resource>
+   </DAO_subtype>
+	
+	<DAO_subtype alias="CT image set">
+      <DAO_resource alias="Source DICOM">DICOM</DAO_resource>
+		<DAO_resource alias="Single zipped DICOM">zDICOM</DAO_resource>
+		<DAO_resource alias="NIFTI .nii">niiNIFTI</DAO_resource>
+		<DAO_resource alias="XNAT scan XML">XNATscanXML</DAO_resource>
+   </DAO_subtype>
+	
+	<DAO_subtype alias="US image set">
+      <DAO_resource alias="Source DICOM">DICOM</DAO_resource>
+		<DAO_resource alias="Single zipped DICOM">zDICOM</DAO_resource>
+		<DAO_resource alias="NIFTI .nii">niiNIFTI</DAO_resource>
+		<DAO_resource alias="XNAT scan XML">XNATscanXML</DAO_resource>
+   </DAO_subtype>
+	
+	<DAO_subtype alias="Arbitrary image set">
+      <DAO_resource alias="Source DICOM">DICOM</DAO_resource>
+		<DAO_resource alias="Single zipped DICOM">zDICOM</DAO_resource>
+		<DAO_resource alias="NIFTI .nii">niiNIFTI</DAO_resource>
+		<DAO_resource alias="XNAT scan XML">XNATscanXML</DAO_resource>
+   </DAO_subtype>
+		
+   <DAO_subtype alias="Any spectrum">
+      <DAO_resource alias="Source format">src</DAO_resource>
+   </DAO_subtype>
+		
+   <DAO_subtype alias="1-D spectrum">
+      <DAO_resource alias="Source format">src</DAO_resource>
+   </DAO_subtype>
+		
+   <DAO_subtype alias="2-D spectrum">
+      <DAO_resource alias="Source format">src</DAO_resource>
+   </DAO_subtype>
+		
+   <DAO_subtype alias="Any parametric image">
+      <DAO_resource alias="Source format">src</DAO_resource>
+		<DAO_resource alias="DICOM">zDICOM</DAO_resource>
+		<DAO_resource alias="NIFTI .nii">niiNIFTI</DAO_resource>
+		<DAO_resource alias="XNAT assessor XML">XNATassessorXML</DAO_resource>
+   </DAO_subtype>
+		
+   <DAO_subtype alias="T1 map">
+      <DAO_resource alias="Source format">DICOM</DAO_resource>
+		<DAO_resource alias="DICOM">zDICOM</DAO_resource>
+		<DAO_resource alias="NIFTI .nii">niiNIFTI</DAO_resource>
+		<DAO_resource alias="XNAT assessor XML">XNATassessorXML</DAO_resource>
+   </DAO_subtype>
+		
+   <DAO_subtype alias="T2 map">
+      <DAO_resource alias="Source format">DICOM</DAO_resource>
+		<DAO_resource alias="DICOM">zDICOM</DAO_resource>
+		<DAO_resource alias="NIFTI .nii">niiNIFTI</DAO_resource>
+		<DAO_resource alias="XNAT assessor XML">XNATassessorXML</DAO_resource>
+   </DAO_subtype>
+		
+   <DAO_subtype alias="ADC">
+      <DAO_resource alias="Source format">DICOM</DAO_resource>
+		<DAO_resource alias="DICOM">zDICOM</DAO_resource>
+		<DAO_resource alias="NIFTI .nii">niiNIFTI</DAO_resource>
+		<DAO_resource alias="XNAT assessor XML">XNATassessorXML</DAO_resource>
+   </DAO_subtype>
+		
+   <DAO_subtype alias="Any XNAT assessment">
+      <DAO_resource alias="XNAT assessor XML">XNATassessorXML</DAO_resource>
+   </DAO_subtype>
+	
+	<DAO_subtype alias="MRIW output">
+      <DAO_resource alias="MRIW output XML">MRIW</DAO_resource>
+		<DAO_resource alias="XNAT assessor XML">XNATassessorXML</DAO_resource>
+   </DAO_subtype>
+	
+	<DAO_subtype alias="Adept output">
+      <DAO_resource alias="XNAT assessor XML">XNATassessorXML</DAO_resource>
+   </DAO_subtype>
+	
+	<DAO_subtype alias="Set of ROIs">
+      <DAO_resource alias="DICOM-RT structure set">RT-STRUCT</DAO_resource>
+   </DAO_subtype>
+
+   <DAO_subtype alias="Single ROI">
+      <DAO_resource alias="DICOM-RT structure set (one per ROI selected)">sRT-STRUCT</DAO_resource>
+		<DAO_resource alias="DICOM-RT structure set (all ROIs in single RT-STRUCT)">mRT-STRUCT</DAO_resource>
+		<DAO_resource alias="Slicer label map">Slicer</DAO_resource>
+		<DAO_resource alias="MRIW format">MRIW</DAO_resource>
+		<DAO_resource alias="Volume mask">mask</DAO_resource>
+	</DAO_subtype>
+    
+</XNAT_DAO_storedResources>

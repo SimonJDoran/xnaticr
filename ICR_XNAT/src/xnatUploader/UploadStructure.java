@@ -52,7 +52,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Vector;
 import org.apache.log4j.Logger;
-import xnatDAO.DAOSearchableElementList;
+import configurationLists.DAOSearchableElementsList;
 
 
 public class UploadStructure
@@ -60,7 +60,7 @@ public class UploadStructure
    static  Logger                   logger = Logger.getLogger(XNATUploader.class);
    private String                   rootElement;
    private HashMap<String, Object>  fieldMap;
-   private DAOSearchableElementList sel = null;
+   private DAOSearchableElementsList sel = null;
    
   
    /**
@@ -77,11 +77,11 @@ public class UploadStructure
       
       try
       {
-         // The DAOSearchableElementList (sel) is an object that maps the contents of the
+         // The DAOSearchableElementsList (sel) is an object that maps the contents of the
          // searchableXNATElements.xml file into an easy format for the program to
          // interrogate. It is used here to model the fields to be uploaded, and
          // in a variety of other places around XNAT_DAO.
-         sel = DAOSearchableElementList.getSingleton();
+         sel = DAOSearchableElementsList.getSingleton();
       }
       catch (IOException exIO)
       {

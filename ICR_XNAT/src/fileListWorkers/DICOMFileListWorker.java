@@ -35,10 +35,10 @@
 
 /*********************************************************************
 * @author Simon J Doran
-* Java class: MRIWFileListWorker.java
-* First created on April 21, 2011 at 9.44 AM
+* Java class: DICOMFileListWorker.java
+* First created on April 21, 2011 at 9.04 AM
 * 
-* Retrieve a list of MRIW output files to the local machine
+* Retrieve a list of DICOM files onto the local machine
 * corresponding to the data selected. If the user is interacting with
 * a database on the local machine, then things are simple. However,
 * if the database is somewhere on the Internet, then this worker
@@ -46,7 +46,7 @@
 * when the task is completed.
 *********************************************************************/
 
-package xnatDAO;
+package fileListWorkers;
 
 import exceptions.XNATException;
 import generalUtilities.Vector2D;
@@ -62,38 +62,72 @@ import org.netbeans.swing.outline.OutlineModel;
 import org.w3c.dom.Document;
 import treeTable.DAOOutline;
 import xmlUtilities.XMLUtilities;
+import xnatDAO.DAOOutput;
+import xnatDAO.ThumbnailPreview;
+import xnatDAO.XNATDAO;
 import xnatRestToolkit.XNATNamespaceContext;
 import xnatRestToolkit.XNATRESTToolkit;
 import xnatRestToolkit.XNATServerConnection;
 
 
-public class MRIWOutputFileListWorker extends FileListWorker
+
+public class DICOMFileListWorker extends FileListWorker
 {
-   public MRIWOutputFileListWorker(XNATDAO              xndao,
-                                   DAOOutput            daoo,
-                                   XNATServerConnection xnsc,
-                                   DAOOutline           outline,
-                                   ThumbnailPreview     preview,
-                                   String               rootElement,
-                                   String               cacheDirName)
+   public DICOMFileListWorker(XNATDAO              xndao,
+                              DAOOutput            daoo,
+                              XNATServerConnection xnsc,
+                              DAOOutline           outline,
+                              ThumbnailPreview     preview,
+                              String               rootElement,
+                              String               cacheDirName)
           throws IOException, XNATException
    {
       super(xndao, daoo, xnsc, outline, preview, rootElement, cacheDirName);
    }
    
    
-   
    @Override
-   protected int calculateNumberOfFilesToDownload(int nSets, int firstRow,
+	protected ArrayList<File> generateCacheFiles(int            tableRow,
+			                                       Vector<String> tableColumnElements,
+			                                       String         outputFormat)
+			                    throws XNATException
+	{
+		
+	}
+	
+	@Override
+   protected int calculateNumberOfFilesToDownload(int nSelections, int firstRow,
                                                   Vector<String> tableColumnElements)
+                 throws XNATException
    {
-      // For icr:mriwOutputData, as opposed to say xnat:mrScanData, there is
-      // only one file per item selected from the table, so this is easy!
-      return nSets;
+      // Initially, work this out for DICOM files from an XNAT MRScan element.
+      // This will need extending after the initial feasibility is proved.
+      int nFrames = 0;
+      
+      for (int i=0; i<nSelections; i++)
+      {
+         int          modelRow = outline.convertRowIndexToModel(firstRow + i);
+         String       expXPath = rootElement + "/frames";
+         int          expIndex = tableColumnElements.indexOf(expXPath);
+         OutlineModel omdl     = outline.getOutlineModel();
+         
+         // Note expIndex+1: the first column of the table is the treenode column.
+         try
+         {
+            nFrames  += new Integer((String) omdl.getValueAt(modelRow, expIndex+1));
+         }
+         catch (NumberFormatException exNF)
+         {
+            throw new XNATException(XNATException.DATA_NOT_PRESENT,
+                                "The XNAT database does not contain the number\n"
+                                + "of frames for this scan and I cannot load it.");
+         }
+      }
+      return nFrames;
    }
    
    
-   
+
    /**
     * Get the URL where we need to go to obtain the list of filenames.
     * For all root elements, we need to reconstruct an
@@ -111,32 +145,32 @@ public class MRIWOutputFileListWorker extends FileListWorker
                                          boolean        isLocal)
    {
       StringBuilder RESTCommand = new StringBuilder("/data/archive/experiments/");
-      
+
       // Note that XNAT uses the terms "experiment" and "session" somewhat
       // interchangeably, although session is formally a subset of experiment.
       // The tree table is laid out with the column headings in the same order
       // as the tableColumnElements variable, so if we get an index from the
       // tableColumnElements, we can use it to find the right entry in the table.
-      String expXPath = "xnat:qcAssessmentData/imageSession_ID";
+      String expXPath = rootElement + "/image_session_ID";
       int    expIndex = tableColumnElements.indexOf(expXPath);
 
       // Note expIndex+1: the first column of the table is the treenode column.
-      OutlineModel omdl  = outline.getOutlineModel();
-      String       expID = (String) omdl.getValueAt(tableRow, expIndex+1);
+      OutlineModel omdl    = outline.getOutlineModel();
+      String       expID   = (String) omdl.getValueAt(tableRow, expIndex+1);
       
-      String IDXPath = rootElement + "/ID";
-      int    IDIndex = tableColumnElements.indexOf(IDXPath);
-      String ID      = (String) omdl.getValueAt(tableRow, IDIndex+1);
-
-      RESTCommand.append(expID).append("/assessors/").append(ID);
+      String       IDXPath = rootElement + "/ID";
+      int          IDIndex = tableColumnElements.indexOf(IDXPath);
+      String       ID      = (String) omdl.getValueAt(tableRow, IDIndex+1);
+           
+      RESTCommand.append(expID).append("/scans/").append(ID);
       if (!isLocal) RESTCommand.append("/files");
       RESTCommand.append("?format=xml");
 
+      logger.debug("tableRow = " + tableRow + "RESTCommand = " + RESTCommand.toString());
       return RESTCommand.toString();
    }
-   
-   
-   
+
+
    @Override
    protected ArrayList<File> getCacheList(String RESTCommand)
    {
@@ -145,7 +179,7 @@ public class MRIWOutputFileListWorker extends FileListWorker
       // When the files are remote, it is more problematic to retrieve just the
       // ones we want, as we have no access to the dcmCatalog file. Retrieve all
       // the filenames associated with the given experiment and rely on the
-      // fact that correctly loaded files will have column 5 set to "MRIW_XML".
+      // fact that correctly loaded DICOM images will have column 5 set to "DICOM".
       Vector2D resultSet;
       try
       {
@@ -156,12 +190,12 @@ public class MRIWOutputFileListWorker extends FileListWorker
          return null;
       }
       Vector<String> URI  = resultSet.getColumn(2);
-      Vector<String> type = resultSet.getColumn(5);
+      Vector<String> type = resultSet.getColumn(3);
 
 
       for (int i=0; i<URI.size(); i++)
       {
-         if (type.elementAt(i).equals("MRIW_XML"))
+         if (type.elementAt(i).equals("DICOM"))
          {
             // Build the local cache filename where the data will be stored.
             // The directory structure is a bit long-winded, but should be
@@ -171,7 +205,12 @@ public class MRIWOutputFileListWorker extends FileListWorker
             File cacheFile = new File(sb.toString());
             File parent    = new File(cacheFile.getParent());
 
-            if (!cacheFile.exists())
+            // If the cache file does exist, but doesn't open correctly,
+            // have another go at downloading it, on the basis that it
+            // could have either become corrupted or a previous download
+            // might have been interrupted, leaving an incomplete file.
+            boolean success = true;
+            if (!(cacheFile.exists() && preview.addFile(cacheFile, "DICOM")))
             {
                // Retrieve the actual data and store it in the cache.
                try
@@ -191,37 +230,59 @@ public class MRIWOutputFileListWorker extends FileListWorker
                      if (length < 0) break;
                      bos.write(buf, 0, length);
                   }
+                  
+                  logger.debug("Worker ID = " + this.toString() + " Downloaded " + cacheFile.toString());
 
                   try{bis.close();}
                   catch (IOException ignore) {;}
 
                   try{bos.close();}
-                  catch (IOException ignore) {;}
+                  catch (IOException ignore) {;}                  
+                                    
+                  if (!preview.addFile(cacheFile, "DICOM"))
+                  {
+                     success = false;
+                     nFileFailures++;
+                  }                  
+
                }
                catch (Exception ex)
                {
-                  return null;
+                  logger.warn("Failed to download " + cacheFile.getName());
+                  success = false;
+                  nFileFailures++;
                }
             }
 
-            scanFileList.add(cacheFile);
-            preview.addFile(cacheFile, "XML");
-            logger.debug("Downloaded " + cacheFile.toString());
+            if (success) scanFileList.add(cacheFile);
             nFilesDownloaded++;
-            setProgress(100 * nFilesDownloaded / nFilesToDownload);
+            
+            // Note: this is (DAOOutput.STOP_ICON - 1) not 100 because the values
+            // 100 and 99 = DAOOutput.STOP_ICON is reserved for signalling
+            // the START_ICON and STOP_ICON conditions.
+            logger.debug("nFilesDownloaded " + nFilesDownloaded
+                               + "  nFilesToDownload " + nFilesToDownload
+                               + "  nFileFailures " + nFileFailures
+                               + " progress: " + (DAOOutput.STOP_ICON - 1) * nFilesDownloaded / nFilesToDownload);
+            setProgress((DAOOutput.STOP_ICON - 1) * nFilesDownloaded / nFilesToDownload);
             publishDownloadProgress(cacheFile.getName());
+            
+            if (isCancelled())
+            {
+               break;
+            }            
          }
       }
       return scanFileList;
    }
-   
-   
-   
+
+
+
    protected ArrayList<File> getLocalList(String RESTCommand)
    {
-      ArrayList<File> MRIWFileList = new ArrayList<File>();
+      ArrayList<File> scanFileList = new ArrayList<File>();
 
-            // From the Document returned by RESTCommand, we can extract the
+      // From the Document returned by RESTCommand, we can extract the
       // the location of the dcmCatalog file and this, in turn, tells us where
       // the actual DICOM data are.
       try
@@ -250,18 +311,28 @@ public class MRIWOutputFileListWorker extends FileListWorker
 
          for (int k=0; k<fileNames.length; k++)
          {
-            File MRIWFile = new File(dirPath + File.separator + fileNames[k]);
-            MRIWFileList.add(MRIWFile);
-            preview.addFile(MRIWFile, "XML");
+            File imageFile = new File(dirPath + File.separator + fileNames[k]);
+    
+            if (preview.addFile(imageFile, "DICOM"))
+               scanFileList.add(imageFile);
+            
+            else nFileFailures++; 
+            
             nFilesDownloaded++;
-            setProgress(100 * nFilesDownloaded / nFilesToDownload);
+            setProgress((DAOOutput.STOP_ICON - 1) * nFilesDownloaded / nFilesToDownload);
             publishDownloadProgress(fileNames[k]);
+            
+            if (isCancelled()) break;
          }
       }
       catch (Exception ex)
       {
          return null;
       }
-      return MRIWFileList;
+
+      return scanFileList;
    }
+
+
+   
 }

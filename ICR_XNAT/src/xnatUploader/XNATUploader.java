@@ -71,7 +71,7 @@ import javax.swing.SwingConstants;
 import javax.swing.SwingWorker;
 import javax.swing.UIManager;
 import org.apache.log4j.Logger;
-import xnatDAO.DAOSearchableElementList;
+import configurationLists.DAOSearchableElementsList;
 import xnatDAO.XNATGUI;
 import xnatDAO.XNATProfile;
 
@@ -1188,12 +1188,12 @@ public final class XNATUploader extends XNATGUI
   
    
 
-   private DAOSearchableElementList getSearchableElementList()
+   private DAOSearchableElementsList getSearchableElementList()
    {
-      DAOSearchableElementList sel = null;
+      DAOSearchableElementsList sel = null;
       try
       {
-         sel = DAOSearchableElementList.getSingleton();
+         sel = DAOSearchableElementsList.getSingleton();
       }
       catch (IOException exIO)
       {

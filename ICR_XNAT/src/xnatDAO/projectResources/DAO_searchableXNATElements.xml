@@ -14,6 +14,48 @@
 
 <XNATSearchRootElements>
 
+	<XNATSearchRootElement element="xnat:mrSessionData">
+      <searchableXNATElement alias="Patient name">xnat:mrSessionData/dcmPatientName</searchableXNATElement>
+		<searchableXNATElement alias="Session date">xnat:mrSessionData/date</searchableXNATElement>
+		<searchableXNATElement alias="Session time">xnat:mrSessionData/time</searchableXNATElement>
+		<searchableXNATElement alias="XNAT project">xnat:mrSessionData/project</searchableXNATElement>
+      <searchableXNATElement alias="XNAT Subject ID">xnat:mrSessionData/subject_ID</searchableXNATElement>
+      <searchableXNATElement alias="XNAT image session label">xnat:mrSessionData/label</searchableXNATElement>
+      <searchableXNATElement alias="DICOM session UID">xnat:mrSessionData/UID</searchableXNATElement>
+      <searchableXNATElement alias="DICOM patient ID">xnat:mrSessionData/dcmPatientID</searchableXNATElement>
+      <searchableXNATElement alias="Scanner manufacturer">xnat:mrSessionData/scanner/manufacturer</searchableXNATElement>
+      <searchableXNATElement alias="Scanner model">xnat:mrSessionData/scanner/model</searchableXNATElement>
+      <searchableXNATElement alias="Acquisition site">xnat:mrSessionData/acquisition_site</searchableXNATElement>       
+   </XNATSearchRootElement>
+	
+	<XNATSearchRootElement element="xnat:ctSessionData">
+      <searchableXNATElement alias="Patient name">xnat:ctSessionData/dcmPatientName</searchableXNATElement>
+		<searchableXNATElement alias="Session date">xnat:ctSessionData/date</searchableXNATElement>
+		<searchableXNATElement alias="Session time">xnat:ctSessionData/time</searchableXNATElement>
+		<searchableXNATElement alias="XNAT project">xnat:ctSessionData/project</searchableXNATElement>
+      <searchableXNATElement alias="XNAT Subject ID">xnat:ctSessionData/subject_ID</searchableXNATElement>
+      <searchableXNATElement alias="XNAT image session label">xnat:ctSessionData/label</searchableXNATElement>
+      <searchableXNATElement alias="DICOM session UID">xnat:ctSessionData/UID</searchableXNATElement>
+      <searchableXNATElement alias="DICOM patient ID">xnat:ctSessionData/dcmPatientID</searchableXNATElement>
+      <searchableXNATElement alias="Scanner manufacturer">xnat:ctSessionData/scanner/manufacturer</searchableXNATElement>
+      <searchableXNATElement alias="Scanner model">xnat:ctSessionData/scanner/model</searchableXNATElement>
+      <searchableXNATElement alias="Acquisition site">xnat:ctSessionData/acquisition_site</searchableXNATElement>       
+   </XNATSearchRootElement>
+	
+	<XNATSearchRootElement element="xnat:imageSessionData">
+      <searchableXNATElement alias="Patient name">xnat:imageSessionData/dcmPatientName</searchableXNATElement>
+		<searchableXNATElement alias="Session date">xnat:imageSessionData/date</searchableXNATElement>
+		<searchableXNATElement alias="Session time">xnat:imageSessionData/time</searchableXNATElement>
+		<searchableXNATElement alias="XNAT project">xnat:imageSessionData/project</searchableXNATElement>
+      <searchableXNATElement alias="XNAT Subject ID">xnat:imageSessionData/subject_ID</searchableXNATElement>
+      <searchableXNATElement alias="XNAT image session label">xnat:imageSessionData/label</searchableXNATElement>
+      <searchableXNATElement alias="DICOM session UID">xnat:imageSessionData/UID</searchableXNATElement>
+      <searchableXNATElement alias="DICOM patient ID">xnat:imageSessionData/dcmPatientID</searchableXNATElement>
+      <searchableXNATElement alias="Scanner manufacturer">xnat:imageSessionData/scanner/manufacturer</searchableXNATElement>
+      <searchableXNATElement alias="Scanner model">xnat:imageSessionData/scanner/model</searchableXNATElement>
+      <searchableXNATElement alias="Acquisition site">xnat:imageSessionData/acquisition_site</searchableXNATElement>       
+   </XNATSearchRootElement>
+
 	<XNATSearchRootElement element="xnat:mrScanData">
       <searchableXNATElement alias="Patient name">xnat:mrSessionData/dcmPatientName</searchableXNATElement>
       <searchableXNATElement alias="Scan type">xnat:mrScanData/type</searchableXNATElement>

@@ -1,24 +1,24 @@
-/*******************************************************************
-* Copyright (c) 2014, Institute of Cancer Research
+/********************************************************************
+* Copyright (c) 2012, Institute of Cancer Research
 * All rights reserved.
-*
+* 
 * Redistribution and use in source and binary forms, with or without
 * modification, are permitted provided that the following conditions
 * are met:
-*
+* 
 * (1) Redistributions of source code must retain the above copyright
 *     notice, this list of conditions and the following disclaimer.
-*
+* 
 * (2) Redistributions in binary form must reproduce the above
 *     copyright notice, this list of conditions and the following
 *     disclaimer in the documentation and/or other materials provided
 *     with the distribution.
-*
+* 
 * (3) Neither the name of the Institute of Cancer Research nor the
 *     names of its contributors may be used to endorse or promote
 *     products derived from this software without specific prior
 *     written permission.
-*
+* 
 * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
 * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
 * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
@@ -33,12 +33,12 @@
 * OF THE POSSIBILITY OF SUCH DAMAGE.
 *********************************************************************/
 
-/********************************************************************
+/*********************************************************************
 * @author Simon J Doran
-* Java class: ROIFileListWorker.java
-* First created on May 23, 2013 at 4:36:28 PM
-*
-* Retrieve a list of region-of-interest files to the local machine
+* Java class: MRIWFileListWorker.java
+* First created on April 21, 2011 at 9.44 AM
+* 
+* Retrieve a list of MRIW output files to the local machine
 * corresponding to the data selected. If the user is interacting with
 * a database on the local machine, then things are simple. However,
 * if the database is somewhere on the Internet, then this worker
@@ -46,8 +46,9 @@
 * when the task is completed.
 *********************************************************************/
 
-package xnatDAO;
+package fileListWorkers;
 
+import fileListWorkers.FileListWorker;
 import exceptions.XNATException;
 import generalUtilities.Vector2D;
 import java.io.BufferedInputStream;
@@ -62,35 +63,41 @@ import org.netbeans.swing.outline.OutlineModel;
 import org.w3c.dom.Document;
 import treeTable.DAOOutline;
 import xmlUtilities.XMLUtilities;
-import static xnatDAO.FileListWorker.logger;
+import xnatDAO.DAOOutput;
+import xnatDAO.ThumbnailPreview;
+import xnatDAO.XNATDAO;
 import xnatRestToolkit.XNATNamespaceContext;
 import xnatRestToolkit.XNATRESTToolkit;
 import xnatRestToolkit.XNATServerConnection;
 
-public class ROIFileListWorker extends FileListWorker
+
+public class MRIWOutputFileListWorker extends FileListWorker
 {
-   public ROIFileListWorker(XNATDAO              xndao,
-                                  DAOOutput            daoo,
-                                  XNATServerConnection xnsc,
-                                  DAOOutline           outline,
-                                  ThumbnailPreview     preview,
-                                  String               rootElement,
-                                  String               cacheDirName)
+   public MRIWOutputFileListWorker(XNATDAO              xndao,
+                                   DAOOutput            daoo,
+                                   XNATServerConnection xnsc,
+                                   DAOOutline           outline,
+                                   ThumbnailPreview     preview,
+                                   String               rootElement,
+                                   String               cacheDirName)
           throws IOException, XNATException
    {
       super(xndao, daoo, xnsc, outline, preview, rootElement, cacheDirName);
    }
-
-
+   
+   
+   
    @Override
    protected int calculateNumberOfFilesToDownload(int nSets, int firstRow,
                                                   Vector<String> tableColumnElements)
    {
-		// Temporarily return a single RT-STRUCT file containining the chosen ROI.
-      return 1;
+      // For icr:mriwOutputData, as opposed to say xnat:mrScanData, there is
+      // only one file per item selected from the table, so this is easy!
+      return nSets;
    }
-
-
+   
+   
+   
    /**
     * Get the URL where we need to go to obtain the list of filenames.
     * For all root elements, we need to reconstruct an
@@ -108,19 +115,19 @@ public class ROIFileListWorker extends FileListWorker
                                          boolean        isLocal)
    {
       StringBuilder RESTCommand = new StringBuilder("/data/archive/experiments/");
-
+      
       // Note that XNAT uses the terms "experiment" and "session" somewhat
       // interchangeably, although session is formally a subset of experiment.
       // The tree table is laid out with the column headings in the same order
       // as the tableColumnElements variable, so if we get an index from the
       // tableColumnElements, we can use it to find the right entry in the table.
-      String expXPath = rootElement + "/imageSession_ID";
+      String expXPath = "xnat:qcAssessmentData/imageSession_ID";
       int    expIndex = tableColumnElements.indexOf(expXPath);
 
       // Note expIndex+1: the first column of the table is the treenode column.
       OutlineModel omdl  = outline.getOutlineModel();
       String       expID = (String) omdl.getValueAt(tableRow, expIndex+1);
-
+      
       String IDXPath = rootElement + "/ID";
       int    IDIndex = tableColumnElements.indexOf(IDXPath);
       String ID      = (String) omdl.getValueAt(tableRow, IDIndex+1);
@@ -131,16 +138,18 @@ public class ROIFileListWorker extends FileListWorker
 
       return RESTCommand.toString();
    }
-
+   
+   
+   
    @Override
    protected ArrayList<File> getCacheList(String RESTCommand)
    {
       ArrayList<File> scanFileList = new ArrayList<File>();
 
-      // There are two types of file associated with the icr:roiData assessor:
-		// the ROIs themselves, served out as an RT-STRUCT file, generated at the
-		// time of download and the image thumbnails generated at the time of upload.
-		// Only the RT-STRUCT is returned and the thumbnails are loaded into the preview.
+      // When the files are remote, it is more problematic to retrieve just the
+      // ones we want, as we have no access to the dcmCatalog file. Retrieve all
+      // the filenames associated with the given experiment and rely on the
+      // fact that correctly loaded files will have column 5 set to "MRIW_XML".
       Vector2D resultSet;
       try
       {
@@ -151,72 +160,72 @@ public class ROIFileListWorker extends FileListWorker
          return null;
       }
       Vector<String> URI  = resultSet.getColumn(2);
+      Vector<String> type = resultSet.getColumn(5);
+
 
       for (int i=0; i<URI.size(); i++)
       {
-			// Build the local cache filename where the data will be stored.
-			// The directory structure is a bit long-winded, but should be
-			// easy to manage.
-			StringBuilder sb = new StringBuilder(cacheDirName);
-			sb.append(URI.elementAt(i));
-			File cacheFile = new File(sb.toString());
-			File parent    = new File(cacheFile.getParent());
+         if (type.elementAt(i).equals("MRIW_XML"))
+         {
+            // Build the local cache filename where the data will be stored.
+            // The directory structure is a bit long-winded, but should be
+            // easy to manage.
+            StringBuilder sb = new StringBuilder(cacheDirName);
+            sb.append(URI.elementAt(i));
+            File cacheFile = new File(sb.toString());
+            File parent    = new File(cacheFile.getParent());
 
-			if (!cacheFile.exists())
-			{
-				// Retrieve the preview data and store it in the cache.
-				try
-				{
-					parent.mkdirs();
-					BufferedOutputStream bos
-						= new BufferedOutputStream(new FileOutputStream(cacheFile, true));
+            if (!cacheFile.exists())
+            {
+               // Retrieve the actual data and store it in the cache.
+               try
+               {
+                  parent.mkdirs();
+                  BufferedOutputStream bos
+                     = new BufferedOutputStream(new FileOutputStream(cacheFile, true));
 
-					BufferedInputStream  bis
-						= new BufferedInputStream(xnsc.doRESTGet(URI.elementAt(i)));
+                  BufferedInputStream  bis
+                     = new BufferedInputStream(xnsc.doRESTGet(URI.elementAt(i)));
 
-					byte[] buf = new byte[8192];
+                  byte[] buf = new byte[8192];
 
-					while (true)
-					{
-						int length = bis.read(buf);
-						if (length < 0) break;
-						bos.write(buf, 0, length);
-					}
+                  while (true)
+                  {
+                     int length = bis.read(buf);
+                     if (length < 0) break;
+                     bos.write(buf, 0, length);
+                  }
 
-					try{bis.close();}
-					catch (IOException ignore) {;}
+                  try{bis.close();}
+                  catch (IOException ignore) {;}
 
-					try{bos.close();}
-					catch (IOException ignore) {;}
-				}
-				catch (Exception ex)
-				{
-					return null;
-				}
-				preview.addFile(cacheFile, "PNG");
-			}
-			
-			// Now retrieve the associated RT-STRUCT file and create a subset
-			// RT-STRUCT dynamically with the data for the ROIs to be downloaded.
+                  try{bos.close();}
+                  catch (IOException ignore) {;}
+               }
+               catch (Exception ex)
+               {
+                  return null;
+               }
+            }
 
-//			scanFileList.add(cacheFile);
-//			logger.debug("Downloaded " + cacheFile.toString());
-//
-//			nFilesDownloaded++;
-//			setProgress(100 * nFilesDownloaded / nFilesToDownload);
-//			publishDownloadProgress(cacheFile.getName());
-//         }
+            scanFileList.add(cacheFile);
+            preview.addFile(cacheFile, "XML");
+            logger.debug("Downloaded " + cacheFile.toString());
+            nFilesDownloaded++;
+            setProgress(100 * nFilesDownloaded / nFilesToDownload);
+            publishDownloadProgress(cacheFile.getName());
+         }
       }
       return scanFileList;
    }
-
-
-
+   
+   
+   
    protected ArrayList<File> getLocalList(String RESTCommand)
    {
-      ArrayList<File> ROIFileList = new ArrayList<File>();
+      ArrayList<File> MRIWFileList = new ArrayList<File>();
 
-      // From the Document returned by RESTCommand, we can extract the
+            // From the Document returned by RESTCommand, we can extract the
       // the location of the dcmCatalog file and this, in turn, tells us where
       // the actual DICOM data are.
       try
@@ -232,7 +241,7 @@ public class ROIFileListWorker extends FileListWorker
          File catalogFile = null;
          for (int k=0; k<parseResults.length; k++)
          {
-            if (parseResults[k][0].equals("DICOM_RT-STRUCT"))
+            if (parseResults[k][0].equals("DICOM"))
                catalogFile = new File(parseResults[k][1]);
          }
 
@@ -245,9 +254,9 @@ public class ROIFileListWorker extends FileListWorker
 
          for (int k=0; k<fileNames.length; k++)
          {
-            File ROIFile = new File(dirPath + File.separator + fileNames[k]);
-            ROIFileList.add(ROIFile);
-            preview.addFile(ROIFile, "XML");
+            File MRIWFile = new File(dirPath + File.separator + fileNames[k]);
+            MRIWFileList.add(MRIWFile);
+            preview.addFile(MRIWFile, "XML");
             nFilesDownloaded++;
             setProgress(100 * nFilesDownloaded / nFilesToDownload);
             publishDownloadProgress(fileNames[k]);
@@ -257,7 +266,6 @@ public class ROIFileListWorker extends FileListWorker
       {
          return null;
       }
-      return ROIFileList;
+      return MRIWFileList;
    }
-
 }

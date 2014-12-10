@@ -43,7 +43,7 @@
 * file.
 *********************************************************************/
 
-package xnatDAO;
+package configurationLists;
 
 
 import java.io.IOException;
@@ -53,25 +53,25 @@ import java.util.Vector;
 import xmlUtilities.SingletonListFromTwoLevelXML;
 
 	
-public class DAOSearchableElementList extends SingletonListFromTwoLevelXML
+public class DAOSearchableElementsList extends SingletonListFromTwoLevelXML
 {
-   protected static DAOSearchableElementList singletonList = null;
+   protected static DAOSearchableElementsList singletonList = null;
    
    /** Creates a new instance of DAOSearchableElementList
     *  Note that this is never called directly - but rather via getSingleton().
 	 */
-	protected DAOSearchableElementList() throws IOException
+	protected DAOSearchableElementsList() throws IOException
 	{
       super();
    }
 
-   public static DAOSearchableElementList getSingleton() throws IOException
+   public static DAOSearchableElementsList getSingleton() throws IOException
 	{
 		if ( singletonList == null )
 		{
          try
          {
-            singletonList = new DAOSearchableElementList();
+            singletonList = new DAOSearchableElementsList();
          }
 			catch (IOException exIO) {throw exIO;}
 		}

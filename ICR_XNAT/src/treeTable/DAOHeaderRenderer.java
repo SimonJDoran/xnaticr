@@ -52,16 +52,16 @@ import javax.swing.DefaultComboBoxModel;
 import javax.swing.JComboBox;
 import javax.swing.JTable;
 import javax.swing.table.TableCellRenderer;
-import xnatDAO.DAOSearchableElementList;
+import configurationLists.DAOSearchableElementsList;
 
 public class DAOHeaderRenderer extends JComboBox implements TableCellRenderer
 {
    public DAOHeaderRenderer(String searchRootElement)
    {
-      DAOSearchableElementList sel;
+      DAOSearchableElementsList sel;
       try
       {
-         sel = DAOSearchableElementList.getSingleton();
+         sel = DAOSearchableElementsList.getSingleton();
       }
       catch (IOException exIO)
       {

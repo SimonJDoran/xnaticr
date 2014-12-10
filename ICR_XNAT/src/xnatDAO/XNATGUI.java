@@ -46,6 +46,7 @@
 
 package xnatDAO;
 
+import configurationLists.DAOReturnTypesList;
 import com.generationjava.io.xml.PrettyPrinterXmlWriter;
 import com.generationjava.io.xml.SimpleXmlWriter;
 import exceptions.XMLException;

@@ -45,6 +45,10 @@
 
 package xnatDAO;
 
+import configurationLists.DAOSearchableElementsList;
+import configurationLists.DAOReturnTypesList;
+import configurationLists.DAOOutputFormatsList;
+import fileListWorkers.FileListWorker;
 import com.generationjava.io.xml.PrettyPrinterXmlWriter;
 import com.generationjava.io.xml.SimpleXmlWriter;
 import generalUtilities.ColouredCellRenderer;
@@ -1001,10 +1005,10 @@ public final class XNATDAO extends XNATGUI
          // rectified in the future.
          rootElement = getCurrentSubtypeXPath();
          
-         DAOSearchableElementList sel=null;
+         DAOSearchableElementsList sel=null;
          try
          {
-            sel = DAOSearchableElementList.getSingleton();
+            sel = DAOSearchableElementsList.getSingleton();
          }
          catch (IOException exIO)
          {
@@ -1503,6 +1507,9 @@ public final class XNATDAO extends XNATGUI
    private String getLeafElement(String rootElement)
    {
       HashMap<String, String> leafDef = new HashMap<String, String>();
+		leafDef.put("xnat:mrSessionData",  "xnat:mrSessionData/UID");
+		leafDef.put("xnat:ctSessionData",  "xnat:ctSessionData/UID");
+		leafDef.put("xnat:imageSessionData",  "xnat:imageSessionData/UID");
       leafDef.put("xnat:mrScanData",     "xnat:mrScanData/UID");
       leafDef.put("xnat:petScanData",    "xnat:petScanData/UID");
       leafDef.put("xnat:ctScanData",     "xnat:ctScanData/UID");
@@ -1557,7 +1564,8 @@ public final class XNATDAO extends XNATGUI
    @Override
    public boolean typeIsSelectable(String type)
    {
-      if ((type.equals("Set of images"))       ||
+      if ((type.equals("Imaging session"))     ||
+			 (type.equals("Set of images"))       ||
           (type.equals("Application outputs")) ||
           (type.equals("Regions-of-interest")))
          return true;
@@ -1569,11 +1577,14 @@ public final class XNATDAO extends XNATGUI
    @Override
    public boolean subtypeIsSelectable(String subtype)
    {
-      if ((subtype.equals("MR image set"))  ||
-          (subtype.equals("PET image set")) ||
-          (subtype.equals("CT image set"))  ||
-          (subtype.equals("MRIW output"))   ||
-          (subtype.equals("Set of ROIs"))   ||
+      if ((subtype.equals("MR session"))       ||
+			 (subtype.equals("CT session"))       ||
+			 (subtype.equals("Arbitrary session"))||
+			 (subtype.equals("MR image set"))     ||
+          (subtype.equals("PET image set"))    ||
+          (subtype.equals("CT image set"))     ||
+          (subtype.equals("MRIW output"))      ||
+          (subtype.equals("Set of ROIs"))      ||
           (subtype.equals("Single ROI")))
          return true;
       else return false;
@@ -1703,7 +1714,17 @@ public final class XNATDAO extends XNATGUI
    }
 
 
-    /**
+   /** Getter method to allow a method defined in this superclass to have
+    *  access to the subclass's variable. Each different subclass of XNATGUI
+    *  will implement this to return the projectJComboBox from its own GUI.
+    * @return the variable corresponding to the data subtype JcomboBox.
+    */
+   public JComboBox getOutputFormatJComboBox()
+   {
+      return outputFormatJComboBox;
+   }
+	
+	/**
     * Getter method to allow a method defined in this superclass to have
     * access to the subclass's variable. Each different subclass of XNATGUI
     * will implement this to return the projectJComboBox from its own GUI.
@@ -1880,6 +1901,25 @@ public final class XNATDAO extends XNATGUI
          sc.setComparisonOperator(">");
          sc.setComparisonString("2000-01-01");
          sc.setElementSelectedItem("Scan date");
+         sc.setVisible(true);
+         
+         //dAOSearchCriteria1.fireCriteriaChanged(dAOSearchCriteria1);
+      }
+		
+		if (dataSubtypeAlias.contains("session"))
+      {
+         dAOSearchCriteria1.nCriteriaDisplayed = 2;
+         
+         DAOSearchCriterion sc = dAOSearchCriteria1.criteria[0];
+         sc.setComparisonOperator("LIKE");
+         sc.setComparisonString("%");
+         sc.setElementSelectedItem("XNAT project");
+         sc.setVisible(true);
+         
+         sc = dAOSearchCriteria1.criteria[1];
+         sc.setComparisonOperator("LIKE");
+         sc.setComparisonString("%");
+         sc.setElementSelectedItem("Patient name");
          sc.setVisible(true);
          
          //dAOSearchCriteria1.fireCriteriaChanged(dAOSearchCriteria1);

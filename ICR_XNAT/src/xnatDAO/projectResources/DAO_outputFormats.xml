@@ -39,37 +39,55 @@
 
 <XNAT_DAO_outputDataFormats>
 
-   <DAO_subtype alias="MR image set">
+   <DAO_subtype alias="MR session">
+      <DAO_outputFormat alias="Source DICOM">DicomImage</DAO_outputFormat>
+		<DAO_outputFormat alias="Send session">Send</DAO_outputFormat>
+		<DAO_outputFormat alias="Anonymise and send session">AnonSend</DAO_outputFormat>
+   </DAO_subtype>
+	
+	<DAO_subtype alias="CT session">
       <DAO_outputFormat alias="Source DICOM">DICOM</DAO_outputFormat>
-		<DAO_outputFormat alias="Single zipped DICOM">zDICOM</DAO_outputFormat>
+		<DAO_outputFormat alias="Send session">Send</DAO_outputFormat>
+		<DAO_outputFormat alias="Anonymise and send session">AnonSend</DAO_outputFormat>
+   </DAO_subtype>
+	
+	<DAO_subtype alias="Arbitrary session">
+      <DAO_outputFormat alias="Source DICOM">DICOM</DAO_outputFormat>
+		<DAO_outputFormat alias="Send session">Send</DAO_outputFormat>
+		<DAO_outputFormat alias="Anonymise and send session">AnonSend</DAO_outputFormat>
+   </DAO_subtype>
+	
+	<DAO_subtype alias="MR image set">
+      <DAO_outputFormat alias="Source DICOM">DicomImage</DAO_outputFormat>
+		<DAO_outputFormat alias="Single zipped DICOM">zDicomImage</DAO_outputFormat>
 		<DAO_outputFormat alias="NIFTI .nii">niiNIFTI</DAO_outputFormat>
 		<DAO_outputFormat alias="XNAT scan XML">XNATscanXML</DAO_outputFormat>
    </DAO_subtype>
 
    <DAO_subtype alias="PET image set">
-      <DAO_outputFormat alias="Source DICOM">DICOM</DAO_outputFormat>
-		<DAO_outputFormat alias="Single zipped DICOM">zDICOM</DAO_outputFormat>
+      <DAO_outputFormat alias="Source DICOM">DicomImage</DAO_outputFormat>
+		<DAO_outputFormat alias="Single zipped DICOM">zDicomImage</DAO_outputFormat>
 		<DAO_outputFormat alias="NIFTI .nii">niiNIFTI</DAO_outputFormat>
 		<DAO_outputFormat alias="XNAT scan XML">XNATscanXML</DAO_outputFormat>
    </DAO_subtype>
 	
 	<DAO_subtype alias="CT image set">
-      <DAO_outputFormat alias="Source DICOM">DICOM</DAO_outputFormat>
-		<DAO_outputFormat alias="Single zipped DICOM">zDICOM</DAO_outputFormat>
+      <DAO_outputFormat alias="Source DICOM">DicomImage</DAO_outputFormat>
+		<DAO_outputFormat alias="Single zipped DICOM">zDicomImage</DAO_outputFormat>
 		<DAO_outputFormat alias="NIFTI .nii">niiNIFTI</DAO_outputFormat>
 		<DAO_outputFormat alias="XNAT scan XML">XNATscanXML</DAO_outputFormat>
    </DAO_subtype>
 	
 	<DAO_subtype alias="US image set">
-      <DAO_outputFormat alias="Source DICOM">DICOM</DAO_outputFormat>
-		<DAO_outputFormat alias="Single zipped DICOM">zDICOM</DAO_outputFormat>
+      <DAO_outputFormat alias="Source DICOM">DicomImage</DAO_outputFormat>
+		<DAO_outputFormat alias="Single zipped DICOM">zDicomImage</DAO_outputFormat>
 		<DAO_outputFormat alias="NIFTI .nii">niiNIFTI</DAO_outputFormat>
 		<DAO_outputFormat alias="XNAT scan XML">XNATscanXML</DAO_outputFormat>
    </DAO_subtype>
 	
 	<DAO_subtype alias="Arbitrary image set">
-      <DAO_outputFormat alias="Source DICOM">DICOM</DAO_outputFormat>
-		<DAO_outputFormat alias="Single zipped DICOM">zDICOM</DAO_outputFormat>
+      <DAO_outputFormat alias="Source DICOM">DicomImage</DAO_outputFormat>
+		<DAO_outputFormat alias="Single zipped DICOM">zDicomImage</DAO_outputFormat>
 		<DAO_outputFormat alias="NIFTI .nii">niiNIFTI</DAO_outputFormat>
 		<DAO_outputFormat alias="XNAT scan XML">XNATscanXML</DAO_outputFormat>
    </DAO_subtype>
@@ -128,11 +146,11 @@
    </DAO_subtype>
 	
 	<DAO_subtype alias="Set of ROIs">
-      <DAO_outputFormat alias="DICOM-RT structure set">RT-STRUCT</DAO_outputFormat>
+      <DAO_outputFormat alias="DICOM-RT structure set">RtStruct</DAO_outputFormat>
    </DAO_subtype>
 
    <DAO_subtype alias="Single ROI">
-      <DAO_outputFormat alias="DICOM-RT structure set (one per ROI selected)">sRT-STRUCT</DAO_outputFormat>
+      <DAO_outputFormat alias="DICOM-RT structure set (one per ROI selected)">sRtStruct</DAO_outputFormat>
 		<DAO_outputFormat alias="DICOM-RT structure set (all ROIs in single RT-STRUCT)">mRT-STRUCT</DAO_outputFormat>
 		<DAO_outputFormat alias="Slicer label map">Slicer</DAO_outputFormat>
 		<DAO_outputFormat alias="MRIW format">MRIW</DAO_outputFormat>

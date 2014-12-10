@@ -35,66 +35,80 @@
 
 /*********************************************************************
 * @author Simon J Doran
-* Java class: DAOElementsComboBox.java
-* First created on Mar 26, 2008
+* Java class: DAOReturnTypesList.java
+* First created on Mar 30, 2010 at 2:54:03 PM
 * 
-* GUI element containing the list of the XNAT database elements that
-* we are allowing selection on.
+* Object representing a list of XNAT complex types that can be
+* returned by the DataChooser, with method for reading this list from
+* an XML file.
 *********************************************************************/
 
-package xnatDAO;
+package configurationLists;
 
-import configurationLists.DAOSearchableElementsList;
 import java.io.IOException;
 import java.util.LinkedHashMap;
 import java.util.Vector;
-import javax.swing.DefaultComboBoxModel;
-import javax.swing.JComboBox;
+import xmlUtilities.SingletonListFromTwoLevelXML;
 
-public class DAOElementsComboBox extends JComboBox
+
+/**
+ *
+ * @author Simon J Doran
+ *
+ * Java class: DAOReturnTypesList.java
+ *
+ * First created on Mar 30, 2010 at 2:54:03 PM
+ *
+ */
+public class DAOReturnTypesList extends SingletonListFromTwoLevelXML
 {
-   private DAOSearchableElementsList sel;
-   private String searchRootElement = "xnat:mrScanData";
-	
-	/** Create a new JComboBox and populate it with database fields available for
-	 *  selection.
+   protected static DAOReturnTypesList singletonList = null;
+
+   /** Creates a new instance of DAOReturnTypesList.
+    *  Note that this is never called directly - but rather via getSingleton().
 	 */
-	public DAOElementsComboBox()
+	protected DAOReturnTypesList() throws IOException
 	{
-		super();
-		
-		/* Obtain the list object that contains the XNAT database elements that
-       * we are allowing selection on. Note that the items we can search on
-       * depends on the "root" element of the search in XNAT parlance, i.e.,
-       * on the type of object we are retrieving from the XNAT database.
-       */
-		try
-      {
-         sel = DAOSearchableElementsList.getSingleton();
-      }
-      catch (IOException exIO)
-      {
-         throw new RuntimeException(exIO.getMessage());
-      }
-      LinkedHashMap<String, Vector<String>> map = sel.getSearchableXNATAliases();
-		setModel(new DefaultComboBoxModel(map.get(searchRootElement)));
-	}
-	
-	
-	/** Get the full XPath of the entry selected in the JComboBox */
-	public String getFullXPath()
-	{
-      LinkedHashMap<String, Vector<String>> map = sel.getSearchableXNATElements();
-      return map.get(searchRootElement).elementAt(getSelectedIndex());
-	}
-
-
-   /** Reset the combo box model if the search root element has changed. */
-   public void resetModel(String searchRootElement)
-   {
-      this.searchRootElement = searchRootElement;
-      LinkedHashMap<String, Vector<String>> map = sel.getSearchableXNATAliases();
-		setModel(new DefaultComboBoxModel(map.get(searchRootElement)));
+      super();
    }
-	
+
+   public static DAOReturnTypesList getSingleton() throws IOException
+	{
+		if ( singletonList == null )
+		{
+			try
+         {
+            singletonList = new DAOReturnTypesList();
+         }
+			catch (IOException exIO) {throw exIO;}
+		}
+
+		return singletonList;
+	}
+
+
+   @Override
+   public void setVariables()
+   {
+      XMLResourceName = "projectResources/DAOreturnTypes.xml";
+      rootName        = "XNAT_DAO_returnDataTypes";
+      outer           = "DAO_datatype";
+      outAttr         = "alias";
+      inner           = "DAO_subtype";
+      inAttr          = "alias";
+      errorMessageIOE = "Unable to retrieve list of XNAT return types";
+      errorMessageLog = "The returnDataTypes.xml file did not contain the correct data.";
+   }
+
+   public LinkedHashMap<String, Vector<String>> getDAOReturnTypes()
+   {
+      return getInnerTextMap();
+   }
+
+   public LinkedHashMap<String, Vector<String>> getDAOReturnAliases()
+   {
+      return getInnerAttrTextMap();
+   }
+
 }
+

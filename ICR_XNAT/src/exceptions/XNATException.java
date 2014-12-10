@@ -69,7 +69,7 @@ public class XNATException extends SJDException
    public static final int DATA_NOT_PRESENT  = 18;
    public static final int DATA_INCONSISTENT = 19;
    public static final int DATA_AMBIGUOUS    = 20;
-
+	public static final int RETRIEVING_LIST   = 21;
 
 	private static final String[] errorMessages =
 	{
@@ -93,7 +93,8 @@ public class XNATException extends SJDException
       "Cannot perform the request, as another search is in progress",
       "Required data not present in XNAT",
       "Inconsistent data",
-      "Ambiguous data"     
+      "Ambiguous data",
+		"Problem retrieving list of files"
 	};
 
 
