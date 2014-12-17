@@ -45,10 +45,11 @@
 
 package xnatDAO;
 
+import fileDownloads.DAOOutput;
 import configurationLists.DAOSearchableElementsList;
 import configurationLists.DAOReturnTypesList;
 import configurationLists.DAOOutputFormatsList;
-import fileListWorkers.FileListWorker;
+import fileDownloads.FileListWorker;
 import com.generationjava.io.xml.PrettyPrinterXmlWriter;
 import com.generationjava.io.xml.SimpleXmlWriter;
 import generalUtilities.ColouredCellRenderer;

@@ -68,7 +68,7 @@ import generalUtilities.Vector2D;
 import java.util.Vector;
 import org.apache.log4j.Logger;
 import xmlUtilities.DelayedPrettyPrinterXmlWriter;
-import xnatDAO.DAOOutput;
+import fileDownloads.DAOOutput;
 import xnatDAO.XNATGUI;
 import xnatRestToolkit.XNATRESTToolkit;
 

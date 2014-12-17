@@ -45,12 +45,12 @@
 * and the path to the cache is returned.
 *********************************************************************/
 
-package xnatDAO;
+package fileDownloads;
 
-import fileListWorkers.ROIFileListWorker;
-import fileListWorkers.MRIWOutputFileListWorker;
-import fileListWorkers.FileListWorker;
-import fileListWorkers.DICOMFileListWorker;
+import fileDownloads.ROIFileListWorker;
+import fileDownloads.MRIWOutputFileListWorker;
+import fileDownloads.FileListWorker;
+import fileDownloads.DICOMFileListWorker;
 import exceptions.XNATException;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
@@ -63,6 +63,8 @@ import javax.swing.JOptionPane;
 import org.apache.log4j.Logger;
 import org.netbeans.swing.outline.Outline;
 import treeTable.DAOOutline;
+import xnatDAO.ThumbnailPreview;
+import xnatDAO.XNATDAO;
 import xnatRestToolkit.XNATRESTToolkit;
 import xnatRestToolkit.XNATServerConnection;
 

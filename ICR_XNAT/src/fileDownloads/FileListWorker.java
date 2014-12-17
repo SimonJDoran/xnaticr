@@ -46,7 +46,7 @@
 * when the task is completed.
 *********************************************************************/
 
-package fileListWorkers;
+package fileDownloads;
 
 import configurationLists.DAOOutputDefinitionsList;
 import configurationLists.DAOOutputFormatsList;
@@ -68,7 +68,6 @@ import org.netbeans.swing.outline.OutlineModel;
 import treeTable.DAOMutableTreeNode;
 import treeTable.DAOOutline;
 import treeTable.DAOTreeNodeUserObject;
-import xnatDAO.DAOOutput;
 import configurationLists.DAOSearchableElementsList;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -77,6 +76,8 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
 import xnatDAO.ThumbnailPreview;
 import xnatDAO.XNATDAO;
 import xnatRestToolkit.XNATRESTToolkit;
@@ -85,22 +86,27 @@ import xnatRestToolkit.XNATServerConnection;
 
 public class FileListWorker extends SwingWorker<ArrayList<ArrayList<File>>, String>
 {
-   static    Logger               logger = Logger.getLogger(FileListWorker.class);
-   protected XNATDAO              xndao;
-   protected DAOOutput            daoo;
-   protected XNATServerConnection xnsc;
-   protected DAOOutline           outline;
-   protected ThumbnailPreview     preview;
-   protected String               rootElement;
-   protected String               cacheDirName;
-   protected DownloadIcon         icon;
-   protected boolean              iconCycling;
-   protected int                  downloadIconRow;
-   protected int                  nFilesToDownload;
-   protected int                  nFilesDownloaded;
-   protected int                  nFileFailures;
-	protected int                  nFilesToGenerate;
-	protected int                  nFilesToOutput;
+   static    Logger                     logger = Logger.getLogger(FileListWorker.class);
+   protected XNATDAO                    xndao;
+   protected DAOOutput                  daoo;
+   protected XNATServerConnection       xnsc;
+   protected DAOOutline                 outline;
+   protected ThumbnailPreview           preview;
+   protected String                     rootElement;
+   protected String                     cacheDirName;
+   protected DownloadIcon               icon;
+   protected boolean                    iconCycling;
+   protected int                        downloadIconRow;
+   protected int                        nFilesToDownload;
+   protected int                        nFilesDownloaded;
+   protected int                        nFileFailures;
+	protected int                        nFilesToGenerate;
+	protected int                        nFilesToOutput;
+	protected int                        nTableLines;
+	protected ArrayList<File>            workingListForCurrentTableLine;
+	protected ArrayList<File>            outputListForCurrentTableLine;
+	protected ArrayList<ArrayList<File>> sourceList;
+	protected ArrayList<ArrayList<File>> outputList;
    
    /**
     * Create a worker thread to return a list of files corresponding to the resources
@@ -134,13 +140,76 @@ public class FileListWorker extends SwingWorker<ArrayList<ArrayList<File>>, Stri
    @Override
    protected ArrayList<ArrayList<File>> doInBackground() throws Exception
    {
-		Map od = getOutputDefinition();
-		downloadResources(od);
+		Map od     = getOutputDefinition();
+		sourceList = downloadResources(od);
 		
-		ArrayList<ArrayList<File>> outputFileList = performActions(od);
+		performActions(od);
 		
-		return outputFileList;
+		// outputList is built up by the executeAction() method of the concrete
+		// DownloadAction classes created as part of the performActions(od) method.
+		return outputList;
 	}
+	
+		
+   @Override
+   protected void done()
+   {
+      hideDownloadArea();
+      
+      try
+      {
+         daoo.distributeList(get());
+      }
+      catch (InterruptedException exIE)
+      {
+         daoo.interrupted();
+      }
+      catch (CancellationException exCA)
+      {
+         daoo.cancelled();
+      }
+      catch (ExecutionException exEE)
+      {
+         JOptionPane.showMessageDialog(xndao,
+              "I was unable to retrieve the local filenames for the  \n"
+                  + "data that you selected for the following reason:\n"
+                  + exEE.getMessage(),
+              "Failed to retrieve filenames",
+              JOptionPane.ERROR_MESSAGE);
+         return;
+      }
+   }
+
+   
+   protected void publishDownloadProgress(String filename)
+   {
+      StringBuilder sb = new StringBuilder();
+      sb.append(nFilesDownloaded);
+      sb.append("/");
+      sb.append(nFilesToDownload);
+      sb.append("/");
+      sb.append(nFileFailures);
+      sb.append(" ");
+         
+      int len = filename.length();
+      if (len < 17) sb.append(filename);
+      else
+      {
+         sb.append(filename.substring(0, 10));
+         sb.append("...");
+         sb.append(filename.substring(len-2));
+      }
+      publish(sb.toString());
+   }
+   
+   
+   @Override
+   protected void process(List<String> listToProcess)
+   {
+      String lastElement = listToProcess.get(listToProcess.size()-1);
+      xndao.getDownloadDetailsJLabel().setText(lastElement);
+   }
+	
 	
 	protected Map<String, String> getOutputDefinition() throws IOException
 	{
@@ -163,20 +232,16 @@ public class FileListWorker extends SwingWorker<ArrayList<ArrayList<File>>, Stri
 	}
 	
 	
-	protected void downloadThumbnails(Map od)
-	{
-
-		
-	}
-	
-	
-	protected void downloadResources(Map<String, String> od) throws InterruptedException
+	protected ArrayList<ArrayList<File>> downloadResources(Map<String, String> od)
+			         throws InterruptedException, IOException, XNATException
 	{
 		int firstRow    = outline.getSelectionModel().getMinSelectionIndex();
       int lastRow     = outline.getSelectionModel().getMaxSelectionIndex();
-      int nSelections = lastRow - firstRow + 1;
+      nTableLines     = lastRow - firstRow + 1;
 		
-      for (int j=0; j<nSelections; j++)
+		ArrayList<ArrayList<File>> sourceListAllRows = new ArrayList<>();
+		
+      for (int j=0; j<nTableLines; j++)
       {
          // While the selection is being retrieved (potentially from a remote
          // database) change the icon to indicate a download. We send a signal
@@ -198,14 +263,18 @@ public class FileListWorker extends SwingWorker<ArrayList<ArrayList<File>>, Stri
          int modelRow = outline.convertRowIndexToModel(viewRow);
          logger.debug("Row selected in view = " + viewRow + "  Model row = " + modelRow);
 			
-			if (!od.get("resourceName").equals(od.get("thumbnailResourceName")))
+			boolean downloadThumbnailsSeparately = !od.get("resourceName").equals(od.get("thumbnailResourceName"));
+			int nSource = getNumberOfFilesForResourceSet("source", od, modelRow);
+			int nThumb  = getNumberOfFilesForResourceSet("source", od, modelRow);
+			nFilesToDownload = nSource;
+			if (downloadThumbnailsSeparately)
 			{
-				ArrayList<File> thumbnailList = downloadResource("thumbnail", od, modelRow);
+				nFilesToDownload += nThumb;
+				ArrayList<File> thumbnailList = downloadResourceSet("thumbnail", od, modelRow);
 			}
 			
-			ArrayList<File> sourceList = downloadResource("source", od);
+			ArrayList<File> sourceList = downloadResourceSet("source", od, modelRow);
          
-         ArrayList<File> fileList = generateCacheFiles(modelRow, tableColumnElements);
          
          // Send stop signal to icon and wait for it to stop.
          setProgress(DAOOutput.STOP_ICON);
@@ -214,14 +283,10 @@ public class FileListWorker extends SwingWorker<ArrayList<ArrayList<File>>, Stri
             Thread.sleep(100);
          }
 
-         outputFileList.add(fileList);
+         sourceListAllRows.add(sourceList);
       }
-		// If the thumbnails are calculated on-the-fly from the source data
-		// then update the thumbnails in parallel with the main download.
-		// Otherwise, preload the thumbnails.
-		if (!od.get("thumbnailResourceName").equals(od.get("resourceName")))
-			downloadThumbnails(od);
 		
+		return sourceListAllRows;
 	}
 	
 	protected int getNumberOfFilesForResourceSet(String type, Map<String, String> od, int modelRow)
@@ -290,6 +355,7 @@ public class FileListWorker extends SwingWorker<ArrayList<ArrayList<File>>, Stri
 					}
 				}
 				if (success) filesRetrieved.add(retrieved);
+				else nFileFailures++;
 			}
 		}
 		return filesRetrieved;
@@ -323,7 +389,9 @@ public class FileListWorker extends SwingWorker<ArrayList<ArrayList<File>>, Stri
 					if (length < 0) break;
 					bos.write(buf, 0, length);
 				}
-
+				nFilesDownloaded++;
+				setProgress((DAOOutput.STOP_ICON - 1) * nFilesDownloaded / nFilesToDownload);
+				publishDownloadProgress(cacheFile.getName());	
 				logger.debug("Worker ID = " + this.toString() + " Downloaded " + cacheFile.toString());                                
 			}
 			catch (Exception ex)
@@ -476,118 +544,92 @@ public class FileListWorker extends SwingWorker<ArrayList<ArrayList<File>>, Stri
 			
 		return restPrefix.toString();
 	}
+	 
 	
-
-
-	
-	protected ArrayList<ArrayList<File>> performActions(Map<String, String> od)
+	protected void performActions(Map<String, String> od) throws Exception
 	{
+		outputList = new ArrayList<ArrayList<File>>();
 		
+		for (int i=0; i<nTableLines; i++)
+		{	
+			outputListForCurrentTableLine  = new ArrayList<File>();
+			workingListForCurrentTableLine = new ArrayList<File>();
+			// Get all action entries in the output definition.
+			Set<String>       keys    = od.keySet();
+			SortedSet<String> actions = new TreeSet<>();
+			for (String key : keys) if (key.startsWith("action")) actions.add(key);
+		
+			// Perform the actions.
+			DownloadActionFactory af = new DownloadActionFactory();
+			for (String action : actions)
+			{
+				String actionName = od.get(action);
+				af.getAction(actionName).executeAction(this);
+			}
       
-//      nFilesToDownload = calculateNumberOfFilesToDownload(nSelections, firstRow, tableColumnElements);
-//		//nFilesToGenerate = calculateNumberOfFilesToGenerate();
-//		//nFilesToOutput   = calculateNumberOfFilesToOutput();
-//      nFilesDownloaded = 0;
-//      nFileFailures    = 0;
-
-      ArrayList<ArrayList<File>> outputFileList = new ArrayList<ArrayList<File>>();
-
-//      for (int j=0; j<nSelections; j++)
-//      {
-//         // While the selection is being retrieved (potentially from a remote
-//         // database) change the icon to indicate a download. We send a signal
-//         // to the Event Dispatch Thread, then wait using Thread.sleep(100) for
-//         // the EDT to start the icon. Potentially bad practice, but a good
-//         // solution here.
-//         iconCycling     = false;
-//         downloadIconRow = j;
-//         setProgress(DAOOutput.START_ICON);
-//         while (!iconCycling)
-//         {
-//            Thread.sleep(100);
-//         }
-//         
-//         // Note that, if the column has been sorted, then we need to retrieve
-//         // the correct row in the original model here.
-//         int viewRow  = firstRow + j;
-//         int modelRow = outline.convertRowIndexToModel(viewRow);
-//         logger.debug("Row selected in view = " + viewRow + "  Model row = " + modelRow);
-//         
-//         ArrayList<File> fileList = generateCacheFiles(modelRow, tableColumnElements);
-//         
-//         // Send stop signal to icon and wait for it to stop.
-//         setProgress(DAOOutput.STOP_ICON);
-//         while (iconCycling)
-//         {
-//            Thread.sleep(100);
-//         }
-//
-//         outputFileList.add(fileList);
-//      }
-
-      return outputFileList;
+			outputList.add(outputListForCurrentTableLine);
+		}
    }
+	
+	
+	public String getCacheDirName()
+	{
+		return cacheDirName;
+	}
+	
+	
+	public ArrayList<File> getOutputList()
+	{
+		return outputListForCurrentTableLine;
+	}
 
+	
+	public void putOutputList(ArrayList<File> fileList)
+	{
+		outputListForCurrentTableLine = fileList;
+	}
+	
+	
+	public void addToOutputList(ArrayList<File> fileList)
+	{
+		outputListForCurrentTableLine.addAll(fileList);
+	}
+	
+	
+	public void addToOutputList(File file)
+	{
+		outputListForCurrentTableLine.add(file);
+	}
 
-   @Override
-   protected void done()
-   {
-      hideDownloadArea();
-      
-      try
-      {
-         daoo.distributeList(get());
-      }
-      catch (InterruptedException exIE)
-      {
-         daoo.interrupted();
-      }
-      catch (CancellationException exCA)
-      {
-         daoo.cancelled();
-      }
-      catch (ExecutionException exEE)
-      {
-         JOptionPane.showMessageDialog(xndao,
-              "I was unable to retrieve the local filenames for the  \n"
-                  + "data that you selected for the following reason:\n"
-                  + exEE.getMessage(),
-              "Failed to retrieve filenames",
-              JOptionPane.ERROR_MESSAGE);
-         return;
-      }
-   }
-
-   
-   protected void publishDownloadProgress(String filename)
-   {
-      StringBuilder sb = new StringBuilder();
-      sb.append(nFilesDownloaded);
-      sb.append("/");
-      sb.append(nFilesToDownload);
-      sb.append("/");
-      sb.append(nFileFailures);
-      sb.append(" ");
-         
-      int len = filename.length();
-      if (len < 17) sb.append(filename);
-      else
-      {
-         sb.append(filename.substring(0, 10));
-         sb.append("...");
-         sb.append(filename.substring(len-2));
-      }
-      publish(sb.toString());
-   }
-   
-   
-   @Override
-   protected void process(List<String> listToProcess)
-   {
-      String lastElement = listToProcess.get(listToProcess.size()-1);
-      xndao.getDownloadDetailsJLabel().setText(lastElement);
-   }
-   
+	
+	public ArrayList<ArrayList<File>> getSourceList()
+	{
+		return sourceList;
+	}
+	
+	
+	public ArrayList<File> getWorkingList()
+	{
+		return workingListForCurrentTableLine;
+	}
+	
+	
+	public void putWorkingList(ArrayList<File> fileList)
+	{
+		workingListForCurrentTableLine = fileList;
+	}
+	
+	
+	public void addToWorkingList(ArrayList<File> fileList)
+	{
+		workingListForCurrentTableLine.addAll(fileList);
+	}
+	
+	public void addToWorkingList(File file)
+	{
+		workingListForCurrentTableLine.add(file);
+	}
+	
    
    // Note that this needs to be executed on the Event Dispatch Thread.
    public void revealDownloadArea()
@@ -646,40 +688,4 @@ public class FileListWorker extends SwingWorker<ArrayList<ArrayList<File>>, Stri
       }
    }
    
-
-	
-	
-//   /**
-//    * Returns the string corresponding to the URL where we need to go to obtain
-//    * the list of filenames. For all root elements, we need to reconstruct an
-//    * initial portion of a REST URL of form /REST/experiments/ID.
-//    * After this, the final portion of the REST URL is dependent on what type
-//    * of data we are retrieving and will be provided by the concrete class.
-//    * @param tableColumnElements
-//    * @param tableRow
-//    * @param isLocal
-//    * @return required URL as a String
-//    */
-//   protected abstract String constructRESTCommand(Vector<String> tableColumnElements,
-//                                                  int            tableRow,
-//                                                  boolean        isLocal);
-//   
-//   
-//   /**
-//    * Organises the subclass-specific elements of the data download.
-//	 * Account for both "straight" file downloads and files that are generated
-//	 * by the system depending on the data output format chosen.
-//    * @param tableColumnElements
-//    * @param tableRow
-//    * @return required URL as a String
-//    */
-//   protected abstract ArrayList<File> generateCacheFiles(int            tableRow,
-//			                                                Vector<String> tableColumnElements,
-//			                                                String         outputFormat);
-//   
-//   
-//   
-//   protected abstract int calculateNumberOfFilesToDownload(int nSets, int firstRow,
-//                                                Vector<String> tableColumnElements)
-//                          throws XNATException;
 }
