@@ -50,10 +50,7 @@ import configurationLists.DAOSearchableElementsList;
 import configurationLists.DAOReturnTypesList;
 import configurationLists.DAOOutputFormatsList;
 import fileDownloads.FileListWorker;
-import com.generationjava.io.xml.PrettyPrinterXmlWriter;
-import com.generationjava.io.xml.SimpleXmlWriter;
 import generalUtilities.ColouredCellRenderer;
-import generalUtilities.SimpleColourTable;
 import generalUtilities.Vector2D;
 import imageUtilities.DownloadIcon;
 import java.awt.Color;
@@ -71,15 +68,11 @@ import java.util.Vector;
 import java.util.concurrent.ExecutionException;
 import javax.swing.*;
 import javax.swing.event.*;
-import javax.swing.table.TableColumnModel;
 import javax.swing.table.TableModel;
-import javax.swing.tree.MutableTreeNode;
 import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
 import org.apache.log4j.Logger;
-import org.apache.log4j.PropertyConfigurator;
 import org.netbeans.swing.outline.Outline;
-import org.netbeans.swing.outline.OutlineModel;
 import treeTable.DAOTreeTableSettings.SettingsForSubtype;
 import treeTable.*;
 import xnatRestToolkit.RESTSearchWorker;
@@ -130,6 +123,7 @@ public final class XNATDAO extends XNATGUI
       populateSettingsJComboBox();
       updateLeafComboBox();
       implementRestrictions();
+		setTypeSubtype("Set of images", "MR image set", true);
       setDefaultSearch();
       downloadingJLabel.setVisible(false);
       downloadDetailsJLabel.setVisible(false);
@@ -1596,6 +1590,7 @@ public final class XNATDAO extends XNATGUI
 	public boolean formatIsSelectable(String format)
    {
       if ((format.equals("Source DICOM"))  ||
+			 (format.equals("Single zipped DICOM")) ||
           (format.equals("DICOM-RT structure set (one per ROI selected)")) ||
           (format.equals("DICOM-RT structure set (all ROIs in single RT-STRUCT)"))  ||
           (format.equals("DICOM-RT structure set"))   ||

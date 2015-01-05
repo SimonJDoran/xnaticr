@@ -66,6 +66,7 @@ public class GenerateZipDownloadAction implements DownloadAction
 		// generation is actually done only once for all the table lines.
 		if (caller.getOutputList().isEmpty())
 		{
+			caller.publishFromOutsidePackage("Generating ZIP file ...");
 			// Zip files may be composites of multiple different files and may
 			// contain different patients, scans, assessors, etc. Hence, they do
 			// not have an obvious "unique" place in the hierarchy. So, place
@@ -88,6 +89,7 @@ public class GenerateZipDownloadAction implements DownloadAction
 
 			for (int i=0; i<zipList.size(); i++)
 			{
+				caller.setProgressFromOutsidePackage((DAOOutput.STOP_ICON - 1) * i / zipList.size());
 				File f = zipList.get(i);
 				
 				if (!f.isDirectory())

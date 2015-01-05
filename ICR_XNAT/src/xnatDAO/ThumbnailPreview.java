@@ -45,6 +45,8 @@
 * by image.
 *********************************************************************/
 
+// TODO: Suggest refactoring to rationalise repeated code.
+
 package xnatDAO;
 
 import exceptions.ImageUtilitiesException;
@@ -64,6 +66,8 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.ShortBuffer;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.ConcurrentModificationException;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -73,19 +77,45 @@ import javax.imageio.ImageIO;
 import javax.swing.Timer;
 import org.apache.log4j.Logger;
 import org.dcm4che2.data.BasicDicomObject;
+import org.dcm4che2.data.Tag;
 import org.dcm4che2.io.DicomInputStream;
 import org.dcm4che2.iod.module.composite.ImagePixel;
 import org.fife.ui.rsyntaxtextarea.SyntaxConstants;
 
 public class ThumbnailPreview extends ThumbnailDisplayPanel implements ActionListener
 {
-   static  Logger        logger     = Logger.getLogger(ThumbnailPreview.class);
-   private boolean       cancelled  = false;
-   private Timer         timer      = null;
-   private int           imageCount = 0;
-   private String        fileText;
-   private BufferedImage blankImage;
-
+   static  Logger            logger     = Logger.getLogger(ThumbnailPreview.class);
+   private boolean           cancelled  = false;
+   private Timer             timer      = null;
+   private int               imageCount = 0;
+   private String            fileText;
+   private BufferedImage     blankImage;
+	
+	public class FileOrdering 
+	{
+		File  file;
+		float orderingParameter;
+		
+		public FileOrdering(File f, float op)
+		{
+			file = f;
+			orderingParameter = op;
+		}
+	}
+	
+	public class FileComparator implements Comparator<FileOrdering>
+	{
+		@Override
+		public int compare(FileOrdering o1, FileOrdering o2)
+		{
+        if (o1.orderingParameter == o2.orderingParameter) return 0;
+		  if (o1.orderingParameter > o2.orderingParameter)  return 1;
+		  else return -1;
+		}
+	}
+	
+	private ArrayList<FileOrdering>            ordering;
+	
    private LinkedHashMap<File, BufferedImage> fileImageMap;
 
    private static final int DEFAULT_DELAY  = 100;
@@ -98,7 +128,8 @@ public class ThumbnailPreview extends ThumbnailDisplayPanel implements ActionLis
 
    public ThumbnailPreview()
    {
-      fileImageMap = new LinkedHashMap<File, BufferedImage>(); 
+      fileImageMap = new LinkedHashMap<File, BufferedImage>();
+		ordering     = new ArrayList<FileOrdering>();
       timer        = new Timer(DEFAULT_DELAY, this);
       blankImage   = new BufferedImage(PANEL_SIZE, PANEL_SIZE, BufferedImage.TYPE_INT_ARGB);
    }
@@ -126,6 +157,8 @@ public class ThumbnailPreview extends ThumbnailDisplayPanel implements ActionLis
             try
             {
                fileImageMap.put(file, readDICOMFile(file));
+					// Ordering needs access to DICOM header, so is set in readDICOMFile().
+					Collections.sort(ordering, new FileComparator());
             }
             catch (IOException exIO)
             {
@@ -141,6 +174,7 @@ public class ThumbnailPreview extends ThumbnailDisplayPanel implements ActionLis
             try
             {
                fileText = readTextFile(file, MAX_TEXT_LINES);
+					ordering.add(new FileOrdering(file, 0)); // No preferred ordering
             }
             catch (IOException exIO)
             {
@@ -159,6 +193,7 @@ public class ThumbnailPreview extends ThumbnailDisplayPanel implements ActionLis
             try
             {
                fileImageMap.put(file, readPNGFile(file));
+					ordering.add(new FileOrdering(file, 0)); // No preferred ordering
             }
             catch (IOException exIO)
             {
@@ -173,7 +208,8 @@ public class ThumbnailPreview extends ThumbnailDisplayPanel implements ActionLis
    }
    
    
-   public synchronized int loadImages(ArrayList<ArrayList<File>> imageFileList)
+   @Deprecated
+	public synchronized int loadImages(ArrayList<ArrayList<File>> imageFileList)
    {
       boolean changed = false;
 
@@ -322,6 +358,8 @@ public class ThumbnailPreview extends ThumbnailDisplayPanel implements ActionLis
          logger.warn(message);
          throw new IOException(message);
       }
+		
+		ordering.add(new FileOrdering(imageFile, bdo.getFloat(Tag.SliceLocation)));
 
       return dest;
    }
@@ -360,28 +398,34 @@ public class ThumbnailPreview extends ThumbnailDisplayPanel implements ActionLis
          repaint();
          return;
       }
-
-      Set<Map.Entry<File, BufferedImage>> mapEntries = fileImageMap.entrySet();
-      Iterator<Map.Entry<File, BufferedImage>> ime = mapEntries.iterator();
-      
-      // In my original method, I made the set iterator ime an instance
-      // variable and kept track of it between Timer events. However, this
-      // leads to ConcurrentModificationException problems when the method
-      // addImage tries to modify fileImageMap. Here, I regenerate ime
-      // each time, but keep track of which number in the sequence we are
-      // at via the variable imageCount. imageCount can potentially become
-      // greater than the number of images available if fileImageMap has
-      // been reset to a different list of files between calls. In this
-      // case, simply restart the display at zero and continue.
-      if (imageCount > fileImageMap.size()-1) imageCount = 0;
-      
-      // Skip the images we have already displayed.
-      for (int i=0; i<imageCount; i++) ime.next();
-
-      setImage(ime.next().getValue());
-      repaint();
-
-      imageCount++;
+		
+// Original prior to introduction of image ordering.
+//      Set<Map.Entry<File, BufferedImage>> mapEntries = fileImageMap.entrySet();
+//      Iterator<Map.Entry<File, BufferedImage>> ime = mapEntries.iterator();
+//      
+//      // In my original method, I made the set iterator ime an instance
+//      // variable and kept track of it between Timer events. However, this
+//      // leads to ConcurrentModificationException problems when the method
+//      // addImage tries to modify fileImageMap. Here, I regenerate ime
+//      // each time, but keep track of which number in the sequence we are
+//      // at via the variable imageCount. imageCount can potentially become
+//      // greater than the number of images available if fileImageMap has
+//      // been reset to a different list of files between calls. In this
+//      // case, simply restart the display at zero and continue.
+//      if (imageCount > fileImageMap.size()-1) imageCount = 0;
+//      
+//      // Skip the images we have already displayed.
+//      for (int i=0; i<imageCount; i++) ime.next();
+//
+//      setImage(ime.next().getValue());
+//      repaint();
+//
+//      imageCount++;
+		
+		if (imageCount > fileImageMap.size()-1) imageCount = 0;
+		setImage(fileImageMap.get(ordering.get(imageCount).file));
+		repaint();
+		imageCount++;
    }
 
 

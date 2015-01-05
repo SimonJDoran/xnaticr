@@ -130,7 +130,7 @@ public class DAOTreeTableSettingsList extends ArrayList<DAOTreeTableSettings>
    protected void readDefaultSettings()
    {
       InputStream resourceIs 
-         = XNATDAO.class.getResourceAsStream("projectResources/defaultTableSettings.xml");
+         = XNATDAO.class.getResourceAsStream("projectResources/DAO_defaultTableSettings.xml");
 
       if (resourceIs == null)
       {

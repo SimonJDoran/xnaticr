@@ -81,7 +81,7 @@ public class DAOOutputDefinitionsList extends SingletonListFromTwoLevelXML
    @Override
    public void setVariables()
    {
-      XMLResourceName = "projectResources/DAOOutputDefinitionsList.xml";
+      XMLResourceName = "projectResources/DAO_outputDefinitions.xml";
       rootName        = "XNAT_DAO_outputDefinitions";
       outer           = "DAO_outputFormat";
       outAttr         = "code";
@@ -89,7 +89,7 @@ public class DAOOutputDefinitionsList extends SingletonListFromTwoLevelXML
       inAttr          = "name";
 
       errorMessageLog = "The output definitions file did not contain the correct data.";
-      errorMessageIOE = "Unable to retrieve list of definitions of the data output formats";
+      errorMessageIOE = "Unable to retrieve list of definitions of the data output definitions";
    }
 
    public LinkedHashMap<String, Vector<String>> getOutputDefinitions()

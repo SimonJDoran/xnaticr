@@ -40,6 +40,8 @@
 * 
 * SwingWorker class that manages the loading of preview thumbnails
 * on a worker thread
+* 
+* Class now obselete???? No references found?
 *********************************************************************/
 
 package xnatDAO;

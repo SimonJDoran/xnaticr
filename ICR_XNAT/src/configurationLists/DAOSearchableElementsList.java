@@ -83,7 +83,7 @@ public class DAOSearchableElementsList extends SingletonListFromTwoLevelXML
    @Override
    public void setVariables()
    {
-      XMLResourceName = "projectResources/searchableXNATElements.xml";
+      XMLResourceName = "projectResources/DAO_searchableXNATElements.xml";
       rootName        = "XNATSearchRootElements";
       outer           = "XNATSearchRootElement";
       outAttr         = "element";

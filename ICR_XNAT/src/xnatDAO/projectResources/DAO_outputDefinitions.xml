@@ -37,7 +37,17 @@
 
 <XNAT_DAO_outputDefinitions>
     
+	<DAO_outputFormat code="DicomImageForSession">
+      <DAO_outputFormatProperty name="restTemplate">/data/archive/experiments/$ID</DAO_outputFormatProperty>
+      <DAO_outputFormatProperty name="sourceName">DICOM</DAO_outputFormatProperty> 
+		<DAO_outputFormatProperty name="sourceFormat">DICOM</DAO_outputFormatProperty>
+		<DAO_outputFormatProperty name="action1">toDicomEdit</DAO_outputFormatProperty>
+		<DAO_outputFormatProperty name="thumbnailName">XNAT XML</DAO_outputFormatProperty>
+		<DAO_outputFormatProperty name="thumbnailFormat">XML</DAO_outputFormatProperty>
+   </DAO_outputFormat>
+	
 	<DAO_outputFormat code="SendDicomSession">
+      <DAO_outputFormatProperty name="restTemplate">/data/archive/experiments/$ID</DAO_outputFormatProperty>
       <DAO_outputFormatProperty name="sourceName">DICOM</DAO_outputFormatProperty> 
 		<DAO_outputFormatProperty name="sourceFormat">DICOM</DAO_outputFormatProperty>
 		<DAO_outputFormatProperty name="action1">toDicomEdit</DAO_outputFormatProperty>
@@ -47,6 +57,7 @@
    </DAO_outputFormat>
 	
 	<DAO_outputFormat code="AnonSendDicomSession">
+      <DAO_outputFormatProperty name="restTemplate">/data/archive/experiments/$ID</DAO_outputFormatProperty>
       <DAO_outputFormatProperty name="sourceName">DICOM</DAO_outputFormatProperty> 
 		<DAO_outputFormatProperty name="sourceFormat">DICOM</DAO_outputFormatProperty>
 		<DAO_outputFormatProperty name="action1">toDicomEdit</DAO_outputFormatProperty>
@@ -56,6 +67,7 @@
    </DAO_outputFormat>
 	
 	<DAO_outputFormat code="ZipCompleteSession">
+      <DAO_outputFormatProperty name="restTemplate">/data/archive/experiments/$ID</DAO_outputFormatProperty>
       <DAO_outputFormatProperty name="sourceName">*Any*</DAO_outputFormatProperty> 
 		<DAO_outputFormatProperty name="sourceFormat">*Any*</DAO_outputFormatProperty>
 		<DAO_outputFormatProperty name="action1">generateZip</DAO_outputFormatProperty>
@@ -68,12 +80,12 @@
 		<DAO_outputFormatProperty name="restTemplate">/data/archive/experiments/$image_session_ID/scans/$ID/resources</DAO_outputFormatProperty>
       <DAO_outputFormatProperty name="sourceName">DICOM</DAO_outputFormatProperty> 
 		<DAO_outputFormatProperty name="sourceFormat">DICOM</DAO_outputFormatProperty>
-		<DAO_outputFormatProperty name="action">toCache</DAO_outputFormatProperty>
+		<DAO_outputFormatProperty name="action1">toCache</DAO_outputFormatProperty>
 		<DAO_outputFormatProperty name="thumbnailName">DICOM</DAO_outputFormatProperty>
 		<DAO_outputFormatProperty name="thumbnailFormat">DICOM</DAO_outputFormatProperty>
    </DAO_outputFormat>
 	
-	<DAO_outputFormat code="zDicomImage">
+	<DAO_outputFormat code="ZipDicomImage">
       <DAO_outputFormatProperty name="restTemplate">/data/archive/experiments/$image_session_ID/scans/$ID/resources</DAO_outputFormatProperty>
       <DAO_outputFormatProperty name="sourceName">DICOM</DAO_outputFormatProperty> 
 		<DAO_outputFormatProperty name="sourceFormat">DICOM</DAO_outputFormatProperty>

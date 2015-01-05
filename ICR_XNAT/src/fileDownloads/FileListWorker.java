@@ -201,6 +201,18 @@ public class FileListWorker extends SwingWorker<ArrayList<ArrayList<File>>, Stri
       }
       publish(sb.toString());
    }
+	
+	
+	public void publishFromOutsidePackage(String textToPublish)
+	{
+		publish(textToPublish);
+	}
+	
+	
+	public void setProgressFromOutsidePackage(int progValue)
+	{
+		setProgress(progValue);
+	}
    
    
    @Override
@@ -230,6 +242,7 @@ public class FileListWorker extends SwingWorker<ArrayList<ArrayList<File>>, Stri
 		
 		return odl.getMap().get(formatChosen);
 	}
+	
 	
 	
 	protected ArrayList<ArrayList<File>> downloadResources(Map<String, String> od)
@@ -263,18 +276,27 @@ public class FileListWorker extends SwingWorker<ArrayList<ArrayList<File>>, Stri
          int modelRow = outline.convertRowIndexToModel(viewRow);
          logger.debug("Row selected in view = " + viewRow + "  Model row = " + modelRow);
 			
-			boolean downloadThumbnailsSeparately = !od.get("resourceName").equals(od.get("thumbnailResourceName"));
-			int nSource = getNumberOfFilesForResourceSet("source", od, modelRow);
-			int nThumb  = getNumberOfFilesForResourceSet("source", od, modelRow);
-			nFilesToDownload = nSource;
-			if (downloadThumbnailsSeparately)
+			// Sessions need to be handled differently from other items, as they
+			// are further up the hierarchy and do not have resources directly
+			// underneath.
+			if (rootElement.contains("Session"))
 			{
-				nFilesToDownload += nThumb;
-				ArrayList<File> thumbnailList = downloadResourceSet("thumbnail", od, modelRow);
+				
 			}
-			
-			ArrayList<File> sourceList = downloadResourceSet("source", od, modelRow);
-         
+			else // Each row represents a single item to download.
+			{
+				boolean downloadThumbnailsSeparately = !od.get("sourceName").equals(od.get("thumbnailName"));
+				int nSource = getNumberOfFilesForResourceSet("source", od, modelRow);
+				int nThumb  = getNumberOfFilesForResourceSet("thumbnail", od, modelRow);
+				nFilesToDownload = nSource;
+				if (downloadThumbnailsSeparately)
+				{
+					nFilesToDownload += nThumb;
+					ArrayList<File> thumbnailList = downloadResourceSet("thumbnail", od, modelRow);
+				}
+
+				ArrayList<File> sourceList = downloadResourceSet("source", od, modelRow);
+			}
          
          // Send stop signal to icon and wait for it to stop.
          setProgress(DAOOutput.STOP_ICON);
@@ -356,6 +378,7 @@ public class FileListWorker extends SwingWorker<ArrayList<ArrayList<File>>, Stri
 				}
 				if (success) filesRetrieved.add(retrieved);
 				else nFileFailures++;
+				setProgress((DAOOutput.STOP_ICON - 1) * nFilesDownloaded / nFilesToDownload);
 			}
 		}
 		return filesRetrieved;
@@ -389,10 +412,9 @@ public class FileListWorker extends SwingWorker<ArrayList<ArrayList<File>>, Stri
 					if (length < 0) break;
 					bos.write(buf, 0, length);
 				}
-				nFilesDownloaded++;
-				setProgress((DAOOutput.STOP_ICON - 1) * nFilesDownloaded / nFilesToDownload);
-				publishDownloadProgress(cacheFile.getName());	
-				logger.debug("Worker ID = " + this.toString() + " Downloaded " + cacheFile.toString());                                
+				nFilesDownloaded++;	
+				logger.debug("Worker ID = " + this.toString() + " Downloaded " + cacheFile.toString());
+				publishDownloadProgress(cacheFile.getName());
 			}
 			catch (Exception ex)
 			{
@@ -417,7 +439,7 @@ public class FileListWorker extends SwingWorker<ArrayList<ArrayList<File>>, Stri
 	protected ArrayList<String> getFilenamesForResource(String resourceName, String restPrefix)
 			                      throws XNATException
 	{
-		String restCommand = restPrefix + "/" + resourceName + "/files";
+		String restCommand = restPrefix + "/" + resourceName + "/files?format=xml";
 		Vector2D resultSet;
 		try
 		{
@@ -430,7 +452,7 @@ public class FileListWorker extends SwingWorker<ArrayList<ArrayList<File>>, Stri
 			throw new XNATException(XNATException.RETRIEVING_LIST);
 		}
 		
-		return new ArrayList<String>(resultSet.getColumn(1));
+		return new ArrayList<String>(resultSet.getColumn(2));
 	}
 	
 	
@@ -520,18 +542,12 @@ public class FileListWorker extends SwingWorker<ArrayList<ArrayList<File>>, Stri
 
 		StringBuilder restPrefix = new StringBuilder(od.get("restTemplate"));
 		
-		ArrayList<Integer> occurrences = new ArrayList<>();
-		for (int i=0; i<restPrefix.length(); i++)
-		{
-			if (restPrefix.charAt(i) == '$') occurrences.add(i);
-		}
-		
       OutlineModel omdl    = outline.getOutlineModel();
-		for (int i=0; i<occurrences.size(); i++)
+		int startPos;
+		while ((startPos = restPrefix.indexOf("$")) != -1)
 		{
-			int    startPos  = occurrences.get(i);
 			int    nextSlash = restPrefix.substring(startPos).indexOf('/');
-			String token     = restPrefix.substring(startPos, nextSlash);
+			String token     = restPrefix.substring(startPos+1, startPos+nextSlash);
 			String expXPath  = rootElement + "/" + token;
 			int    expIndex  = tableColumnElements.indexOf(expXPath);
 			

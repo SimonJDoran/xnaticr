@@ -59,7 +59,7 @@
 	
 	<DAO_subtype alias="MR image set">
       <DAO_outputFormat alias="Source DICOM">DicomImage</DAO_outputFormat>
-		<DAO_outputFormat alias="Single zipped DICOM">zDicomImage</DAO_outputFormat>
+		<DAO_outputFormat alias="Single zipped DICOM">ZipDicomImage</DAO_outputFormat>
 		<DAO_outputFormat alias="NIFTI .nii">niiNIFTI</DAO_outputFormat>
 		<DAO_outputFormat alias="XNAT scan XML">XNATscanXML</DAO_outputFormat>
    </DAO_subtype>
