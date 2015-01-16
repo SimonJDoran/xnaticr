@@ -56,7 +56,6 @@ import imageUtilities.DownloadIcon;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Vector;
 import java.util.concurrent.CancellationException;
@@ -73,7 +72,6 @@ import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.FileOutputStream;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.SortedSet;
@@ -102,11 +100,12 @@ public class FileListWorker extends SwingWorker<ArrayList<ArrayList<File>>, Stri
    protected int                        nFileFailures;
 	protected int                        nFilesToGenerate;
 	protected int                        nFilesToOutput;
-	protected int                        nTableLines;
-	protected ArrayList<File>            workingListForCurrentTableLine;
-	protected ArrayList<File>            outputListForCurrentTableLine;
-	protected ArrayList<ArrayList<File>> sourceList;
-	protected ArrayList<ArrayList<File>> outputList;
+	protected int                        nTableRows;
+	protected ArrayList<File>            workingListCurrentRow;
+	protected ArrayList<File>            outputListCurrentRow;
+	protected ArrayList<File>            sourceListCurrentRow;
+	protected ArrayList<ArrayList<File>> sourceListAllRows;
+	protected ArrayList<ArrayList<File>> outputListAllRows;
    
    /**
     * Create a worker thread to return a list of files corresponding to the resources
@@ -140,14 +139,14 @@ public class FileListWorker extends SwingWorker<ArrayList<ArrayList<File>>, Stri
    @Override
    protected ArrayList<ArrayList<File>> doInBackground() throws Exception
    {
-		Map od     = getOutputDefinition();
-		sourceList = downloadResources(od);
+		Map od            = getOutputDefinition();
+		sourceListAllRows = downloadResources(od);
 		
 		performActions(od);
 		
 		// outputList is built up by the executeAction() method of the concrete
 		// DownloadAction classes created as part of the performActions(od) method.
-		return outputList;
+		return outputListAllRows;
 	}
 	
 		
@@ -176,7 +175,6 @@ public class FileListWorker extends SwingWorker<ArrayList<ArrayList<File>>, Stri
                   + exEE.getMessage(),
               "Failed to retrieve filenames",
               JOptionPane.ERROR_MESSAGE);
-         return;
       }
    }
 
@@ -250,11 +248,11 @@ public class FileListWorker extends SwingWorker<ArrayList<ArrayList<File>>, Stri
 	{
 		int firstRow    = outline.getSelectionModel().getMinSelectionIndex();
       int lastRow     = outline.getSelectionModel().getMaxSelectionIndex();
-      nTableLines     = lastRow - firstRow + 1;
+      nTableRows     = lastRow - firstRow + 1;
 		
-		ArrayList<ArrayList<File>> sourceListAllRows = new ArrayList<>();
+		sourceListAllRows = new ArrayList<>();
 		
-      for (int j=0; j<nTableLines; j++)
+      for (int j=0; j<nTableRows; j++)
       {
          // While the selection is being retrieved (potentially from a remote
          // database) change the icon to indicate a download. We send a signal
@@ -281,21 +279,42 @@ public class FileListWorker extends SwingWorker<ArrayList<ArrayList<File>>, Stri
 			// underneath.
 			if (rootElement.contains("Session"))
 			{
-				
+				boolean downloadThumbnailsSeparately = !od.get("sourceName").equals(od.get("thumbnailName"));
+				ArrayList<String> scanIDs = getScanIDsForSession(modelRow);
+				for (String scanID : scanIDs)
+				{
+					String restPrefix = constructRestPrefix("source", od, modelRow, scanID); 
+					int    nSource    = getNumberOfFilesForResourceSet("source", od, restPrefix);
+					int    nThumb     = getNumberOfFilesForResourceSet("thumbnail", od, restPrefix);
+					nFilesToDownload += nSource;
+					if (downloadThumbnailsSeparately)
+					{
+						nFilesToDownload += nThumb;
+						sourceListCurrentRow.addAll(downloadResourceSet("thumbnail", od, restPrefix));
+					}
+
+					sourceListCurrentRow.addAll(downloadResourceSet("source", od, restPrefix));
+				}
 			}
-			else // Each row represents a single item to download.
+			else // Each row represents a single item under which there are
+			     // resources to download.
 			{
 				boolean downloadThumbnailsSeparately = !od.get("sourceName").equals(od.get("thumbnailName"));
-				int nSource = getNumberOfFilesForResourceSet("source", od, modelRow);
-				int nThumb  = getNumberOfFilesForResourceSet("thumbnail", od, modelRow);
-				nFilesToDownload = nSource;
+				
+				String restPrefix = constructRestPrefix("source", od, modelRow, null);
+				int nSource       = getNumberOfFilesForResourceSet("source", od, restPrefix);
+				
+				restPrefix        = constructRestPrefix("thumbnail", od, modelRow, null);
+				int nThumb        = getNumberOfFilesForResourceSet("thumbnail", od, restPrefix);
+				
+				nFilesToDownload  = nSource;
 				if (downloadThumbnailsSeparately)
 				{
 					nFilesToDownload += nThumb;
-					ArrayList<File> thumbnailList = downloadResourceSet("thumbnail", od, modelRow);
+					sourceListCurrentRow.addAll(downloadResourceSet("thumbnail", od, restPrefix));
 				}
 
-				ArrayList<File> sourceList = downloadResourceSet("source", od, modelRow);
+				sourceListCurrentRow.addAll(downloadResourceSet("source", od, restPrefix));
 			}
          
          // Send stop signal to icon and wait for it to stop.
@@ -305,19 +324,18 @@ public class FileListWorker extends SwingWorker<ArrayList<ArrayList<File>>, Stri
             Thread.sleep(100);
          }
 
-         sourceListAllRows.add(sourceList);
+         sourceListAllRows.add(sourceListCurrentRow);
       }
 		
 		return sourceListAllRows;
 	}
 	
-	protected int getNumberOfFilesForResourceSet(String type, Map<String, String> od, int modelRow)
+	protected int getNumberOfFilesForResourceSet(String type, Map<String, String> od,
+			                                       String restPrefix)
 			        throws IOException, XNATException
 	{
-		String restPrefix = constructRestPrefix(type, od, modelRow);
-
 		// Check for multiple elements in the name and format entries.
-		HashMap<String, String> nameFormat       = getNameAndFormatMap(type, od, modelRow);
+		HashMap<String, String> nameFormat       = getNameAndFormatMap(type, od, restPrefix);
 		Set<String>             resourceNames    = nameFormat.keySet();
 		ArrayList<String>       filesForResource = new ArrayList<>();
 		
@@ -343,13 +361,12 @@ public class FileListWorker extends SwingWorker<ArrayList<ArrayList<File>>, Stri
 	 * @param modelRow the row of the table in the UI currently being worked on
 	 * @return an ArrayList of cache files containing the data downloaded
 	 */
-	protected ArrayList<File> downloadResourceSet(String type, Map<String, String> od, int modelRow)
+	protected ArrayList<File> downloadResourceSet(String type, Map<String, String> od,
+			                                        String restPrefix)
 			    throws IOException, XNATException
 	{
-		String restPrefix = constructRestPrefix(type, od, modelRow);
-
 		// Check for multiple elements in the name and format entries.
-		HashMap<String, String> nameFormat     = getNameAndFormatMap(type, od, modelRow);
+		HashMap<String, String> nameFormat     = getNameAndFormatMap(type, od, restPrefix);
 		Set<String>             resourceNames  = nameFormat.keySet();
 		ArrayList<File>         filesRetrieved = new ArrayList<>();
 		
@@ -457,7 +474,8 @@ public class FileListWorker extends SwingWorker<ArrayList<ArrayList<File>>, Stri
 	
 	
 	
-	protected HashMap<String, String> getNameAndFormatMap(String type, Map<String, String> od, int modelRow)
+	protected HashMap<String, String> getNameAndFormatMap(String type, Map<String, String> od,
+			                                                String restPrefix)
 			                            throws XNATException, IOException
 	{
 		// First check the formats specified in the XML defining the output type.
@@ -497,7 +515,6 @@ public class FileListWorker extends SwingWorker<ArrayList<ArrayList<File>>, Stri
 		HashMap<String, String> nameFormatMap = new HashMap<>();
 		
 		// Return only those resources that are present in the archive.
-		String restPrefix  = constructRestPrefix(type, od, modelRow);
 		String restCommand = restPrefix + "?format=xml";
 		
 		Vector2D resultSet;
@@ -524,6 +541,32 @@ public class FileListWorker extends SwingWorker<ArrayList<ArrayList<File>>, Stri
 	}
 
 	
+	protected ArrayList<String> getScanIDsForSession(int modelRow)
+			    throws IOException, XNATException
+	{
+		DAOSearchableElementsList sel      = DAOSearchableElementsList.getSingleton();
+      Vector<String> tableColumnElements = sel.getSearchableXNATElements().get(rootElement);
+		OutlineModel  omdl                 = outline.getOutlineModel();
+		String        expXPath             = rootElement + "/ID";
+		int           expIndex             = tableColumnElements.indexOf(expXPath);
+		String        sessionID            = (String) omdl.getValueAt(modelRow, expIndex+1);
+		String        restCommand          = "/data/archive/" + sessionID + "?format=xml";
+		
+		Vector2D resultSet;
+		try
+		{
+			resultSet = (new XNATRESTToolkit(xnsc)).RESTGetResultSet(restCommand.toString());
+		}
+		catch(XNATException exXNAT)
+		{
+			logger.warn("Problem retrieving list of scans for session "
+					       + sessionID + "from XNAT");
+			throw new XNATException(XNATException.RETRIEVING_LIST);
+		}
+		
+		return new ArrayList<String>(resultSet.getColumn(2));
+	}
+	
 	/**
 	 * Build up the REST command from the information in the table by
 	 * extracting the fields specified by the template.
@@ -534,7 +577,8 @@ public class FileListWorker extends SwingWorker<ArrayList<ArrayList<File>>, Stri
 	 * in the resource being extracted
 	 * @throws IOException 
 	 */
-	protected String constructRestPrefix(String type, Map<String, String> od, int modelRow)
+	protected String constructRestPrefix(String type, Map<String, String> od,
+			                               int modelRow, String insert)
 			    throws IOException
 	{
 		DAOSearchableElementsList sel = DAOSearchableElementsList.getSingleton();
@@ -557,6 +601,24 @@ public class FileListWorker extends SwingWorker<ArrayList<ArrayList<File>>, Stri
 			
 			restPrefix.replace(startPos, startPos+nextSlash, replText);
 		}
+		
+		// The purpose of the additional insert argument is to allow a part of
+		// the REST prefix to be generated by a loop around a set of predetermined
+		// values that don't come from the table. The particular use case for
+		// which this is important is downloading session resources. If each line
+		// in the treetable is a session, then we need to iterate around all the
+		// scans in the session and download the resources for each scan, each
+		// assessor, or other element.
+		startPos = restPrefix.indexOf("@");
+		if ((startPos != -1) && (insert != null))
+		{
+			int  nextSlash = restPrefix.substring(startPos).indexOf('/');
+			restPrefix.replace(startPos, startPos+nextSlash, insert);
+		}
+		if (((startPos == -1) && (insert != null)) ||
+			 ((startPos != -1  && (insert == null))))
+			throw new RuntimeException("Programming error: incorrect insertion into REST prefix.");
+				  
 			
 		return restPrefix.toString();
 	}
@@ -564,12 +626,13 @@ public class FileListWorker extends SwingWorker<ArrayList<ArrayList<File>>, Stri
 	
 	protected void performActions(Map<String, String> od) throws Exception
 	{
-		outputList = new ArrayList<ArrayList<File>>();
+		outputListAllRows = new ArrayList<ArrayList<File>>();
 		
-		for (int i=0; i<nTableLines; i++)
+		for (int i=0; i<nTableRows; i++)
 		{	
-			outputListForCurrentTableLine  = new ArrayList<File>();
-			workingListForCurrentTableLine = new ArrayList<File>();
+			outputListCurrentRow      = new ArrayList<File>();
+			workingListCurrentRow     = new ArrayList<File>();
+			
 			// Get all action entries in the output definition.
 			Set<String>       keys    = od.keySet();
 			SortedSet<String> actions = new TreeSet<>();
@@ -582,8 +645,16 @@ public class FileListWorker extends SwingWorker<ArrayList<ArrayList<File>>, Stri
 				String actionName = od.get(action);
 				af.getAction(actionName).executeAction(this);
 			}
-      
-			outputList.add(outputListForCurrentTableLine);
+			
+			String cardinality = od.get("outputCardinality");
+			if (cardinality.equals("OnePerRow"))
+				outputListAllRows.add(outputListCurrentRow);
+			
+			if ((cardinality.equals("Single")) && !outputListCurrentRow.isEmpty())
+			{
+				outputListAllRows.clear();
+				outputListAllRows.add(outputListCurrentRow);
+			}	
 		}
    }
 	
@@ -594,56 +665,80 @@ public class FileListWorker extends SwingWorker<ArrayList<ArrayList<File>>, Stri
 	}
 	
 	
-	public ArrayList<File> getOutputList()
+	public ArrayList<File> getOutputListCurrentRow()
 	{
-		return outputListForCurrentTableLine;
+		return outputListCurrentRow;
 	}
 
 	
-	public void putOutputList(ArrayList<File> fileList)
+	public void putOutputListCurrentRow(ArrayList<File> fileList)
 	{
-		outputListForCurrentTableLine = fileList;
+		outputListCurrentRow = fileList;
 	}
 	
 	
-	public void addToOutputList(ArrayList<File> fileList)
+	public void addAllToOutputListCurrentRow(ArrayList<File> fileList)
 	{
-		outputListForCurrentTableLine.addAll(fileList);
+		outputListCurrentRow.addAll(fileList);
 	}
 	
 	
-	public void addToOutputList(File file)
+	public void addToOutputListCurrentRow(File file)
 	{
-		outputListForCurrentTableLine.add(file);
+		outputListCurrentRow.add(file);
+	}
+	
+	
+	public ArrayList<ArrayList<File>> getOutputListAllRows()
+	{
+		return outputListAllRows;
 	}
 
 	
-	public ArrayList<ArrayList<File>> getSourceList()
+	public void putOutputListAllRows(ArrayList<ArrayList<File>> fileList)
 	{
-		return sourceList;
+		outputListAllRows = fileList;
 	}
 	
 	
-	public ArrayList<File> getWorkingList()
+	public void addAllToOutputListAllRows(ArrayList<ArrayList<File>> fileList)
 	{
-		return workingListForCurrentTableLine;
+		outputListAllRows.addAll(fileList);
 	}
 	
 	
-	public void putWorkingList(ArrayList<File> fileList)
+	public void addToOutputListAllRows(ArrayList<File> fileList)
 	{
-		workingListForCurrentTableLine = fileList;
+		outputListAllRows.add(fileList);
 	}
 	
 	
-	public void addToWorkingList(ArrayList<File> fileList)
+	public ArrayList<ArrayList<File>> getSourceListAllRows()
 	{
-		workingListForCurrentTableLine.addAll(fileList);
+		return sourceListAllRows;
+	}
+	
+	
+	public ArrayList<File> getWorkingListCurrentRow()
+	{
+		return workingListCurrentRow;
+	}
+	
+	
+	public void putWorkingListCurrentRow(ArrayList<File> fileList)
+	{
+		workingListCurrentRow = fileList;
+	}
+	
+	
+	public void addAllToWorkingList(ArrayList<File> fileList)
+	{
+		workingListCurrentRow.addAll(fileList);
 	}
 	
 	public void addToWorkingList(File file)
 	{
-		workingListForCurrentTableLine.add(file);
+		workingListCurrentRow.add(file);
 	}
 	
    

@@ -38,42 +38,46 @@
 <XNAT_DAO_outputDefinitions>
     
 	<DAO_outputFormat code="DicomImageForSession">
-      <DAO_outputFormatProperty name="restTemplate">/data/archive/experiments/$ID</DAO_outputFormatProperty>
+      <DAO_outputFormatProperty name="restTemplate">/data/archive/experiments/$ID/scans/@scanID/resources</DAO_outputFormatProperty>
       <DAO_outputFormatProperty name="sourceName">DICOM</DAO_outputFormatProperty> 
 		<DAO_outputFormatProperty name="sourceFormat">DICOM</DAO_outputFormatProperty>
 		<DAO_outputFormatProperty name="action1">toDicomEdit</DAO_outputFormatProperty>
 		<DAO_outputFormatProperty name="thumbnailName">XNAT XML</DAO_outputFormatProperty>
 		<DAO_outputFormatProperty name="thumbnailFormat">XML</DAO_outputFormatProperty>
+		<DAO_outputFormatProperty name="outputCardinality">OnePerRow</DAO_outputFormatProperty>
    </DAO_outputFormat>
 	
 	<DAO_outputFormat code="SendDicomSession">
-      <DAO_outputFormatProperty name="restTemplate">/data/archive/experiments/$ID</DAO_outputFormatProperty>
+      <DAO_outputFormatProperty name="restTemplate">/data/archive/experiments/$ID/scans/@scanID/resources</DAO_outputFormatProperty>
       <DAO_outputFormatProperty name="sourceName">DICOM</DAO_outputFormatProperty> 
 		<DAO_outputFormatProperty name="sourceFormat">DICOM</DAO_outputFormatProperty>
 		<DAO_outputFormatProperty name="action1">toDicomEdit</DAO_outputFormatProperty>
 		<DAO_outputFormatProperty name="deScript">sendSession.das</DAO_outputFormatProperty>
 		<DAO_outputFormatProperty name="thumbnailName">XNAT XML</DAO_outputFormatProperty>
 		<DAO_outputFormatProperty name="thumbnailFormat">XML</DAO_outputFormatProperty>
+		<DAO_outputFormatProperty name="outputCardinality">None</DAO_outputFormatProperty>
    </DAO_outputFormat>
 	
 	<DAO_outputFormat code="AnonSendDicomSession">
-      <DAO_outputFormatProperty name="restTemplate">/data/archive/experiments/$ID</DAO_outputFormatProperty>
+      <DAO_outputFormatProperty name="restTemplate">/data/archive/experiments/$ID/scans/@scanID/resources</DAO_outputFormatProperty>
       <DAO_outputFormatProperty name="sourceName">DICOM</DAO_outputFormatProperty> 
 		<DAO_outputFormatProperty name="sourceFormat">DICOM</DAO_outputFormatProperty>
 		<DAO_outputFormatProperty name="action1">toDicomEdit</DAO_outputFormatProperty>
 		<DAO_outputFormatProperty name="deScript">anonSendSession.das</DAO_outputFormatProperty>
 		<DAO_outputFormatProperty name="thumbnailName">XNAT XML</DAO_outputFormatProperty>
 		<DAO_outputFormatProperty name="thumbnailFormat">XML</DAO_outputFormatProperty>
+		<DAO_outputFormatProperty name="outputCardinality">None</DAO_outputFormatProperty>
    </DAO_outputFormat>
 	
 	<DAO_outputFormat code="ZipCompleteSession">
-      <DAO_outputFormatProperty name="restTemplate">/data/archive/experiments/$ID</DAO_outputFormatProperty>
+      <DAO_outputFormatProperty name="restTemplate">/data/archive/experiments/$ID/scans/@scanID/resources</DAO_outputFormatProperty>
       <DAO_outputFormatProperty name="sourceName">*Any*</DAO_outputFormatProperty> 
 		<DAO_outputFormatProperty name="sourceFormat">*Any*</DAO_outputFormatProperty>
 		<DAO_outputFormatProperty name="action1">generateZip</DAO_outputFormatProperty>
 		<DAO_outputFormatProperty name="deScript">toCache</DAO_outputFormatProperty>
 		<DAO_outputFormatProperty name="thumbnailName">XNAT XML</DAO_outputFormatProperty>
 		<DAO_outputFormatProperty name="thumbnailFormat">XML</DAO_outputFormatProperty>
+		<DAO_outputFormatProperty name="outputCardinality">Single</DAO_outputFormatProperty>
    </DAO_outputFormat>
 
 	<DAO_outputFormat code="DicomImage">
@@ -83,6 +87,7 @@
 		<DAO_outputFormatProperty name="action1">toCache</DAO_outputFormatProperty>
 		<DAO_outputFormatProperty name="thumbnailName">DICOM</DAO_outputFormatProperty>
 		<DAO_outputFormatProperty name="thumbnailFormat">DICOM</DAO_outputFormatProperty>
+		<DAO_outputFormatProperty name="outputCardinality">OnePerRow</DAO_outputFormatProperty>
    </DAO_outputFormat>
 	
 	<DAO_outputFormat code="ZipDicomImage">
@@ -93,6 +98,7 @@
 		<DAO_outputFormatProperty name="action2">toCache</DAO_outputFormatProperty>
 		<DAO_outputFormatProperty name="thumbnailName">DICOM</DAO_outputFormatProperty>
 		<DAO_outputFormatProperty name="thumbnailFormat">DICOM</DAO_outputFormatProperty>
+		<DAO_outputFormatProperty name="outputCardinality">Single</DAO_outputFormatProperty>
    </DAO_outputFormat>
 	
 	<DAO_outputFormat code="niiNIFTI">
@@ -103,6 +109,7 @@
 		<DAO_outputFormatProperty name="action2">toCache</DAO_outputFormatProperty>
 		<DAO_outputFormatProperty name="thumbnailName">DICOM|NIFTI</DAO_outputFormatProperty>
 		<DAO_outputFormatProperty name="thumbnailFormat">DICOM|NIFTI</DAO_outputFormatProperty>
+		<DAO_outputFormatProperty name="outputCardinality">OnePerRow</DAO_outputFormatProperty>
    </DAO_outputFormat>
 	
 	<DAO_outputFormat code="RtStruct">
@@ -112,6 +119,7 @@
 		<DAO_outputFormatProperty name="action1">toCache</DAO_outputFormatProperty>
 		<DAO_outputFormatProperty name="thumbnailName">ROISET_THUMBNAIL</DAO_outputFormatProperty>
 		<DAO_outputFormatProperty name="thumbnailFormat">PNG</DAO_outputFormatProperty>
+		<DAO_outputFormatProperty name="outputCardinality">OnePerRow</DAO_outputFormatProperty>
    </DAO_outputFormat>
 		
 	<DAO_outputFormat code="sRtStruct">
@@ -122,6 +130,7 @@
 		<DAO_outputFormatProperty name="action2">toCache</DAO_outputFormatProperty>
 		<DAO_outputFormatProperty name="thumbnailName">ROI_THUMBNAIL</DAO_outputFormatProperty>
 		<DAO_outputFormatProperty name="thumbnailFormat">PNG</DAO_outputFormatProperty>
+		<DAO_outputFormatProperty name="outputCardinality">Single</DAO_outputFormatProperty>
    </DAO_outputFormat>
 
 	<DAO_outputFormat code="mRtStruct">
@@ -132,6 +141,7 @@
 		<DAO_outputFormatProperty name="action2">toCache</DAO_outputFormatProperty>
 		<DAO_outputFormatProperty name="thumbnailName">ROI_THUMBNAIL</DAO_outputFormatProperty>
 		<DAO_outputFormatProperty name="thumbnailFormat">PNG</DAO_outputFormatProperty>
+		<DAO_outputFormatProperty name="outputCardinality">OnePerRow</DAO_outputFormatProperty>
    </DAO_outputFormat>
 	
 </XNAT_DAO_outputDefinitions>

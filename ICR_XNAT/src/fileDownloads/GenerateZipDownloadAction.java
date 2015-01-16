@@ -64,7 +64,7 @@ public class GenerateZipDownloadAction implements DownloadAction
 		// Although the action is executed for every row, because of the generalised
 		// nature of the performActions method in FileListWorker.java, the zip
 		// generation is actually done only once for all the table lines.
-		if (caller.getOutputList().isEmpty())
+		if (caller.getOutputListAllRows().isEmpty())
 		{
 			caller.publishFromOutsidePackage("Generating ZIP file ...");
 			// Zip files may be composites of multiple different files and may
@@ -82,7 +82,7 @@ public class GenerateZipDownloadAction implements DownloadAction
 			ZipOutputStream zos     = new ZipOutputStream(new FileOutputStream(zipFile));
 			ArrayList<File> zipList = new ArrayList<>();
 			
-			for (ArrayList<File> al : caller.getSourceList()) zipList.addAll(al);
+			for (ArrayList<File> alf : caller.getSourceListAllRows()) zipList.addAll(alf);
 			
 			byte[] buffer = new byte[128];
 			File   cache  = new File(caller.getCacheDirName());
@@ -112,8 +112,10 @@ public class GenerateZipDownloadAction implements DownloadAction
 				}
 			}
 			
-      zos.close();
-		caller.addToOutputList(zipFile);
+			zos.close();
+			ArrayList<File> alf = new ArrayList<>();
+			alf.add(zipFile);
+			caller.addToOutputListAllRows(alf);
 		}
 	}
 }

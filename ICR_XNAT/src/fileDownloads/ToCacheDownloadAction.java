@@ -54,7 +54,7 @@ public class ToCacheDownloadAction implements DownloadAction
 	@Override
 	public void executeAction(FileListWorker caller)
 	{
-		caller.addToOutputList(caller.getWorkingList());
+		caller.addAllToOutputListCurrentRow(caller.getWorkingListCurrentRow());
 	}
 
 }
