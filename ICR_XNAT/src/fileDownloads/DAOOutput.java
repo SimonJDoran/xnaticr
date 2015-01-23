@@ -132,42 +132,6 @@ public class DAOOutput
    public FileListWorker invoke(String rootElement)
           throws Exception
    {
-//      HashMap<String, Class> map = new HashMap<String, Class>();
-//      map.put("xnat:mrScanData",    DICOMFileListWorker.class);
-//      map.put("xnat:ctScanData",    DICOMFileListWorker.class);
-//      map.put("xnat:petScanData",   DICOMFileListWorker.class);
-//      map.put("icr:mriwOutputData", MRIWOutputFileListWorker.class);
-////      map.put("icr:roiSetData",     ROIFileListWorker.class);
-//      map.put("icr:roiData",        ROIFileListWorker.class);
-//      
-//      if (map.containsKey(rootElement))
-//      {
-//         try
-//         {
-//            Class c = map.get(rootElement);
-// 
-//            Constructor<FileListWorker> con = c.getConstructor(XNATDAO.class,
-//                                                         DAOOutput.class,
-//                                                         XNATServerConnection.class,
-//                                                         DAOOutline.class,
-//                                                         ThumbnailPreview.class,
-//                                                         String.class,
-//                                                         String.class);
-//            
-//            fileListWorker = con.newInstance(xndao, this, xnsc, outline,
-//                                  thumbnailPreview, rootElement, cacheDirName);
-//         }
-//         catch (Exception ex)
-//         {
-//            throw new UnsupportedOperationException("Couldn't instantiate the "
-//                    + "required class \nfor downloading data of type "
-//                    + rootElement + ".\nPlease contact Simon Doran.");
-//         }
-//      }
-//     
-//      
-//      else throw new UnsupportedOperationException("Output type " + rootElement + " not supported yet");
-      
 		fileListWorker = new FileListWorker(xndao, this, xnsc, outline,
                                           thumbnailPreview, rootElement, cacheDirName);
 		
@@ -291,7 +255,7 @@ public class DAOOutput
    public void cancelled()
    {
       currentStatus = "Download cancelled";
-      
+		
       // Now stop the running icon and hide the download area.
       fileListWorker.stopIcon();
       //fileListWorker.hideDownloadArea();

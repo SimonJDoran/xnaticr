@@ -43,7 +43,13 @@
       <property name="tooltip">ID of the XNAT subject under which this MR scan is stored</property>
    </renderProperties>
    
-   <renderProperties element="xnat:mrScanData/image_session_ID">
+   <renderProperties element="xnat:mrSessionData/ID">
+      <property name="Letter">X</property>
+      <property name="Colour">XNAT green</property>
+      <property name="tooltip">Session ID in XNAT database</property>
+   </renderProperties>
+	
+	<renderProperties element="xnat:mrScanData/image_session_ID">
       <property name="Letter">X</property>
       <property name="Colour">XNAT green</property>
       <property name="tooltip">Session ID in XNAT database</property>
@@ -268,7 +274,13 @@
       <property name="tooltip">PET examination protocol: scan type</property>
    </renderProperties>
 
-   <renderProperties element="xnat:petSessionData/date">
+   <renderProperties element="xnat:petSessionData/ID">
+      <property name="Letter">X</property>
+      <property name="Colour">XNAT green</property>
+      <property name="tooltip">Session ID in XNAT database</property>
+   </renderProperties>
+	
+	<renderProperties element="xnat:petSessionData/date">
       <property name="Letter">A</property>
       <property name="Colour">ICR red</property>
       <property name="tooltip">Administration: scan date</property>
@@ -481,7 +493,13 @@
       <property name="tooltip">Subject demographics/administration: name</property>
    </renderProperties>
 
-   <renderProperties element="xnat:ctScanData/type">
+   <renderProperties element="xnat:ctSessionData/ID">
+      <property name="Letter">X</property>
+      <property name="Colour">XNAT green</property>
+      <property name="tooltip">Session ID in XNAT database</property>
+   </renderProperties>
+	
+	<renderProperties element="xnat:ctScanData/type">
       <property name="Letter">P</property>
       <property name="Colour">XNAT blue</property>
       <property name="tooltip">CT examination protocol: scan type</property>

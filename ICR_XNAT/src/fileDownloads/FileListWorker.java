@@ -142,7 +142,7 @@ public class FileListWorker extends SwingWorker<ArrayList<ArrayList<File>>, Stri
 		Map od            = getOutputDefinition();
 		sourceListAllRows = downloadResources(od);
 		
-		performActions(od);
+		if (!isCancelled()) performActions(od);
 		
 		// outputList is built up by the executeAction() method of the concrete
 		// DownloadAction classes created as part of the performActions(od) method.
@@ -193,9 +193,9 @@ public class FileListWorker extends SwingWorker<ArrayList<ArrayList<File>>, Stri
       if (len < 17) sb.append(filename);
       else
       {
-         sb.append(filename.substring(0, 10));
+         sb.append(filename.substring(0, 9));
          sb.append("...");
-         sb.append(filename.substring(len-2));
+         sb.append(filename.substring(len-3));
       }
       publish(sb.toString());
    }
@@ -250,7 +250,8 @@ public class FileListWorker extends SwingWorker<ArrayList<ArrayList<File>>, Stri
       int lastRow     = outline.getSelectionModel().getMaxSelectionIndex();
       nTableRows     = lastRow - firstRow + 1;
 		
-		sourceListAllRows = new ArrayList<>();
+		sourceListAllRows    = new ArrayList<>();
+		sourceListCurrentRow = new ArrayList<>(); 
 		
       for (int j=0; j<nTableRows; j++)
       {
@@ -280,6 +281,8 @@ public class FileListWorker extends SwingWorker<ArrayList<ArrayList<File>>, Stri
 			if (rootElement.contains("Session"))
 			{
 				boolean downloadThumbnailsSeparately = !od.get("sourceName").equals(od.get("thumbnailName"));
+				nFilesDownloaded = 0;
+				nFilesToDownload = 0;
 				ArrayList<String> scanIDs = getScanIDsForSession(modelRow);
 				for (String scanID : scanIDs)
 				{
@@ -287,12 +290,19 @@ public class FileListWorker extends SwingWorker<ArrayList<ArrayList<File>>, Stri
 					int    nSource    = getNumberOfFilesForResourceSet("source", od, restPrefix);
 					int    nThumb     = getNumberOfFilesForResourceSet("thumbnail", od, restPrefix);
 					nFilesToDownload += nSource;
-					if (downloadThumbnailsSeparately)
-					{
-						nFilesToDownload += nThumb;
+					if (downloadThumbnailsSeparately) nFilesToDownload += nThumb;
+				}
+				
+				// We can't do this in the same loop as above, because we need to have the
+				// total number of files to download calculated for all scans before
+				// so that any downloads happen, so that the progress bar works properly.
+				for (String scanID : scanIDs)
+				{
+					String restPrefix = constructRestPrefix("source", od, modelRow, scanID);
+					
+					if (downloadThumbnailsSeparately)					
 						sourceListCurrentRow.addAll(downloadResourceSet("thumbnail", od, restPrefix));
-					}
-
+		
 					sourceListCurrentRow.addAll(downloadResourceSet("source", od, restPrefix));
 				}
 			}
@@ -307,6 +317,7 @@ public class FileListWorker extends SwingWorker<ArrayList<ArrayList<File>>, Stri
 				restPrefix        = constructRestPrefix("thumbnail", od, modelRow, null);
 				int nThumb        = getNumberOfFilesForResourceSet("thumbnail", od, restPrefix);
 				
+				nFilesDownloaded  = 0;
 				nFilesToDownload  = nSource;
 				if (downloadThumbnailsSeparately)
 				{
@@ -377,25 +388,35 @@ public class FileListWorker extends SwingWorker<ArrayList<ArrayList<File>>, Stri
 			ArrayList<String> filenames = getFilenamesForResource(resourceName, restPrefix);
 			for (String fname : filenames)
 			{
-				File    retrieved = retrieveFileToCache(fname);
-				boolean success   = false;
-				if (retrieved != null)
+				// The status will be cancelled, for example, if a selection on the
+				// table has been modified to add extra lines, in which case, a new
+				// FileListWorker will have been created to handle the retrieval of
+				// all lines.
+				if (!isCancelled())
 				{
-					if (resourceName.equals(od.get("thumbnailName")))
+					File    retrieved = retrieveFileToCache(fname);
+					boolean success   = false;
+					if (retrieved != null)
 					{
-						// If this is a thumbnail type, then we have a further check,
-						// over and above simply whether any file data were retrieved,
-						// to tell us whether the download was successful.
-						success = preview.addFile(retrieved, format);
+						if (resourceName.equals(od.get("thumbnailName")))
+						{
+							// If this is a thumbnail type, then we have a further check,
+							// over and above simply whether any file data were retrieved,
+							// to tell us whether the download was successful.
+							success = preview.addFile(retrieved, format);
+						}
+						else
+						{
+							success = true;
+						}
 					}
-					else
-					{
-						success = true;
-					}
+					if (success) filesRetrieved.add(retrieved);
+					else nFileFailures++;
+					System.out.println(this.toString());
+					if (((DAOOutput.STOP_ICON - 1) * nFilesDownloaded / nFilesToDownload) > 100)
+						System.out.println("Too large");
+					setProgress((DAOOutput.STOP_ICON - 1) * nFilesDownloaded / nFilesToDownload);
 				}
-				if (success) filesRetrieved.add(retrieved);
-				else nFileFailures++;
-				setProgress((DAOOutput.STOP_ICON - 1) * nFilesDownloaded / nFilesToDownload);
 			}
 		}
 		return filesRetrieved;
@@ -550,7 +571,7 @@ public class FileListWorker extends SwingWorker<ArrayList<ArrayList<File>>, Stri
 		String        expXPath             = rootElement + "/ID";
 		int           expIndex             = tableColumnElements.indexOf(expXPath);
 		String        sessionID            = (String) omdl.getValueAt(modelRow, expIndex+1);
-		String        restCommand          = "/data/archive/" + sessionID + "?format=xml";
+		String        restCommand          = "/data/archive/experiments/" + sessionID + "/scans?format=xml";
 		
 		Vector2D resultSet;
 		try
@@ -564,7 +585,7 @@ public class FileListWorker extends SwingWorker<ArrayList<ArrayList<File>>, Stri
 			throw new XNATException(XNATException.RETRIEVING_LIST);
 		}
 		
-		return new ArrayList<String>(resultSet.getColumn(2));
+		return new ArrayList<String>(resultSet.getColumn(1));
 	}
 	
 	/**
@@ -631,7 +652,7 @@ public class FileListWorker extends SwingWorker<ArrayList<ArrayList<File>>, Stri
 		for (int i=0; i<nTableRows; i++)
 		{	
 			outputListCurrentRow      = new ArrayList<File>();
-			workingListCurrentRow     = new ArrayList<File>();
+			workingListCurrentRow     = sourceListAllRows.get(i);
 			
 			// Get all action entries in the output definition.
 			Set<String>       keys    = od.keySet();

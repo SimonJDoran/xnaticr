@@ -26,7 +26,8 @@
       <searchableXNATElement alias="Scanner manufacturer">xnat:mrSessionData/scanner/manufacturer</searchableXNATElement>
       <searchableXNATElement alias="Scanner model">xnat:mrSessionData/scanner/model</searchableXNATElement>
       <searchableXNATElement alias="Acquisition site">xnat:mrSessionData/acquisition_site</searchableXNATElement>       
-   </XNATSearchRootElement>
+		<searchableXNATElement alias="XNAT Session ID">xnat:mrSessionData/ID</searchableXNATElement>
+	</XNATSearchRootElement>
 	
 	<XNATSearchRootElement element="xnat:ctSessionData">
       <searchableXNATElement alias="Patient name">xnat:ctSessionData/dcmPatientName</searchableXNATElement>

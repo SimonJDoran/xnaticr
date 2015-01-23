@@ -150,7 +150,17 @@ public class ThumbnailPreview extends ThumbnailDisplayPanel implements ActionLis
      */
    public synchronized boolean addFile(File file, String type)
    {
-      if (!fileImageMap.containsKey(file))
+		// KLUDGE Limit the number of files displayed in the preview to stop
+		// memory requirements getting out of hand.
+		//
+		// Note that a smarter way to proceed might be to react to new acquisitions
+		// by arranging the map so that it contains only a sampling of the total
+		// entries, e.g., take every second entry in the ordering list.
+		// Since this is a bit more than I want to program, for the moment, all we
+		// do is not add any more entries after the number reaches an arbitrary
+		// threshold.
+		int MAX_THUMB = 100;
+      if ((!fileImageMap.containsKey(file)) && (fileImageMap.size() <= MAX_THUMB))
       {
          if (type.equals("DICOM"))
          {

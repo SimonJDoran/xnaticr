@@ -1590,7 +1590,7 @@ public final class XNATDAO extends XNATGUI
 	public boolean formatIsSelectable(String format)
    {
       if ((format.equals("Source DICOM"))  ||
-			 (format.equals("Single zipped DICOM")) ||
+			 (format.equals("Single zip file of DICOM")) ||
           (format.equals("DICOM-RT structure set (one per ROI selected)")) ||
           (format.equals("DICOM-RT structure set (all ROIs in single RT-STRUCT)"))  ||
           (format.equals("DICOM-RT structure set"))   ||
@@ -1861,6 +1861,12 @@ public final class XNATDAO extends XNATGUI
           && (!daoo.getStatus().equals("Download cancelled")))
       {
          daoo.cancel(true);
+			
+			// Allow some time for operations to finish.
+			// N.B. Don't know whether this is necessary or will help, but I had a
+			//      problem with newly launched thread not producing correct result.
+			try{Thread.sleep(100);}
+			catch (InterruptedException exIgnore) {}
       }
       
       // Retrieve the data.
