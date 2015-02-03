@@ -5,6 +5,9 @@
  */
 package sessionExporter;
 
+import java.util.Vector;
+import javax.swing.JComboBox;
+
 /**
  *
  * @author simond
@@ -21,10 +24,35 @@ public class AnonymiseAndSend extends xnatDAO.XNATGUI
 
       initComponents();
       versionJLabel.setText("Version " + version); 
-      addListeners();
+      //addListeners();
       implementRestrictions();
       populateCommonComponents();
-      populateSpecificComponents();
+      //populateSpecificComponents();
+	}
+	
+	@Override
+   public JComboBox getProfileJComboBox()
+   {
+      return destProfileJComboBox;
+   }
+	
+	
+	@Override
+	public JComboBox getDataTypeJComboBox()
+	{
+		return new JComboBox();
+	}
+	
+	@Override
+	public JComboBox getDataSubtypeJComboBox()
+	{
+		return new JComboBox();
+	}
+	
+	@Override
+	public void implementRestrictions()
+	{
+		
 	}
 
 	/**
@@ -330,4 +358,24 @@ public class AnonymiseAndSend extends xnatDAO.XNATGUI
    private javax.swing.JLabel titleLabel;
    private javax.swing.JLabel versionJLabel;
    // End of variables declaration//GEN-END:variables
+
+	@Override
+	protected boolean allowAll() {
+		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+	}
+
+	@Override
+	public void useSubtype(String subtype, Vector<String> subtypes, String subtypeAlias) {
+		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+	}
+
+	@Override
+	public boolean typeIsSelectable(String type) {
+		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+	}
+
+	@Override
+	public boolean subtypeIsSelectable(String subtype) {
+		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+	}
 }
