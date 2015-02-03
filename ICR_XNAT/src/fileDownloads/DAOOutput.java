@@ -142,7 +142,9 @@ public class DAOOutput
       // image preview area.
       logger.debug("\nCreated " + this.toString() + " with associated "
               + fileListWorker.toString() + ".");
-      fileListWorker.revealDownloadArea();
+		
+      fileListWorker.clearDownloadArea();
+		fileListWorker.revealDownloadArea();
       fileListWorker.addPropertyChangeListener(new PropertyChangeListener()
       {
          @Override

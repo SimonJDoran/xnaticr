@@ -44,6 +44,7 @@
 
 package fileDownloads;
 
+import generalUtilities.UIDGenerator;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -75,8 +76,8 @@ public class GenerateZipDownloadAction implements DownloadAction
 			StringBuffer zipName = new StringBuffer(caller.getCacheDirName());
 			
 			zipName.append(filesep)
-					  .append(new SimpleDateFormat("yyyyMMdd_HHmmss").format(Calendar.getInstance().getTime()))
-					  .append(".zip");
+					 .append(new SimpleDateFormat("yyyyMMdd_HHmmss").format(Calendar.getInstance().getTime()))
+					 .append(".zip");
 			
 			File            zipFile = new File(zipName.toString());			
 			ZipOutputStream zos     = new ZipOutputStream(new FileOutputStream(zipFile));

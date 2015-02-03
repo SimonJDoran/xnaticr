@@ -56,27 +56,27 @@
 	<DAO_subtype alias="Arbitrary session">
       <DAO_outputFormat alias="Source DICOM">DicomImageForSession</DAO_outputFormat>
 		<DAO_outputFormat alias="Send session">Send</DAO_outputFormat>
-		<DAO_outputFormat alias="Single zip file">ZipCompleteSession</DAO_outputFormat>
+		<DAO_outputFormat alias="Single zip file of DICOM">ZipCompleteSession</DAO_outputFormat>
 		<DAO_outputFormat alias="Anonymise and send session">AnonSend</DAO_outputFormat>
    </DAO_subtype>
 	
 	<DAO_subtype alias="MR image set">
       <DAO_outputFormat alias="Source DICOM">DicomImage</DAO_outputFormat>
-		<DAO_outputFormat alias="Single zip file">ZipDicomImage</DAO_outputFormat>
+		<DAO_outputFormat alias="Single zip file of DICOM">ZipDicomImage</DAO_outputFormat>
 		<DAO_outputFormat alias="NIFTI .nii">niiNIFTI</DAO_outputFormat>
 		<DAO_outputFormat alias="XNAT scan XML">XNATscanXML</DAO_outputFormat>
    </DAO_subtype>
 
    <DAO_subtype alias="PET image set">
       <DAO_outputFormat alias="Source DICOM">DicomImage</DAO_outputFormat>
-		<DAO_outputFormat alias="Single zipped DICOM">zDicomImage</DAO_outputFormat>
+		<DAO_outputFormat alias="Single zip file of DICOM">zDicomImage</DAO_outputFormat>
 		<DAO_outputFormat alias="NIFTI .nii">niiNIFTI</DAO_outputFormat>
 		<DAO_outputFormat alias="XNAT scan XML">XNATscanXML</DAO_outputFormat>
    </DAO_subtype>
 	
 	<DAO_subtype alias="CT image set">
       <DAO_outputFormat alias="Source DICOM">DicomImage</DAO_outputFormat>
-		<DAO_outputFormat alias="Single zipped DICOM">zDicomImage</DAO_outputFormat>
+		<DAO_outputFormat alias="Single zip file of DICOM">zDicomImage</DAO_outputFormat>
 		<DAO_outputFormat alias="NIFTI .nii">niiNIFTI</DAO_outputFormat>
 		<DAO_outputFormat alias="XNAT scan XML">XNATscanXML</DAO_outputFormat>
    </DAO_subtype>

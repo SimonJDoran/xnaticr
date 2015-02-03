@@ -762,9 +762,15 @@ public class FileListWorker extends SwingWorker<ArrayList<ArrayList<File>>, Stri
 		workingListCurrentRow.add(file);
 	}
 	
+// Note that this needs to be executed on the Event Dispatch Thread.
+	public void clearDownloadArea()
+	{
+		xndao.getDownloadingJLabel().setText("");
+	}
    
-   // Note that this needs to be executed on the Event Dispatch Thread.
-   public void revealDownloadArea()
+
+// Note that this needs to be executed on the Event Dispatch Thread.
+	public void revealDownloadArea()
    {     
       xndao.getDownloadingJLabel().setVisible(true);
       xndao.getDownloadDetailsJLabel().setVisible(true);

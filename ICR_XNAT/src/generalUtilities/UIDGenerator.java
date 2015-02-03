@@ -162,6 +162,29 @@ public class UIDGenerator
               sdf.format(cal.getTime());     
    }
    
+	
+	public static String createTimeOnlyShortUnique()
+   {
+      // This construct with the do loop guarantees that timing portion cannot
+      // be the same as for anything previously uploaded from this machine.
+      long time;
+      long t = System.currentTimeMillis();
+      do   time = System.currentTimeMillis(); while (time == t);
+      
+      return convertDecimalToIntegerBase(time, 62);                                        
+   }
+   
+   
+   public static String decodeTimeOnlyShortUnique(String shortUID)
+   {
+      long time = convertIntegerBaseToDecimal(shortUID, 62);
+      
+      Calendar cal = Calendar.getInstance();
+      cal.setTimeInMillis(time);
+      SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+      
+      return  "Timestamp: " + sdf.format(cal.getTime());     
+   }
    
    /**
     * Convert a decimal integer to a character string in base b.
