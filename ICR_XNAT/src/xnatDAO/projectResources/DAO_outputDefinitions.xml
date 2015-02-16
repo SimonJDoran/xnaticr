@@ -62,10 +62,10 @@
       <DAO_outputFormatProperty name="restTemplate">/data/archive/experiments/$ID/scans/@scanID/resources</DAO_outputFormatProperty>
       <DAO_outputFormatProperty name="sourceName">DICOM</DAO_outputFormatProperty> 
 		<DAO_outputFormatProperty name="sourceFormat">DICOM</DAO_outputFormatProperty>
-		<DAO_outputFormatProperty name="action1">toDicomEdit</DAO_outputFormatProperty>
+		<DAO_outputFormatProperty name="action1">anonSendGUI</DAO_outputFormatProperty>
 		<DAO_outputFormatProperty name="deScript">anonSendSession.das</DAO_outputFormatProperty>
-		<DAO_outputFormatProperty name="thumbnailName">XNAT XML</DAO_outputFormatProperty>
-		<DAO_outputFormatProperty name="thumbnailFormat">XML</DAO_outputFormatProperty>
+		<DAO_outputFormatProperty name="thumbnailName">DICOM</DAO_outputFormatProperty>
+		<DAO_outputFormatProperty name="thumbnailFormat">DICOM</DAO_outputFormatProperty>
 		<DAO_outputFormatProperty name="outputCardinality">None</DAO_outputFormatProperty>
    </DAO_outputFormat>
 	

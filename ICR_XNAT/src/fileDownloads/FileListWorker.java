@@ -106,6 +106,7 @@ public class FileListWorker extends SwingWorker<ArrayList<ArrayList<File>>, Stri
 	protected ArrayList<File>            sourceListCurrentRow;
 	protected ArrayList<ArrayList<File>> sourceListAllRows;
 	protected ArrayList<ArrayList<File>> outputListAllRows;
+	protected ArrayList<String>          sessionLabelList;
    
    /**
     * Create a worker thread to return a list of files corresponding to the resources
@@ -251,7 +252,8 @@ public class FileListWorker extends SwingWorker<ArrayList<ArrayList<File>>, Stri
       nTableRows     = lastRow - firstRow + 1;
 		
 		sourceListAllRows    = new ArrayList<>();
-		sourceListCurrentRow = new ArrayList<>(); 
+		sourceListCurrentRow = new ArrayList<>();
+		sessionLabelList     = new ArrayList<>();
 		
       for (int j=0; j<nTableRows; j++)
       {
@@ -280,6 +282,8 @@ public class FileListWorker extends SwingWorker<ArrayList<ArrayList<File>>, Stri
 			// underneath.
 			if (rootElement.contains("Session"))
 			{
+				sessionLabelList.add(getSessionLabel(modelRow));
+				
 				boolean downloadThumbnailsSeparately = !od.get("sourceName").equals(od.get("thumbnailName"));
 				nFilesDownloaded = 0;
 				nFilesToDownload = 0;
@@ -412,9 +416,9 @@ public class FileListWorker extends SwingWorker<ArrayList<ArrayList<File>>, Stri
 					}
 					if (success) filesRetrieved.add(retrieved);
 					else nFileFailures++;
-					System.out.println(this.toString());
-					if (((DAOOutput.STOP_ICON - 1) * nFilesDownloaded / nFilesToDownload) > 100)
-						System.out.println("Too large");
+//					System.out.println(this.toString());
+//					if (((DAOOutput.STOP_ICON - 1) * nFilesDownloaded / nFilesToDownload) > 100)
+//						System.out.println("Too large");
 					setProgress((DAOOutput.STOP_ICON - 1) * nFilesDownloaded / nFilesToDownload);
 				}
 			}
@@ -562,16 +566,36 @@ public class FileListWorker extends SwingWorker<ArrayList<ArrayList<File>>, Stri
 	}
 
 	
-	protected ArrayList<String> getScanIDsForSession(int modelRow)
-			    throws IOException, XNATException
+	protected String getSessionID(int modelRow) throws IOException		  
 	{
 		DAOSearchableElementsList sel      = DAOSearchableElementsList.getSingleton();
       Vector<String> tableColumnElements = sel.getSearchableXNATElements().get(rootElement);
 		OutlineModel  omdl                 = outline.getOutlineModel();
 		String        expXPath             = rootElement + "/ID";
 		int           expIndex             = tableColumnElements.indexOf(expXPath);
-		String        sessionID            = (String) omdl.getValueAt(modelRow, expIndex+1);
-		String        restCommand          = "/data/archive/experiments/" + sessionID + "/scans?format=xml";
+		
+		return (String) omdl.getValueAt(modelRow, expIndex+1);
+	}
+	
+	
+	
+	protected String getSessionLabel(int modelRow) throws IOException
+	{
+		DAOSearchableElementsList sel      = DAOSearchableElementsList.getSingleton();
+      Vector<String> tableColumnElements = sel.getSearchableXNATElements().get(rootElement);
+		OutlineModel  omdl                 = outline.getOutlineModel();
+		String        expXPath             = rootElement + "/label";
+		int           expIndex             = tableColumnElements.indexOf(expXPath);
+		
+		return (String) omdl.getValueAt(modelRow, expIndex+1);
+	}
+		
+		
+	protected ArrayList<String> getScanIDsForSession(int modelRow)
+			    throws IOException, XNATException
+	{
+		String sessionID = getSessionID(modelRow);
+		String restCommand = "/data/archive/experiments/" + sessionID + "/scans?format=xml";
 		
 		Vector2D resultSet;
 		try
@@ -643,7 +667,7 @@ public class FileListWorker extends SwingWorker<ArrayList<ArrayList<File>>, Stri
 			
 		return restPrefix.toString();
 	}
-	 
+	
 	
 	protected void performActions(Map<String, String> od) throws Exception
 	{

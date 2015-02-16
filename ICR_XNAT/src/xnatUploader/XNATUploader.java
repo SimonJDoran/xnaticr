@@ -241,7 +241,7 @@ public final class XNATUploader extends XNATGUI
          @Override
          public void itemStateChanged(ItemEvent evt)
          {
-            profileJComboBoxItemStateChanged(evt);
+            profileJComboBoxItemStateChanged(evt, true);
          }
       });
 

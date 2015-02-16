@@ -1,5 +1,5 @@
 /********************************************************************
-* Copyright (c) 2014, Institute of Cancer Research
+* Copyright (c) 2015, Institute of Cancer Research
 * All rights reserved.
 * 
 * Redistribution and use in source and binary forms, with or without
@@ -33,32 +33,41 @@
 * OF THE POSSIBILITY OF SUCH DAMAGE.
 *********************************************************************/
 
-/*********************************************************************
+/********************************************************************
 * @author Simon J Doran
-* Java interface: DownloadAction.java
-* First created on December 16, 2014 at 11.32 AM
+* Java class: AnonSendDownloadAction.java
+* First created on Feb 6, 2015 at 9:50:35 AM
 * 
-* Create the appropriate classes for taking actions during the
-* download of data from XNAT via XNATDataChooser.
+* Launch the anonymisation and send GUI to allow users to route the
+* downloaded session to a different XNAT instance and project.
 *********************************************************************/
 
 package fileDownloads;
 
-public class DownloadActionFactory
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import sessionExporter.AnonymiseAndSend;
+
+public class AnonSendDownloadAction implements DownloadAction
 {
-	public DownloadAction getAction(String actionName)
-			                throws UnsupportedOperationException
+@Override
+	public void executeAction(FileListWorker caller) throws IOException
 	{
-		switch(actionName)
+		// Although the action is executed for every row, because of the generalised
+		// nature of the performActions method in FileListWorker.java, the zip
+		// generation is actually done only once for all the table lines.
+		if (caller.getOutputListAllRows().isEmpty())
 		{
-			case "anonSendGUI"              : return new AnonSendDownloadAction();
-			case "generateZip"              : return new GenerateZipDownloadAction();
-			case "toCache"                  : return new ToCacheDownloadAction();
-			case "generateNii"              : throw new UnsupportedOperationException();
-			case "generateSingleRtStruct"   : throw new UnsupportedOperationException();
-			case "generateMultipleRtStruct" : throw new UnsupportedOperationException();
-				
-			default                         : throw new UnsupportedOperationException();
+		   // Extract the ID of the sessions concerned from the file information.
+			ArrayList<ArrayList<File>> fileList = caller.getSourceListAllRows();
+		
+			caller.publishFromOutsidePackage("Launching anonymise-and-send GUI ...");
+			AnonymiseAndSend as = new AnonymiseAndSend(new javax.swing.JFrame(),
+					                                     true,
+			                                           caller.xndao.getProfile(),
+			                                           caller.sessionLabelList);
+			as.setVisible(true);
 		}
 	}
 }

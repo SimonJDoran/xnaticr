@@ -27,27 +27,28 @@
               <EmptySpace min="-2" pref="25" max="-2" attributes="0"/>
               <Group type="103" groupAlignment="0" attributes="0">
                   <Group type="102" attributes="0">
+                      <Component id="destSubjLabel" min="-2" max="-2" attributes="0"/>
+                      <EmptySpace type="separate" max="-2" attributes="0"/>
+                      <Component id="subjJTextField" min="-2" pref="306" max="-2" attributes="0"/>
+                      <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
+                  </Group>
+                  <Group type="102" attributes="0">
                       <Component id="ICRLogoJLabel" min="-2" max="-2" attributes="0"/>
                       <EmptySpace max="32767" attributes="0"/>
                       <Group type="103" groupAlignment="0" attributes="0">
-                          <Group type="102" alignment="1" attributes="0">
-                              <Component id="versionJLabel" min="-2" max="-2" attributes="0"/>
-                              <EmptySpace min="-2" pref="100" max="-2" attributes="0"/>
-                          </Group>
-                          <Group type="102" alignment="1" attributes="0">
-                              <Component id="titleLabel" min="-2" max="-2" attributes="0"/>
-                              <EmptySpace min="-2" pref="86" max="-2" attributes="0"/>
-                          </Group>
+                          <Component id="versionJLabel" alignment="1" min="-2" max="-2" attributes="0"/>
+                          <Component id="titleLabel" alignment="1" min="-2" max="-2" attributes="0"/>
                       </Group>
+                      <EmptySpace min="-2" pref="100" max="-2" attributes="0"/>
                       <Component id="poweredByXNATJLabel" min="-2" max="-2" attributes="0"/>
                       <EmptySpace min="-2" pref="24" max="-2" attributes="0"/>
                   </Group>
                   <Group type="102" alignment="0" attributes="0">
                       <Group type="103" groupAlignment="0" attributes="0">
-                          <Component id="srcProjectJLabel" alignment="0" min="-2" max="-2" attributes="0"/>
+                          <Component id="srcSessionsJLabel" alignment="0" min="-2" max="-2" attributes="0"/>
                           <Component id="srcProfileJLabel" alignment="0" min="-2" max="-2" attributes="0"/>
-                          <Component id="destProfileJLabel" alignment="1" min="-2" max="-2" attributes="0"/>
-                          <Component id="destProjectJLabel" alignment="1" min="-2" max="-2" attributes="0"/>
+                          <Component id="destProfileJLabel" alignment="0" min="-2" max="-2" attributes="0"/>
+                          <Component id="destProjectJLabel" alignment="0" min="-2" max="-2" attributes="0"/>
                       </Group>
                       <EmptySpace type="separate" max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="1" attributes="0">
@@ -56,15 +57,20 @@
                                   <Component id="destProfileJComboBox" max="32767" attributes="0"/>
                                   <Component id="destProjectJComboBox" min="-2" pref="317" max="-2" attributes="0"/>
                               </Group>
-                              <EmptySpace pref="90" max="32767" attributes="0"/>
-                              <Component id="exportJButton" min="-2" pref="101" max="-2" attributes="0"/>
+                              <EmptySpace max="-2" attributes="0"/>
+                              <Group type="103" groupAlignment="0" attributes="0">
+                                  <Group type="102" attributes="0">
+                                      <EmptySpace min="0" pref="91" max="32767" attributes="0"/>
+                                      <Component id="exportJButton" min="-2" pref="101" max="-2" attributes="0"/>
+                                  </Group>
+                                  <Component id="checkAccessJLabel" alignment="0" max="32767" attributes="0"/>
+                              </Group>
                           </Group>
                           <Group type="102" attributes="0">
                               <EmptySpace min="-2" pref="8" max="-2" attributes="0"/>
                               <Group type="103" groupAlignment="0" attributes="0">
-                                  <Component id="srcProjectJTextField" min="-2" max="-2" attributes="0"/>
                                   <Component id="srcProfileJTextField" min="-2" max="-2" attributes="0"/>
-                                  <Component id="srcSessionsJTextField" alignment="0" min="-2" max="-2" attributes="0"/>
+                                  <Component id="srcSessionsJScrollPane" min="-2" pref="214" max="-2" attributes="0"/>
                               </Group>
                               <EmptySpace max="32767" attributes="0"/>
                               <Group type="103" groupAlignment="0" attributes="0">
@@ -76,16 +82,13 @@
                       <EmptySpace min="-2" pref="14" max="-2" attributes="0"/>
                   </Group>
                   <Group type="102" attributes="0">
-                      <Group type="103" groupAlignment="0" attributes="0">
-                          <Component id="dataDestinationJLabel" alignment="0" min="-2" max="-2" attributes="0"/>
-                          <Component id="srcSessionsJLabel" alignment="0" min="-2" max="-2" attributes="0"/>
-                      </Group>
+                      <Component id="dataDestinationJLabel" min="-2" max="-2" attributes="0"/>
                       <EmptySpace max="32767" attributes="0"/>
                   </Group>
                   <Group type="102" attributes="0">
                       <Group type="103" groupAlignment="0" attributes="0">
                           <Group type="102" attributes="0">
-                              <Component id="jLabel11" min="-2" max="-2" attributes="0"/>
+                              <Component id="anonScriptJLabel" min="-2" max="-2" attributes="0"/>
                               <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
                           </Group>
                           <Component id="anonScriptJScrollPane" max="32767" attributes="0"/>
@@ -133,61 +136,55 @@
               </Group>
               <EmptySpace type="separate" max="-2" attributes="0"/>
               <Group type="103" groupAlignment="0" attributes="0">
-                  <Group type="102" alignment="0" attributes="0">
-                      <Component id="srcProfileJTextField" min="-2" max="-2" attributes="0"/>
-                      <EmptySpace type="separate" max="-2" attributes="0"/>
-                      <Component id="srcProjectJTextField" min="-2" max="-2" attributes="0"/>
-                      <EmptySpace type="separate" max="-2" attributes="0"/>
-                      <Component id="srcSessionsJTextField" min="-2" max="-2" attributes="0"/>
-                      <EmptySpace min="85" pref="85" max="-2" attributes="0"/>
-                      <Group type="103" groupAlignment="3" attributes="0">
-                          <Component id="destProfileJComboBox" alignment="3" min="-2" max="-2" attributes="0"/>
-                          <Component id="exportJButton" alignment="3" min="-2" max="-2" attributes="0"/>
-                          <Component id="destProfileJLabel" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="srcProfileJTextField" alignment="0" min="-2" max="-2" attributes="0"/>
+                  <Group type="103" alignment="0" groupAlignment="0" attributes="0">
+                      <Component id="exportProgressJScrollPane" alignment="0" min="-2" max="-2" attributes="0"/>
+                      <Group type="102" alignment="0" attributes="0">
+                          <Component id="srcProfileJLabel" min="-2" max="-2" attributes="0"/>
+                          <EmptySpace type="separate" max="-2" attributes="0"/>
+                          <Component id="srcSessionsJLabel" min="-2" max="-2" attributes="0"/>
                       </Group>
-                      <EmptySpace type="unrelated" max="-2" attributes="0"/>
-                      <Group type="103" groupAlignment="3" attributes="0">
-                          <Component id="destProjectJComboBox" alignment="3" min="-2" max="-2" attributes="0"/>
-                          <Component id="destProjectJLabel" alignment="3" min="-2" max="-2" attributes="0"/>
-                      </Group>
-                  </Group>
-                  <Group type="102" alignment="0" attributes="0">
-                      <Group type="103" groupAlignment="0" attributes="0">
-                          <Group type="102" attributes="0">
-                              <Component id="srcProfileJLabel" min="-2" max="-2" attributes="0"/>
-                              <EmptySpace type="separate" max="-2" attributes="0"/>
-                              <Component id="srcProjectJLabel" min="-2" max="-2" attributes="0"/>
-                              <EmptySpace type="separate" max="-2" attributes="0"/>
-                              <Component id="srcSessionsJLabel" min="-2" max="-2" attributes="0"/>
-                          </Group>
-                          <Component id="exportProgressJScrollPane" alignment="0" min="-2" max="-2" attributes="0"/>
-                      </Group>
-                      <Group type="103" groupAlignment="0" attributes="0">
-                          <Group type="102" attributes="0">
-                              <EmptySpace min="-2" pref="46" max="-2" attributes="0"/>
-                              <Component id="dataDestinationJLabel" min="-2" max="-2" attributes="0"/>
-                          </Group>
-                          <Group type="102" alignment="0" attributes="0">
-                              <EmptySpace min="-2" pref="12" max="-2" attributes="0"/>
-                              <Component id="exportJProgressBar" min="-2" max="-2" attributes="0"/>
-                          </Group>
+                      <Group type="102" alignment="1" attributes="0">
+                          <EmptySpace min="-2" pref="34" max="-2" attributes="0"/>
+                          <Component id="srcSessionsJScrollPane" min="-2" pref="50" max="-2" attributes="0"/>
                       </Group>
                   </Group>
               </Group>
-              <EmptySpace min="-2" pref="33" max="-2" attributes="0"/>
-              <Component id="jLabel11" min="-2" max="-2" attributes="0"/>
               <EmptySpace type="unrelated" max="-2" attributes="0"/>
-              <Group type="103" groupAlignment="1" max="-2" attributes="0">
+              <Component id="exportJProgressBar" min="-2" max="-2" attributes="0"/>
+              <EmptySpace min="-2" pref="13" max="-2" attributes="0"/>
+              <Component id="dataDestinationJLabel" min="-2" max="-2" attributes="0"/>
+              <EmptySpace type="separate" max="-2" attributes="0"/>
+              <Group type="103" groupAlignment="3" attributes="0">
+                  <Component id="destProfileJComboBox" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="exportJButton" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="destProfileJLabel" alignment="3" min="-2" max="-2" attributes="0"/>
+              </Group>
+              <EmptySpace type="unrelated" max="-2" attributes="0"/>
+              <Group type="103" groupAlignment="3" attributes="0">
+                  <Component id="destProjectJComboBox" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="destProjectJLabel" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="checkAccessJLabel" alignment="3" min="-2" max="-2" attributes="0"/>
+              </Group>
+              <EmptySpace type="separate" max="-2" attributes="0"/>
+              <Group type="103" groupAlignment="3" attributes="0">
+                  <Component id="destSubjLabel" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="subjJTextField" alignment="3" min="-2" max="-2" attributes="0"/>
+              </Group>
+              <EmptySpace pref="22" max="32767" attributes="0"/>
+              <Component id="anonScriptJLabel" min="-2" max="-2" attributes="0"/>
+              <EmptySpace type="unrelated" max="-2" attributes="0"/>
+              <Group type="103" groupAlignment="0" attributes="0">
                   <Group type="102" attributes="0">
                       <Component id="saveJButton" min="-2" max="-2" attributes="0"/>
-                      <EmptySpace min="-2" pref="12" max="-2" attributes="0"/>
+                      <EmptySpace min="-2" pref="8" max="-2" attributes="0"/>
                       <Component id="loadJButton" min="-2" max="-2" attributes="0"/>
                       <EmptySpace max="32767" attributes="0"/>
                       <Component id="cancelJButton" min="-2" max="-2" attributes="0"/>
                   </Group>
                   <Component id="anonScriptJScrollPane" min="-2" pref="327" max="-2" attributes="0"/>
               </Group>
-              <EmptySpace pref="33" max="32767" attributes="0"/>
+              <EmptySpace min="-2" pref="15" max="-2" attributes="0"/>
           </Group>
       </Group>
     </DimensionLayout>
@@ -254,7 +251,7 @@
     <Component class="javax.swing.JLabel" name="dataToExportJLabel">
       <Properties>
         <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
-          <Font name="Lucida Grande" size="18" style="0"/>
+          <Font name="Lucida Grande" size="18" style="1"/>
         </Property>
         <Property name="text" type="java.lang.String" value="Data to export"/>
       </Properties>
@@ -264,9 +261,9 @@
         <Property name="text" type="java.lang.String" value="XNAT Profile"/>
       </Properties>
     </Component>
-    <Component class="javax.swing.JLabel" name="srcProjectJLabel">
+    <Component class="javax.swing.JLabel" name="srcSessionsJLabel">
       <Properties>
-        <Property name="text" type="java.lang.String" value="XNAT Project"/>
+        <Property name="text" type="java.lang.String" value="XNAT Session(s)"/>
       </Properties>
     </Component>
     <Component class="javax.swing.JLabel" name="srcProfileJTextField">
@@ -274,33 +271,18 @@
         <Property name="text" type="java.lang.String" value="No profile specified"/>
       </Properties>
     </Component>
-    <Component class="javax.swing.JLabel" name="srcProjectJTextField">
-      <Properties>
-        <Property name="text" type="java.lang.String" value="No project specified"/>
-      </Properties>
-    </Component>
-    <Component class="javax.swing.JLabel" name="srcSessionsJLabel">
-      <Properties>
-        <Property name="text" type="java.lang.String" value="Session(s)"/>
-      </Properties>
-    </Component>
-    <Component class="javax.swing.JLabel" name="srcSessionsJTextField">
-      <Properties>
-        <Property name="text" type="java.lang.String" value="No session specified"/>
-      </Properties>
-    </Component>
     <Component class="javax.swing.JLabel" name="dataDestinationJLabel">
       <Properties>
         <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
-          <Font name="Lucida Grande" size="18" style="0"/>
+          <Font name="Lucida Grande" size="18" style="1"/>
         </Property>
         <Property name="text" type="java.lang.String" value="Data destination"/>
       </Properties>
     </Component>
-    <Component class="javax.swing.JLabel" name="jLabel11">
+    <Component class="javax.swing.JLabel" name="anonScriptJLabel">
       <Properties>
         <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
-          <Font name="Lucida Grande" size="18" style="0"/>
+          <Font name="Lucida Grande" size="18" style="1"/>
         </Property>
         <Property name="text" type="java.lang.String" value="Anonymisation script"/>
       </Properties>
@@ -343,7 +325,7 @@
     <Component class="javax.swing.JLabel" name="exportProgressJLabel">
       <Properties>
         <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
-          <Font name="Lucida Grande" size="18" style="0"/>
+          <Font name="Lucida Grande" size="18" style="1"/>
         </Property>
         <Property name="text" type="java.lang.String" value="Export progress"/>
       </Properties>
@@ -357,6 +339,7 @@
       <SubComponents>
         <Component class="javax.swing.JTextArea" name="logJTextArea">
           <Properties>
+            <Property name="editable" type="boolean" value="false"/>
             <Property name="columns" type="int" value="20"/>
             <Property name="rows" type="int" value="5"/>
           </Properties>
@@ -364,6 +347,41 @@
       </SubComponents>
     </Container>
     <Component class="javax.swing.JProgressBar" name="exportJProgressBar">
+    </Component>
+    <Container class="javax.swing.JScrollPane" name="srcSessionsJScrollPane">
+      <AuxValues>
+        <AuxValue name="autoScrollPane" type="java.lang.Boolean" value="true"/>
+      </AuxValues>
+
+      <Layout class="org.netbeans.modules.form.compat2.layouts.support.JScrollPaneSupportLayout"/>
+      <SubComponents>
+        <Component class="javax.swing.JTextArea" name="srcSessionsJTextArea">
+          <Properties>
+            <Property name="editable" type="boolean" value="false"/>
+            <Property name="columns" type="int" value="20"/>
+            <Property name="rows" type="int" value="5"/>
+          </Properties>
+        </Component>
+      </SubComponents>
+    </Container>
+    <Component class="javax.swing.JLabel" name="checkAccessJLabel">
+      <Properties>
+        <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+          <Font name="Lucida Grande" size="10" style="0"/>
+        </Property>
+        <Property name="text" type="java.lang.String" value="Checking project access"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JLabel" name="destSubjLabel">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="XNAT Subject ID"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JTextField" name="subjJTextField">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Enter anonymisation subject code."/>
+        <Property name="toolTipText" type="java.lang.String" value=""/>
+      </Properties>
     </Component>
   </SubComponents>
 </Form>

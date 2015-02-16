@@ -67,14 +67,16 @@ public class PermissionsWorker extends SwingWorker<ArrayList<String>, Void>
    public static final String NO_PROFILES     = "No profiles specified";
 
 
-   private XNATProfileEditor xnpre;
+   private ProjectGetter     pg;
+	private boolean           allowAll;
    private XNATProfile       xnprf;
    private ArrayList<String> accessible;
 
-   public PermissionsWorker(XNATProfileEditor xnpre)
+   public PermissionsWorker(ProjectGetter pg, boolean allowAll)
    {
-      this.xnpre = xnpre;
-      xnprf = xnpre.getProfile();
+		this.allowAll = allowAll;
+      this.pg       = pg;
+      xnprf         = pg.getProfile();
    }
    
    @Override
@@ -140,8 +142,8 @@ public class PermissionsWorker extends SwingWorker<ArrayList<String>, Void>
      
       }
       
-      if (accessible.size() == 0) accessible.add(NO_PROJECTS);
-      if (accessible.size() >  1) accessible.add(0, ALL_PROJECTS);
+      if (accessible.size() == 0)               accessible.add(NO_PROJECTS);
+      if ((accessible.size() >  1) && allowAll) accessible.add(0, ALL_PROJECTS);
       
       return accessible;
    }
@@ -150,6 +152,6 @@ public class PermissionsWorker extends SwingWorker<ArrayList<String>, Void>
    @Override
    protected void done()
    {
-      xnpre.populateProjectJComboBox(accessible);
+      pg.populateProjectJComboBox(accessible);
    }
 }

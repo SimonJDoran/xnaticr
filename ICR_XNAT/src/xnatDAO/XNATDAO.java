@@ -73,6 +73,7 @@ import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
 import org.apache.log4j.Logger;
 import org.netbeans.swing.outline.Outline;
+import sessionExporter.AnonymiseAndSend;
 import treeTable.DAOTreeTableSettings.SettingsForSubtype;
 import treeTable.*;
 import xnatRestToolkit.RESTSearchWorker;
@@ -524,7 +525,7 @@ public final class XNATDAO extends XNATGUI
     * Returns silently if the supplied profile does not match any in the list.
     * @param profileName 
     */
-   public void setProfile(String profileName)
+   public void setProfileName(String profileName)
    {
       for (int i=0; i<profileJComboBox.getItemCount(); i++)
          if (profileName.equals(profileJComboBox.getItemAt(i)))
@@ -539,7 +540,7 @@ public final class XNATDAO extends XNATGUI
     * External API: Get current profile programmatically
     * @return a String containing the current profile name 
     */
-   public String getProfile()
+   public String getProfileName()
    {
       return (String) profileJComboBox.getSelectedItem();      
    }
@@ -825,7 +826,7 @@ public final class XNATDAO extends XNATGUI
          @Override
          public void itemStateChanged(ItemEvent evt)
          {
-            profileJComboBoxItemStateChanged(evt);
+            profileJComboBoxItemStateChanged(evt, true);
          }
       });
 
@@ -1591,6 +1592,7 @@ public final class XNATDAO extends XNATGUI
    {
       if ((format.equals("Source DICOM"))  ||
 			 (format.equals("Single zip file of DICOM")) ||
+			 (format.equals("Anonymise and send session")) ||
           (format.equals("DICOM-RT structure set (one per ROI selected)")) ||
           (format.equals("DICOM-RT structure set (all ROIs in single RT-STRUCT)"))  ||
           (format.equals("DICOM-RT structure set"))   ||
@@ -1760,6 +1762,16 @@ public final class XNATDAO extends XNATGUI
    public JLabel getDownloadDetailsJLabel()
    {
       return downloadDetailsJLabel;
+   }
+	
+	
+	/**
+    * Getter method to allow access to the currently selected profile
+    * @return current XNATProfile
+    */
+	public XNATProfile getProfile()
+   {
+      return profileList.getCurrentProfile();      
    }
 
 

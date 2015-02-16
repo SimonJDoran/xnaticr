@@ -63,9 +63,9 @@ public class TestDAOExternalAPI
 
       // If the specified profile has been deleted from the current list,
       // then this call will return silently.
-      xndao.setProfile("Central");
+      xndao.setProfileName("Central");
       System.out.println("XNAT login profile has been set to \""
-                          + xndao.getProfile() + "\".");
+                          + xndao.getProfileName() + "\".");
       System.out.println(" ");
 
       DAOSearchCriteriaSet scs = xndao.createNewSearchCriteriaSet();

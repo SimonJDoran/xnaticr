@@ -539,9 +539,14 @@ public abstract class XNATGUI extends javax.swing.JDialog implements ActionListe
     * Take appropriate action when the profile changes.
     * This involves either selecting a different profile, adding a new one,
     * editing the current profile, or deleting the current profile.
-    * @param evt and ItemEvent returning details of the user's choice.
+    * @param evt an ItemEvent returning details of the user's choice.
+	 * @param concreteClassActions a boolean determining whether any concrete class actions
+	 * will be performed. This is important because in some circumstances, the concrete class
+	 * action is to change the authentication status of a menu item and re-call this method
+	 * to change the colour of the item in the combo box. We thus don't want to get into an
+	 * infinite recursion.
     */
-   protected void profileJComboBoxItemStateChanged(ItemEvent evt)
+   protected void profileJComboBoxItemStateChanged(ItemEvent evt, boolean concreteClassActions)
    {
       // Note: There are two passes through this method per click: once to tell you
       // that an item has been deselected and once to say that a new item has been chosen.
@@ -604,7 +609,7 @@ public abstract class XNATGUI extends javax.swing.JDialog implements ActionListe
             populateProfileJComboBox();
             
             // Subclass-dependent actions when changing profile.
-            profileChangeConcreteClassActions();
+            if (concreteClassActions) profileChangeConcreteClassActions();
          }
       }
 
@@ -625,7 +630,7 @@ public abstract class XNATGUI extends javax.swing.JDialog implements ActionListe
             tryToSaveProfiles();
          }
          else scb.setSelectedIndex(0);
-         profileChangeConcreteClassActions();
+         if (concreteClassActions) profileChangeConcreteClassActions();
       }
       
       
@@ -649,7 +654,7 @@ public abstract class XNATGUI extends javax.swing.JDialog implements ActionListe
                projectList = xnprfEdited.getProjectList();
             }
          }
-         profileChangeConcreteClassActions();
+         if (concreteClassActions) profileChangeConcreteClassActions();
       }
 
       if (ind == n-1)
@@ -688,7 +693,7 @@ public abstract class XNATGUI extends javax.swing.JDialog implements ActionListe
             populateProfileJComboBox();
             scb.setSelectedIndex(0);
             tryToSaveProfiles();
-            profileChangeConcreteClassActions();
+            if (concreteClassActions) profileChangeConcreteClassActions();
          }
       }
       

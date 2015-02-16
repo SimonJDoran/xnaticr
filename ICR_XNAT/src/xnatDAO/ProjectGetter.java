@@ -1,5 +1,5 @@
 /********************************************************************
-* Copyright (c) 2014, Institute of Cancer Research
+* Copyright (c) 2015, Institute of Cancer Research
 * All rights reserved.
 * 
 * Redistribution and use in source and binary forms, with or without
@@ -33,32 +33,21 @@
 * OF THE POSSIBILITY OF SUCH DAMAGE.
 *********************************************************************/
 
-/*********************************************************************
+/********************************************************************
 * @author Simon J Doran
-* Java interface: DownloadAction.java
-* First created on December 16, 2014 at 11.32 AM
+* Java interface ProjectGetter.java
+* First created on Feb 12, 2015
 * 
-* Create the appropriate classes for taking actions during the
-* download of data from XNAT via XNATDataChooser.
+* Interface marking a type of file that can retrieve a list of
+* projects and contains a combo box that is updated.
 *********************************************************************/
 
-package fileDownloads;
+package xnatDAO;
 
-public class DownloadActionFactory
+import java.util.ArrayList;
+
+public interface ProjectGetter
 {
-	public DownloadAction getAction(String actionName)
-			                throws UnsupportedOperationException
-	{
-		switch(actionName)
-		{
-			case "anonSendGUI"              : return new AnonSendDownloadAction();
-			case "generateZip"              : return new GenerateZipDownloadAction();
-			case "toCache"                  : return new ToCacheDownloadAction();
-			case "generateNii"              : throw new UnsupportedOperationException();
-			case "generateSingleRtStruct"   : throw new UnsupportedOperationException();
-			case "generateMultipleRtStruct" : throw new UnsupportedOperationException();
-				
-			default                         : throw new UnsupportedOperationException();
-		}
-	}
+	public XNATProfile getProfile();
+	public void        populateProjectJComboBox(ArrayList<String> accessible);
 }

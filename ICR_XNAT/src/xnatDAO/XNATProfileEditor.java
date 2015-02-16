@@ -66,7 +66,7 @@ import xnatRestToolkit.XNATServerConnection;
 import xnatRestToolkit.XNATProfileList;
 
 
-public class XNATProfileEditor extends javax.swing.JDialog
+public class XNATProfileEditor extends javax.swing.JDialog implements ProjectGetter
 {
    XNATProfile xnprf;
    XNATProfile xnprfOrig;
@@ -294,7 +294,7 @@ public class XNATProfileEditor extends javax.swing.JDialog
       checkAccessJLabel.setIcon(getPermsIcon);
       getPermsIcon.start();
 
-      (new PermissionsWorker(this)).execute();
+      (new PermissionsWorker(this, true)).execute();
    }
 
 
@@ -304,7 +304,8 @@ public class XNATProfileEditor extends javax.swing.JDialog
     * to the drop list.
     * @param accessible and ArrayList of Strings containing the project list.
     */
-   protected void populateProjectJComboBox(ArrayList<String> accessible)
+   @Override
+	public void populateProjectJComboBox(ArrayList<String> accessible)
    {
       profileNameJTextField.setEnabled(true);
       serverJTextField.setEnabled(true);
