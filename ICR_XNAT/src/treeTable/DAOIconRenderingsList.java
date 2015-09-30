@@ -79,7 +79,7 @@ public class DAOIconRenderingsList extends SingletonListFromTwoLevelXML
    @Override
    public void setVariables()
    {
-      XMLResourceName = "projectResources/DAO_treeTableRenderings.xml";
+      XMLResourceName = "/configurationLists/resources/DAO_treeTableRenderings.xml";
       rootName        = "XNATIconRenderings";
       outer           = "renderProperties";
       outAttr         = "element";

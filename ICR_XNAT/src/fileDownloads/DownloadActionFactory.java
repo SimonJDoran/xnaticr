@@ -51,7 +51,7 @@ public class DownloadActionFactory
 	{
 		switch(actionName)
 		{
-			case "anonSendGUI"              : return new AnonSendDownloadAction();
+			case "anonSendGUI"              : return new AnonSendPreFetchDownloadAction();
 			case "generateZip"              : return new GenerateZipDownloadAction();
 			case "toCache"                  : return new ToCacheDownloadAction();
 			case "generateNii"              : throw new UnsupportedOperationException();

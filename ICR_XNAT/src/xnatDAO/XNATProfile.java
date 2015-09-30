@@ -46,9 +46,12 @@
 
 package xnatDAO;
 
+import generalUtilities.Vector2D;
 import java.awt.Dialog;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collections;
+import xnatRestToolkit.XNATRESTToolkit;
 import xnatRestToolkit.XNATServerConnection;
 
 /**
@@ -123,4 +126,65 @@ public class XNATProfile extends XNATServerConnection
    {
       lastAuthenticationTime = System.currentTimeMillis();
    }
+	
+	
+/**
+ * Quick and dirty way to get some basic system stats.
+ * Call this routine from method connectWithAuthentication, by adding
+ * analytics(this);
+ * at the end of the method.
+ * @param xnprf 
+ */
+	private void analytics(XNATProfile xnprf)
+	{
+		try
+		{
+			XNATRESTToolkit    xnrt      = new XNATRESTToolkit(xnprf);
+			ArrayList<Integer> nSessions = new ArrayList<>();   
+			
+			// Loop over all projects.
+			Vector2D<String> v2dProj = xnrt.RESTGetResultSet("/data/archive/projects?format=xml");
+			for (int i=0; i<v2dProj.size(); i++)
+			{
+				String proj = v2dProj.atom(0, i);
+				
+				// Loop over all subjects within a project.
+				Vector2D<String> v2dSubj = xnrt.RESTGetResultSet("/data/archive/projects/" + proj + "/subjects?format=xml");
+				for (int j=0; j<v2dSubj.size(); j++)
+				{
+					String subj = v2dSubj.atom(0, j);
+					
+					// Loop over all sessions for a given subject.
+					Vector2D<String>  v2dExp   = xnrt.RESTGetResultSet("/data/archive/projects/" + proj + "/subjects/" + subj + "/experiments?format=xml");
+					ArrayList<String> oldDates = new ArrayList<>();
+					String           d;
+					int              nUniqueDates = 0;
+					for (int k=0; k<v2dExp.size(); k++)
+					{
+					   d = v2dExp.atom(3, k);
+						if (!oldDates.contains(d))
+							++nUniqueDates;
+							oldDates.add(d);
+					}
+					nSessions.add(nUniqueDates);
+					//System.out.println("Project = " + proj + "  Subject =  " + subj + "  nUniqueDates = " + nUniqueDates);
+				}
+			}
+			System.out.println("Combined results for " + v2dProj.size() + " projects and " + nSessions.size() + " subjects:");
+		   
+			int mx = Collections.max(nSessions);
+			for (int i=0; i<=mx; i++)
+			{
+				System.out.println(i + ", " + Collections.frequency(nSessions, i));
+			}
+			
+			System.out.println();
+		}
+		
+		catch (Exception ex)
+		{
+			System.out.println("Caught exception " + ex.getMessage());
+		}
+	}
+
 }

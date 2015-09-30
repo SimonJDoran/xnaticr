@@ -100,13 +100,15 @@ public class FileListWorker extends SwingWorker<ArrayList<ArrayList<File>>, Stri
    protected int                        nFileFailures;
 	protected int                        nFilesToGenerate;
 	protected int                        nFilesToOutput;
+	protected int                        firstRow;
+	protected int                        lastRow;
 	protected int                        nTableRows;
 	protected ArrayList<File>            workingListCurrentRow;
 	protected ArrayList<File>            outputListCurrentRow;
-	protected ArrayList<File>            sourceListCurrentRow;
-	protected ArrayList<ArrayList<File>> sourceListAllRows;
-	protected ArrayList<ArrayList<File>> outputListAllRows;
-	protected ArrayList<String>          sessionLabelList;
+	protected ArrayList<File>            sourceListCurrentRow = new ArrayList<>();
+	protected ArrayList<ArrayList<File>> sourceListAllRows    = new ArrayList<>();;
+	protected ArrayList<ArrayList<File>> outputListAllRows    = new ArrayList<>();
+	protected ArrayList<String>          sessionLabelList     = new ArrayList<>();;
    
    /**
     * Create a worker thread to return a list of files corresponding to the resources
@@ -140,13 +142,16 @@ public class FileListWorker extends SwingWorker<ArrayList<ArrayList<File>>, Stri
    @Override
    protected ArrayList<ArrayList<File>> doInBackground() throws Exception
    {
-		Map od            = getOutputDefinition();
-		sourceListAllRows = downloadResources(od);
+		Map od = getOutputDefinition();
 		
-		if (!isCancelled()) performActions(od);
+		getPreFetchResources(od);
+		performPreFetchActions(od);
+		
+		sourceListAllRows = downloadResources(od);
+		if (!isCancelled()) performPostFetchActions(od);
 		
 		// outputList is built up by the executeAction() method of the concrete
-		// DownloadAction classes created as part of the performActions(od) method.
+		// DownloadAction classes created as part of the performPostFetchActions(od) method.
 		return outputListAllRows;
 	}
 	
@@ -243,18 +248,38 @@ public class FileListWorker extends SwingWorker<ArrayList<ArrayList<File>>, Stri
 	}
 	
 	
+	protected void getPreFetchResources(Map<String, String> od)
+			         throws InterruptedException, IOException, XNATException
+	{
+		// At present, the only thing that we need is a list of session
+		// labels for the anonymise and send GUI.
+		firstRow   = outline.getSelectionModel().getMinSelectionIndex();
+      lastRow    = outline.getSelectionModel().getMaxSelectionIndex();
+      nTableRows = lastRow - firstRow + 1;
+		
+		for (int j=0; j<nTableRows; j++)
+      {  
+         // Note that, if the column has been sorted, then we need to retrieve
+         // the correct row in the original model here.
+         int viewRow  = firstRow + j;
+         int modelRow = outline.convertRowIndexToModel(viewRow);
+         logger.debug("Row selected in view = " + viewRow + "  Model row = " + modelRow);
+			
+			// Sessions need to be handled differently from other items, as they
+			// are further up the hierarchy and do not have resources directly
+			// underneath.
+			if (rootElement.contains("Session"))
+			{
+				sessionLabelList.add(getSessionLabel(modelRow));
+			}
+		}
+	}
+	
+	
 	
 	protected ArrayList<ArrayList<File>> downloadResources(Map<String, String> od)
 			         throws InterruptedException, IOException, XNATException
 	{
-		int firstRow    = outline.getSelectionModel().getMinSelectionIndex();
-      int lastRow     = outline.getSelectionModel().getMaxSelectionIndex();
-      nTableRows     = lastRow - firstRow + 1;
-		
-		sourceListAllRows    = new ArrayList<>();
-		sourceListCurrentRow = new ArrayList<>();
-		sessionLabelList     = new ArrayList<>();
-		
       for (int j=0; j<nTableRows; j++)
       {
          // While the selection is being retrieved (potentially from a remote
@@ -669,10 +694,27 @@ public class FileListWorker extends SwingWorker<ArrayList<ArrayList<File>>, Stri
 	}
 	
 	
-	protected void performActions(Map<String, String> od) throws Exception
+	protected void performPreFetchActions(Map<String, String> od) throws Exception
 	{
 		outputListAllRows = new ArrayList<ArrayList<File>>();
 		
+		// Get all action entries in the output definition.
+		Set<String>       keys    = od.keySet();
+		SortedSet<String> actions = new TreeSet<>();
+		for (String key : keys) if (key.startsWith("preFetchAction")) actions.add(key);
+
+		// Perform the actions.
+		DownloadActionFactory af = new DownloadActionFactory();
+		for (String action : actions)
+		{
+			String actionName = od.get(action);
+			af.getAction(actionName).executeAction(this);
+		}
+	}
+	
+	
+	protected void performPostFetchActions(Map<String, String> od) throws Exception
+	{
 		for (int i=0; i<nTableRows; i++)
 		{	
 			outputListCurrentRow      = new ArrayList<File>();
@@ -681,7 +723,7 @@ public class FileListWorker extends SwingWorker<ArrayList<ArrayList<File>>, Stri
 			// Get all action entries in the output definition.
 			Set<String>       keys    = od.keySet();
 			SortedSet<String> actions = new TreeSet<>();
-			for (String key : keys) if (key.startsWith("action")) actions.add(key);
+			for (String key : keys) if (key.startsWith("postFetchAction")) actions.add(key);
 		
 			// Perform the actions.
 			DownloadActionFactory af = new DownloadActionFactory();

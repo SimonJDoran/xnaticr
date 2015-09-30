@@ -291,7 +291,7 @@ public abstract class SingletonListFromTwoLevelXML
 
    protected Document getXMLDoc() throws IOException
    {
-      InputStream resourceIs  = XNATDAO.class.getResourceAsStream(XMLResourceName);
+      InputStream resourceIs  = this.getClass().getResourceAsStream(XMLResourceName);
 
       if (resourceIs == null)
       {

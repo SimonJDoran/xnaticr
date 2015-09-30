@@ -63,7 +63,7 @@ public class GenerateZipDownloadAction implements DownloadAction
 	public void executeAction(FileListWorker caller) throws IOException
 	{
 		// Although the action is executed for every row, because of the generalised
-		// nature of the performActions method in FileListWorker.java, the zip
+		// nature of the performPostFetchActions method in FileListWorker.java, the zip
 		// generation is actually done only once for all the table lines.
 		if (caller.getOutputListAllRows().isEmpty())
 		{

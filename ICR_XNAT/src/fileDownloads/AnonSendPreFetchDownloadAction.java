@@ -49,18 +49,21 @@ import java.io.IOException;
 import java.util.ArrayList;
 import sessionExporter.AnonymiseAndSend;
 
-public class AnonSendDownloadAction implements DownloadAction
+public class AnonSendPreFetchDownloadAction implements DownloadAction
 {
 @Override
 	public void executeAction(FileListWorker caller) throws IOException
 	{
 		// Although the action is executed for every row, because of the generalised
-		// nature of the performActions method in FileListWorker.java, the zip
-		// generation is actually done only once for all the table lines.
+		// nature of the performPostFetchActions method in FileListWorker.java, the anonymise
+		// and send operation is actually done only once for all the table lines.
 		if (caller.getOutputListAllRows().isEmpty())
 		{
-		   // Extract the ID of the sessions concerned from the file information.
-			ArrayList<ArrayList<File>> fileList = caller.getSourceListAllRows();
+			// Add a dummy value to the list to avoid the routine being called
+			// multiple times. Note that the property "outputCardinality" is set
+			// to "None" for this type of action, so no action will be taken
+			// by FileListWorker in response.
+			caller.addAllToOutputListAllRows(caller.getSourceListAllRows());
 		
 			caller.publishFromOutsidePackage("Launching anonymise-and-send GUI ...");
 			AnonymiseAndSend as = new AnonymiseAndSend(new javax.swing.JFrame(),

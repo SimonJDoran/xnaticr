@@ -90,7 +90,7 @@ public class DAOReturnTypesList extends SingletonListFromTwoLevelXML
    @Override
    public void setVariables()
    {
-      XMLResourceName = "projectResources/DAO_returnTypes.xml";
+      XMLResourceName = "/configurationLists/resources/DAO_returnTypes.xml";
       rootName        = "XNAT_DAO_returnDataTypes";
       outer           = "DAO_datatype";
       outAttr         = "alias";

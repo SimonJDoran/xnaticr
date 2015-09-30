@@ -41,7 +41,7 @@
       <DAO_outputFormatProperty name="restTemplate">/data/archive/experiments/$ID/scans/@scanID/resources</DAO_outputFormatProperty>
       <DAO_outputFormatProperty name="sourceName">DICOM</DAO_outputFormatProperty> 
 		<DAO_outputFormatProperty name="sourceFormat">DICOM</DAO_outputFormatProperty>
-		<DAO_outputFormatProperty name="action1">toCache</DAO_outputFormatProperty>
+		<DAO_outputFormatProperty name="postFetchAction1">toCache</DAO_outputFormatProperty>
 		<DAO_outputFormatProperty name="thumbnailName">DICOM</DAO_outputFormatProperty>
 		<DAO_outputFormatProperty name="thumbnailFormat">DICOM</DAO_outputFormatProperty>
 		<DAO_outputFormatProperty name="outputCardinality">OnePerRow</DAO_outputFormatProperty>
@@ -51,7 +51,7 @@
       <DAO_outputFormatProperty name="restTemplate">/data/archive/experiments/$ID/scans/@scanID/resources</DAO_outputFormatProperty>
       <DAO_outputFormatProperty name="sourceName">DICOM</DAO_outputFormatProperty> 
 		<DAO_outputFormatProperty name="sourceFormat">DICOM</DAO_outputFormatProperty>
-		<DAO_outputFormatProperty name="action1">toDicomEdit</DAO_outputFormatProperty>
+		<DAO_outputFormatProperty name="postFetchAction1">toDicomEdit</DAO_outputFormatProperty>
 		<DAO_outputFormatProperty name="deScript">sendSession.das</DAO_outputFormatProperty>
 		<DAO_outputFormatProperty name="thumbnailName">XNAT XML</DAO_outputFormatProperty>
 		<DAO_outputFormatProperty name="thumbnailFormat">XML</DAO_outputFormatProperty>
@@ -62,7 +62,7 @@
       <DAO_outputFormatProperty name="restTemplate">/data/archive/experiments/$ID/scans/@scanID/resources</DAO_outputFormatProperty>
       <DAO_outputFormatProperty name="sourceName">DICOM</DAO_outputFormatProperty> 
 		<DAO_outputFormatProperty name="sourceFormat">DICOM</DAO_outputFormatProperty>
-		<DAO_outputFormatProperty name="action1">anonSendGUI</DAO_outputFormatProperty>
+		<DAO_outputFormatProperty name="preFetchAction1">anonSendGUI</DAO_outputFormatProperty>
 		<DAO_outputFormatProperty name="deScript">anonSendSession.das</DAO_outputFormatProperty>
 		<DAO_outputFormatProperty name="thumbnailName">DICOM</DAO_outputFormatProperty>
 		<DAO_outputFormatProperty name="thumbnailFormat">DICOM</DAO_outputFormatProperty>
@@ -73,8 +73,8 @@
       <DAO_outputFormatProperty name="restTemplate">/data/archive/experiments/$ID/scans/@scanID/resources</DAO_outputFormatProperty>
       <DAO_outputFormatProperty name="sourceName">DICOM</DAO_outputFormatProperty> 
 		<DAO_outputFormatProperty name="sourceFormat">DICOM</DAO_outputFormatProperty>
-		<DAO_outputFormatProperty name="action1">generateZip</DAO_outputFormatProperty>
-		<DAO_outputFormatProperty name="action2">toCache</DAO_outputFormatProperty>
+		<DAO_outputFormatProperty name="postFetchAction1">generateZip</DAO_outputFormatProperty>
+		<DAO_outputFormatProperty name="postFetchAction2">toCache</DAO_outputFormatProperty>
 		<DAO_outputFormatProperty name="thumbnailName">DICOM</DAO_outputFormatProperty>
 		<DAO_outputFormatProperty name="thumbnailFormat">DICOM</DAO_outputFormatProperty>
 		<DAO_outputFormatProperty name="outputCardinality">Single</DAO_outputFormatProperty>
@@ -84,7 +84,7 @@
 		<DAO_outputFormatProperty name="restTemplate">/data/archive/experiments/$image_session_ID/scans/$ID/resources</DAO_outputFormatProperty>
       <DAO_outputFormatProperty name="sourceName">DICOM</DAO_outputFormatProperty> 
 		<DAO_outputFormatProperty name="sourceFormat">DICOM</DAO_outputFormatProperty>
-		<DAO_outputFormatProperty name="action1">toCache</DAO_outputFormatProperty>
+		<DAO_outputFormatProperty name="postFetchAction1">toCache</DAO_outputFormatProperty>
 		<DAO_outputFormatProperty name="thumbnailName">DICOM</DAO_outputFormatProperty>
 		<DAO_outputFormatProperty name="thumbnailFormat">DICOM</DAO_outputFormatProperty>
 		<DAO_outputFormatProperty name="outputCardinality">OnePerRow</DAO_outputFormatProperty>
@@ -94,8 +94,8 @@
       <DAO_outputFormatProperty name="restTemplate">/data/archive/experiments/$image_session_ID/scans/$ID/resources</DAO_outputFormatProperty>
       <DAO_outputFormatProperty name="sourceName">DICOM</DAO_outputFormatProperty> 
 		<DAO_outputFormatProperty name="sourceFormat">DICOM</DAO_outputFormatProperty>
-		<DAO_outputFormatProperty name="action1">generateZip</DAO_outputFormatProperty>		
-		<DAO_outputFormatProperty name="action2">toCache</DAO_outputFormatProperty>
+		<DAO_outputFormatProperty name="postFetchAction1">generateZip</DAO_outputFormatProperty>		
+		<DAO_outputFormatProperty name="postFetchAction2">toCache</DAO_outputFormatProperty>
 		<DAO_outputFormatProperty name="thumbnailName">DICOM</DAO_outputFormatProperty>
 		<DAO_outputFormatProperty name="thumbnailFormat">DICOM</DAO_outputFormatProperty>
 		<DAO_outputFormatProperty name="outputCardinality">Single</DAO_outputFormatProperty>
@@ -105,8 +105,8 @@
       <DAO_outputFormatProperty name="restTemplate">/data/archive/experiments/$image_session_ID/scans/$ID/resources</DAO_outputFormatProperty>
       <DAO_outputFormatProperty name="sourceName">DICOM|NIFTI</DAO_outputFormatProperty> 
 		<DAO_outputFormatProperty name="sourceFormat">DICOM|NIFTI</DAO_outputFormatProperty>
-		<DAO_outputFormatProperty name="action1">generateNii</DAO_outputFormatProperty>
-		<DAO_outputFormatProperty name="action2">toCache</DAO_outputFormatProperty>
+		<DAO_outputFormatProperty name="postFetchAction1">generateNii</DAO_outputFormatProperty>
+		<DAO_outputFormatProperty name="postFetchAction2">toCache</DAO_outputFormatProperty>
 		<DAO_outputFormatProperty name="thumbnailName">DICOM|NIFTI</DAO_outputFormatProperty>
 		<DAO_outputFormatProperty name="thumbnailFormat">DICOM|NIFTI</DAO_outputFormatProperty>
 		<DAO_outputFormatProperty name="outputCardinality">OnePerRow</DAO_outputFormatProperty>
@@ -116,7 +116,7 @@
       <DAO_outputFormatProperty name="restTemplate">/data/archive/experiments/$image_session_ID/assessors/$ID/resources</DAO_outputFormatProperty>
       <DAO_outputFormatProperty name="sourceName">RT-STRUCT</DAO_outputFormatProperty> 
 		<DAO_outputFormatProperty name="sourceFormat">DICOM</DAO_outputFormatProperty>
-		<DAO_outputFormatProperty name="action1">toCache</DAO_outputFormatProperty>
+		<DAO_outputFormatProperty name="postFetchAction1">toCache</DAO_outputFormatProperty>
 		<DAO_outputFormatProperty name="thumbnailName">ROISET_THUMBNAIL</DAO_outputFormatProperty>
 		<DAO_outputFormatProperty name="thumbnailFormat">PNG</DAO_outputFormatProperty>
 		<DAO_outputFormatProperty name="outputCardinality">OnePerRow</DAO_outputFormatProperty>
@@ -126,8 +126,8 @@
       <DAO_outputFormatProperty name="restTemplate">/data/archive/experiments/$image_session_ID/assessors/$ID/resources</DAO_outputFormatProperty>
       <DAO_outputFormatProperty name="resourceName">RT-STRUCT</DAO_outputFormatProperty> 
 		<DAO_outputFormatProperty name="sourceFormat">DICOM</DAO_outputFormatProperty>
-		<DAO_outputFormatProperty name="action1">generateSingleRtStruct</DAO_outputFormatProperty>
-		<DAO_outputFormatProperty name="action2">toCache</DAO_outputFormatProperty>
+		<DAO_outputFormatProperty name="postFetchAction1">generateSingleRtStruct</DAO_outputFormatProperty>
+		<DAO_outputFormatProperty name="postFetchAction2">toCache</DAO_outputFormatProperty>
 		<DAO_outputFormatProperty name="thumbnailName">ROI_THUMBNAIL</DAO_outputFormatProperty>
 		<DAO_outputFormatProperty name="thumbnailFormat">PNG</DAO_outputFormatProperty>
 		<DAO_outputFormatProperty name="outputCardinality">Single</DAO_outputFormatProperty>
@@ -137,8 +137,8 @@
       <DAO_outputFormatProperty name="restTemplate">/data/archive/experiments/$image_session_ID/assessors/$ID/resources</DAO_outputFormatProperty>
       <DAO_outputFormatProperty name="resourceName">RT-STRUCT</DAO_outputFormatProperty> 
 		<DAO_outputFormatProperty name="sourceFormat">DICOM</DAO_outputFormatProperty>
-		<DAO_outputFormatProperty name="action1">generateMultipleRtStruct</DAO_outputFormatProperty>
-		<DAO_outputFormatProperty name="action2">toCache</DAO_outputFormatProperty>
+		<DAO_outputFormatProperty name="postFetchAction1">generateMultipleRtStruct</DAO_outputFormatProperty>
+		<DAO_outputFormatProperty name="postFetchAction2">toCache</DAO_outputFormatProperty>
 		<DAO_outputFormatProperty name="thumbnailName">ROI_THUMBNAIL</DAO_outputFormatProperty>
 		<DAO_outputFormatProperty name="thumbnailFormat">PNG</DAO_outputFormatProperty>
 		<DAO_outputFormatProperty name="outputCardinality">OnePerRow</DAO_outputFormatProperty>

@@ -43,10 +43,12 @@
 
 package xnatDAO;
 
+import generalUtilities.Vector2D;
 import java.awt.Dialog;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import javax.swing.JOptionPane;
+import xnatRestToolkit.XNATRESTToolkit;
 
 
 public class XNATProfileAuthenticator extends javax.swing.JDialog
@@ -150,7 +152,7 @@ public class XNATProfileAuthenticator extends javax.swing.JDialog
     
     
    
-
+	
     /** This method is called from within the constructor to
      * initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is

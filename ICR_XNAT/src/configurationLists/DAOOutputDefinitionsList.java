@@ -81,7 +81,7 @@ public class DAOOutputDefinitionsList extends SingletonListFromTwoLevelXML
    @Override
    public void setVariables()
    {
-      XMLResourceName = "projectResources/DAO_outputDefinitions.xml";
+      XMLResourceName = "/configurationLists/resources/DAO_outputDefinitions.xml";
       rootName        = "XNAT_DAO_outputDefinitions";
       outer           = "DAO_outputFormat";
       outAttr         = "code";
