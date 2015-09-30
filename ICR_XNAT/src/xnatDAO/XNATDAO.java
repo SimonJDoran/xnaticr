@@ -1841,8 +1841,8 @@ public final class XNATDAO extends XNATGUI
       // 2. When we sort the columns the row number in the user view is not
       // the same as the row number in the model and we do not want to get
       // all the files again just because the position of the row has changed.
-		Outline     outline = dAOTreeTable1.getOutline();
-		TableModel  model = outline.getModel();
+		Outline    outline = dAOTreeTable1.getOutline();
+		TableModel model = outline.getModel();
 		
       int        firstModelRow = outline.convertRowIndexToModel(evt.getFirstIndex());
       int        lastModelRow  = outline.convertRowIndexToModel(evt.getLastIndex());
@@ -1984,10 +1984,10 @@ public final class XNATDAO extends XNATGUI
       tableSettingsJLabel = new javax.swing.JLabel();
       settingsJComboBox = new javax.swing.JComboBox();
       downloadJProgressBar = new javax.swing.JProgressBar();
-      downloadingJLabel = new javax.swing.JLabel();
       downloadDetailsJLabel = new javax.swing.JLabel();
       leafJLabel = new javax.swing.JLabel();
       leafDAOElementsComboBox = new xnatDAO.DAOElementsComboBox();
+      jButton1 = new javax.swing.JButton();
 
       setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
       setResizable(false);
@@ -2224,9 +2224,6 @@ public final class XNATDAO extends XNATGUI
       settingsJComboBox.setFont(new java.awt.Font("Lucida Grande", 0, 11)); // NOI18N
       settingsJComboBox.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
 
-      downloadingJLabel.setFont(new java.awt.Font("Lucida Grande", 0, 11)); // NOI18N
-      downloadingJLabel.setText("Downloading");
-
       downloadDetailsJLabel.setFont(new java.awt.Font("Lucida Grande", 0, 11)); // NOI18N
       downloadDetailsJLabel.setText("File details");
 
@@ -2239,6 +2236,9 @@ public final class XNATDAO extends XNATGUI
       leafDAOElementsComboBox.setMinimumSize(new java.awt.Dimension(133, 27));
       leafDAOElementsComboBox.setPreferredSize(new java.awt.Dimension(133, 27));
 
+      jButton1.setFont(new java.awt.Font("Lucida Grande", 0, 11)); // NOI18N
+      jButton1.setLabel("Download");
+
       org.jdesktop.layout.GroupLayout jPanel7Layout = new org.jdesktop.layout.GroupLayout(jPanel7);
       jPanel7.setLayout(jPanel7Layout);
       jPanel7Layout.setHorizontalGroup(
@@ -2247,18 +2247,18 @@ public final class XNATDAO extends XNATGUI
             .addContainerGap()
             .add(tableSettingsJLabel)
             .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-            .add(settingsJComboBox, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 133, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-            .add(26, 26, 26)
+            .add(settingsJComboBox, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 121, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+            .addPreferredGap(org.jdesktop.layout.LayoutStyle.UNRELATED)
             .add(leafJLabel)
             .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-            .add(leafDAOElementsComboBox, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 133, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-            .add(18, 18, 18)
-            .add(downloadingJLabel)
-            .add(18, 18, 18)
-            .add(downloadDetailsJLabel, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 162, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+            .add(leafDAOElementsComboBox, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 129, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+            .addPreferredGap(org.jdesktop.layout.LayoutStyle.UNRELATED)
+            .add(jButton1, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 105, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+            .add(16, 16, 16)
+            .add(downloadDetailsJLabel, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 179, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
             .addPreferredGap(org.jdesktop.layout.LayoutStyle.UNRELATED)
             .add(downloadJProgressBar, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 85, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-            .add(67, 67, 67))
+            .add(97, 97, 97))
       );
       jPanel7Layout.setVerticalGroup(
          jPanel7Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
@@ -2269,10 +2269,10 @@ public final class XNATDAO extends XNATGUI
                   .add(leafJLabel)
                   .add(settingsJComboBox, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
                   .add(leafDAOElementsComboBox, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                  .add(downloadingJLabel)
-                  .add(downloadDetailsJLabel))
+                  .add(downloadDetailsJLabel)
+                  .add(jButton1))
                .add(downloadJProgressBar, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
-            .addContainerGap(13, Short.MAX_VALUE))
+            .addContainerGap(11, Short.MAX_VALUE))
       );
 
       ((org.jdesktop.layout.GroupLayout) jPanel7.getLayout()).setHonorsVisibility(false);
@@ -2281,7 +2281,7 @@ public final class XNATDAO extends XNATGUI
       jPanel6.setLayout(jPanel6Layout);
       jPanel6Layout.setHorizontalGroup(
          jPanel6Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-         .add(jPanel7, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 839, Short.MAX_VALUE)
+         .add(jPanel7, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 883, Short.MAX_VALUE)
          .add(jPanel6Layout.createSequentialGroup()
             .add(jScrollPane2, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 796, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
             .addContainerGap(org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
@@ -2322,7 +2322,7 @@ public final class XNATDAO extends XNATGUI
    private javax.swing.JLabel dataTypeJLabel;
    private javax.swing.JLabel downloadDetailsJLabel;
    private javax.swing.JProgressBar downloadJProgressBar;
-   private javax.swing.JLabel downloadingJLabel;
+   private javax.swing.JButton jButton1;
    private javax.swing.JLabel jLabel10;
    private javax.swing.JLabel jLabel13;
    private javax.swing.JLabel jLabel2;
