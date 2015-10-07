@@ -62,6 +62,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintStream;
 import java.net.URI;
+import java.nio.charset.StandardCharsets;
 import java.sql.SQLException;
 import java.text.ParseException;
 import java.util.Collection;
@@ -211,7 +212,7 @@ public class DicomRemapAndSend
 	
 	
 	public DicomRemapAndSend(JTextArea logJTextArea)
-			 throws IOException, ParseException, DocumentException
+			 throws IOException, ParseException, DocumentException, Exception
 	{
 		this.logJTextArea = logJTextArea;
 		InputStream is    = new ByteArrayInputStream(logJTextArea.getText()

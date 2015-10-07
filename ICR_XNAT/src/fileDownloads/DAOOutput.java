@@ -230,7 +230,7 @@ public class DAOOutput
                                        "location from XNAT",
                                        "I/O error", JOptionPane.ERROR_MESSAGE);
          currentStatus = "Failed";
-         xndao.getDownloadingJLabel().setVisible(false);
+         xndao.getDownloadJButton().setEnabled(false);
          xndao.getDownloadDetailsJLabel().setVisible(false);
          xndao.getDownloadJProgressBar().setVisible(false);
       }

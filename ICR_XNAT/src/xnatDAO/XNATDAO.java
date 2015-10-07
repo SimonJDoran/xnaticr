@@ -126,7 +126,7 @@ public final class XNATDAO extends XNATGUI
       implementRestrictions();
 		setTypeSubtype("Set of images", "MR image set", true);
       setDefaultSearch();
-      downloadingJLabel.setVisible(false);
+      downloadJButton.setEnabled(false);
       downloadDetailsJLabel.setVisible(false);
       downloadJProgressBar.setVisible(false);
       thumbnailPreview1.start();
@@ -322,7 +322,7 @@ public final class XNATDAO extends XNATGUI
       thumbnailPreview1.stop();
       thumbnailPreview1.clearImages();
       thumbnailPreview1.start();
-      downloadingJLabel.setVisible(false);
+      downloadJButton.setEnabled(false);
       downloadDetailsJLabel.setVisible(false);
       downloadJProgressBar.setVisible(false);
       status = "No files chosen yet";
@@ -746,9 +746,18 @@ public final class XNATDAO extends XNATGUI
             respondToRowSelection(evt);
          }
       });
+		
+		
+		downloadJButton.addActionListener(new ActionListener()
+		{
+			@Override
+			public void actionPerformed(ActionEvent e)
+			{
+				respondToDownloadRequest(e);
+			}
+		}
       
-      
-     
+        
       
       selectDataJButton.addActionListener(new ActionListener()
 		{
@@ -1749,9 +1758,9 @@ public final class XNATDAO extends XNATGUI
     * Getter method to allow access to a private variable defined by Matisse.
     * @return the JLabel variable corresponding to the "Downloading" label.
     */
-   public JLabel getDownloadingJLabel()
+   public JButton getDownloadJButton()
    {
-      return downloadingJLabel;
+      return downloadJButton;
    }
  
 
@@ -1842,7 +1851,7 @@ public final class XNATDAO extends XNATGUI
       // the same as the row number in the model and we do not want to get
       // all the files again just because the position of the row has changed.
 		Outline    outline = dAOTreeTable1.getOutline();
-		TableModel model = outline.getModel();
+		TableModel model   = outline.getModel();
 		
       int        firstModelRow = outline.convertRowIndexToModel(evt.getFirstIndex());
       int        lastModelRow  = outline.convertRowIndexToModel(evt.getLastIndex());
@@ -1855,9 +1864,18 @@ public final class XNATDAO extends XNATGUI
       oldFirstRow = firstModelRow;
       oldLastRow  = lastModelRow;
 		
+		downloadJButton.setEnabled(true);
+	}
+	
+	
+	protected void respondToDownloadRequest(ActionEvent evt)
+	{
+		Outline    outline   = dAOTreeTable1.getOutline();
+		TableModel model     = outline.getModel();
+		
 		// Set variables to be returned as part of the external API.
-		int nCols   = model.getColumnCount();
-		int nRows   = lastModelRow - firstModelRow + 1;
+		int nCols            = model.getColumnCount();
+		int nRows            = oldLastRow - oldFirstRow + 1;
 		outputColumnHeadings = new String[nCols];
 		outputColumnValues   = new String[nRows][nCols];
 		for (int i=0; i<nCols; i++)
@@ -1865,7 +1883,7 @@ public final class XNATDAO extends XNATGUI
 			outputColumnHeadings[i] = model.getColumnName(i);
 			for (int j=0; j<nRows; j++)
 			{
-				outputColumnValues[j][i] = model.getValueAt(j+firstModelRow, i).toString();
+				outputColumnValues[j][i] = model.getValueAt(j+oldFirstRow, i).toString();
 			}
 		}
       
@@ -1987,7 +2005,7 @@ public final class XNATDAO extends XNATGUI
       downloadDetailsJLabel = new javax.swing.JLabel();
       leafJLabel = new javax.swing.JLabel();
       leafDAOElementsComboBox = new xnatDAO.DAOElementsComboBox();
-      jButton1 = new javax.swing.JButton();
+      downloadJButton = new javax.swing.JButton();
 
       setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
       setResizable(false);
@@ -2236,8 +2254,8 @@ public final class XNATDAO extends XNATGUI
       leafDAOElementsComboBox.setMinimumSize(new java.awt.Dimension(133, 27));
       leafDAOElementsComboBox.setPreferredSize(new java.awt.Dimension(133, 27));
 
-      jButton1.setFont(new java.awt.Font("Lucida Grande", 0, 11)); // NOI18N
-      jButton1.setLabel("Download");
+      downloadJButton.setFont(new java.awt.Font("Lucida Grande", 0, 11)); // NOI18N
+      downloadJButton.setLabel("Download");
 
       org.jdesktop.layout.GroupLayout jPanel7Layout = new org.jdesktop.layout.GroupLayout(jPanel7);
       jPanel7.setLayout(jPanel7Layout);
@@ -2253,7 +2271,7 @@ public final class XNATDAO extends XNATGUI
             .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .add(leafDAOElementsComboBox, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 129, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
             .addPreferredGap(org.jdesktop.layout.LayoutStyle.UNRELATED)
-            .add(jButton1, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 105, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+            .add(downloadJButton, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 105, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
             .add(16, 16, 16)
             .add(downloadDetailsJLabel, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 179, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
             .addPreferredGap(org.jdesktop.layout.LayoutStyle.UNRELATED)
@@ -2270,7 +2288,7 @@ public final class XNATDAO extends XNATGUI
                   .add(settingsJComboBox, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
                   .add(leafDAOElementsComboBox, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
                   .add(downloadDetailsJLabel)
-                  .add(jButton1))
+                  .add(downloadJButton))
                .add(downloadJProgressBar, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
             .addContainerGap(11, Short.MAX_VALUE))
       );
@@ -2321,8 +2339,8 @@ public final class XNATDAO extends XNATGUI
    private javax.swing.JComboBox dataTypeJComboBox;
    private javax.swing.JLabel dataTypeJLabel;
    private javax.swing.JLabel downloadDetailsJLabel;
+   private javax.swing.JButton downloadJButton;
    private javax.swing.JProgressBar downloadJProgressBar;
-   private javax.swing.JButton jButton1;
    private javax.swing.JLabel jLabel10;
    private javax.swing.JLabel jLabel13;
    private javax.swing.JLabel jLabel2;

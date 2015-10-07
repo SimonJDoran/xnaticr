@@ -500,7 +500,7 @@
                           <EmptySpace max="32767" attributes="0"/>
                           <Component id="leafDAOElementsComboBox" min="-2" pref="129" max="-2" attributes="0"/>
                           <EmptySpace type="unrelated" max="-2" attributes="0"/>
-                          <Component id="jButton1" min="-2" pref="105" max="-2" attributes="0"/>
+                          <Component id="downloadJButton" min="-2" pref="105" max="-2" attributes="0"/>
                           <EmptySpace min="-2" pref="16" max="-2" attributes="0"/>
                           <Component id="downloadDetailsJLabel" min="-2" pref="179" max="-2" attributes="0"/>
                           <EmptySpace type="unrelated" max="-2" attributes="0"/>
@@ -519,7 +519,7 @@
                                   <Component id="settingsJComboBox" alignment="3" min="-2" max="-2" attributes="0"/>
                                   <Component id="leafDAOElementsComboBox" alignment="3" min="-2" max="-2" attributes="0"/>
                                   <Component id="downloadDetailsJLabel" alignment="3" min="-2" max="-2" attributes="0"/>
-                                  <Component id="jButton1" alignment="3" min="-2" max="-2" attributes="0"/>
+                                  <Component id="downloadJButton" alignment="3" min="-2" max="-2" attributes="0"/>
                               </Group>
                               <Component id="downloadJProgressBar" alignment="0" min="-2" max="-2" attributes="0"/>
                           </Group>
@@ -585,7 +585,7 @@
                     </Property>
                   </Properties>
                 </Component>
-                <Component class="javax.swing.JButton" name="jButton1">
+                <Component class="javax.swing.JButton" name="downloadJButton">
                   <Properties>
                     <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
                       <Font name="Lucida Grande" size="11" style="0"/>

@@ -831,15 +831,17 @@ public class FileListWorker extends SwingWorker<ArrayList<ArrayList<File>>, Stri
 // Note that this needs to be executed on the Event Dispatch Thread.
 	public void clearDownloadArea()
 	{
-		xndao.getDownloadingJLabel().setText("");
+		xndao.getDownloadJButton().setText("Download");
+		xndao.getDownloadJButton().setEnabled(false);
 	}
    
 
 // Note that this needs to be executed on the Event Dispatch Thread.
 	public void revealDownloadArea()
-   {     
-      xndao.getDownloadingJLabel().setVisible(true);
-      xndao.getDownloadDetailsJLabel().setVisible(true);
+   {
+		xndao.getDownloadJButton().setText("Downloading now");
+      xndao.getDownloadJButton().setEnabled(true);
+		xndao.getDownloadDetailsJLabel().setVisible(true);
       xndao.getDownloadJProgressBar().setVisible(true);
       xndao.getDownloadJProgressBar().setValue(0);
    }
@@ -848,7 +850,8 @@ public class FileListWorker extends SwingWorker<ArrayList<ArrayList<File>>, Stri
    // Note that this needs to be executed on the Event Dispatch Thread.
    public void hideDownloadArea()
    {
-      xndao.getDownloadingJLabel().setVisible(false);
+		xndao.getDownloadJButton().setText("Download");
+      xndao.getDownloadJButton().setEnabled(false);
       xndao.getDownloadDetailsJLabel().setVisible(false);
       xndao.getDownloadJProgressBar().setVisible(false);
    }
