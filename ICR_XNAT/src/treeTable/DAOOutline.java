@@ -73,8 +73,7 @@ public class DAOOutline extends Outline
 
    public DAOOutline()
    {
-      lastValidRowSelection = null;
-      
+      lastValidRowSelection = null;    
    }
 
 
@@ -97,25 +96,6 @@ public class DAOOutline extends Outline
               SimpleColourTable.getColour("Apple Finder selected row"));
 
       return comp;
-   }
-   
-   @Override
-   public boolean editCellAt(int row, int col, EventObject e)
-   {
-      bypassOutlineRow = row;
-      return super.editCellAt(row, col, e);
-   }
-
-
-   public int[] getPreviousValidRowSelection()
-   {
-      return lastValidRowSelection;
-   }
-
-
-   public void setLastValidRowSelection(int[] rowSelection)
-   {
-      lastValidRowSelection = rowSelection;
    }
    
    

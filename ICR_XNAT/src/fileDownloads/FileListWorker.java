@@ -100,8 +100,8 @@ public class FileListWorker extends SwingWorker<ArrayList<ArrayList<File>>, Stri
    protected int                        nFileFailures;
 	protected int                        nFilesToGenerate;
 	protected int                        nFilesToOutput;
-	protected int                        firstRow;
-	protected int                        lastRow;
+	protected int[]                      selTableRows;
+	protected int[]                      selModelRows;
 	protected int                        nTableRows;
 	protected ArrayList<File>            workingListCurrentRow;
 	protected ArrayList<File>            outputListCurrentRow;
@@ -253,24 +253,19 @@ public class FileListWorker extends SwingWorker<ArrayList<ArrayList<File>>, Stri
 	{
 		// At present, the only thing that we need is a list of session
 		// labels for the anonymise and send GUI.
-		firstRow   = outline.getSelectionModel().getMinSelectionIndex();
-      lastRow    = outline.getSelectionModel().getMaxSelectionIndex();
-      nTableRows = lastRow - firstRow + 1;
-		
-		for (int j=0; j<nTableRows; j++)
-      {  
-         // Note that, if the column has been sorted, then we need to retrieve
-         // the correct row in the original model here.
-         int viewRow  = firstRow + j;
-         int modelRow = outline.convertRowIndexToModel(viewRow);
-         logger.debug("Row selected in view = " + viewRow + "  Model row = " + modelRow);
+		selTableRows       = outline.getSelectedRows();
+		nTableRows         = selTableRows.length;
+      selModelRows = new int[nTableRows];		
+		for (int i=0; i<nTableRows; i++)
+		{
+			selModelRows[i] = outline.convertRowIndexToModel(selTableRows[i]);
 			
 			// Sessions need to be handled differently from other items, as they
 			// are further up the hierarchy and do not have resources directly
 			// underneath.
 			if (rootElement.contains("Session"))
 			{
-				sessionLabelList.add(getSessionLabel(modelRow));
+				sessionLabelList.add(getSessionLabel(selModelRows[i]));
 			}
 		}
 	}
@@ -288,7 +283,8 @@ public class FileListWorker extends SwingWorker<ArrayList<ArrayList<File>>, Stri
          // the EDT to start the icon. Potentially bad practice, but a good
          // solution here.
          iconCycling     = false;
-         downloadIconRow = j;
+         downloadIconRow = selTableRows[j];
+			int modelRow    = selModelRows[j];
          setProgress(DAOOutput.START_ICON);
          while (!iconCycling)
          {
@@ -296,12 +292,7 @@ public class FileListWorker extends SwingWorker<ArrayList<ArrayList<File>>, Stri
 				catch (InterruptedException exIE) {throw exIE;}
          }
          
-         // Note that, if the column has been sorted, then we need to retrieve
-         // the correct row in the original model here.
-         int viewRow  = firstRow + j;
-         int modelRow = outline.convertRowIndexToModel(viewRow);
-         logger.debug("Row selected in view = " + viewRow + "  Model row = " + modelRow);
-			
+         
 			// Sessions need to be handled differently from other items, as they
 			// are further up the hierarchy and do not have resources directly
 			// underneath.
@@ -866,9 +857,7 @@ public class FileListWorker extends SwingWorker<ArrayList<ArrayList<File>>, Stri
    public void startIcon()
    {
       logger.debug("\n\nstartIcon()\nWorker ID " + this.toString() + " downloadIconRow = " + downloadIconRow);
-      int                   firstRow  = outline.getSelectionModel().getMinSelectionIndex();
-      DAOMutableTreeNode    treeNode  = (DAOMutableTreeNode) outline.getValueAt(
-                                                        firstRow+downloadIconRow, 0);
+      DAOMutableTreeNode    treeNode  = (DAOMutableTreeNode) outline.getValueAt(downloadIconRow, 0);
       DAOTreeNodeUserObject treeObj   = treeNode.getUserObject();
       
       icon = (DownloadIcon) treeObj.getIcon();

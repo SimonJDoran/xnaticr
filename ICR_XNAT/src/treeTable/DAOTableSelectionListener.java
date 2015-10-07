@@ -90,7 +90,9 @@ public class DAOTableSelectionListener implements ListSelectionListener
 
       if (ignoreCall)
       {
-         ignoreCall = false;
+         // This variable is set to prevent endless recursion, because
+			// later in the method, we may alter the user's selection to
+			// remove non-leaf elements.
          return;
       }
 
@@ -109,48 +111,26 @@ public class DAOTableSelectionListener implements ListSelectionListener
 
       else if (e.getSource() == model && outline.getRowSelectionAllowed())
       {
-         // Row selection changed - note that the standard JTable on which the
-         // Outline class is based allows only contiguous selections. Code is
-         // available "out there" to cater for non-contiguous, but I have not
-         // yet implemented this.
-         int first      = model.getMinSelectionIndex();
-         int last       = model.getMaxSelectionIndex();
-         int [] prevSel = outline.getPreviousValidRowSelection();
-         
-         // The Netbeans Outline object returns an incorrect value for the
-         // selection index if a non-leaf is clicked on. My DAOOutline object
-         // intercepts the correct value of the row in the case where a tree
-         // expansion is occurring and quietly ignores the event.
-         DAOMutableTreeNode nd = (DAOMutableTreeNode) outline.getValueAt(outline.bypassOutlineRow, 0);
-         if (!nd.isLeaf())
+         // Modify the selection to remove all null or non-leaf rows.
+			int[] selTableRows = outline.getSelectedRows();
+			ignoreCall = true;
+			
+			for (int i=0; i<selTableRows.length; i++)
          {
-            return;
+				int row = selTableRows[i];
+            DAOMutableTreeNode nodeForRow = (DAOMutableTreeNode) outline.getValueAt(row, 0);
+            if (nodeForRow == null) outline.removeRowSelectionInterval(row, row); 
+				else if (!nodeForRow.isLeaf()) outline.removeRowSelectionInterval(row, row);
          }
+			
+			ignoreCall = false;
 
-         for (int j=first; j<=last; j++)
-         {
-            DAOMutableTreeNode nodeForRow = (DAOMutableTreeNode) outline.getValueAt(j, 0);
-            if (nodeForRow == null) return;
-            if (nodeForRow.isLeaf())
-            {
-               // Selection is OK. Notify the application object (XNAT_DAO) via
-               // a listener, so that it can take appropriate action.
-               treeTable.fireRowSelectionChanged(first, last);
-
-            }
-            else
-            {
-               // Return selection to previous state.
-               ignoreCall = true;
-               if (prevSel == null) model.clearSelection();
-               else model.setSelectionInterval(prevSel[0], prevSel[1] );
-               return;
-            }
-         }
-         // If we get to the end of the loop, then all the rows were valid for
-         // selection. Leave the Outline table with selection untouched, but
-         // update the variable storing the selection.
-         outline.setLastValidRowSelection(new int[]{first, last});
+			selTableRows       = outline.getSelectedRows();
+			int[] selModelRows = new int[selTableRows.length];		
+			for (int i=0; i<selTableRows.length; i++)
+				selModelRows[i] = outline.convertRowIndexToModel(selTableRows[i]);
+			
+			treeTable.fireRowSelectionChanged(selModelRows);
       }
 
    }

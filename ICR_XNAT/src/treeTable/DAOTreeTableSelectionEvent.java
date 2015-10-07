@@ -43,61 +43,38 @@
 
 package treeTable;
 
+import java.util.Arrays;
 import java.util.EventObject;
 
 public class DAOTreeTableSelectionEvent extends EventObject
 {
-   private int firstIndex;
-   private int lastIndex;
+   private int[] selModelRows;
 
    /**
-     * Represents a change in selection status between {@code firstIndex} and
-     * {@code lastIndex}, inclusive. {@code firstIndex} is less than or equal to
-     * {@code lastIndex}. The selection of at least one index within the range will
-     * have changed.
+     * Represents a change in selection status leading to a new state
+	  * with the rows given by selModelRows now selected.
      *
-     * @param firstIndex the first index in the range, &lt;= lastIndex
-     * @param lastIndex the last index in the range, &gt;= firstIndex
+     * @param selModelRows the indices of the model rows now selected
+	  * in the table
      */
-   public DAOTreeTableSelectionEvent(Object source, int firstIndex, int lastIndex)
+   public DAOTreeTableSelectionEvent(Object source, int[] selModelRows)
    {
       super(source);
-      this.firstIndex = firstIndex;
-      this.lastIndex = lastIndex;
+      this.selModelRows = selModelRows;
 	}
 
 
    /**
-     * Returns the index of the first row whose selection may have changed.
-     * {@code getFirstIndex() &lt;= getLastIndex()}
-     *
-     * @return the first row whose selection value may have changed,
-     *         where zero is the first row
+     * @return the first set of model rows that are now selected
+	  * after the latest selection event
      */
-   public int getFirstIndex() { return firstIndex; }
+   public int[] getSelectedModelRows() { return selModelRows; }
 
-
-    /**
-     * Returns the index of the last row whose selection may have changed.
-     * {@code getLastIndex() &gt;= getFirstIndex()}
-     *
-     * @return the last row whose selection value may have changed,
-     *         where zero is the first row
-     */
-   public int getLastIndex() { return lastIndex; }
-
-
-    /**
-     * Returns a {@code String} that displays and identifies this
-     * object's properties.
-     *
-     * @return a String representation of this object
-     */
    @Override
    public String toString()
    {
-      String properties = " source=" + getSource() + " firstIndex= "
-                          + firstIndex + " lastIndex= " + lastIndex + " ";
+      String properties = " source=" + getSource() + " selectedModelRows = "
+                          + Arrays.toString(selModelRows);
 
       return getClass().getName() + "[" + properties + "]";
    }

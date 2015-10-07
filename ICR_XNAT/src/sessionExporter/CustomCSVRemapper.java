@@ -68,7 +68,7 @@ import com.google.common.collect.Sets;
 public final class CustomCSVRemapper {
     private static final int DICOM_DEFAULT_PORT = 104;
     private static final String AE_TITLE = "DicomRemap";
-
+/*
     private static final class RemapColumn {
         final String level;
         final int index;
@@ -305,7 +305,7 @@ public final class CustomCSVRemapper {
         }
         return new Constraint(new ConstraintConjunction(conditions));
     }
-
+*/
     /**
      * 
      * @param remapSpreadsheet
@@ -317,6 +317,7 @@ public final class CustomCSVRemapper {
      * @throws InvalidRemapsException
      * @throws SQLException
      */
+	 /*
     public Map<?,?> apply(final File remapSpreadsheet, final URI out, final Collection<File> files)
     throws IOException,AttributeException,InvalidRemapsException,SQLException {
         final List<Statement> statements = Lists.newArrayList(globalStatements);
@@ -439,10 +440,11 @@ public final class CustomCSVRemapper {
             return new File(path).toURI();
         }
     }
-
+*/
     /**
      * @param args
      */
+	 /*
     public static void main(final String[] args) throws Exception {
         final Options options = new Options();
         options.addOption("h", "help", false, "show this information");
@@ -538,5 +540,6 @@ public final class CustomCSVRemapper {
             }
         }
     }
+	 */
 }
 

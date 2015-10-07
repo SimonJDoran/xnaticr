@@ -519,11 +519,10 @@ public class DAOTreeTable extends JPanel
     * notification on this event type.  The event instance
     * is created using the parameters passed into the fire method.
     *
-    * @param first - the start row index of the new selection
-    * @param last  - the end row index
+    * @param modelRows the row indices of the new selection in the table model
     * @see EventListenerList
     */
-   protected void fireRowSelectionChanged(int first, int last)
+   protected void fireRowSelectionChanged(int[] selModelRows)
    {
       // Guaranteed to return a non-null array
       Object[] listeners = listenerList.getListenerList();
@@ -535,7 +534,7 @@ public class DAOTreeTable extends JPanel
          if (listeners[i]==DAOTreeTableSelectionListener.class)
          {
             DAOTreeTableSelectionEvent e
-                    = new DAOTreeTableSelectionEvent(this, first, last);
+                    = new DAOTreeTableSelectionEvent(this, selModelRows);
             ((DAOTreeTableSelectionListener) listeners[i+1]).rowSelectionChanged(e);
          }
 	   }

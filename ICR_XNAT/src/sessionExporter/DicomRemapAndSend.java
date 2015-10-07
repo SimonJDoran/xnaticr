@@ -52,6 +52,7 @@ import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.google.common.collect.Multimap;
 import com.google.common.collect.Sets;
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
@@ -71,6 +72,7 @@ import java.util.Map;
 import java.util.Set;
 import javax.swing.JTextArea;
 import org.apache.log4j.Logger;
+import org.dcm4che2.data.BasicDicomObject;
 import org.dcm4che2.data.DicomObject;
 import org.dcm4che2.net.TransferCapability;
 import org.dcm4che2.util.TagUtils;
@@ -97,13 +99,13 @@ public class DicomRemapAndSend
 	protected static     Logger           logger             = Logger.getLogger(DicomRemapAndSend.class);
 	private final List<Statement>         globalStatements   = Lists.newArrayList();
 	private final PrintStream             messages           = System.err;
-	private final DicomObject             template;
+	private final DicomObject             template           = new BasicDicomObject();
 	private final Collection<RemapColumn> remaps;
 	private final Map<String,Map<Integer,Integer>> selectionKeysToCols;
 	
 	private JTextArea                     logJTextArea;
-
-
+	
+	
 	private static final class RemapColumn
 	{
 		final String level;
@@ -209,7 +211,18 @@ public class DicomRemapAndSend
 		}
 	}
 	
-	
+	private static final class InvalidRemapsException extends Exception {
+        private static final long serialVersionUID = 1L;
+        private static final String LINE_SEPARATOR = System.getProperty("line.separator");
+        final Collection<RemapWithContext> underspecified;
+        final Multimap<RemapWithContext,String> overspecified;
+
+        InvalidRemapsException(Iterable<RemapWithContext> underspecified, Multimap<RemapWithContext,String> overspecified) {
+            this.underspecified = Lists.newArrayList(underspecified);
+            this.overspecified = overspecified;
+            assert !this.underspecified.isEmpty() || !overspecified.isEmpty();           
+        }
+	}
 	
 	public DicomRemapAndSend(JTextArea logJTextArea)
 			 throws IOException, ParseException, DocumentException, Exception
@@ -218,6 +231,7 @@ public class DicomRemapAndSend
 		InputStream is    = new ByteArrayInputStream(logJTextArea.getText()
 				                                                   .getBytes(StandardCharsets.UTF_8));
 		
+		File configFile = new File("dummy");
 		final ConfigurableDirectoryRecordFactory factory = new ConfigurableDirectoryRecordFactory(configFile);
 		final List<DicomTableEntry> columns = Lists.newArrayList(factory.getColumns());
 

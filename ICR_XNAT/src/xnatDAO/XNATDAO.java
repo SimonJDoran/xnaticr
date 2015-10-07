@@ -1,5 +1,5 @@
 /********************************************************************
-* Copyright (c) 2012, Institute of Cancer Research
+* CCopyright (c) 2012, Institute of Cancer Research
 * All rights reserved.
 * 
 * Redistribution and use in source and binary forms, with or without
@@ -62,6 +62,7 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.*;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Vector;
@@ -102,8 +103,7 @@ public final class XNATDAO extends XNATGUI
    private boolean                    queryInProgress      = false;
    private boolean                    isLazySearch         = true;
    private TreeNode[]                 expansionNodePath;
-   private int                        oldFirstRow          = 0;
-   private int                        oldLastRow           = 0;
+   private int[]                      selModelRows         = new int[1];
    private XndWrapper                 xndw = null;
    
 
@@ -748,7 +748,7 @@ public final class XNATDAO extends XNATGUI
       });
 		
 		
-		downloadJButton.addActionListener(new ActionListener()
+      downloadJButton.addActionListener(new ActionListener()
 		{
 			@Override
 			public void actionPerformed(ActionEvent e)
@@ -1853,18 +1853,15 @@ public final class XNATDAO extends XNATGUI
 		Outline    outline = dAOTreeTable1.getOutline();
 		TableModel model   = outline.getModel();
 		
-      int        firstModelRow = outline.convertRowIndexToModel(evt.getFirstIndex());
-      int        lastModelRow  = outline.convertRowIndexToModel(evt.getLastIndex());
       
-      if ((oldFirstRow == firstModelRow) && (oldLastRow  == lastModelRow))
+      if (Arrays.equals(selModelRows, evt.getSelectedModelRows()))
       {
          logger.debug("Same values - duplicate call to respondToRowSelection()");
          return;
       }
-      oldFirstRow = firstModelRow;
-      oldLastRow  = lastModelRow;
-		
-		downloadJButton.setEnabled(true);
+      selModelRows = evt.getSelectedModelRows();
+		if (selModelRows.length == 0) downloadJButton.setEnabled(false);
+		else downloadJButton.setEnabled(true);
 	}
 	
 	
@@ -1875,7 +1872,7 @@ public final class XNATDAO extends XNATGUI
 		
 		// Set variables to be returned as part of the external API.
 		int nCols            = model.getColumnCount();
-		int nRows            = oldLastRow - oldFirstRow + 1;
+		int nRows            = selModelRows.length;
 		outputColumnHeadings = new String[nCols];
 		outputColumnValues   = new String[nRows][nCols];
 		for (int i=0; i<nCols; i++)
@@ -1883,7 +1880,7 @@ public final class XNATDAO extends XNATGUI
 			outputColumnHeadings[i] = model.getColumnName(i);
 			for (int j=0; j<nRows; j++)
 			{
-				outputColumnValues[j][i] = model.getValueAt(j+oldFirstRow, i).toString();
+				outputColumnValues[j][i] = model.getValueAt(selModelRows[j], i).toString();
 			}
 		}
       
