@@ -755,7 +755,7 @@ public final class XNATDAO extends XNATGUI
 			{
 				respondToDownloadRequest(e);
 			}
-		}
+		});
       
         
       
