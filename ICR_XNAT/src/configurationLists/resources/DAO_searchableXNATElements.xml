@@ -14,7 +14,13 @@
 
 <XNATSearchRootElements>
 
-	<XNATSearchRootElement element="xnat:mrSessionData">
+	<XNATSearchRootElement element="xnat:subjectData">
+      <searchableXNATElement alias="XNAT subject ID">xnat:subjectData/ID</searchableXNATElement>
+		<searchableXNATElement alias="XNAT subject label">xnat:subjectData/label</searchableXNATElement>
+      <searchableXNATElement alias="XNAT project">xnat:subjectData/project</searchableXNATElement>
+   </XNATSearchRootElement>
+   
+   <XNATSearchRootElement element="xnat:mrSessionData">
       <searchableXNATElement alias="Patient name">xnat:mrSessionData/dcmPatientName</searchableXNATElement>
 		<searchableXNATElement alias="Session date">xnat:mrSessionData/date</searchableXNATElement>
 		<searchableXNATElement alias="Session time">xnat:mrSessionData/time</searchableXNATElement>

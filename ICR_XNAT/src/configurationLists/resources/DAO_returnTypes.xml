@@ -9,7 +9,11 @@
 
 <XNAT_DAO_returnDataTypes>
 
-	<DAO_datatype alias="Imaging session">
+   <DAO_datatype alias="Subject">
+		<DAO_subtype alias="Subject">xnat:subjectData</DAO_subtype>
+	</DAO_datatype>
+   
+   <DAO_datatype alias="Imaging session">
 		<DAO_subtype alias="MR session">xnat:mrSessionData</DAO_subtype>
 		<DAO_subtype alias="PET session">xnat:petSessionData</DAO_subtype>
 		<DAO_subtype alias="CT session">xnat:ctSessionData</DAO_subtype>

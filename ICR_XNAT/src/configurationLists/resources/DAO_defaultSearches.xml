@@ -1,0 +1,185 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+*******************************************************************
+* Copyright (c) 2015, Institute of Cancer Research
+* All rights reserved.
+*
+* Redistribution and use in source and binary forms, with or without
+* modification, are permitted provided that the following conditions
+* are met:
+*
+* (1) Redistributions of source code must retain the above copyright
+*     notice, this list of conditions and the following disclaimer.
+*
+* (2) Redistributions in binary form must reproduce the above
+*     copyright notice, this list of conditions and the following
+*     disclaimer in the documentation and/or other materials provided
+*     with the distribution.
+*
+* (3) Neither the name of the Institute of Cancer Research nor the
+*     names of its contributors may be used to endorse or promote
+*     products derived from this software without specific prior
+*     written permission.
+*
+* THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+* "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+* LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
+* FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+* COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT,
+* INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+* (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+* SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+* HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
+* STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+* ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
+* OF THE POSSIBILITY OF SUCH DAMAGE.
+*********************************************************************/
+-->
+
+
+<XNAT_DAO_defaultSearches>
+
+   <DAO_subtype name="default">
+      <DAO_defaultSearchProperty name="nCriteria">3</DAO_defaultSearchProperty>
+		<DAO_defaultSearchProperty name="comparison0">LIKE</DAO_defaultSearchProperty>
+		<DAO_defaultSearchProperty name="string0">%</DAO_defaultSearchProperty>
+      <DAO_defaultSearchProperty name="element0">XNAT project</DAO_defaultSearchProperty>
+      <DAO_defaultSearchProperty name="comparison1">LIKE</DAO_defaultSearchProperty>
+		<DAO_defaultSearchProperty name="string1">%</DAO_defaultSearchProperty>
+      <DAO_defaultSearchProperty name="element1">Patient name</DAO_defaultSearchProperty>
+      <DAO_defaultSearchProperty name="comparison2">&gt;</DAO_defaultSearchProperty>
+		<DAO_defaultSearchProperty name="string2">1900-01-01</DAO_defaultSearchProperty>
+      <DAO_defaultSearchProperty name="element2">Scan date</DAO_defaultSearchProperty>
+   </DAO_subtype>
+   
+   <DAO_subtype name="Subject">
+      <DAO_defaultSearchProperty name="useDefault">false</DAO_defaultSearchProperty>
+      <DAO_defaultSearchProperty name="nCriteria">1</DAO_defaultSearchProperty>
+		<DAO_defaultSearchProperty name="comparison0">LIKE</DAO_defaultSearchProperty>
+		<DAO_defaultSearchProperty name="string0">%</DAO_defaultSearchProperty>
+      <DAO_defaultSearchProperty name="element0">XNAT project</DAO_defaultSearchProperty>    
+   </DAO_subtype> 
+
+   <DAO_subtype name="MR session">
+      <DAO_defaultSearchProperty name="useDefault">false</DAO_defaultSearchProperty>
+      <DAO_defaultSearchProperty name="nCriteria">2</DAO_defaultSearchProperty>
+		<DAO_defaultSearchProperty name="comparison0">LIKE</DAO_defaultSearchProperty>
+		<DAO_defaultSearchProperty name="string0">%</DAO_defaultSearchProperty>
+      <DAO_defaultSearchProperty name="element0">XNAT project</DAO_defaultSearchProperty>
+      <DAO_defaultSearchProperty name="comparison1">LIKE</DAO_defaultSearchProperty>
+		<DAO_defaultSearchProperty name="string1">%</DAO_defaultSearchProperty>
+      <DAO_defaultSearchProperty name="element1">Patient name</DAO_defaultSearchProperty>
+   </DAO_subtype>
+	
+	<DAO_subtype name="CT session">
+      <DAO_defaultSearchProperty name="useDefault">false</DAO_defaultSearchProperty>
+      <DAO_defaultSearchProperty name="nCriteria">2</DAO_defaultSearchProperty>
+		<DAO_defaultSearchProperty name="comparison0">LIKE</DAO_defaultSearchProperty>
+		<DAO_defaultSearchProperty name="string0">%</DAO_defaultSearchProperty>
+      <DAO_defaultSearchProperty name="element0">XNAT project</DAO_defaultSearchProperty>
+      <DAO_defaultSearchProperty name="comparison1">LIKE</DAO_defaultSearchProperty>
+		<DAO_defaultSearchProperty name="string1">%</DAO_defaultSearchProperty>
+      <DAO_defaultSearchProperty name="element1">Patient name</DAO_defaultSearchProperty>
+   </DAO_subtype>
+	
+	<DAO_subtype name="PET session">
+      <DAO_defaultSearchProperty name="useDefault">false</DAO_defaultSearchProperty>
+      <DAO_defaultSearchProperty name="nCriteria">2</DAO_defaultSearchProperty>
+		<DAO_defaultSearchProperty name="comparison0">LIKE</DAO_defaultSearchProperty>
+		<DAO_defaultSearchProperty name="string0">%</DAO_defaultSearchProperty>
+      <DAO_defaultSearchProperty name="element0">XNAT project</DAO_defaultSearchProperty>
+      <DAO_defaultSearchProperty name="comparison1">LIKE</DAO_defaultSearchProperty>
+		<DAO_defaultSearchProperty name="string1">%</DAO_defaultSearchProperty>
+      <DAO_defaultSearchProperty name="element1">Patient name</DAO_defaultSearchProperty>
+   </DAO_subtype>
+   
+   <DAO_subtype name="Arbitrary session">
+      <DAO_defaultSearchProperty name="useDefault">false</DAO_defaultSearchProperty>
+      <DAO_defaultSearchProperty name="nCriteria">2</DAO_defaultSearchProperty>
+		<DAO_defaultSearchProperty name="comparison0">LIKE</DAO_defaultSearchProperty>
+		<DAO_defaultSearchProperty name="string0">%</DAO_defaultSearchProperty>
+      <DAO_defaultSearchProperty name="element0">XNAT project</DAO_defaultSearchProperty>
+      <DAO_defaultSearchProperty name="comparison1">LIKE</DAO_defaultSearchProperty>
+		<DAO_defaultSearchProperty name="string1">%</DAO_defaultSearchProperty>
+      <DAO_defaultSearchProperty name="element1">Patient name</DAO_defaultSearchProperty>
+   </DAO_subtype>
+	
+	<DAO_subtype name="MR image set">
+      <DAO_defaultSearchProperty name="useDefault">true</DAO_defaultSearchProperty>
+   </DAO_subtype>
+
+   <DAO_subtype name="PET image set">
+      <DAO_defaultSearchProperty name="useDefault">true</DAO_defaultSearchProperty>
+   </DAO_subtype>
+	
+	<DAO_subtype name="CT image set">
+      <DAO_defaultSearchProperty name="useDefault">true</DAO_defaultSearchProperty>
+   </DAO_subtype>
+	
+	<DAO_subtype name="US image set">
+      <DAO_defaultSearchProperty name="useDefault">true</DAO_defaultSearchProperty>
+   </DAO_subtype>
+	
+	<DAO_subtype name="Arbitrary image set">
+      <DAO_defaultSearchProperty name="useDefault">true</DAO_defaultSearchProperty>
+   </DAO_subtype>
+		
+   <DAO_subtype name="Any spectrum">
+      <DAO_defaultSearchProperty name="useDefault">true</DAO_defaultSearchProperty>
+   </DAO_subtype>
+		
+   <DAO_subtype name="1-D spectrum">
+      <DAO_defaultSearchProperty name="useDefault">true</DAO_defaultSearchProperty>
+   </DAO_subtype>
+		
+   <DAO_subtype name="2-D spectrum">
+      <DAO_defaultSearchProperty name="useDefault">true</DAO_defaultSearchProperty>
+   </DAO_subtype>
+		
+   <DAO_subtype name="Any parametric image">
+      <DAO_defaultSearchProperty name="useDefault">true</DAO_defaultSearchProperty>
+   </DAO_subtype>
+		
+   <DAO_subtype name="T1 map">
+      <DAO_defaultSearchProperty name="useDefault">true</DAO_defaultSearchProperty>
+   </DAO_subtype>
+		
+   <DAO_subtype name="T2 map">
+      <DAO_defaultSearchProperty name="useDefault">true</DAO_defaultSearchProperty>
+   </DAO_subtype>
+		
+   <DAO_subtype name="ADC">
+      <DAO_defaultSearchProperty name="useDefault">true</DAO_defaultSearchProperty>
+   </DAO_subtype>
+		
+   <DAO_subtype name="Any XNAT assessment">
+      <DAO_defaultSearchProperty name="useDefault">true</DAO_defaultSearchProperty>
+   </DAO_subtype>
+	
+	<DAO_subtype name="MRIW output">
+      <DAO_defaultSearchProperty name="useDefault">false</DAO_defaultSearchProperty>
+      <DAO_defaultSearchProperty name="nCriteria">3</DAO_defaultSearchProperty>
+		<DAO_defaultSearchProperty name="comparison0">LIKE</DAO_defaultSearchProperty>
+		<DAO_defaultSearchProperty name="string0">%</DAO_defaultSearchProperty>
+      <DAO_defaultSearchProperty name="element0">Associated project</DAO_defaultSearchProperty>
+      <DAO_defaultSearchProperty name="comparison1">LIKE</DAO_defaultSearchProperty>
+		<DAO_defaultSearchProperty name="string1">%</DAO_defaultSearchProperty>
+      <DAO_defaultSearchProperty name="element1">Patient name</DAO_defaultSearchProperty>
+      <DAO_defaultSearchProperty name="comparison2">&gt;</DAO_defaultSearchProperty>
+		<DAO_defaultSearchProperty name="string2">1900-01-01</DAO_defaultSearchProperty>
+      <DAO_defaultSearchProperty name="element2">Imaging session date</DAO_defaultSearchProperty>
+   </DAO_subtype>
+	
+	<DAO_subtype name="Adept output">
+      <DAO_defaultSearchProperty name="useDefault">true</DAO_defaultSearchProperty>
+   </DAO_subtype>
+	
+	<DAO_subtype name="Set of ROIs">
+      <DAO_defaultSearchProperty name="useDefault">true</DAO_defaultSearchProperty>
+   </DAO_subtype>
+
+   <DAO_subtype name="Single ROI">
+      <DAO_defaultSearchProperty name="useDefault">true</DAO_defaultSearchProperty>
+   </DAO_subtype>
+
+</XNAT_DAO_defaultSearches>

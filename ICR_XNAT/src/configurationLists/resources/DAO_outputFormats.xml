@@ -39,6 +39,12 @@
 
 <XNAT_DAO_outputDataFormats>
 
+   <DAO_subtype alias="Subject">
+      <DAO_outputFormat alias="Source DICOM">DicomImageForSession</DAO_outputFormat>
+		<DAO_outputFormat alias="Single zip file of DICOM">ZipDicomForSession</DAO_outputFormat>
+		<DAO_outputFormat alias="Anonymise and send session">AnonSendDicomSession</DAO_outputFormat>
+   </DAO_subtype>
+	
    <DAO_subtype alias="MR session">
       <DAO_outputFormat alias="Source DICOM">DicomImageForSession</DAO_outputFormat>
 		<DAO_outputFormat alias="Single zip file of DICOM">ZipDicomForSession</DAO_outputFormat>

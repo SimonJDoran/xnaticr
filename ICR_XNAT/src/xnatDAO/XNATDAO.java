@@ -45,6 +45,7 @@
 
 package xnatDAO;
 
+import configurationLists.DAODefaultSearchesList;
 import fileDownloads.DAOOutput;
 import configurationLists.DAOSearchableElementsList;
 import configurationLists.DAOReturnTypesList;
@@ -65,6 +66,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.Vector;
 import java.util.concurrent.ExecutionException;
 import javax.swing.*;
@@ -1512,6 +1514,7 @@ public final class XNATDAO extends XNATGUI
    private String getLeafElement(String rootElement)
    {
       HashMap<String, String> leafDef = new HashMap<String, String>();
+		leafDef.put("xnat:subjectData",    "xnat:subjectData/ID");
 		leafDef.put("xnat:mrSessionData",  "xnat:mrSessionData/UID");
 		leafDef.put("xnat:ctSessionData",  "xnat:ctSessionData/UID");
 		leafDef.put("xnat:imageSessionData",  "xnat:imageSessionData/UID");
@@ -1572,7 +1575,8 @@ public final class XNATDAO extends XNATGUI
       if ((type.equals("Imaging session"))     ||
 			 (type.equals("Set of images"))       ||
           (type.equals("Application outputs")) ||
-          (type.equals("Regions-of-interest")))
+          (type.equals("Regions-of-interest")) ||
+			 (type.equals("Subject")))
          return true;
       else return false;
    }
@@ -1590,7 +1594,8 @@ public final class XNATDAO extends XNATGUI
           (subtype.equals("CT image set"))     ||
           (subtype.equals("MRIW output"))      ||
           (subtype.equals("Set of ROIs"))      ||
-          (subtype.equals("Single ROI")))
+          (subtype.equals("Single ROI"))       ||
+			 (subtype.equals("Subject")))
          return true;
       else return false;
    }
@@ -1691,9 +1696,6 @@ public final class XNATDAO extends XNATGUI
 	}
 
 
-   
-
-  
    
    
 
@@ -1908,50 +1910,37 @@ public final class XNATDAO extends XNATGUI
    
    private void setDefaultSearch()
    {
-      // This will in due course be made more sophisticated, but for the moment
-      // set some defaults that are good for DICOM files.
-      if (dataSubtypeAlias.contains("image set") && !dataSubtypeAlias.contains("Arbitrary"))
+		DAODefaultSearchesList dsl;
+      try
       {
-         dAOSearchCriteria1.nCriteriaDisplayed = 3;
-         
-         DAOSearchCriterion sc = dAOSearchCriteria1.criteria[0];
-         sc.setComparisonOperator("LIKE");
-         sc.setComparisonString("%");
-         sc.setElementSelectedItem("XNAT project");
-         sc.setVisible(true);
-         
-         sc = dAOSearchCriteria1.criteria[1];
-         sc.setComparisonOperator("LIKE");
-         sc.setComparisonString("%");
-         sc.setElementSelectedItem("Patient name");
-         sc.setVisible(true);
-         
-         sc = dAOSearchCriteria1.criteria[2];
-         sc.setComparisonOperator(">");
-         sc.setComparisonString("2000-01-01");
-         sc.setElementSelectedItem("Scan date");
-         sc.setVisible(true);
-         
-         //dAOSearchCriteria1.fireCriteriaChanged(dAOSearchCriteria1);
+         dsl = DAODefaultSearchesList.getSingleton();
+		  	Map<String, String> propertyMap = dsl.getMap().get(dataSubtypeAlias);
+			if (propertyMap.get("useDefault").equals("true"))
+				propertyMap = dsl.getMap().get("default");
+			
+			for (int i=0; i<DAOSearchCriteria.MAX_CRITERIA; i++)
+			{
+				DAOSearchCriterion sc = dAOSearchCriteria1.criteria[i];
+				sc.setVisible(false);
+			}
+			
+			int ncr = Integer.parseInt(propertyMap.get("nCriteria"));
+			dAOSearchCriteria1.nCriteriaDisplayed = ncr;
+			
+			for (int i=0; i<ncr; i++)
+			{
+				DAOSearchCriterion sc = dAOSearchCriteria1.criteria[i];
+				sc.setComparisonOperator(propertyMap.get("comparison"+i));
+				sc.setComparisonString(propertyMap.get("string"+i));
+				sc.setElementSelectedItem(propertyMap.get("element"+i));
+				sc.setVisible(true);
+			}
       }
-		
-		if (dataSubtypeAlias.contains("session"))
+      catch (IOException | NumberFormatException | NullPointerException ex)
       {
-         dAOSearchCriteria1.nCriteriaDisplayed = 2;
-         
-         DAOSearchCriterion sc = dAOSearchCriteria1.criteria[0];
-         sc.setComparisonOperator("LIKE");
-         sc.setComparisonString("%");
-         sc.setElementSelectedItem("XNAT project");
-         sc.setVisible(true);
-         
-         sc = dAOSearchCriteria1.criteria[1];
-         sc.setComparisonOperator("LIKE");
-         sc.setComparisonString("%");
-         sc.setElementSelectedItem("Patient name");
-         sc.setVisible(true);
-         
-         //dAOSearchCriteria1.fireCriteriaChanged(dAOSearchCriteria1);
+			String msg = "Programming error: Unable to set default search; exception encountered was "
+				              + ex.getMessage();
+         throw new RuntimeException(msg);
       }
       
    }

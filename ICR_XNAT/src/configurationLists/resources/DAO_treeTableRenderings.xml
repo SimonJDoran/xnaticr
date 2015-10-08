@@ -29,12 +29,30 @@
       <property name="tooltip">Data from XNAT database</property>
    </renderProperties>
 
-<!-- MR properties -->
+   <renderProperties element="xnat:subjectData/ID">
+      <property name="Letter">X</property>
+      <property name="Colour">XNAT green</property>
+      <property name="tooltip">XNAT internal ID of the subject</property>
+   </renderProperties>
+   
+   <renderProperties element="xnat:subjectData/label">
+      <property name="Letter">D</property>
+      <property name="Colour">orange</property>
+      <property name="tooltip">Subject demographics: name</property>
+   </renderProperties>
+   
+   <renderProperties element="xnat:subjectData/project">
+      <property name="Letter">X</property>
+      <property name="Colour">XNAT green</property>
+      <property name="tooltip">XNAT internal ID of the subject</property>
+   </renderProperties>
+     
+   <!-- MR properties -->
 
    <renderProperties element="xnat:mrSessionData/project">
       <property name="Letter">X</property>
       <property name="Colour">XNAT green</property>
-      <property name="tooltip">ID of the XNAT project under which this MR scan is stored</property>
+      <property name="tooltip">ID of the XNAT project in which this subject resides</property>
    </renderProperties>
    
    <renderProperties element="xnat:mrSessionData/subject_ID">
