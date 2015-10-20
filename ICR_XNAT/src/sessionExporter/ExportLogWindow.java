@@ -26,19 +26,66 @@ public class ExportLogWindow extends javax.swing.JDialog {
 	 */
 	@SuppressWarnings("unchecked")
    // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
-   private void initComponents() {
+   private void initComponents()
+   {
+
+      jScrollPane1 = new javax.swing.JScrollPane();
+      jTextArea1 = new javax.swing.JTextArea();
+      cancelJButton = new javax.swing.JButton();
+      exportLogJLabel = new javax.swing.JLabel();
+      iconJLabel = new javax.swing.JLabel();
 
       setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+      setBackground(new java.awt.Color(255, 255, 255));
+
+      jTextArea1.setEditable(false);
+      jTextArea1.setColumns(20);
+      jTextArea1.setFont(jTextArea1.getFont());
+      jTextArea1.setRows(5);
+      jScrollPane1.setViewportView(jTextArea1);
+
+      cancelJButton.setText("Cancel");
+
+      exportLogJLabel.setBackground(new java.awt.Color(255, 255, 255));
+      exportLogJLabel.setFont(exportLogJLabel.getFont().deriveFont(exportLogJLabel.getFont().getStyle() | java.awt.Font.BOLD, exportLogJLabel.getFont().getSize()+7));
+      exportLogJLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+      exportLogJLabel.setText("Export Log");
+      exportLogJLabel.setHorizontalTextPosition(javax.swing.SwingConstants.RIGHT);
+
+      iconJLabel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/xnatDAO/projectResources/ICR_DataExporter_small.png"))); // NOI18N
 
       javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
       getContentPane().setLayout(layout);
       layout.setHorizontalGroup(
          layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-         .addGap(0, 400, Short.MAX_VALUE)
+         .addGroup(layout.createSequentialGroup()
+            .addContainerGap()
+            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+               .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                  .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                     .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.LEADING)
+                     .addGroup(layout.createSequentialGroup()
+                        .addGap(0, 0, Short.MAX_VALUE)
+                        .addComponent(cancelJButton)))
+                  .addContainerGap())
+               .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                  .addComponent(iconJLabel)
+                  .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 68, Short.MAX_VALUE)
+                  .addComponent(exportLogJLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 138, javax.swing.GroupLayout.PREFERRED_SIZE)
+                  .addGap(214, 214, 214))))
       );
       layout.setVerticalGroup(
          layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-         .addGap(0, 300, Short.MAX_VALUE)
+         .addGroup(layout.createSequentialGroup()
+            .addGap(33, 33, 33)
+            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+               .addComponent(exportLogJLabel)
+               .addComponent(iconJLabel))
+            .addGap(34, 34, 34)
+            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 412, Short.MAX_VALUE)
+            .addGap(18, 18, 18)
+            .addComponent(cancelJButton)
+            .addContainerGap())
       );
 
       pack();
@@ -88,5 +135,10 @@ public class ExportLogWindow extends javax.swing.JDialog {
 	}
 
    // Variables declaration - do not modify//GEN-BEGIN:variables
+   private javax.swing.JButton cancelJButton;
+   private javax.swing.JLabel exportLogJLabel;
+   private javax.swing.JLabel iconJLabel;
+   private javax.swing.JScrollPane jScrollPane1;
+   private javax.swing.JTextArea jTextArea1;
    // End of variables declaration//GEN-END:variables
 }

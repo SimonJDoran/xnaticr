@@ -1,22 +1,85 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
+/********************************************************************
+* Copyright (c) 2015, Institute of Cancer Research
+* All rights reserved.
+* 
+* Redistribution and use in source and binary forms, with or without
+* modification, are permitted provided that the following conditions
+* are met:
+* 
+* (1) Redistributions of source code must retain the above copyright
+*     notice, this list of conditions and the following disclaimer.
+* 
+* (2) Redistributions in binary form must reproduce the above
+*     copyright notice, this list of conditions and the following
+*     disclaimer in the documentation and/or other materials provided
+*     with the distribution.
+* 
+* (3) Neither the name of the Institute of Cancer Research nor the
+*     names of its contributors may be used to endorse or promote
+*     products derived from this software without specific prior
+*     written permission.
+* 
+* THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+* "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+* LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
+* FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+* COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT,
+* INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+* (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+* SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+* HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
+* STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+* ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
+* OF THE POSSIBILITY OF SUCH DAMAGE.
+*********************************************************************/
+
+/********************************************************************
+* @author Simon J Doran
+* Java class: AnonScriptWindow.java
+* First created on Oct 20, 2015
+* 
+* Anonymisation script editing window
+*********************************************************************/
 package sessionExporter;
 
-/**
- *
- * @author simond
- */
-public class AnonScriptWindow extends javax.swing.JDialog {
+import java.awt.Font;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
+import javax.swing.JFileChooser;
+import javax.swing.JOptionPane;
+import javax.swing.filechooser.FileFilter;
+import javax.swing.filechooser.FileNameExtensionFilter;
+import org.apache.commons.io.IOUtils;
+import org.apache.log4j.Logger;
+import static sessionExporter.AnonymiseAndSend.DEFAULT_SUBJ_CODE;
+import xnatDAO.XNATProfile;
 
+public class AnonScriptWindow extends javax.swing.JDialog
+{
+	protected File            chooserCurrentDir = null;
+	protected File            anonScriptFile    = null;
+	protected static Logger   logger = Logger.getLogger(AnonymiseAndSend.class);
+	
 	/**
-	 * Creates new form AnonScriptWindow
+	 * Create a new instance of the anonymisation script editing window
+	 * @param parent
+	 * @param modal
+	 * @param anonScriptFile 
 	 */
-	public AnonScriptWindow(java.awt.Frame parent, boolean modal) {
+	public AnonScriptWindow(java.awt.Frame parent, boolean modal)
+	{
 		super(parent, modal);
-		initComponents();
+
+      initComponents();	
+      addListeners();
+      populateAnonScriptTextArea();
 	}
 
 	/**
@@ -26,66 +89,288 @@ public class AnonScriptWindow extends javax.swing.JDialog {
 	 */
 	@SuppressWarnings("unchecked")
    // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
-   private void initComponents() {
+   private void initComponents()
+   {
+
+      jScrollPane1 = new javax.swing.JScrollPane();
+      anonScriptJTextArea = new javax.swing.JTextArea();
+      anonScriptJLabel = new javax.swing.JLabel();
+      iconJLabel = new javax.swing.JLabel();
+      cancelJButton = new javax.swing.JButton();
+      saveJButton = new javax.swing.JButton();
+      loadJButton = new javax.swing.JButton();
 
       setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+
+      anonScriptJTextArea.setColumns(20);
+      anonScriptJTextArea.setRows(5);
+      jScrollPane1.setViewportView(anonScriptJTextArea);
+
+      anonScriptJLabel.setFont(anonScriptJLabel.getFont().deriveFont(anonScriptJLabel.getFont().getStyle() | java.awt.Font.BOLD, anonScriptJLabel.getFont().getSize()+7));
+      anonScriptJLabel.setText("Anonymisation Script");
+
+      iconJLabel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/xnatDAO/projectResources/ICR_DataExporter_small.png"))); // NOI18N
+
+      cancelJButton.setText("Cancel");
+
+      saveJButton.setText("Save ...");
+
+      loadJButton.setText("Load ...");
 
       javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
       getContentPane().setLayout(layout);
       layout.setHorizontalGroup(
          layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-         .addGap(0, 400, Short.MAX_VALUE)
+         .addGroup(layout.createSequentialGroup()
+            .addContainerGap()
+            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+               .addComponent(jScrollPane1)
+               .addGroup(layout.createSequentialGroup()
+                  .addComponent(iconJLabel)
+                  .addGap(30, 30, 30)
+                  .addComponent(anonScriptJLabel)
+                  .addGap(0, 159, Short.MAX_VALUE))
+               .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                  .addGap(0, 0, Short.MAX_VALUE)
+                  .addComponent(loadJButton)
+                  .addGap(18, 18, 18)
+                  .addComponent(saveJButton)
+                  .addGap(18, 18, 18)
+                  .addComponent(cancelJButton)))
+            .addContainerGap())
       );
       layout.setVerticalGroup(
          layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-         .addGap(0, 300, Short.MAX_VALUE)
+         .addGroup(layout.createSequentialGroup()
+            .addContainerGap()
+            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+               .addComponent(anonScriptJLabel)
+               .addComponent(iconJLabel))
+            .addGap(18, 18, 18)
+            .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 442, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addGap(18, 18, 18)
+            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+               .addComponent(cancelJButton)
+               .addComponent(saveJButton)
+               .addComponent(loadJButton))
+            .addContainerGap(13, Short.MAX_VALUE))
       );
 
       pack();
    }// </editor-fold>//GEN-END:initComponents
 
-	/**
-	 * @param args the command line arguments
-	 */
-	public static void main(String args[]) {
-		/* Set the Nimbus look and feel */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-		 * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-		 */
-		try {
-			for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-				if ("Nimbus".equals(info.getName())) {
-					javax.swing.UIManager.setLookAndFeel(info.getClassName());
-					break;
-				}
-			}
-		} catch (ClassNotFoundException ex) {
-			java.util.logging.Logger.getLogger(AnonScriptWindow.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-		} catch (InstantiationException ex) {
-			java.util.logging.Logger.getLogger(AnonScriptWindow.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-		} catch (IllegalAccessException ex) {
-			java.util.logging.Logger.getLogger(AnonScriptWindow.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-		} catch (javax.swing.UnsupportedLookAndFeelException ex) {
-			java.util.logging.Logger.getLogger(AnonScriptWindow.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-		}
-        //</editor-fold>
-
-		/* Create and display the dialog */
-		java.awt.EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				AnonScriptWindow dialog = new AnonScriptWindow(new javax.swing.JFrame(), true);
-				dialog.addWindowListener(new java.awt.event.WindowAdapter() {
-					@Override
-					public void windowClosing(java.awt.event.WindowEvent e) {
-						System.exit(0);
-					}
-				});
-				dialog.setVisible(true);
-			}
+	private void addListeners()
+   {
+		cancelJButton.addActionListener(new ActionListener()
+		{
+			@Override
+			public void actionPerformed(ActionEvent e)
+			{            
+				dispose();
+			}	  
+		});
+		
+		
+		saveJButton.addActionListener(new ActionListener()
+		{
+			@Override
+			public void actionPerformed(ActionEvent e)
+			{            
+				saveAnonymisationScript();
+			}	  
+		});
+		
+		
+		loadJButton.addActionListener(new ActionListener()
+		{
+			@Override
+			public void actionPerformed(ActionEvent e)
+			{            
+				loadAnonymisationScript();
+			}	  
 		});
 	}
 
+	
+	protected void loadAnonymisationScript()
+	{
+		Object[] options = {"Cancel", "Reselect...", "Confirm"};
+		int      choice;
+		String   anonScript;
+		do
+		{
+			choice  = 2;
+			
+			JFileChooser chooser = new JFileChooser();
+		
+			FileFilter   filter  = new FileNameExtensionFilter("Anon script (*.das)","das");
+			chooser.addChoosableFileFilter(filter);
+			chooser.setFileFilter(filter);
+			chooser.setCurrentDirectory(chooserCurrentDir);
+			chooser.setApproveButtonText("Open");
+			chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+
+			int returnVal  = chooser.showOpenDialog(this);
+			chooserCurrentDir = chooser.getCurrentDirectory();
+			if (returnVal != JFileChooser.APPROVE_OPTION) return;
+			
+			String          fileErrMsg = "Couldn't open anonymisation script file chosen.\n";
+			File            chosenFile = chooser.getSelectedFile();
+			FileInputStream fis;
+			try
+			{
+				fis = new FileInputStream(chooser.getSelectedFile());
+				if (chosenFile.length() < 10000) anonScript = IOUtils.toString(fis, "UTF-8");
+				else anonScript = null;
+			}
+			catch (IOException exIO)
+			{
+				logger.error(fileErrMsg);
+				throw new RuntimeException(fileErrMsg);
+			}
+			
+			// Check for pathological case of user selecting a very large non-text
+			// file by mistake.
+			if (chosenFile.length() >= 10000)
+			{
+				logger.warn("Script file larger than expected.");
+				
+				choice  = JOptionPane.showOptionDialog(this,
+						  "The anonymisation script file was larger than expected.\n"
+						  + "Please confirm that this file is correct or reselect",
+						  "Script larger than expected",
+						  JOptionPane.DEFAULT_OPTION, JOptionPane.WARNING_MESSAGE,
+                    null, options, options[1]);
+				
+				if ((choice == 0) || (choice == JOptionPane.CLOSED_OPTION)) return;
+				if (choice == 2)
+				{
+					try
+					{
+						anonScript = IOUtils.toString(fis, "UTF-8");
+					}
+					catch (IOException exIO)
+					{
+						logger.error(fileErrMsg);
+						throw new RuntimeException(fileErrMsg);
+					}
+				}
+			}
+		}
+		while (choice != 2);
+		
+		populateAnonScriptTextArea();
+	}
+	
+	protected void saveAnonymisationScript()
+	{
+		String   fileErrMsg = "Couldn't write anonymisation script file chosen.";
+		File     chosenFile;	
+		Object[] options = {"Cancel", "Re-select...", "Overwrite"};
+		int      choice;	
+		do
+		{
+			choice  = 2;
+			JFileChooser chooser = new JFileChooser();
+		
+			FileFilter   filter  = new FileNameExtensionFilter("Anon script (*.das)","das");
+			chooser.addChoosableFileFilter(filter);
+			chooser.setFileFilter(filter);
+			chooser.setApproveButtonText("Save");
+			chooser.setCurrentDirectory(chooserCurrentDir);
+			chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+			chooser.setDialogType(JFileChooser.SAVE_DIALOG);
+
+			int returnVal  = chooser.showSaveDialog(this);
+			chooserCurrentDir = chooser.getCurrentDirectory();
+			if (returnVal != JFileChooser.APPROVE_OPTION) return;
+					  
+			chosenFile = chooser.getSelectedFile();
+			
+			if (chosenFile.exists())
+			{
+				choice  = JOptionPane.showOptionDialog(this,
+						  "The anonymisation script file chosen already exists.\n"
+						  + "Do you want to overwrite it?",
+						  "File exists",
+						  JOptionPane.DEFAULT_OPTION, JOptionPane.WARNING_MESSAGE,
+                    null, options, options[1]);
+				
+				if ((choice == 0) || (choice == JOptionPane.CLOSED_OPTION)) return;
+			}
+		}
+		while (choice != 2);
+		
+		BufferedWriter writer = null;
+		try
+		{
+			writer = new BufferedWriter(new FileWriter(chosenFile));
+			writer.write(anonScriptJTextArea.getText());
+		}
+		catch (IOException exIO)
+		{
+			JOptionPane.showConfirmDialog(this, "There was an error writing out your anonymisation\n"
+					                              + "script to file. Please check your file permissions.");
+			logger.error(exIO.getMessage());
+		}
+		finally
+		{
+			try {writer.close();}
+			catch (IOException exIgnore){}		
+		}
+	}
+	
+	
+	protected void populateAnonScriptTextArea()
+	{
+		String resourceErrMsg   = "Couldn't read default anonymisation script.\n"
+                                + "This shouldn't happen as it resource is supposed"
+				                    + "to be packaged with the application jar!";
+		String      fileErrMesg = "Couldn't read selected anonymisation script file.\n";
+		String      anonScript;
+		InputStream resourceIs;
+		
+		if (anonScriptFile == null)
+		{
+			resourceIs = AnonymiseAndSend.class.getResourceAsStream("anonSendSession.das");
+			if (resourceIs == null)
+			{
+				logger.error(resourceErrMsg);
+				throw new RuntimeException(resourceErrMsg);
+			}
+			try
+			{
+				anonScript = IOUtils.toString(resourceIs, "UTF-8");		
+			}
+			catch (IOException exIO)
+			{
+				logger.error(resourceErrMsg + "\n" + exIO.getMessage());
+				throw new RuntimeException(resourceErrMsg + "\n" + exIO.getMessage());
+			}
+		}		
+		else
+		{
+			try
+			{
+				FileInputStream fis = new FileInputStream(anonScriptFile);
+				anonScript = IOUtils.toString(fis, "UTF-8");		
+			}
+			catch (IOException exIO)
+			{
+				logger.error(resourceErrMsg + "\n" + exIO.getMessage());
+				throw new RuntimeException(resourceErrMsg + "\n" + exIO.getMessage());
+			}
+		}
+		
+		anonScriptJTextArea.setText(anonScript);
+	}
    // Variables declaration - do not modify//GEN-BEGIN:variables
+   private javax.swing.JLabel anonScriptJLabel;
+   private javax.swing.JTextArea anonScriptJTextArea;
+   private javax.swing.JButton cancelJButton;
+   private javax.swing.JLabel iconJLabel;
+   private javax.swing.JScrollPane jScrollPane1;
+   private javax.swing.JButton loadJButton;
+   private javax.swing.JButton saveJButton;
    // End of variables declaration//GEN-END:variables
 }
