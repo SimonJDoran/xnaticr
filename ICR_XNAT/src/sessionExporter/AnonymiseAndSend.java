@@ -589,10 +589,8 @@ public class AnonymiseAndSend extends xnatDAO.XNATGUI implements ProjectGetter
    // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
    private void initComponents() {
 
-      ICRLogoJLabel = new javax.swing.JLabel();
       titleLabel = new javax.swing.JLabel();
       versionJLabel = new javax.swing.JLabel();
-      poweredByXNATJLabel = new javax.swing.JLabel();
       destProfileJLabel = new javax.swing.JLabel();
       destProfileJComboBox = new javax.swing.JComboBox();
       destProjectJLabel = new javax.swing.JLabel();
@@ -602,34 +600,32 @@ public class AnonymiseAndSend extends xnatDAO.XNATGUI implements ProjectGetter
       srcSessionsJLabel = new javax.swing.JLabel();
       srcProfileJTextField = new javax.swing.JLabel();
       dataDestinationJLabel = new javax.swing.JLabel();
-      anonScriptJLabel = new javax.swing.JLabel();
-      anonScriptJScrollPane = new javax.swing.JScrollPane();
-      anonScriptJTextArea = new javax.swing.JTextArea();
       cancelJButton = new javax.swing.JButton();
       exportJButton = new javax.swing.JButton();
-      loadJButton = new javax.swing.JButton();
-      saveJButton = new javax.swing.JButton();
-      exportProgressJLabel = new javax.swing.JLabel();
-      exportProgressJScrollPane = new javax.swing.JScrollPane();
-      logJTextArea = new javax.swing.JTextArea();
       exportJProgressBar = new javax.swing.JProgressBar();
-      srcSessionsJScrollPane = new javax.swing.JScrollPane();
-      srcSessionsJTextArea = new javax.swing.JTextArea();
       checkAccessJLabel = new javax.swing.JLabel();
       destSubjLabel = new javax.swing.JLabel();
       subjJTextField = new javax.swing.JTextField();
+      jButton1 = new javax.swing.JButton();
+      jButton2 = new javax.swing.JButton();
+      dataDestinationJLabel1 = new javax.swing.JLabel();
+      jLabel1 = new javax.swing.JLabel();
+      jScrollPane1 = new javax.swing.JScrollPane();
+      jTable1 = new javax.swing.JTable();
+      dataDestinationJLabel2 = new javax.swing.JLabel();
 
       setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
-      ICRLogoJLabel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/xnatDAO/projectResources/ICR_fibonacci_logo.jpg"))); // NOI18N
-
       titleLabel.setFont(new java.awt.Font("Lucida Grande", 0, 28)); // NOI18N
-      titleLabel.setText("Data Exporter");
 
       versionJLabel.setFont(new java.awt.Font("Lucida Grande", 0, 14)); // NOI18N
+      versionJLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+      versionJLabel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/xnatDAO/projectResources/ICR_DataExporter_large.png"))); // NOI18N
       versionJLabel.setText("2.0 alpha (3/2/2015)");
-
-      poweredByXNATJLabel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/xnatDAO/projectResources/powered_by_XNAT.jpg"))); // NOI18N
+      versionJLabel.setAlignmentX(0.5F);
+      versionJLabel.setAlignmentY(1.0F);
+      versionJLabel.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+      versionJLabel.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
 
       destProfileJLabel.setText("XNAT Profile");
 
@@ -651,33 +647,9 @@ public class AnonymiseAndSend extends xnatDAO.XNATGUI implements ProjectGetter
       dataDestinationJLabel.setFont(new java.awt.Font("Lucida Grande", 1, 18)); // NOI18N
       dataDestinationJLabel.setText("Data destination");
 
-      anonScriptJLabel.setFont(new java.awt.Font("Lucida Grande", 1, 18)); // NOI18N
-      anonScriptJLabel.setText("Anonymisation script");
-
-      anonScriptJTextArea.setColumns(20);
-      anonScriptJTextArea.setRows(5);
-      anonScriptJScrollPane.setViewportView(anonScriptJTextArea);
-
       cancelJButton.setText("Cancel");
 
       exportJButton.setText("Export");
-
-      loadJButton.setText("Load ...");
-
-      saveJButton.setText("Save ...");
-
-      exportProgressJLabel.setFont(new java.awt.Font("Lucida Grande", 1, 18)); // NOI18N
-      exportProgressJLabel.setText("Export progress");
-
-      logJTextArea.setEditable(false);
-      logJTextArea.setColumns(20);
-      logJTextArea.setRows(5);
-      exportProgressJScrollPane.setViewportView(logJTextArea);
-
-      srcSessionsJTextArea.setEditable(false);
-      srcSessionsJTextArea.setColumns(20);
-      srcSessionsJTextArea.setRows(5);
-      srcSessionsJScrollPane.setViewportView(srcSessionsJTextArea);
 
       checkAccessJLabel.setFont(new java.awt.Font("Lucida Grande", 0, 10)); // NOI18N
       checkAccessJLabel.setText("Checking project access");
@@ -687,6 +659,32 @@ public class AnonymiseAndSend extends xnatDAO.XNATGUI implements ProjectGetter
       subjJTextField.setText("Enter anonymisation subject code.");
       subjJTextField.setToolTipText("");
 
+      jButton1.setText("View export log ...");
+      jButton1.setActionCommand("View download log ...");
+
+      jButton2.setText("Edit anonymisation script ...");
+
+      dataDestinationJLabel1.setFont(new java.awt.Font("Lucida Grande", 1, 18)); // NOI18N
+      dataDestinationJLabel1.setText("Export progress");
+
+      jLabel1.setText("Inactive");
+
+      jTable1.setModel(new javax.swing.table.DefaultTableModel(
+         new Object [][] {
+            {null, null, null, null},
+            {null, null, null, null},
+            {null, null, null, null},
+            {null, null, null, null}
+         },
+         new String [] {
+            "Title 1", "Title 2", "Title 3", "Title 4"
+         }
+      ));
+      jScrollPane1.setViewportView(jTable1);
+
+      dataDestinationJLabel2.setFont(new java.awt.Font("Lucida Grande", 1, 18)); // NOI18N
+      dataDestinationJLabel2.setText("Data anonymisation");
+
       javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
       getContentPane().setLayout(layout);
       layout.setHorizontalGroup(
@@ -695,115 +693,82 @@ public class AnonymiseAndSend extends xnatDAO.XNATGUI implements ProjectGetter
             .addGap(25, 25, 25)
             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                .addGroup(layout.createSequentialGroup()
-                  .addComponent(ICRLogoJLabel)
-                  .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                  .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                     .addComponent(versionJLabel, javax.swing.GroupLayout.Alignment.TRAILING)
-                     .addComponent(titleLabel, javax.swing.GroupLayout.Alignment.TRAILING))
-                  .addGap(100, 100, 100)
-                  .addComponent(poweredByXNATJLabel)
-                  .addGap(24, 24, 24))
-               .addGroup(layout.createSequentialGroup()
-                  .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(anonScriptJLabel)
-                        .addGap(0, 0, Short.MAX_VALUE))
-                     .addComponent(anonScriptJScrollPane))
-                  .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                  .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                     .addComponent(loadJButton, javax.swing.GroupLayout.PREFERRED_SIZE, 95, javax.swing.GroupLayout.PREFERRED_SIZE)
-                     .addComponent(saveJButton, javax.swing.GroupLayout.PREFERRED_SIZE, 95, javax.swing.GroupLayout.PREFERRED_SIZE)
-                     .addComponent(cancelJButton, javax.swing.GroupLayout.PREFERRED_SIZE, 95, javax.swing.GroupLayout.PREFERRED_SIZE))
-                  .addGap(12, 12, 12))
-               .addGroup(layout.createSequentialGroup()
                   .addComponent(dataToExportJLabel)
-                  .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                  .addComponent(exportProgressJLabel)
-                  .addGap(73, 73, 73))))
+                  .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+               .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                  .addGap(0, 0, Short.MAX_VALUE)
+                  .addComponent(versionJLabel)
+                  .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                  .addComponent(titleLabel)
+                  .addGap(240, 240, 240))))
          .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+            .addGap(25, 25, 25)
+            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                .addGroup(layout.createSequentialGroup()
-                  .addGap(24, 24, 24)
+                  .addComponent(dataDestinationJLabel)
+                  .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+               .addGroup(layout.createSequentialGroup()
                   .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(dataDestinationJLabel)
-                        .addGap(496, 496, 496))
-                     .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                           .addComponent(destProfileJLabel)
-                           .addComponent(destProjectJLabel))
-                        .addGap(341, 341, 341)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                           .addComponent(checkAccessJLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                           .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                              .addGap(0, 0, Short.MAX_VALUE)
-                              .addComponent(exportJButton, javax.swing.GroupLayout.PREFERRED_SIZE, 101, javax.swing.GroupLayout.PREFERRED_SIZE))))))
-               .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
+                     .addComponent(destProfileJLabel)
+                     .addComponent(destProjectJLabel))
+                  .addGap(341, 341, 341)
+                  .addComponent(checkAccessJLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+               .addGroup(layout.createSequentialGroup()
                   .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                     .addComponent(dataDestinationJLabel1)
                      .addGroup(layout.createSequentialGroup()
-                        .addGap(25, 25, 25)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                            .addComponent(srcSessionsJLabel)
-                           .addComponent(srcProfileJLabel)))
-                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addContainerGap()
-                        .addComponent(destSubjLabel)))
-                  .addGap(18, 18, 18)
-                  .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addGap(8, 8, 8)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                           .addComponent(srcProfileJTextField)
-                           .addComponent(srcSessionsJScrollPane, javax.swing.GroupLayout.PREFERRED_SIZE, 214, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                           .addComponent(exportJProgressBar, javax.swing.GroupLayout.PREFERRED_SIZE, 257, javax.swing.GroupLayout.PREFERRED_SIZE)
-                           .addComponent(exportProgressJScrollPane, javax.swing.GroupLayout.PREFERRED_SIZE, 257, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                           .addComponent(srcProfileJLabel))
+                        .addGap(26, 26, 26)
+                        .addComponent(srcProfileJTextField))
                      .addGroup(layout.createSequentialGroup()
+                        .addComponent(destSubjLabel)
+                        .addGap(18, 18, 18)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                            .addComponent(destProjectJComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, 317, javax.swing.GroupLayout.PREFERRED_SIZE)
                            .addComponent(subjJTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 306, javax.swing.GroupLayout.PREFERRED_SIZE)
-                           .addComponent(destProfileJComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, 317, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(0, 0, Short.MAX_VALUE)))))
-            .addGap(14, 14, 14))
+                           .addComponent(destProfileJComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, 317, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                     .addComponent(dataDestinationJLabel2)
+                     .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 642, javax.swing.GroupLayout.PREFERRED_SIZE)
+                     .addGroup(layout.createSequentialGroup()
+                        .addComponent(exportJProgressBar, javax.swing.GroupLayout.PREFERRED_SIZE, 355, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(50, 50, 50)
+                        .addComponent(jLabel1)))
+                  .addGap(0, 0, Short.MAX_VALUE)))
+            .addGap(13, 13, 13))
+         .addGroup(layout.createSequentialGroup()
+            .addGap(91, 91, 91)
+            .addComponent(jButton2)
+            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+            .addComponent(jButton1)
+            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+            .addComponent(exportJButton, javax.swing.GroupLayout.PREFERRED_SIZE, 101, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(cancelJButton, javax.swing.GroupLayout.PREFERRED_SIZE, 95, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addContainerGap())
       );
       layout.setVerticalGroup(
          layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
          .addGroup(layout.createSequentialGroup()
+            .addGap(40, 40, 40)
+            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+               .addComponent(titleLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 39, javax.swing.GroupLayout.PREFERRED_SIZE)
+               .addComponent(versionJLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 85, javax.swing.GroupLayout.PREFERRED_SIZE))
+            .addGap(37, 37, 37)
+            .addComponent(dataToExportJLabel)
             .addGap(18, 18, 18)
             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-               .addComponent(ICRLogoJLabel)
-               .addGroup(layout.createSequentialGroup()
-                  .addGap(22, 22, 22)
-                  .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                     .addComponent(poweredByXNATJLabel)
-                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(titleLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 39, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(versionJLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 17, javax.swing.GroupLayout.PREFERRED_SIZE)))))
-            .addGap(44, 44, 44)
-            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-               .addComponent(dataToExportJLabel)
-               .addComponent(exportProgressJLabel))
-            .addGap(18, 18, 18)
-            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-               .addGroup(layout.createSequentialGroup()
-                  .addComponent(srcProfileJTextField)
-                  .addGap(18, 18, 18)
-                  .addComponent(srcSessionsJScrollPane))
+               .addComponent(srcProfileJTextField)
                .addGroup(layout.createSequentialGroup()
                   .addComponent(srcProfileJLabel)
                   .addGap(18, 18, 18)
-                  .addComponent(srcSessionsJLabel))
-               .addComponent(exportProgressJScrollPane, javax.swing.GroupLayout.PREFERRED_SIZE, 196, javax.swing.GroupLayout.PREFERRED_SIZE))
-            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 18, Short.MAX_VALUE)
-            .addComponent(exportJProgressBar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-            .addGap(8, 8, 8)
+                  .addComponent(srcSessionsJLabel)))
+            .addGap(46, 46, 46)
             .addComponent(dataDestinationJLabel)
             .addGap(18, 18, 18)
             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                .addComponent(destProfileJComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-               .addComponent(exportJButton)
                .addComponent(destProfileJLabel))
             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
@@ -814,18 +779,23 @@ public class AnonymiseAndSend extends xnatDAO.XNATGUI implements ProjectGetter
             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                .addComponent(subjJTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                .addComponent(destSubjLabel))
+            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 43, Short.MAX_VALUE)
+            .addComponent(dataDestinationJLabel2)
             .addGap(18, 18, 18)
-            .addComponent(anonScriptJLabel)
-            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-               .addGroup(layout.createSequentialGroup()
-                  .addComponent(saveJButton)
-                  .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                  .addComponent(loadJButton)
-                  .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                  .addComponent(cancelJButton))
-               .addComponent(anonScriptJScrollPane, javax.swing.GroupLayout.PREFERRED_SIZE, 327, javax.swing.GroupLayout.PREFERRED_SIZE))
-            .addGap(15, 15, 15))
+            .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 295, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addGap(42, 42, 42)
+            .addComponent(dataDestinationJLabel1)
+            .addGap(18, 18, 18)
+            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+               .addComponent(exportJProgressBar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+               .addComponent(jLabel1))
+            .addGap(18, 18, 18)
+            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+               .addComponent(jButton2)
+               .addComponent(jButton1)
+               .addComponent(exportJButton)
+               .addComponent(cancelJButton))
+            .addGap(128, 128, 128))
       );
 
       pack();
@@ -874,13 +844,11 @@ public class AnonymiseAndSend extends xnatDAO.XNATGUI implements ProjectGetter
 //	}
 
    // Variables declaration - do not modify//GEN-BEGIN:variables
-   private javax.swing.JLabel ICRLogoJLabel;
-   private javax.swing.JLabel anonScriptJLabel;
-   private javax.swing.JScrollPane anonScriptJScrollPane;
-   private javax.swing.JTextArea anonScriptJTextArea;
    private javax.swing.JButton cancelJButton;
    private javax.swing.JLabel checkAccessJLabel;
    private javax.swing.JLabel dataDestinationJLabel;
+   private javax.swing.JLabel dataDestinationJLabel1;
+   private javax.swing.JLabel dataDestinationJLabel2;
    private javax.swing.JLabel dataToExportJLabel;
    private javax.swing.JComboBox destProfileJComboBox;
    private javax.swing.JLabel destProfileJLabel;
@@ -889,17 +857,14 @@ public class AnonymiseAndSend extends xnatDAO.XNATGUI implements ProjectGetter
    private javax.swing.JLabel destSubjLabel;
    private javax.swing.JButton exportJButton;
    private javax.swing.JProgressBar exportJProgressBar;
-   private javax.swing.JLabel exportProgressJLabel;
-   private javax.swing.JScrollPane exportProgressJScrollPane;
-   private javax.swing.JButton loadJButton;
-   private javax.swing.JTextArea logJTextArea;
-   private javax.swing.JLabel poweredByXNATJLabel;
-   private javax.swing.JButton saveJButton;
+   private javax.swing.JButton jButton1;
+   private javax.swing.JButton jButton2;
+   private javax.swing.JLabel jLabel1;
+   private javax.swing.JScrollPane jScrollPane1;
+   private javax.swing.JTable jTable1;
    private javax.swing.JLabel srcProfileJLabel;
    private javax.swing.JLabel srcProfileJTextField;
    private javax.swing.JLabel srcSessionsJLabel;
-   private javax.swing.JScrollPane srcSessionsJScrollPane;
-   private javax.swing.JTextArea srcSessionsJTextArea;
    private javax.swing.JTextField subjJTextField;
    private javax.swing.JLabel titleLabel;
    private javax.swing.JLabel versionJLabel;
