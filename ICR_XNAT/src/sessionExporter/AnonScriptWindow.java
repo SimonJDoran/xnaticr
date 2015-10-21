@@ -166,7 +166,7 @@ public class AnonScriptWindow extends javax.swing.JDialog
 			@Override
 			public void actionPerformed(ActionEvent e)
 			{            
-				dispose();
+				setVisible(false);
 			}	  
 		});
 		
@@ -364,6 +364,14 @@ public class AnonScriptWindow extends javax.swing.JDialog
 		
 		anonScriptJTextArea.setText(anonScript);
 	}
+	
+	
+	public String getScriptText()
+	{
+		return anonScriptJTextArea.getText();
+	}
+	
+	
    // Variables declaration - do not modify//GEN-BEGIN:variables
    private javax.swing.JLabel anonScriptJLabel;
    private javax.swing.JTextArea anonScriptJTextArea;

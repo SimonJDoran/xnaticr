@@ -5,6 +5,9 @@
  */
 package sessionExporter;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
 /**
  *
  * @author simond
@@ -17,8 +20,26 @@ public class ExportLogWindow extends javax.swing.JDialog {
 	public ExportLogWindow(java.awt.Frame parent, boolean modal) {
 		super(parent, modal);
 		initComponents();
+		addListeners();
 	}
-
+	
+	private void addListeners()
+   {
+		cancelJButton.addActionListener(new ActionListener()
+		{
+			@Override
+			public void actionPerformed(ActionEvent e)
+			{            
+				setVisible(false);
+			}	  
+		});
+	}
+	
+	
+	public void updateLogWindow(String els)
+	{
+		exportLogJTextArea.append(els);
+	}
 	/**
 	 * This method is called from within the constructor to initialize the form.
 	 * WARNING: Do NOT modify this code. The content of this method is always
@@ -30,7 +51,7 @@ public class ExportLogWindow extends javax.swing.JDialog {
    {
 
       jScrollPane1 = new javax.swing.JScrollPane();
-      jTextArea1 = new javax.swing.JTextArea();
+      exportLogJTextArea = new javax.swing.JTextArea();
       cancelJButton = new javax.swing.JButton();
       exportLogJLabel = new javax.swing.JLabel();
       iconJLabel = new javax.swing.JLabel();
@@ -38,11 +59,12 @@ public class ExportLogWindow extends javax.swing.JDialog {
       setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
       setBackground(new java.awt.Color(255, 255, 255));
 
-      jTextArea1.setEditable(false);
-      jTextArea1.setColumns(20);
-      jTextArea1.setFont(jTextArea1.getFont());
-      jTextArea1.setRows(5);
-      jScrollPane1.setViewportView(jTextArea1);
+      exportLogJTextArea.setEditable(false);
+      exportLogJTextArea.setColumns(20);
+      exportLogJTextArea.setFont(exportLogJTextArea.getFont());
+      exportLogJTextArea.setLineWrap(true);
+      exportLogJTextArea.setRows(5);
+      jScrollPane1.setViewportView(exportLogJTextArea);
 
       cancelJButton.setText("Cancel");
 
@@ -91,35 +113,12 @@ public class ExportLogWindow extends javax.swing.JDialog {
       pack();
    }// </editor-fold>//GEN-END:initComponents
 
-	/**
-	 * @param args the command line arguments
-	 */
-	public static void main(String args[]) {
-		/* Set the Nimbus look and feel */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-		 * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-		 */
-		try {
-			for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-				if ("Nimbus".equals(info.getName())) {
-					javax.swing.UIManager.setLookAndFeel(info.getClassName());
-					break;
-				}
-			}
-		} catch (ClassNotFoundException ex) {
-			java.util.logging.Logger.getLogger(ExportLogWindow.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-		} catch (InstantiationException ex) {
-			java.util.logging.Logger.getLogger(ExportLogWindow.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-		} catch (IllegalAccessException ex) {
-			java.util.logging.Logger.getLogger(ExportLogWindow.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-		} catch (javax.swing.UnsupportedLookAndFeelException ex) {
-			java.util.logging.Logger.getLogger(ExportLogWindow.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-		}
-        //</editor-fold>
-        //</editor-fold>
+	/* The code below is introduced by the IDE, but is never used, as
+	 * this component is only ever called by other classes, not from the
+	 * command line.
 
-		/* Create and display the dialog */
+
+		// Create and display the dialog
 		java.awt.EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				ExportLogWindow dialog = new ExportLogWindow(new javax.swing.JFrame(), true);
@@ -133,12 +132,14 @@ public class ExportLogWindow extends javax.swing.JDialog {
 			}
 		});
 	}
+	
+	*/
 
    // Variables declaration - do not modify//GEN-BEGIN:variables
    private javax.swing.JButton cancelJButton;
    private javax.swing.JLabel exportLogJLabel;
+   private javax.swing.JTextArea exportLogJTextArea;
    private javax.swing.JLabel iconJLabel;
    private javax.swing.JScrollPane jScrollPane1;
-   private javax.swing.JTextArea jTextArea1;
    // End of variables declaration//GEN-END:variables
 }
