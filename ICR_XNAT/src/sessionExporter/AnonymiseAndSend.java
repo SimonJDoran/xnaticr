@@ -84,9 +84,13 @@ import xnatRestToolkit.XNATRESTToolkit;
  */
 public class AnonymiseAndSend extends xnatDAO.XNATGUI implements ProjectGetter
 {
+	protected String                     version = "2.01 alpha 21/10/2015";
 	protected XNATProfile                destProf;
 	protected XNATProfile                srcProf;
-	protected ArrayList<String>          srcSess;
+	protected ArrayList<String>          srcSessIDs;
+	protected ArrayList<String>          srcSessLabels;
+	protected ArrayList<String>          srcSessSubjs;
+	protected ArrayList<String>          destSubjCodes;
 	protected ArrayList<ArrayList<File>> srcFileList;
 	protected DefaultTableModel          anonModel;
 	protected AnonScriptWindow           asw;
@@ -107,18 +111,20 @@ public class AnonymiseAndSend extends xnatDAO.XNATGUI implements ProjectGetter
 	public AnonymiseAndSend(java.awt.Frame parent,
 			                  boolean modal,
 			                  XNATProfile srcProf,
-									ArrayList<String> srcSess)
+									ArrayList<String> srcSessIDs,
+									ArrayList<String> srcSessLabels,
+									ArrayList<String> srcSessSubjs)
 	{
 		super(parent, modal);
 		
-		this.srcProf     = srcProf;
-		this.srcSess     = srcSess;
-		this.srcFileList = srcFileList;
+		this.srcProf       = srcProf;
+		this.srcSessIDs    = srcSessIDs;
+		this.srcSessLabels = srcSessLabels;
+		this.srcSessSubjs  = srcSessSubjs;
 
       initComponents();
       versionJLabel.setText("Version " + version);
 		checkAccessJLabel.setVisible(false);
-		subjJTextField.setText(DEFAULT_SUBJ_CODE);
 		elw = new ExportLogWindow(new javax.swing.JFrame(), false);
 		elw.updateLogWindow("Export Log\n\n");
 		
@@ -209,20 +215,30 @@ public class AnonymiseAndSend extends xnatDAO.XNATGUI implements ProjectGetter
 		srcProfileJTextField.setText(srcProf.getProfileName());
 		
 		Object[] colNames = {"Source session", "Source subject name", "Anonymised subject name"}; 
-		anonModel = new DefaultTableModel(colNames, srcSess.size());
+		anonModel = new DefaultTableModel(colNames, srcSessIDs.size());
 		anonJTable.setModel(anonModel);
 		
-		ArrayList<String> srcSubj = getSubjList(srcSess);
+		int               nDistinct     = 0;
+		ArrayList<String> distinctSubjs = new ArrayList<>();
+		destSubjCodes                   = new ArrayList<>();
 		
-		srcSessionsJTextArea.setText(getSessionsAsString());
+		for (int i=0; i<srcSessIDs.size(); i++)
+		{
+			if (!distinctSubjs.contains(srcSessSubjs.get(i)))
+			{
+				nDistinct++;
+				distinctSubjs.add(srcSessSubjs.get(i));
+			}
+			destSubjCodes.add("AnonymisedPatient_" + nDistinct);
+			
+			Object[] row = {srcSessLabels.get(i), srcSessSubjs.get(i), destSubjCodes.get(i)};
+			anonModel.addRow(row);
+		}
+		
+		
 		populateProfileJComboBox();
 	}
 	
-	
-	protected ArrayList<String> getSubjList(ArrayList<String> sessions)
-	{
-		XNATRESTToolkit xnrt = new XNATRESTToolkit(srcProf);
-	}
 	
 	
 	/**
@@ -304,7 +320,7 @@ public class AnonymiseAndSend extends xnatDAO.XNATGUI implements ProjectGetter
 		String templateScript = asw.getScriptText();
 		
 		// Check whether the subject name still has the default value.
-		String subjCode   = subjJTextField.getText();
+		String subjCode   = "junk";
 		if (subjCode.equals(DEFAULT_SUBJ_CODE))
 		{
 			Object[] options = { "Continue", "Cancel" };
@@ -411,7 +427,7 @@ public class AnonymiseAndSend extends xnatDAO.XNATGUI implements ProjectGetter
 	protected String getSessionsAsString()
 	{
 		StringBuilder sb = new StringBuilder();
-		for (String s : srcSess) sb.append(s).append("\n");
+		for (String s : srcSessLabels) sb.append(s).append("\n");
 		// Last newline character is never needed.
 		return sb.substring(0, sb.length()-1);
 	}
@@ -458,10 +474,8 @@ public class AnonymiseAndSend extends xnatDAO.XNATGUI implements ProjectGetter
 	 */
 	@SuppressWarnings("unchecked")
    // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
-   private void initComponents()
-   {
+   private void initComponents() {
 
-      titleLabel = new javax.swing.JLabel();
       versionJLabel = new javax.swing.JLabel();
       destProfileJLabel = new javax.swing.JLabel();
       destProfileJComboBox = new javax.swing.JComboBox();
@@ -475,8 +489,6 @@ public class AnonymiseAndSend extends xnatDAO.XNATGUI implements ProjectGetter
       exportJButton = new javax.swing.JButton();
       exportJProgressBar = new javax.swing.JProgressBar();
       checkAccessJLabel = new javax.swing.JLabel();
-      destSubjLabel = new javax.swing.JLabel();
-      subjJTextField = new javax.swing.JTextField();
       viewExportLogJButton = new javax.swing.JButton();
       viewAnonScriptJButton = new javax.swing.JButton();
       dataDestinationJLabel1 = new javax.swing.JLabel();
@@ -486,8 +498,6 @@ public class AnonymiseAndSend extends xnatDAO.XNATGUI implements ProjectGetter
       anonCodeSameJCheckBox = new javax.swing.JCheckBox();
 
       setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
-
-      titleLabel.setFont(new java.awt.Font("Lucida Grande", 0, 28)); // NOI18N
 
       versionJLabel.setFont(versionJLabel.getFont().deriveFont(versionJLabel.getFont().getSize()+3f));
       versionJLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
@@ -523,11 +533,6 @@ public class AnonymiseAndSend extends xnatDAO.XNATGUI implements ProjectGetter
       checkAccessJLabel.setFont(checkAccessJLabel.getFont().deriveFont(checkAccessJLabel.getFont().getSize()-1f));
       checkAccessJLabel.setText("Checking project access");
 
-      destSubjLabel.setText("XNAT Subject ID");
-
-      subjJTextField.setText("Enter anonymisation subject code.");
-      subjJTextField.setToolTipText("");
-
       viewExportLogJButton.setText("View export log ...");
       viewExportLogJButton.setActionCommand("View download log ...");
 
@@ -539,15 +544,13 @@ public class AnonymiseAndSend extends xnatDAO.XNATGUI implements ProjectGetter
       fileProgressJLabel.setText("Inactive");
 
       anonJTable.setModel(new javax.swing.table.DefaultTableModel(
-         new Object [][]
-         {
+         new Object [][] {
             {null, null, null, null},
             {null, null, null, null},
             {null, null, null, null},
             {null, null, null, null}
          },
-         new String []
-         {
+         new String [] {
             "Title 1", "Title 2", "Title 3", "Title 4"
          }
       ));
@@ -579,9 +582,7 @@ public class AnonymiseAndSend extends xnatDAO.XNATGUI implements ProjectGetter
                .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                   .addGap(0, 174, Short.MAX_VALUE)
                   .addComponent(versionJLabel)
-                  .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                  .addComponent(titleLabel)
-                  .addGap(240, 240, 240))
+                  .addGap(246, 246, 246))
                .addGroup(layout.createSequentialGroup()
                   .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
                      .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
@@ -592,11 +593,9 @@ public class AnonymiseAndSend extends xnatDAO.XNATGUI implements ProjectGetter
                         .addComponent(dataDestinationJLabel)
                         .addComponent(destProfileJLabel)
                         .addGroup(layout.createSequentialGroup()
-                           .addComponent(destSubjLabel)
-                           .addGap(18, 18, 18)
+                           .addGap(121, 121, 121)
                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                               .addComponent(destProjectJComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, 317, javax.swing.GroupLayout.PREFERRED_SIZE)
-                              .addComponent(subjJTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 306, javax.swing.GroupLayout.PREFERRED_SIZE)
                               .addComponent(destProfileJComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, 317, javax.swing.GroupLayout.PREFERRED_SIZE)))
                         .addComponent(dataToExportJLabel)
                         .addComponent(dataDestinationJLabel1)
@@ -615,9 +614,7 @@ public class AnonymiseAndSend extends xnatDAO.XNATGUI implements ProjectGetter
          layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
          .addGroup(layout.createSequentialGroup()
             .addGap(40, 40, 40)
-            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-               .addComponent(titleLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 39, javax.swing.GroupLayout.PREFERRED_SIZE)
-               .addComponent(versionJLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 85, javax.swing.GroupLayout.PREFERRED_SIZE))
+            .addComponent(versionJLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 85, javax.swing.GroupLayout.PREFERRED_SIZE)
             .addGap(30, 30, 30)
             .addComponent(dataToExportJLabel)
             .addGap(18, 18, 18)
@@ -639,11 +636,7 @@ public class AnonymiseAndSend extends xnatDAO.XNATGUI implements ProjectGetter
                .addComponent(destProjectJComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                .addComponent(destProjectJLabel)
                .addComponent(checkAccessJLabel))
-            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-               .addComponent(subjJTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-               .addComponent(destSubjLabel))
-            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 60, Short.MAX_VALUE)
+            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 37, Short.MAX_VALUE)
             .addComponent(dataDestinationJLabel1)
             .addGap(18, 18, 18)
             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
@@ -715,15 +708,12 @@ public class AnonymiseAndSend extends xnatDAO.XNATGUI implements ProjectGetter
    private javax.swing.JLabel destProfileJLabel;
    private javax.swing.JComboBox destProjectJComboBox;
    private javax.swing.JLabel destProjectJLabel;
-   private javax.swing.JLabel destSubjLabel;
    private javax.swing.JButton exportJButton;
    private javax.swing.JProgressBar exportJProgressBar;
    private javax.swing.JLabel fileProgressJLabel;
    private javax.swing.JScrollPane jScrollPane1;
    private javax.swing.JLabel srcProfileJLabel;
    private javax.swing.JLabel srcProfileJTextField;
-   private javax.swing.JTextField subjJTextField;
-   private javax.swing.JLabel titleLabel;
    private javax.swing.JLabel versionJLabel;
    private javax.swing.JButton viewAnonScriptJButton;
    private javax.swing.JButton viewExportLogJButton;

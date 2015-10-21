@@ -44,9 +44,7 @@
                   <Group type="102" alignment="1" attributes="0">
                       <EmptySpace min="0" pref="174" max="32767" attributes="0"/>
                       <Component id="versionJLabel" min="-2" max="-2" attributes="0"/>
-                      <EmptySpace max="-2" attributes="0"/>
-                      <Component id="titleLabel" min="-2" max="-2" attributes="0"/>
-                      <EmptySpace min="-2" pref="240" max="-2" attributes="0"/>
+                      <EmptySpace min="-2" pref="246" max="-2" attributes="0"/>
                   </Group>
                   <Group type="102" alignment="0" attributes="0">
                       <Group type="103" groupAlignment="1" max="-2" attributes="0">
@@ -59,11 +57,9 @@
                               <Component id="dataDestinationJLabel" alignment="0" min="-2" max="-2" attributes="0"/>
                               <Component id="destProfileJLabel" alignment="0" min="-2" max="-2" attributes="0"/>
                               <Group type="102" alignment="0" attributes="0">
-                                  <Component id="destSubjLabel" min="-2" max="-2" attributes="0"/>
-                                  <EmptySpace type="separate" max="-2" attributes="0"/>
+                                  <EmptySpace min="-2" pref="121" max="-2" attributes="0"/>
                                   <Group type="103" groupAlignment="0" attributes="0">
                                       <Component id="destProjectJComboBox" min="-2" pref="317" max="-2" attributes="0"/>
-                                      <Component id="subjJTextField" alignment="0" min="-2" pref="306" max="-2" attributes="0"/>
                                       <Component id="destProfileJComboBox" alignment="0" min="-2" pref="317" max="-2" attributes="0"/>
                                   </Group>
                               </Group>
@@ -92,10 +88,7 @@
       <Group type="103" groupAlignment="0" attributes="0">
           <Group type="102" alignment="0" attributes="0">
               <EmptySpace min="-2" pref="40" max="-2" attributes="0"/>
-              <Group type="103" groupAlignment="0" attributes="0">
-                  <Component id="titleLabel" min="-2" pref="39" max="-2" attributes="0"/>
-                  <Component id="versionJLabel" min="-2" pref="85" max="-2" attributes="0"/>
-              </Group>
+              <Component id="versionJLabel" min="-2" pref="85" max="-2" attributes="0"/>
               <EmptySpace min="-2" pref="30" max="-2" attributes="0"/>
               <Component id="dataToExportJLabel" min="-2" max="-2" attributes="0"/>
               <EmptySpace type="separate" max="-2" attributes="0"/>
@@ -120,12 +113,7 @@
                   <Component id="destProjectJLabel" alignment="3" min="-2" max="-2" attributes="0"/>
                   <Component id="checkAccessJLabel" alignment="3" min="-2" max="-2" attributes="0"/>
               </Group>
-              <EmptySpace type="unrelated" max="-2" attributes="0"/>
-              <Group type="103" groupAlignment="3" attributes="0">
-                  <Component id="subjJTextField" alignment="3" min="-2" max="-2" attributes="0"/>
-                  <Component id="destSubjLabel" alignment="3" min="-2" max="-2" attributes="0"/>
-              </Group>
-              <EmptySpace pref="60" max="32767" attributes="0"/>
+              <EmptySpace pref="37" max="32767" attributes="0"/>
               <Component id="dataDestinationJLabel1" min="-2" max="-2" attributes="0"/>
               <EmptySpace type="separate" max="-2" attributes="0"/>
               <Group type="103" groupAlignment="1" attributes="0">
@@ -145,13 +133,6 @@
     </DimensionLayout>
   </Layout>
   <SubComponents>
-    <Component class="javax.swing.JLabel" name="titleLabel">
-      <Properties>
-        <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
-          <Font name="Lucida Grande" size="28" style="0"/>
-        </Property>
-      </Properties>
-    </Component>
     <Component class="javax.swing.JLabel" name="versionJLabel">
       <Properties>
         <Property name="font" type="java.awt.Font" editor="org.netbeans.modules.form.editors2.FontEditor">
@@ -248,17 +229,6 @@
           </FontInfo>
         </Property>
         <Property name="text" type="java.lang.String" value="Checking project access"/>
-      </Properties>
-    </Component>
-    <Component class="javax.swing.JLabel" name="destSubjLabel">
-      <Properties>
-        <Property name="text" type="java.lang.String" value="XNAT Subject ID"/>
-      </Properties>
-    </Component>
-    <Component class="javax.swing.JTextField" name="subjJTextField">
-      <Properties>
-        <Property name="text" type="java.lang.String" value="Enter anonymisation subject code."/>
-        <Property name="toolTipText" type="java.lang.String" value=""/>
       </Properties>
     </Component>
     <Component class="javax.swing.JButton" name="viewExportLogJButton">

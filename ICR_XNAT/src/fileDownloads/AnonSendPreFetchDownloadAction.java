@@ -69,7 +69,9 @@ public class AnonSendPreFetchDownloadAction implements DownloadAction
 			AnonymiseAndSend as = new AnonymiseAndSend(new javax.swing.JFrame(),
 					                                     true,
 			                                           caller.xndao.getProfile(),
-			                                           caller.sessionLabelList);
+			                                           caller.sessionIDList,
+					                                     caller.sessionLabelList,
+			                                           caller.sessionSubjectList);
 			as.setVisible(true);
 		}
 	}

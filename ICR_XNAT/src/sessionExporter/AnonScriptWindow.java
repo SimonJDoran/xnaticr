@@ -89,8 +89,7 @@ public class AnonScriptWindow extends javax.swing.JDialog
 	 */
 	@SuppressWarnings("unchecked")
    // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
-   private void initComponents()
-   {
+   private void initComponents() {
 
       jScrollPane1 = new javax.swing.JScrollPane();
       anonScriptJTextArea = new javax.swing.JTextArea();
@@ -143,7 +142,7 @@ public class AnonScriptWindow extends javax.swing.JDialog
          layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
          .addGroup(layout.createSequentialGroup()
             .addContainerGap()
-            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                .addComponent(anonScriptJLabel)
                .addComponent(iconJLabel))
             .addGap(18, 18, 18)
