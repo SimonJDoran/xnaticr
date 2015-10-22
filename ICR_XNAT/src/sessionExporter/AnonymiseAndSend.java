@@ -91,6 +91,7 @@ public class AnonymiseAndSend extends xnatDAO.XNATGUI implements ProjectGetter
 	protected String                     version = "2.01 alpha 21/10/2015";
 	protected XNATProfile                destProf;
 	protected XNATProfile                srcProf;
+	protected boolean                    tableChangeLock;
 	protected ArrayList<String>          srcSessIDs;
 	protected ArrayList<String>          srcSessLabels;
 	protected ArrayList<String>          srcSessSubjs;
@@ -130,7 +131,7 @@ public class AnonymiseAndSend extends xnatDAO.XNATGUI implements ProjectGetter
       initComponents();
       versionJLabel.setText("Version " + version);
 		checkAccessJLabel.setVisible(false);
-		elw = new ExportLogWindow(new javax.swing.JFrame(), false);
+		elw = new ExportLogWindow(new javax.swing.JFrame(), true);
 		elw.updateLogWindow("Export Log\n\n");
 		
 		populateComponents();
@@ -171,8 +172,8 @@ public class AnonymiseAndSend extends xnatDAO.XNATGUI implements ProjectGetter
 			public void actionPerformed(ActionEvent e)
 			{            
 				if (asw == null)
-					asw = new AnonScriptWindow(new javax.swing.JFrame(), false);
-				asw.setVisible(true);;
+					asw = new AnonScriptWindow(new javax.swing.JFrame(), true);
+				asw.setVisible(true);
 			}	  
 		});
 		
@@ -183,6 +184,7 @@ public class AnonymiseAndSend extends xnatDAO.XNATGUI implements ProjectGetter
 			public void actionPerformed(ActionEvent e)
 			{            
 				elw.setVisible(true);
+				elw.toFront();
 			}	  
 		});
 		
@@ -351,24 +353,10 @@ public class AnonymiseAndSend extends xnatDAO.XNATGUI implements ProjectGetter
 		
 		String templateScript = asw.getScriptText();
 		
-		// Check whether the subject name still has the default value.
-		String subjCode   = "junk";
-		if (subjCode.equals(DEFAULT_SUBJ_CODE))
-		{
-			Object[] options = { "Continue", "Cancel" };
-			int choice =JOptionPane.showOptionDialog(this,
-					                       "You have not changed the subject name\n"
-					                       + "away from its default value", "Warning",
-			                             JOptionPane.DEFAULT_OPTION,
-												  JOptionPane.WARNING_MESSAGE,
-			                             null, options, options[0]);
-			if (choice == 1) return;
-		}
-		
 		String anonScript = templateScript.replaceAll(SUBJ_TOKEN, subjCode)
 		                                  .replaceAll(PROJ_TOKEN, (String) destProjectJComboBox.getSelectedItem());
 
-	//	remapper = new DicomRemapAndSend(logJTextArea);
+		remapper = new DicomRemapAndSend(logJTextArea);
 		
 		
 		
@@ -458,6 +446,9 @@ public class AnonymiseAndSend extends xnatDAO.XNATGUI implements ProjectGetter
 	*/
 	public void respondToCheck()
 	{
+		// Any changes to the table made here will file a TableModelEvent,
+		// which we want the TableModelListener to ignore.
+		tableChangeLock = true;
 		if (anonCodeSameJCheckBox.isSelected())
 		{
 			// Find all duplicate subject names and use the code for the first
@@ -473,6 +464,7 @@ public class AnonymiseAndSend extends xnatDAO.XNATGUI implements ProjectGetter
 				anonModel.setValueAt(destSubjCodes.get(i), i, 2);
 			}		
 		}
+		tableChangeLock = false;
 	}
 	
 	
@@ -482,17 +474,25 @@ public class AnonymiseAndSend extends xnatDAO.XNATGUI implements ProjectGetter
 	
 	public void respondToTableChange(int row, int col)
 	{
+		if (tableChangeLock) return;
+		
+		// Once we have started this method, we need to not restart it
+		// every time we make a change to the table below.
+		tableChangeLock = true;
 		
 		if (anonCodeSameJCheckBox.isSelected())
 		{
-			for (int i=1; i<srcSessIDs.size(); i++)
+			Object newEntry = anonModel.getValueAt(row, col);
+			for (int i=0; i<srcSessIDs.size(); i++)
 			{
-				int    firstInd = srcSessSubjs.indexOf(srcSessSubjs.get(i));
-				Object code     = anonModel.getValueAt(firstInd, 2);
-				if (firstInd <= i) destSubjCodes.set(i, (String) code);
-				anonModel.setValueAt(destSubjCodes.get(i), i, 2);
+				if (srcSessSubjs.get(i).equals(srcSessSubjs.get(row)))
+				{
+					destSubjCodes.set(i, (String) newEntry);
+					anonModel.setValueAt(newEntry, i, 2);
+				}
 			}		
 		}
+		tableChangeLock = false;
 	}
 		
 	protected String getSessionsAsString()

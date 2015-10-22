@@ -188,6 +188,12 @@ public class DAOOutput
    {
       return iconCycling;
    }
+	
+	
+	public void stopIcon()
+	{
+		fileListWorker.stopIcon();
+	}
 
 
    public void cancel(boolean canInterrupt)

@@ -852,7 +852,7 @@ public class FileListWorker extends SwingWorker<ArrayList<ArrayList<File>>, Stri
 // Note that this needs to be executed on the Event Dispatch Thread.
 	public void revealDownloadArea()
    {
-		xndao.getDownloadJButton().setText("Downloading now");
+		xndao.getDownloadJButton().setText("Cancel");
       xndao.getDownloadJButton().setEnabled(true);
 		xndao.getDownloadDetailsJLabel().setVisible(true);
       xndao.getDownloadJProgressBar().setVisible(true);

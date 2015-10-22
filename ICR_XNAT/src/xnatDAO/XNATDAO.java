@@ -755,7 +755,8 @@ public final class XNATDAO extends XNATGUI
 			@Override
 			public void actionPerformed(ActionEvent e)
 			{
-				respondToDownloadRequest(e);
+				if (downloadJButton.getText().equals("Download")) respondToDownloadRequest(e);
+				else cancelDownload();
 			}
 		});
       
@@ -1907,7 +1908,15 @@ public final class XNATDAO extends XNATGUI
       XNATDAO.this.invokeGetOutputFileList("TreeTable selection changed");
    }
    
-   
+   protected void cancelDownload()
+	{
+		daoo.cancel(true);
+		downloadJButton.setText("Download");
+		thumbnailPreview1.clearImages();
+		daoo.stopIcon();
+	}
+	
+	
    private void setDefaultSearch()
    {
 		DAODefaultSearchesList dsl;
