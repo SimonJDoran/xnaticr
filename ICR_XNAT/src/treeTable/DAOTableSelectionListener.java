@@ -50,17 +50,6 @@ import javax.swing.ListSelectionModel;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
-/**
- *
- * @author Simon J Doran
- *
- * Java class: DAOTableSelectionListener.java
- *
- * First created on Apr 22, 2010 at 4:29:11 PM
- *
- */
-
-
 public class DAOTableSelectionListener implements ListSelectionListener
 {
    // We need to store the treeTable reference since the event's source
