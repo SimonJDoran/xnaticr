@@ -66,6 +66,7 @@ import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.sql.SQLException;
 import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -91,6 +92,7 @@ import org.nrg.dcm.io.DicomObjectExporter;
 import org.nrg.dcm.io.NewRootFileExporter;
 import org.nrg.dcm.io.TransferCapabilityExtractor;
 import org.nrg.io.FileWalkIterator;
+import xnatDAO.XNATProfile;
 
 public class DicomRemapAndSend
 {
@@ -224,10 +226,16 @@ public class DicomRemapAndSend
         }
 	}
 	
-	public DicomRemapAndSend(JTextArea logJTextArea)
+	public DicomRemapAndSend(ExportLogWindow   elw,
+									 XNATProfile       xnprf,
+									 int               destPort,
+									 String            destAeTitle,
+									 String            destProj,
+									 ArrayList<String> destSubjCodes,
+									 String            templateScript)
+									 
 			 throws IOException, ParseException, DocumentException, Exception
 	{
-		this.logJTextArea = logJTextArea;
 		InputStream is    = new ByteArrayInputStream(logJTextArea.getText()
 				                                                   .getBytes(StandardCharsets.UTF_8));
 		
@@ -278,46 +286,30 @@ public class DicomRemapAndSend
 	}
 	
 
-	public Map<?,?> apply(final URI out, final Collection<File> files)
+	public Map<?,?> apply(XNATProfile xnprf, final URI out, final Collection<File> files)
                    throws IOException, AttributeException, InvalidRemapsException, SQLException
 	{
 		final List<Statement> statements = Lists.newArrayList(globalStatements);
 		final DicomObjectExporter exporter;
 		int   count;
 
-		if (!out.isAbsolute())
-			throw new IllegalArgumentException("destination URI must be absolute");
-        
-		if ("file".equals(out.getScheme())) {
-            final Set<File> roots = Sets.newLinkedHashSet();	// only directories can be roots
-            for (final File file : files) {
-                if (file.isDirectory()) {
-                    roots.add(file);
-                } else if (file.exists()) {
-                    roots.add(file.getAbsoluteFile().getParentFile());
-                }
-            }
-            exporter = new NewRootFileExporter(AE_TITLE, new File(out), roots);
-            count = 0;
-        } else if ("dicom".equals(out.getScheme())) {
-            final String locAETitle = out.getUserInfo();
-            final String destHost = out.getHost();
-            final int destPort = -1 == out.getPort() ? DICOM_DEFAULT_PORT : out.getPort();
-            final String destAETitle = out.getPath().replaceAll("/", "");
-            final FileWalkIterator walker = new FileWalkIterator(files,
+      final String locAETitle  = "XNATDAO";
+      final String destHost    = xnprf.getServerURL().getHost();
+      final int    destPort    = xnprf.getServerURL().getPort();
+      
+		final FileWalkIterator walker = new FileWalkIterator(files,
                     new StreamProgressMonitor(messages, "Searching", "original DICOM"));
-            final TransferCapability[] tcs = TransferCapabilityExtractor.getTransferCapabilities(walker, TransferCapability.SCU);
-            count = walker.getCount();
-            exporter = new CStoreExporter(destHost, Integer.toString(destPort), false,
+		final TransferCapability[] tcs = TransferCapabilityExtractor.getTransferCapabilities(walker, TransferCapability.SCU);
+		count = walker.getCount();
+		
+		exporter = new CStoreExporter(destHost, Integer.toString(destPort), false,
                     destAETitle, locAETitle, tcs);
-        } else {
-            throw new UnsupportedOperationException("no exporter defined for URI scheme " + out.getScheme());
-        }
-
-        final BatchExporter batch = new BatchExporter(exporter, statements, new FileWalkIterator(files, null));
-        batch.setProgressMonitor(new StreamProgressMonitor(messages, "Processing", "modified DICOM", count), 0);
-        batch.run();
-        return batch.getFailures();
+		final BatchExporter batch = new BatchExporter(exporter, statements, new FileWalkIterator(files, null));
+		
+		batch.setProgressMonitor(new StreamProgressMonitor(messages, "Processing", "modified DICOM", count), 0);
+		batch.run();
+		
+		return batch.getFailures();
     }
 	
 	public void includeStatements(final InputStream in)
