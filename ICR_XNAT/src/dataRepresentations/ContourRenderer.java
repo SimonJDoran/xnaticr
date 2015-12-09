@@ -176,6 +176,40 @@ public class ContourRenderer
    }
    
    
+	/**
+    * Constructor creates a new renderer of a given MRIWOutput object.
+    * @param mriw MRIWOutput that contains most of the
+    * information necessary for rendering a contour. Note that the MRIW format
+    * does not have a number of the contour-related features of DICOM-RT on
+    * which these developments were originally based, so various default
+    * values need to be supplied and in addition, the data that are present
+    * need to be manipulated to get the correct format.
+    */
+   public ContourRenderer(AIMOutput aim)
+   {
+      this.dr = aim;
+
+      /*
+		]displayColour         = new int[]{255, 0, 0};
+      frameOfReferenceUID   = mriw.frameOfReferenceUID;
+      coordsAsPixel         = true;
+      rcList                = new ArrayList<RContour>();
+      
+      RContour rc           = new RContour();
+      rc.baseImageUID       = mriw.inp.dynSOPInstanceUIDs.get(0);
+      rc.nContourPoints     = mriw.con.roiX.size();
+      rc.contourPoints      = new float[rc.nContourPoints][3];
+      rcList.add(rc);
+      for (int i=0; i<rc.nContourPoints; i++)
+      {
+         rc.contourPoints[i][0] = mriw.con.roiX.get(i).floatValue();
+         rc.contourPoints[i][1] = mriw.con.roiY.get(i).floatValue();
+         rc.contourPoints[i][2] = -999.9f; // dummy value
+      } 
+		*/
+   }
+	
+	
    /**
     * Constructor creates a new renderer of a given MRIWOutput object.
     * @param adept ADEPTOutput that contains most of the

@@ -57,15 +57,16 @@ import com.generationjava.io.xml.SimpleXmlWriter;
 import dataRepresentations.ContourRenderer;
 import dataRepresentations.MRIWOutput;
 import dataRepresentations.RTStruct;
+import exceptions.DataFormatException;
 import exceptions.XMLException;
 import exceptions.XNATException;
+import generalUtilities.DicomXnatDateTime;
 import generalUtilities.UIDGenerator;
 import java.awt.image.BufferedImage;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.zip.DataFormatException;
 import javax.imageio.ImageIO;
 import org.apache.log4j.Logger;
 import org.dcm4che2.data.DicomObject;
@@ -128,8 +129,8 @@ public class MRIWDataUploader extends QCAssessmentDataUploader
       {
          mriw = MRIWOutput.getInstanceFromXML(doc, xnprf);
          
-         date = convertToXNATDate(mriw.prov.creationDateTime);
-         time = convertToXNATTime(mriw.prov.creationDateTime);
+         date = DicomXnatDateTime.convertMriwToXnatDate(mriw.prov.creationDateTime);
+         time = DicomXnatDateTime.convertMriwToXnatTime(mriw.prov.creationDateTime);
          
          XNATProject      = mriw.XNATProjectID; 
          XNATSubjectID    = mriw.XNATSubjectID;
@@ -513,70 +514,6 @@ public class MRIWDataUploader extends QCAssessmentDataUploader
    }
    
    
-   /**
-    * Take a String variable in the form that is used by the MRIW XML file and
-    * convert it to the XNAT date format yyyy-mm-dd.
-    * @param dateTime
-    * @return A String containing the date
-    * @throws DataFormatException
-    */
-   public String convertToXNATDate(String dateTime) throws DataFormatException
-   {
-      String month;
-      String day;
-      String year;
-      
-      try
-      {
-         month = dateTime.substring( 4,  7);
-         day   = dateTime.substring( 8, 10);
-         year  = dateTime.substring(20, 24);
-      }
-      catch (Exception ex)
-      {
-         throw new DataFormatException("Input file has incorrect date format.");
-      }
-      
-      String[] months    = new String[] {"Jan", "Feb", "Mar", "Apr", "May", "Jun",
-                                         "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"};
-      String[] m2Digit   = new String[] {"01", "02", "03", "04", "05", "06",
-                                         "07", "08", "09", "10", "11", "12"};
-
-      String month2Digit = null;
-      for (int i=0; i<12; i++) if (months[i].equals(month)) month2Digit = m2Digit[i];
-      if (month2Digit == null)
-         throw new DataFormatException("Input file has incorrect date format.");
-
-      return year + "-" + month2Digit + "-" + day.replaceFirst(" ", "0");
-   }
-
-
    
-   /**
-    * Take a String variable in the form that is used by the MRIW XML file and
-    * convert it to the XNAT date format yyyy-mm-dd.
-    * @param dateTime
-    * @return A String containing the date
-    * @throws DataFormatException
-    */
-   public String convertToXNATTime(String dateTime) throws DataFormatException
-   {
-      return dateTime.substring(11, 19);
-   }
-   
-   
-   protected void debugContourOutput() throws Exception
-   {
-
-      ContourRenderer cr = new ContourRenderer(mriw);
-      ArrayList<BufferedImage> bi = cr.createImages();
-      for (int j=0; j<bi.size(); j++)
-      {
-         File outputFile = new File("/Users/simond/temp/ROI_test/ROI" + j
-                                    + "/contour_" + j + ".png");
-         outputFile.mkdirs();
-         ImageIO.write(bi.get(j), "png", outputFile);
-         }     
-   }
    
 }

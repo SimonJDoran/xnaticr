@@ -45,33 +45,50 @@
 
 package exceptions;
 
+import org.apache.log4j.Logger;
+import java.util.HashMap;
+import java.util.Map;
 
-public class XMLException extends SJDException
+
+public class XMLException extends CodedException
 {
 	public static final int PARSE  = 0;
    public static final int OUTPUT = 1;
-
-
-	private static final String[] errorMessages =
+	
+	private static final HashMap<Integer, String> messages;
+	static Logger logger = Logger.getLogger(XNATException.class);
+	
+	static
 	{
-		"Error parsing XML",
-      "Error outputting XML"
+		messages = new HashMap();
+	   messages.put(PARSE,  "Problem parsing XML" );
+		messages.put(OUTPUT, "Problem outputting XML" );
 	};
 
 
-	public XMLException(int errorCode)
+	public XMLException(int diagnosticCode)
 	{
-		super(errorCode);
+		this(diagnosticCode, null);
 	}
 
-   public XMLException(int errorCode, String upstreamMessage)
+	
+   public XMLException(int diagnosticCode, String upstreamMessage)
    {
-      super(errorCode, upstreamMessage);
+      super(diagnosticCode, upstreamMessage);
    }
 
+	
    @Override
-	public String[] getMessageList()
+	public Map getMessagesForAllCodes()
 	{
-		return errorMessages;
+		return messages;
+	}
+
+	
+	@Override
+	public String getMessageForCode()
+	{
+		if (!messages.containsKey(code)) return CODE_NOT_FOUND;
+		return messages.get(code);
 	}
 }

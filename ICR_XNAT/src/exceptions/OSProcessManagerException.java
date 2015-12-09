@@ -45,33 +45,49 @@
 
 package exceptions;
 
+import java.util.HashMap;
+import java.util.Map;
 
-public class OSProcessManagerException extends SJDException
+public class OSProcessManagerException extends CodedException
 {
-	public static final int NP          = 0;
-	public static final int IOOB        = 1;
-   public static final int SECURITY    = 2;
-   public static final int IO          = 3;
-   public static final int INTERRUPT   = 4;
+   public static final int SECURITY    = 0;
+   public static final int IO          = 1;
+   public static final int INTERRUPT   = 2;
 
-	private static final String[] errorMessages =
+	private static final HashMap<Integer, String> messages;
+	
+	static
 	{
-		"OS process failed to start because of a Null Pointer Exception.",
-		"OS process failed to start because of an Index Out of Bounds Exception.",
-      "OS process failed to start because of a Security Exception.",
-      "OS process failed to start because of an IO Exception.",
-      "OS process was interrupted."
-	};
+		messages = new HashMap();
+		messages.put(SECURITY,  "OS process failed to start because of a Security Exception." );
+		messages.put(IO,        "OS process failed to start because of an IO Exception." );
+		messages.put(INTERRUPT, "OS process was interrupted." );
+}
 
 
-	public OSProcessManagerException(int errorCode)
+	public OSProcessManagerException(int diagnosticCode)
 	{
-		super(errorCode);
+		this(diagnosticCode, null);
 	}
 
+	
+   public OSProcessManagerException(int diagnosticCode, String upstreamMessage)
+   {
+      super(diagnosticCode, upstreamMessage);
+   }
+
+	
    @Override
-	public String[] getMessageList()
+	public Map getMessagesForAllCodes()
 	{
-		return errorMessages;
+		return messages;
+	}
+
+	
+	@Override
+	public String getMessageForCode()
+	{
+		if (!messages.containsKey(code)) return CODE_NOT_FOUND;
+		return messages.get(code);
 	}
 }

@@ -52,7 +52,8 @@ import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.util.*;
-import java.util.zip.DataFormatException;
+import exceptions.DataFormatException;
+import generalUtilities.DicomXnatDateTime;
 
 import org.apache.log4j.Logger;
 import org.dcm4che2.data.BasicDicomObject;
@@ -83,7 +84,7 @@ public class MRIWOutput extends DataRepresentation implements RtStructWriter
    
    /**
     * Auxiliary classes defining the structure of various internal
-    * elements as specified in the MRIW output file DTD.
+ elements as specified in the MRIW_RECORD output file DTD.
     */ 
    public class MRIWRaw
    {    
@@ -306,8 +307,8 @@ public class MRIWOutput extends DataRepresentation implements RtStructWriter
    
    
    /**
-    * Parse the MRIW ResultSet or Batch file and place the results in the
-    * object's structure. Note that This implementation is currently incomplete
+    * Parse the MRIW_RECORD ResultSet or Batch file and place the results in the
+ object's structure. Note that This implementation is currently incomplete
     * because of lack of appropriate examples of some of the tags.
     * @param MRIWDoc
     * @param xnprf
@@ -331,9 +332,7 @@ public class MRIWOutput extends DataRepresentation implements RtStructWriter
 
          else
          {
-            throw new DataFormatException("This does not appear to be a valid MRIW output file.\n"
-                     + "Valid files should be either MRIW result sets or\n"
-                     + "MRIW batch processing instruction sets.");
+            throw new DataFormatException(DataFormatException.MRIW_RECORD);
          }
          
          prov.programName                 = getAttr("program",   "name");
@@ -516,7 +515,7 @@ public class MRIWOutput extends DataRepresentation implements RtStructWriter
       HashSet<String> absentStudies = new HashSet<String>();
       if (!result.columnContains(1, inp.dynStudyUID)) absentStudies.add(inp.dynStudyUID);
       
-      // Note that inp.refStudyUID is an optional field coming out of MRIW.
+      // Note that inp.refStudyUID is an optional field coming out of MRIW_RECORD.
       if ((inp.refStudyUID != null) && (!result.columnContains(1, inp.refStudyUID)))
               absentStudies.add(inp.refStudyUID);
       
@@ -765,7 +764,7 @@ public class MRIWOutput extends DataRepresentation implements RtStructWriter
       odo.putString(Tag.Manufacturer,            VR.LO, "Institute of Cancer Research");
       odo.putString(Tag.StationName,             VR.SH, InetAddress.getLocalHost().getHostName());      
       
-      // The MRIW result set files do not contain study description data.
+      // The MRIW_RECORD result set files do not contain study description data.
       odo.putString(Tag.StudyDescription,        VR.LO, "");
       odo.putString(Tag.ManufacturerModelName,   VR.LO, "ICR: XNAT DataUploader");
    
@@ -807,7 +806,7 @@ public class MRIWOutput extends DataRepresentation implements RtStructWriter
       
       
       // The label has to be there according to the standard, but the name and
-      // description don't. MRIW doesn't provide these pieces of metadata.
+      // description don't. MRIW_RECORD doesn't provide these pieces of metadata.
       String user  = ((prov.creationUser.isEmpty()) ? "" : (" by user " + prov.creationUser));
       String label = "Auto-generated from MRIW result set originally created by " +
                      prov.programName + " " + prov.programVersion + "-" +
@@ -829,8 +828,8 @@ public class MRIWOutput extends DataRepresentation implements RtStructWriter
       odo.putInt(Tag.InstanceNumber,          VR.IS, instanceNumber);
       */
       
-      formattedDate = convertToDICOMDate(prov.creationDateTime);
-      formattedTime = convertToDICOMTime(prov.creationDateTime);
+      formattedDate = DicomXnatDateTime.convertMriwToDicomDate(prov.creationDateTime);
+      formattedTime = DicomXnatDateTime.convertXnatToDicomTime(prov.creationDateTime);
       odo.putString(Tag.StructureSetDate,        VR.DA, formattedDate);
       odo.putString(Tag.StructureSetTime,        VR.TM, formattedTime);
       
@@ -852,7 +851,7 @@ public class MRIWOutput extends DataRepresentation implements RtStructWriter
       DicomElement seqRefStudy = odo.putSequence(Tag.ReferencedStudySequence);
       
       // Note that the "referenced" studies here are those that are referred to
-      // by the RT-STRUCT file. These include both what MRIW calls the
+      // by the RT-STRUCT file. These include both what MRIW_RECORD calls the
       // reference study and the dynamic study.
       DicomObject  doRefStudy  = new BasicDicomObject();
       doRefStudy.setParent(odo);
@@ -896,9 +895,9 @@ public class MRIWOutput extends DataRepresentation implements RtStructWriter
       DicomObject  doRtRefStudy  = new BasicDicomObject();
       doRtRefStudy.setParent(doRefFOR);
       seqRtRefStudy.addDicomObject(doRtRefStudy);
-      // MRIW result set files are structured with the theoretical possibility
+      // MRIW_RECORD result set files are structured with the theoretical possibility
       // of the dynamic and reference studies being different, but in practice
-      // this will not occur. Choose dyn not ref, because ref is optional in MRIW.
+      // this will not occur. Choose dyn not ref, because ref is optional in MRIW_RECORD.
       doRtRefStudy.putString(Tag.ReferencedSOPInstanceUID, VR.UI, inp.dynStudyUID);
       doRtRefStudy.putString(Tag.ReferencedSOPClassUID,    VR.UI, "1.2.840.10008.3.1.2.3.2");
  
@@ -911,7 +910,7 @@ public class MRIWOutput extends DataRepresentation implements RtStructWriter
       doRtRefSer.putString(Tag.SeriesInstanceUID, VR.UI, inp.dynSeriesInstanceUIDs.get(0));
       
       // Subsequence at (3006,0016)
-      // In the case of MRIW, the contour spans only a single image, but is
+      // In the case of MRIW_RECORD, the contour spans only a single image, but is
       // equally applicable to all the reference and dynamic data. Choose
       // (arbitrarily) the first of the dynamic series.
       DicomElement seqContourImage = doRtRefSer.putSequence(Tag.ContourImageSequence);
@@ -938,7 +937,7 @@ public class MRIWOutput extends DataRepresentation implements RtStructWriter
       doSSRoi.putString(Tag.ReferencedFrameOfReferenceUID, VR.UI, frameOfReferenceUID);
       doSSRoi.putString(Tag.ROIName, VR.LO, "MRIW ROI");
             
-      // There are no metadata for the following DICOM concepts in the MRIW
+      // There are no metadata for the following DICOM concepts in the MRIW_RECORD
       // result set files.
       /*
       doSSRoi.putString(Tag.ROIDescription, VR.ST, roiDescription);
@@ -960,7 +959,7 @@ public class MRIWOutput extends DataRepresentation implements RtStructWriter
       doRoiContour.setParent(odo);
       seqRoiContour.addDicomObject(doRoiContour);
       
-      // MRIW result set files consist of only one ROI.
+      // MRIW_RECORD result set files consist of only one ROI.
       doRoiContour.putInt(Tag.ReferencedROINumber, VR.IS, 1);
       
       // The result set file does not specify any aspects of the ROI presentation.
@@ -1003,8 +1002,8 @@ public class MRIWOutput extends DataRepresentation implements RtStructWriter
    
    /**
     * Write the DICOM sequence at (3006, 0080).
-    * Despite the fact that MRIW provides no metadata whatsoever to place in
-    * this sequence, this is a mandatory tag for structure sets.
+    * Despite the fact that MRIW_RECORD provides no metadata whatsoever to place in
+ this sequence, this is a mandatory tag for structure sets.
     * @param odo - BasicDicomObject being constructed for output to a file
     */
    protected void outputRTROIObservationsSequence(DicomObject odo)
@@ -1024,10 +1023,10 @@ public class MRIWOutput extends DataRepresentation implements RtStructWriter
    
    /**
     * Retrieve various additional details from the base images for which the
-    * MRIW data were generated.
+ MRIW_RECORD data were generated.
     * This is a non-trivial task, as these are not present directly in the
-    * MRIW file being parsed. However, the information is valuable and worth
-    * the effort to extract.
+ MRIW_RECORD file being parsed. However, the information is valuable and worth
+ the effort to extract.
     * @return the slice location as a String
     */
    protected void getDICOMParameters()
@@ -1177,8 +1176,8 @@ public class MRIWOutput extends DataRepresentation implements RtStructWriter
    /**
     * Extract the first match for the element/attribute combination specified
     * by the arguments. Call this routine only when we are entitled to assume
-    * that there should be only one element, because this is the model for MRIW
-    * result set files.
+ that there should be only one element, because this is the model for MRIW_RECORD
+ result set files.
     * @param element
     * @param attr
     * @return
@@ -1239,7 +1238,7 @@ public class MRIWOutput extends DataRepresentation implements RtStructWriter
    {
       SortedMap<String, String> sm = null;
       
-      // Note that earlier versions of MRIW used "keyValue" as the name of the
+      // Note that earlier versions of MRIW_RECORD used "keyValue" as the name of the
       // element containing the key-value pair, but later versions use "key-value".
       sm = XMLUtilities.getKeyValue(doc, XNATns, element, "key-value", "key", "value");
       
@@ -1254,7 +1253,7 @@ public class MRIWOutput extends DataRepresentation implements RtStructWriter
            throws XMLException, NumberFormatException
    {
       // N.B. We assume here that there is at most one matching element
-      // in a valid MRIW file.
+      // in a valid MRIW_RECORD file.
       return XMLUtilities.getFloatArrayListFromElementCSV(doc, XNATns, element, ",");
    }
    
@@ -1263,7 +1262,7 @@ public class MRIWOutput extends DataRepresentation implements RtStructWriter
            throws XMLException, NumberFormatException
    {
       // N.B. We assume here that there is at most one matching element
-      // in a valid MRIW file.
+      // in a valid MRIW_RECORD file.
       return XMLUtilities.getStringArrayListFromElementCSV(doc, XNATns, element, ",");
    }
    
@@ -1299,8 +1298,8 @@ public class MRIWOutput extends DataRepresentation implements RtStructWriter
             {
                logger.error("Invalid format for MRIW data-record " + i +
                                                          " at element " + element);
-               throw new DataFormatException("Invalid format for MRIW data-record "
-                                                   + i + " at element " + element);
+               throw new DataFormatException(DataFormatException.MRIW_RECORD,
+                                             "record " + i + " at element " + element);
             }
 
             
@@ -1322,7 +1321,7 @@ public class MRIWOutput extends DataRepresentation implements RtStructWriter
          
          if (encoding == BASE64)
          {
-            // TODO BASE64 encoding for MRIW data-record
+            // TODO BASE64 encoding for MRIW_RECORD data-record
          }
          
          result.add(dr);
@@ -1362,8 +1361,8 @@ public class MRIWOutput extends DataRepresentation implements RtStructWriter
             {
                logger.error("Invalid format for MRIW map " + i +
                                                          " at element " + element);
-               throw new DataFormatException("Invalid format for MRIW map "
-                                                   + i + " at element " + element);
+               throw new DataFormatException(DataFormatException.MRIW_MAP,
+                                             i + " at element " + element);
             }
 
             m.mapData = new ArrayList<Float>();
@@ -1385,7 +1384,7 @@ public class MRIWOutput extends DataRepresentation implements RtStructWriter
          
          if (encoding == BASE64)
          {
-            /* TODO BASE64 encoding for MRIW maps */
+            /* TODO BASE64 encoding for MRIW_RECORD maps */
          }
          
          result.add(m);
@@ -1396,13 +1395,13 @@ public class MRIWOutput extends DataRepresentation implements RtStructWriter
  
    
    /**
-    * Get the keys from an MRIW key-value Map as single comma-delimited String.
+    * Get the keys from an MRIW_RECORD key-value Map as single comma-delimited String.
     * Although XNAT has a mechanism for storing key-value pairs as additional
     * parameters, this makes searching difficult. The rationale for this method
     * of storage is that we can search the a keys element in XNAT using a
     * PostgreSQL search with regular experession.
     * @param keyValue
-    * @return key part of an MRIW key-value Map as a single comma-delimited String
+    * @return key part of an MRIW_RECORD key-value Map as a single comma-delimited String
     */
    public String getMRIWKeysAsString(SortedMap<String, String> keyValue)
    {
@@ -1419,11 +1418,11 @@ public class MRIWOutput extends DataRepresentation implements RtStructWriter
 
    
 /**
-    * Get the values from an MRIW key-value Map as single comma-delimited String.
+    * Get the values from an MRIW_RECORD key-value Map as single comma-delimited String.
     * Note that the same method of iterating through the keyValue Map is used as
     * for the keys to ensure that the ordering is the same.
     * @param keyValue
-    * @return key part of an MRIW key-value Map as a single comma-delimited String
+    * @return key part of an MRIW_RECORD key-value Map as a single comma-delimited String
     */
    public String getMRIWValuesAsString(SortedMap<String, String> keyValue)
    {
@@ -1439,8 +1438,8 @@ public class MRIWOutput extends DataRepresentation implements RtStructWriter
    
    
    /**
-    * Get the names of the MRIW computed maps present as a single,
-    * comma-delimited String
+    * Get the names of the MRIW_RECORD computed maps present as a single,
+ comma-delimited String
     * @param mapList
     * @return 
     */
@@ -1453,79 +1452,6 @@ public class MRIWOutput extends DataRepresentation implements RtStructWriter
       if (sb.charAt(sb.length()-1) == ',') sb.deleteCharAt(sb.length()-1);
       
       return sb.toString();
-   }
-   
-   
-   /**
-    * Take a dateTime String variable in the form that is output by MRIW and
-    * convert it to the DICOM date format yyyymmdd.
-    * @param dateTime an input dateTime String, originating from the application MRIW
-    * @return an output String containing the structureSetDate formatted for DICOM
-    * @throws DataFormatException
-    */
-   public String convertToDICOMDate(String dateTime) throws DataFormatException
-   {
-      String day;
-      String monthNumeric;
-      String year;
-      String[] months = {"Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul",
-                         "Aug", "Sep", "Oct", "Nov", "Dec"};
-      
-      
-      try
-      {
-         String month = dateTime.substring(4, 7);
-         
-         monthNumeric = "";
-         for (int i=0; i<12; i++)
-         {
-            if (month.equals(months[i]))
-            {
-               if (i<9) monthNumeric = "0" + Integer.toString(i+1);
-               else     monthNumeric = Integer.toString(i+1);
-            }
-         }
-         if (monthNumeric.equals(""))
-            throw new DataFormatException("Input file has incorrect date format.");
- 
-         year  = dateTime.substring(20, 24);
-         day   = dateTime.substring(8, 10);
-         if (day.charAt(0) == ' ') day = "0" + day.substring(1, 2);
-      }
-      catch (Exception ex)
-      {
-         throw new DataFormatException("Input file has incorrect date format.");
-      }
-
-      return year + monthNumeric + day;
-   }
-
-
-   /**
-    * Take a String variable in the form that is used by XNAT and
-    * convert it to the DICOM time format hhmmss.
-    * @param time and input structureSetTime String
-    * @return A String containing the structureSetTime formatted for DICOM
-    * @throws DataFormatException
-    */
-   public String convertToDICOMTime(String time) throws DataFormatException
-   {
-      String hour;
-      String minute;
-      String second;
-      
-      try
-      {
-         hour   = time.substring(11, 13);
-         minute = time.substring(14, 16);
-         second = time.substring(17, 19);
-      }
-      catch (Exception ex)
-      {
-         throw new DataFormatException("Input file has incorrect time format.");
-      }
-
-      return hour + minute + second;
    }
    
 }

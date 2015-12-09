@@ -550,6 +550,8 @@ public final class XNATUploader extends XNATGUI
                            AdeptDataUploader.class);
       uploaderClassMap.put(new TypeSubtype("Application outputs", "MRIW output"),
                            MRIWDataUploader.class);
+		uploaderClassMap.put(new TypeSubtype("Application outputs", "AIM output"),
+                           AIMDataUploader.class);
       //uploaderClassMap.put(new TypeSubtype("Parametric images", "Any parametric image"),
       //                     ParametricImageUploader.class);
    }

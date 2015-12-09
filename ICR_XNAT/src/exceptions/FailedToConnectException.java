@@ -45,10 +45,10 @@
 
 package exceptions;
 
-/**
- * @author Simon J Doran
- */
-public class FailedToConnectException extends SJDException
+import java.util.HashMap;
+import java.util.Map;
+
+public class FailedToConnectException extends CodedException
 {
 	public static final int SOCKET_TIMEOUT      = 0;
    public static final int IO                  = 1;
@@ -59,35 +59,46 @@ public class FailedToConnectException extends SJDException
    public static final int MALFORMED_URL       = 6;
    public static final int WRONG_HTTP_RESPONSE = 7;
 
-
-
-	private static final String[] errorMessages =
+private static final HashMap<Integer, String> messages;
+	
+	static
 	{
-		"Connection timed out",
-      "I/O error",
-      "Null pointer given as authorisation",
-      "Authorisation failure: incorrect userid or password",
-      "Connection did not return valid XML",
-      "Unable to obtain JSESSION",
-      "The REST URL was malformed.",
-      "An unexpected HTTP response (i.e., not 200) came back from the server."
-	};
-
-
-	public FailedToConnectException(int errorCode)
-	{
-		super(errorCode);
+		messages = new HashMap();
+	   messages.put(SOCKET_TIMEOUT,      "Connection timed out");
+		messages.put(IO,                  "I/O error");
+		messages.put(NULL_AUTH,           "Null pointer given as authorisation" );
+		messages.put(AUTH_FAILURE,        "Authorisation failure: incorrect userid or password" );
+		messages.put(BAD_XML,             "Connection did not return valid XML" );
+		messages.put(JSESSION,            "Unable to obtain JSESSION");
+		messages.put(MALFORMED_URL,       "REST URL malformed");
+		messages.put(WRONG_HTTP_RESPONSE, "An unexpected HTTP response (i.e., not 200) came back from the server.");
 	}
 
-   public FailedToConnectException(int errorCode, String upstreamMessage)
+	
+	public FailedToConnectException(int diagnosticCode)
+	{
+		this(diagnosticCode, null);
+	}
+
+	
+   public FailedToConnectException(int diagnosticCode, String upstreamMessage)
    {
-      super(errorCode, upstreamMessage);
+      super(diagnosticCode, upstreamMessage);
    }
 
+	
    @Override
-	public String[] getMessageList()
+	public Map getMessagesForAllCodes()
 	{
-		return errorMessages;
+		return messages;
+	}
+
+	
+	@Override
+	public String getMessageForCode()
+	{
+		if (!messages.containsKey(code)) return CODE_NOT_FOUND;
+		return messages.get(code);
 	}
 
 }

@@ -11,10 +11,11 @@
 
 package obselete;
 
-import exceptions.SJDException;
+import exceptions.CodedException;
+import java.util.HashMap;
+import java.util.Map;
 
-
-public class XNATDicomImportRuleException extends SJDException
+public class XNATDicomImportRuleException extends CodedException
 {
    public static final int IO      = 0;
    public static final int PARSING = 1;
@@ -25,21 +26,39 @@ public class XNATDicomImportRuleException extends SJDException
 		"Unable to open XNAT DICOM import rule XML file.",
       "Parsing error on XNAT DICOM import rule XML file."
 	};
-
-
-	public XNATDicomImportRuleException(int errorCode)
+	private static final HashMap<Integer, String> messages;
+	
+	static
 	{
-		super(errorCode);
+		messages = new HashMap();
+	   messages.put(IO,      "Unable to open XNAT DICOM import rule XML file.");
+		messages.put(PARSING, "Parsing error on XNAT DICOM import rule XML file.");
 	}
 
-   public XNATDicomImportRuleException(int errorCode, String upstreamMessage)
+
+	public XNATDicomImportRuleException(int diagnosticCode)
+	{
+		this(diagnosticCode, null);
+	}
+
+	
+   public XNATDicomImportRuleException(int diagnosticCode, String upstreamMessage)
    {
-      super(errorCode, upstreamMessage);
+      super(diagnosticCode, upstreamMessage);
    }
 
+	
    @Override
-	public String[] getMessageList()
+	public Map getMessagesForAllCodes()
 	{
-		return errorMessages;
+		return messages;
+	}
+
+	
+	@Override
+	public String getMessageForCode()
+	{
+		if (!messages.containsKey(code)) return CODE_NOT_FOUND;
+		return messages.get(code);
 	}
 }

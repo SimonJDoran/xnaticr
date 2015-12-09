@@ -237,7 +237,7 @@ public class XNATDicomLoaderWorker extends SwingWorker<WorkerOutput, WorkerOutpu
 
       catch (XNATException exXNAT)
       {
-         if (exXNAT.getStatus() == XNATException.QUERY_LOADED)
+         if (exXNAT.getReturnCode() == XNATException.QUERY_LOADED)
             logger.warn("Failed to determine whether file" + file.getAbsolutePath()
                         + "is already imported: ");
 

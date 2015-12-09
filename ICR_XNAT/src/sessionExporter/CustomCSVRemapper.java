@@ -68,7 +68,7 @@ import com.google.common.collect.Sets;
 public final class CustomCSVRemapper {
     private static final int DICOM_DEFAULT_PORT = 104;
     private static final String AE_TITLE = "DicomRemap";
-/*
+
     private static final class RemapColumn {
         final String level;
         final int index;
@@ -196,7 +196,7 @@ public final class CustomCSVRemapper {
             return sb.toString();
         }
     }
-
+/*
     private final Collection<RemapColumn> remaps;
     private final Map<String,Map<Integer,Integer>> selectionKeysToCols;
     private final List<Statement> globalStatements = Lists.newArrayList();

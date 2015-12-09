@@ -45,39 +45,52 @@
 
 package exceptions;
 
-public class ImageUtilitiesException extends SJDException
+import java.util.HashMap;
+import java.util.Map;
+
+public class ImageUtilitiesException extends CodedException
 {
 	public static final int INCORRECT_WINDOW_RANGE	= 0;
 	public static final int ZERO_COLUMNS				= 1;
 	public static final int NON_RECTANGULAR_IMAGE	= 2;
    public static final int THUMBNAIL_CREATION      = 3;
 
-	private int imageUtilityStatus;
+	private static final HashMap<Integer, String> messages;
 	
-	private static final String[] errorMessages =
+	static
 	{
-		"One or both of the minimum and maximum values of the imaging window range is invalid.",
-		"The number of image columns may not be zero.",
-		"The data do not represent a valid rectangular image.",
-      "Unable to create the thumbnail image."
-	}; 
+		messages = new HashMap();
+	   messages.put(INCORRECT_WINDOW_RANGE, "One or both of the minimum and maximum values of the imaging window range is invalid.");
+		messages.put(ZERO_COLUMNS,           "The number of image columns may not be zero.");
+		messages.put(NON_RECTANGULAR_IMAGE,  "The data do not represent a valid rectangular image." );
+		messages.put(THUMBNAIL_CREATION,     "Unable to create the thumbnail image." );
+	}	
 	
+
 	
-	
-	/** Creates a new instance of ImageUtilitiesException */
-	public ImageUtilitiesException(int errorCode)
+	public ImageUtilitiesException(int diagnosticCode)
 	{
-		super(errorCode);
+		this(diagnosticCode, null);
 	}
+
 	
-	public ImageUtilitiesException(int errorCode, String upstreamMessage)
+   public ImageUtilitiesException(int diagnosticCode, String upstreamMessage)
    {
-      super(errorCode, upstreamMessage);
+      super(diagnosticCode, upstreamMessage);
    }
 
+	
    @Override
-	public String[] getMessageList()
+	public Map getMessagesForAllCodes()
 	{
-		return errorMessages;
+		return messages;
+	}
+
+	
+	@Override
+	public String getMessageForCode()
+	{
+		if (!messages.containsKey(code)) return CODE_NOT_FOUND;
+		return messages.get(code);
 	}
 }

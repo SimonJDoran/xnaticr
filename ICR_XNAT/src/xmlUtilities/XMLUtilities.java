@@ -48,7 +48,7 @@ import java.io.BufferedInputStream;
 import java.io.InputStream;
 import java.io.StringWriter;
 import java.util.*;
-import java.util.zip.DataFormatException;
+import exceptions.DataFormatException;
 import javax.xml.namespace.NamespaceContext;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -301,7 +301,7 @@ public class XMLUtilities
          return false;
       
       logger.warn("Not valid true/false value: " + s);
-      throw new DataFormatException("Not valid true/false value: " + s);
+      throw new DataFormatException(DataFormatException.TRUE_FALSE, s);
    }
    
  
@@ -559,7 +559,7 @@ public class XMLUtilities
                                   throws XMLException, NumberFormatException
    {
       // N.B. We assume here that there is at most one matching element
-      // in a valid MRIW file.
+      // in a valid MRIW_RECORD file.
       String[] entries = getElementText(node, namespaceContext, elementName);
       if (entries == null) return null;
       
@@ -591,7 +591,7 @@ public class XMLUtilities
                                    throws XMLException, NumberFormatException
    {
       // N.B. We assume here that there is at most one matching element
-      // in a valid MRIW file.
+      // in a valid MRIW_RECORD file.
       String[] entries = getElementText(node, namespaceContext, elementName);
       if (entries == null) return null;
       
