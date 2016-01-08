@@ -45,8 +45,11 @@
 
 package exceptions;
 
+import java.util.HashMap;
+import java.util.Map;
+import org.apache.log4j.Logger;
 
-public class XNATException extends SJDException
+public class XNATException extends CodedException
 {
 	public static final int SUBJECT_CREATE    = 0;
    public static final int SEARCH_CREATE     = 1;
@@ -71,46 +74,60 @@ public class XNATException extends SJDException
    public static final int DATA_AMBIGUOUS    = 20;
 	public static final int RETRIEVING_LIST   = 21;
 
-	private static final String[] errorMessages =
+	private static final HashMap<Integer, String> messages;
+	
+	static
 	{
-		"Unable to create XNAT subject",
-      "Unable to initiate XNAT search",
-      "Error during XNAT search",
-      "Error parsing XNAT output",
-      "Error during processing XNAT REST API GET",
-      "Unable to close XNAT output stream",
-      "Problem with catalog file",
-      "Unable to determine whether file is already uploaded",
-		"Error while trying to access XNAT subject list",
-      "Unexpected date format in DICOM file",
-		"Unable to create XNAT session",
-		"Unable to create XNAT scan",
-      "Error uploading file",
-      "Unexpected cache condition - programming error",
-      "Unable to create XNAT resource",
-      "Unable to create thumbnail image",
-      "Unable to obtain JSESSION ID from XNAT",
-      "Cannot perform the request, as another search is in progress",
-      "Required data not present in XNAT",
-      "Inconsistent data",
-      "Ambiguous data",
-		"Problem retrieving list of files"
+		messages = new HashMap();
+	   messages.put(SUBJECT_CREATE,    "Unable to create XNAT subject" );
+		messages.put(SEARCH_CREATE,     "Unable to initiate XNAT search" );
+		messages.put(SEARCH,            "Problem during XNAT search" );
+		messages.put(PARSE,             "Problem parsing XNAT output" );
+		messages.put(GET,               "Problem during processing XNAT REST API GET" );
+		messages.put(STREAM_CLOSE,      "Unable to close XNAT output stream");
+		messages.put(CATALOG,           "Problem with catalog file");
+		messages.put(QUERY_LOADED,      "Unable to determine whether file is already uploaded");
+		messages.put(SUBJ_LIST,         "Problem while trying to access XNAT subject list");
+		messages.put(DATE,              "Unexpected date format in DICOM file");
+		messages.put(SESSION_CREATE,    "Unable to create XNAT session");
+		messages.put(SCAN_CREATE,       "Unable to create XNAT scan");
+		messages.put(FILE_UPLOAD,       "Problem uploading file");
+		messages.put(CACHE,             "Unexpected cache condition");
+		messages.put(RESOURCE_CREATE,   "Unable to create XNAT resource");
+		messages.put(THUMB_CREATE,      "Unable to determine whether file is already uploaded");
+		messages.put(QUERY_LOADED,      "Unable to create thumbnail image");
+		messages.put(JSESSION,          "Unable to obtain JSESSION ID from XNAT");
+		messages.put(LOCKED,            "Cannot perform the request, as another search is in progress");
+		messages.put(DATA_NOT_PRESENT,  "Required data not present in XNAT");
+		messages.put(DATA_INCONSISTENT, "Inconsistent data");
+		messages.put(DATA_AMBIGUOUS,    "Ambiguous data");
+		messages.put(RETRIEVING_LIST,   "Problem retrieving list of files");
 	};
 
 
-	public XNATException(int errorCode)
+	public XNATException(int diagnosticCode)
 	{
-		super(errorCode);
+		this(diagnosticCode, null);
 	}
 
-   public XNATException(int errorCode, String upstreamMessage)
+	
+   public XNATException(int diagnosticCode, String upstreamMessage)
    {
-      super(errorCode, upstreamMessage);
+      super(diagnosticCode, upstreamMessage);
    }
 
+	
    @Override
-	public String[] getMessageList()
+	public Map getMessagesForAllCodes()
 	{
-		return errorMessages;
+		return messages;
+	}
+
+	
+	@Override
+	public String getMessageForCode()
+	{
+		if (!messages.containsKey(code)) return CODE_NOT_FOUND;
+		return messages.get(code);
 	}
 }

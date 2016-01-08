@@ -45,7 +45,7 @@
 package xnatRestToolkit;
 
 import exceptions.FailedToConnectException;
-import exceptions.SJDException;
+import exceptions.CodedException;
 import exceptions.XMLException;
 import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
@@ -226,7 +226,7 @@ public class XNATServerConnection
       }
       catch (FailedToConnectException exFTC)
       {
-         int code = exFTC.getStatus();
+         int code = exFTC.getReturnCode();
          
          connected              = false;
          mostRecentErrorCode    = code;
@@ -337,7 +337,7 @@ public class XNATServerConnection
       }        
       catch (FailedToConnectException exFC)
       {
-         int code = exFC.getStatus();
+         int code = exFC.getReturnCode();
 
          connected              = false;
          mostRecentErrorCode    = code;

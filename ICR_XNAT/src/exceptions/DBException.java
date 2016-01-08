@@ -45,40 +45,61 @@
 
 package exceptions;
 
-public class DBException extends SJDException
+import java.util.HashMap;
+import java.util.Map;
+
+public class DBException extends CodedException
 {
-	public static final int DRIVER_NOT_FOUND			= 0;
-	public static final int OPEN_ERROR					= 1;
-	public static final int UNABLE_TO_CREATE			= 2;
-	public static final int USER_DECLINED_TO_CREATE	= 3;
-	public static final int SQL_EXECUTION_ERROR		= 4;
-	public static final int ERROR_READING_RESULTSET	= 5;
-	public static final int INVALID_NAME_PASSWORD   = 6;
-	public static final int NO_DATABASES_AVAILABLE  = 7;
-	public static final int MAX_ALLOWED_PACKET		= 8;
+	public static final int DRIVER_NOT_FOUND			 = 0;
+	public static final int OPEN_ERROR					 = 1;
+	public static final int UNABLE_TO_CREATE			 = 2;
+	public static final int USER_DECLINED_TO_CREATE	 = 3;
+	public static final int SQL_EXECUTION_ERROR		 = 4;
+	public static final int ERROR_READING_RESULTSET	 = 5;
+	public static final int INVALID_NAME_OR_PASSWORD = 6;
+	public static final int NO_DATABASES_AVAILABLE   = 7;
+	public static final int MAX_ALLOWED_PACKET		 = 8;
 
-	private static final String[] errorMessages =
+	private static final HashMap<Integer, String> messages;
+	
+	static
 	{
-		"The JDBC database driver class was not found.",
-		"It was not possible to connect to the database server.\nCheck the username " +
-			"and password are correct.",
-		"It was not possible to create the database.",
-		"The user declined to create the database.",
-		"Execution of an SQL statement led to an exception.",
-		"There was a problem reading back the ResultSet from the SQL database.",
-		"Unable to log in to the database. Please check your username and password.",
-		"You do not have authorisation to view any databases on the server.",
-		"The 'SET max_allowed_packet' statement failed."
-	};
-
-	public DBException(int errorCode)
-	{
-		super(errorCode);
+		messages = new HashMap();
+	   messages.put(DRIVER_NOT_FOUND,         "The JDBC database driver class was not found.");
+		messages.put(OPEN_ERROR,               "It was not possible to connect to the database server.");
+		messages.put(UNABLE_TO_CREATE,         "It was not possible to create the database." );
+		messages.put(USER_DECLINED_TO_CREATE,  "The user declined to create the database." );
+		messages.put(SQL_EXECUTION_ERROR,      "Execution of an SQL statement led to an exception." );
+		messages.put(ERROR_READING_RESULTSET,  "There was a problem reading back the ResultSet from the SQL database.");
+		messages.put(INVALID_NAME_OR_PASSWORD, "Unable to log in to the database. Please check your username and password.");
+		messages.put(NO_DATABASES_AVAILABLE,   "You do not have authorisation to view any databases on the server.");
+		messages.put(MAX_ALLOWED_PACKET,       "The 'SET max_allowed_packet' statement failed.");
 	}
+
+
+	public DBException(int diagnosticCode)
+	{
+		this(diagnosticCode, null);
+	}
+
+	
+   public DBException(int diagnosticCode, String upstreamMessage)
+   {
+      super(diagnosticCode, upstreamMessage);
+   }
+
 	
    @Override
-	public String[] getMessageList()
+	public Map getMessagesForAllCodes()
 	{
-		return errorMessages;
+		return messages;
+	}
+
+	
+	@Override
+	public String getMessageForCode()
+	{
+		if (!messages.containsKey(code)) return CODE_NOT_FOUND;
+		return messages.get(code);
 	}
 }

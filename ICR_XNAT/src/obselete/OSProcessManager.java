@@ -51,15 +51,17 @@ public class OSProcessManager
          pid = pb.start();
          startedSuccessfully = true;
       }
-      catch (NullPointerException exNP)
-      {
-         throw new OSProcessManagerException(OSProcessManagerException.NP);
-      }
-
-      catch (IndexOutOfBoundsException exIOOB)
-      {
-         throw new OSProcessManagerException(OSProcessManagerException.IOOB);
-      }
+// Null pointer and index out of bounds exceptions should not be caught, as
+// these are programming errors that need to be corrected.
+//      catch (NullPointerException exNP)
+//      {
+//         throw new OSProcessManagerException(OSProcessManagerException.NP);
+//      }
+//
+//      catch (IndexOutOfBoundsException exIOOB)
+//      {
+//         throw new OSProcessManagerException(OSProcessManagerException.IOOB);
+//      }
 
       catch (SecurityException exSec)
       {

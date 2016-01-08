@@ -44,46 +44,61 @@
 
 package exceptions;
 
-import org.apache.log4j.Logger;
+import java.util.Map;
 
-public abstract class SJDException extends Exception
+public abstract class CodedException extends Exception
 {	
-	protected static int status;
-	protected static String upstreamErrorMessage;
-   static Logger logger = Logger.getLogger(SJDException.class);
+	protected final int           code;
+	protected final String        upstreamMessage;
+	protected static final String CODE_NOT_FOUND = "No message defined for supplied code";
 	
 	/**
 	 * Creates a new instance of ExceptionSJD. The use of a constructor
-	 * using an error code, rather than the standard string means that the
+	 * using a return code, rather than the standard string means that the
 	 * actual message displayed can be changed centrally at will, whilst
 	 * the code throwing the error flags the *condition* rather than the
 	 * message. 
+	 * @param code a return code providing additional information.
+	 * This is potentially useful for taking actions that
+	 * depend on the exact cause of the exception.
 	 */
-	public SJDException(int errorCode)
+
+	public CodedException(int code)
 	{
-		this(errorCode, "");
+		this(code, null);
 	}
 	
 	
-	public SJDException(int errorCode, String upstream)
+	public CodedException(int code, String upstream)
 	{
-		super("<SJD ERROR>");
-		status = errorCode;
-		upstreamErrorMessage = upstream;
-      logger.debug(getMessage());
+		super();
+		this.code = code;
+		upstreamMessage = upstream;
 	}
 	
 	
-	/** Get the error code - potentially useful for taking error dependent actions */
-	public int getStatus()
+	/**
+	 * Get the return code.
+	 * @return code a return code giving more information on the cause of the exception.
+	 */	
+	public int getReturnCode()
 	{
-		return status;
+		return code;
 	}
-		
 	
-	/** Get a list of all the possible errors that the object can report.
-	 *  This is an abstract function provided by the subclasses. */
-	public abstract String[] getMessageList();
+	/**
+	 * Return a map containing the messages for all of the codes. 
+	 * @return messages 
+	 */
+	public abstract Map getMessagesForAllCodes();
+	
+	
+	
+	/**
+	 * Get the message for a given code.
+	 * @return message the corresponding message
+	 */
+	public abstract String getMessageForCode();
 	
 	
 	
@@ -91,25 +106,26 @@ public abstract class SJDException extends Exception
 	@Override
 	public String getMessage()
 	{
-	/*  Note that the error message is normally set by the call to super.
-	 *  Unfortunately, in this case, the abstract function getMessageList() is
-	 *  not defined until after super is called. Hence, a generic message is
-	 *  given to super and the getMessage() function is modified to access the
+	/*  The message is normally set by the call to super.
+	 *  However, the abstract function getMessages() is
+	 *  not defined until after super is called. So here, super is called with
+	 *  no parameters and the getMessage() function is modified to access the
 	 *  true error message.
 	 */
-		return getMessageList()[status] + "\n" + upstreamErrorMessage;
+		String message = getMessageForCode();
+		return message + "\n" + upstreamMessage;
 	}
 	
-	
-	
+		
 	
 	/** Get a detailed error message including the source of the error. */
 	public String getDetailedMessage()
 	{
-		String message = getMessageList()[status] + upstreamErrorMessage;
+		String message = getMessageForCode();
+		message += "\n" + upstreamMessage;
 		
 		StackTraceElement[] st = getStackTrace();
-		return "<SJD ERROR>\n" +
+		return this.getClass().getName() +
 			"Method: " + st[0].getMethodName() + " in class " + st[0].getClassName() +
 			"\n(Source: line " + st[0].getLineNumber() +
 			" in file" + st[0].getFileName() + ")\n" + message;		

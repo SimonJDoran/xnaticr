@@ -45,32 +45,56 @@
 
 package exceptions;
 
-public class DCM4CHEException extends SJDException
+import java.util.HashMap;
+import java.util.Map;
+
+public class DCM4CHEException extends CodedException
 {
 	public static final int EOF   = 0;
 	public static final int IOOB	= 1;
    public static final int NAS	= 2;
    public static final int NF    = 3;
    public static final int UO    = 4;
-
-	private static final String[] errorMessages =
+	
+	private static final HashMap<Integer, String> messages;
+	
+	// It's debatable whether any of these except the last should be checked
+	// exceptions, but for the moment, don't break compatibility with the
+	// code that uses this.
+	static
 	{
-		"DCM4CHE generated an End of File Exception.",
-		"DCM4CHE generated an Index Out of Bounds Exception.",
-      "DCM4CHE generated a Negative Array Size Exception.",
-      "DCM4CHE generated a Number Format Exception.",
-      "DCM4CHE generated an Unsupported Operation Exception.",
-	};
-
-
-	public DCM4CHEException(int errorCode)
-	{
-		super(errorCode);
+		messages = new HashMap();
+	   messages.put(EOF,  "DCM4CHE generated an End of File Exception.");
+		messages.put(IOOB, "DCM4CHE generated an Index Out of Bounds Exception.");
+		messages.put(NAS,  "DCM4CHE generated a Negative Array Size Exception." );
+		messages.put(NF,   "DCM4CHE generated a Number Format Exception." );
+		messages.put(UO,   "DCM4CHE generated an Unsupported Operation Exception." );
 	}
 
-   @Override
-	public String[] getMessageList()
+
+	public DCM4CHEException(int diagnosticCode)
 	{
-		return errorMessages;
+		this(diagnosticCode, null);
+	}
+
+	
+   public DCM4CHEException(int diagnosticCode, String upstreamMessage)
+   {
+      super(diagnosticCode, upstreamMessage);
+   }
+
+	
+   @Override
+	public Map getMessagesForAllCodes()
+	{
+		return messages;
+	}
+
+	
+	@Override
+	public String getMessageForCode()
+	{
+		if (!messages.containsKey(code)) return CODE_NOT_FOUND;
+		return messages.get(code);
 	}
 }

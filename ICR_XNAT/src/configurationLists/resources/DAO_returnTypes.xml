@@ -46,6 +46,7 @@
       <DAO_subtype alias="Any XNAT assessment">xnat:qcAssessmentData</DAO_subtype>
       <DAO_subtype alias="MRIW output">icr:mriwOutputData</DAO_subtype>
       <DAO_subtype alias="Adept output">xnat:qcAssessmentData</DAO_subtype>
+		<DAO_subtype alias="AIM output">xnat:qcAssessmentData</DAO_subtype>
    </DAO_datatype>
 
    <DAO_datatype alias="Regions-of-interest">
