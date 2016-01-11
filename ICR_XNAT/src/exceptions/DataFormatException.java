@@ -59,6 +59,7 @@ public class DataFormatException extends CodedException
 	public static final int MRIW_RECORD  = 4;
 	public static final int MRIW_GENERAL = 5;
 	public static final int MRIW_MAP     = 6;
+	public static final int RTSTRUCT     = 7;
 	
 	private static final HashMap<Integer, String> messages;
 	static Logger logger = Logger.getLogger(XNATException.class);
@@ -70,9 +71,10 @@ public class DataFormatException extends CodedException
 		messages.put(TIME,         "Unexpected format for time");
 		messages.put(AIM,          "Unexpected format for Annotation and Image Markup (AIM) instance file");
 		messages.put(TRUE_FALSE,   "Not a dichotomous true/false value");
-		messages.put(MRIW_RECORD,  "Invalid formwat for MRIW data-record");
+		messages.put(MRIW_RECORD,  "Invalid format for MRIW data-record");
 		messages.put(MRIW_GENERAL, "Not a valid MRIW output: should be either MRIW ResultSet or batch processing file");
-		messages.put(MRIW_GENERAL, "Invalid format for MRIW map");
+		messages.put(MRIW_MAP,     "Invalid format for MRIW map");
+		messages.put(RTSTRUCT,     "Invalid format for DICOM RT Structure Set file");
 	};
 
 

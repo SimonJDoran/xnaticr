@@ -50,7 +50,8 @@ import generalUtilities.Vector2D;
 import generalUtilities.UIDGenerator;
 import java.net.InetAddress;
 import java.util.*;
-import java.util.zip.DataFormatException;
+import exceptions.DataFormatException;
+import exceptions.XMLException;
 import org.apache.log4j.Logger;
 import org.dcm4che2.data.*;
 import org.w3c.dom.Document;
@@ -259,39 +260,7 @@ public class RTStruct extends DataRepresentation implements RtStructWriter
     * @return an RTStruct instance
     * @throws Exception 
     */
-   public static RTStruct getInstanceFromDICOM(DicomObject bdo, XNATProfile xnprf)
-                          throws Exception
-   {
-      RTStruct rts = new RTStruct();
-      try
-      {
-         rts.populateFromDICOM(bdo, xnprf);
-      }
-      catch (Exception ex)
-      {
-         throw ex;
-      }
-      
-      return rts;
-   }
-	
-	
-	
-	public static RTStruct getInstanceFromExisting(RTStruct rtsSrc, Set<Integer> roiList)
-                          throws Exception
-   {
-      RTStruct rts = new RTStruct();
-      try
-      {
-         rts.populateSubsetFromExisting(rtsSrc, roiList);
-      }
-      catch (Exception ex)
-      {
-         throw ex;
-      }
-      
-      return rts;
-   }
+
    
    
    /**
@@ -300,101 +269,101 @@ public class RTStruct extends DataRepresentation implements RtStructWriter
     * typically from an RT-STRUCT file, although it could have been created dynamically.
     * @param xnprf an XNAT profile, already connected to an XNAT database, which
     * we can use to query the databases for image dependencies. 
+	 * @throws java.util.zip.DataFormatException 
     */
-   protected void populateFromDICOM(DicomObject bdo, XNATProfile xnprf)
-                  throws Exception
+	public RTStruct(DicomObject bdo, XNATProfile xnprf)
+          throws DataFormatException
    {
-      
-      this.bdo   = bdo;
-      this.xnprf = xnprf;
-         
-      try
-      {   
-         // Before we start, check that this really is a structure set!
-         if (!bdo.getString(Tag.Modality).equals("RTSTRUCT"))
-         {
-            throw new Exception("Input is not a valid DICOM RTStruct file.\n\n");
-         }
-         
-         structureSetUID         = bdo.getString(Tag.SOPInstanceUID);
-         structureSetLabel       = bdo.getString(Tag.StructureSetLabel);
-         structureSetName        = bdo.getString(Tag.StructureSetName);
-         structureSetDescription = bdo.getString(Tag.StructureSetDescription);
-         if (bdo.contains(Tag.InstanceNumber))
-            instanceNumber       = bdo.getInt(Tag.InstanceNumber);
-         structureSetDate        = bdo.getString(Tag.StructureSetDate);
-         structureSetTime        = bdo.getString(Tag.StructureSetTime);
-         studyDate               = bdo.getString(Tag.StudyDate);
-         studyTime               = bdo.getString(Tag.StudyTime);
-         studyDescription        = bdo.getString(Tag.StudyDescription);
-         patientName             = bdo.getString(Tag.PatientName);
-         
-         // Get information on the (potentially multiple) studies referenced
-         // by this DICOM RT-Struct file.
-         extractReferencedStudyInfo();
-         
-         // Nested within the frames-of-reference DICOM sequence is also all the
-         // information on the referenced studies, on which the contours are
-         // defined. Both the Java classes above and the corresponding custom
-         // XNAT schema are designed to relate directly to the DICOM structures.
-         extractFramesOfReferenceInfo();
-         
-         // Check that all the studies, series and SOPInstances referenced are
-         // already present in the database.
-         dependenciesInDatabase(xnprf);
-         
-         // Extract overview information about the ROIs contained in the
-         // structure set file, such as name, structureSetDescription, volumne, generating
-         // algorithm, etc.
-         extractStructureSetROIInfo();
-         
-         // Extract information on the individual contours that make up each
-         // of the ROIs. Note that we extract only the metadata, not the actual
-         // contour coordinates themselves.
-         extractContourInfo();
-         
-         // Extract information on the radiotherapy-related interpretation
-         // of the ROIs. This includes the identification as an organ, PTV,
-         // marker, etc. and its physical composition.
-         extractRTROIObservationsInfo();
-      }
-      catch (Exception ex)
-      {
-         throw ex;
-      }
+      this.bdo         = bdo;
+      this.xnprf       = xnprf;
+		
+		studyUIDs        = new ArrayList<>();
+      seriesUIDs       = new ArrayList<>();
+      SOPInstanceUIDs  = new ArrayList<>();
+      fileSOPMap       = new TreeMap<>();
+      fileScanMap      = new TreeMap<>();
+      ambiguousSubjExp = new LinkedHashMap<>();
+           
+		// Before we start, check that this really is a structure set!
+		if (!bdo.getString(Tag.Modality).equals("RTSTRUCT"))
+		{
+			throw new DataFormatException(DataFormatException.RTSTRUCT, 
+						 "Can't create an RTStruct object.\n");
+		}
+
+		structureSetUID          = bdo.getString(Tag.SOPInstanceUID);
+		structureSetLabel        = bdo.getString(Tag.StructureSetLabel);
+		structureSetName         = bdo.getString(Tag.StructureSetName);
+		structureSetDescription  = bdo.getString(Tag.StructureSetDescription);
+		if (bdo.contains(Tag.InstanceNumber))
+			instanceNumber        = bdo.getInt(Tag.InstanceNumber);
+		structureSetDate         = bdo.getString(Tag.StructureSetDate);
+		structureSetTime         = bdo.getString(Tag.StructureSetTime);
+		studyDate                = bdo.getString(Tag.StudyDate);
+		studyTime                = bdo.getString(Tag.StudyTime);
+		studyDescription         = bdo.getString(Tag.StudyDescription);
+		patientName              = bdo.getString(Tag.PatientName);
+
+		ArrayList<String> issues = new ArrayList<>();
+
+		// Get information on the (potentially multiple) studies referenced
+		// by this DICOM RT-Struct file.
+		extractReferencedStudyInfo(issues);
+
+		// Nested within the frames-of-reference DICOM sequence is also all the
+		// information on the referenced studies, on which the contours are
+		// defined. Both the Java classes above and the corresponding custom
+		// XNAT schema are designed to relate directly to the DICOM structures.
+		extractFramesOfReferenceInfo(issues);
+
+		// Check that all the studies, series and SOPInstances referenced are
+		// already present in the database.
+		dependenciesInDatabase(xnprf, issues);
+
+		// Extract overview information about the ROIs contained in the
+		// structure set file, such as name, structureSetDescription, volumne, generating
+		// algorithm, etc.
+		extractStructureSetROIInfo(issues);
+
+		// Extract information on the individual contours that make up each
+		// of the ROIs. Note that we extract only the metadata, not the actual
+		// contour coordinates themselves.
+		extractContourInfo(issues);
+
+		// Extract information on the radiotherapy-related interpretation
+		// of the ROIs. This includes the identification as an organ, PTV,
+		// marker, etc. and its physical composition.
+		extractRTROIObservationsInfo(issues);
    }
    
    
    /**
     * Read the information on any studies referred to and place in object instance
-    * variables.
-    * @throws Exception 
+    * variables. 
+	 * @param issues ArrayList to which any problems found will be added
     */
-   protected void extractReferencedStudyInfo() throws Exception
+   protected void extractReferencedStudyInfo(ArrayList<String> issues)
    {
-      try
-      {
-         DicomElement seqRefStudy  = bdo.get(Tag.ReferencedStudySequence);
-         
-         if (seqRefStudy == null)
-            throw new Exception("No information in DICOM file on referenced studies. \n");
-         
-         int nRefStudy = seqRefStudy.countItems();
-         refStudyList = new ReferencedStudy[nRefStudy];
-         
-         for (int i=0; i<nRefStudy; i++)
-         {
-            refStudyList[i] = new ReferencedStudy();
-            DicomObject refStudy = seqRefStudy.getDicomObject(i);
-            
-            refStudyList[i].SOPInstanceUID = refStudy.getString(Tag.ReferencedSOPInstanceUID);
-            refStudyList[i].SOPClassUID    = refStudy.getString(Tag.ReferencedSOPClassUID);   
-         }
-      }
-      catch (Exception ex)
-      {
-         throw ex;
-      }
+ 
+		DicomElement seqRefStudy  = bdo.get(Tag.ReferencedStudySequence);
+
+		if (seqRefStudy == null)
+		{
+			issues.add("No information in DICOM file on referenced studies.");
+			return;
+		}
+			
+		int nRefStudy = seqRefStudy.countItems();
+		refStudyList = new ReferencedStudy[nRefStudy];
+
+		for (int i=0; i<nRefStudy; i++)
+		{
+			refStudyList[i] = new ReferencedStudy();
+			DicomObject refStudy = seqRefStudy.getDicomObject(i);
+
+			refStudyList[i].SOPInstanceUID = refStudy.getString(Tag.ReferencedSOPInstanceUID);
+			refStudyList[i].SOPClassUID    = refStudy.getString(Tag.ReferencedSOPClassUID);   
+		}
       
    }
    
@@ -405,35 +374,31 @@ public class RTStruct extends DataRepresentation implements RtStructWriter
     * to the frame-of-reference of this structure set. As an added complication
     * if the ROIs were drawn on more than one series, then there are multiple
     * items in this sequence.
-    * @return true if all studies are present, false if not or on error 
+    * @param issues ArrayList to which any problems found will be added
     */
-   protected void extractFramesOfReferenceInfo() throws Exception
+   protected void extractFramesOfReferenceInfo(ArrayList<String> issues)
    {   
-      try
-      {
-         DicomElement seqRefFOR  = bdo.get(Tag.ReferencedFrameOfReferenceSequence);
-         
-         if (seqRefFOR == null)
-            throw new Exception("No information in DICOM file on frames of reference. \n");
-         
-         int nRefFOR = seqRefFOR.countItems();
-         fORList = new ReferencedFrameOfReference[nRefFOR];
+		DicomElement seqRefFOR  = bdo.get(Tag.ReferencedFrameOfReferenceSequence);
 
-         for (int i=0; i<nRefFOR; i++)
-         {
-            fORList[i] = new ReferencedFrameOfReference();
-            DicomObject fOR = seqRefFOR.getDicomObject(i);
-            
-            fORList[i].UID  = fOR.getString(Tag.FrameOfReferenceUID);
-            
-            extractFrameOfReferenceRelationship(i, fOR);
-            extractReferencedStudies(i, fOR);            
-         }
-      }
-      catch (Exception ex)
-      {
-         throw ex;
-      }
+		if (seqRefFOR == null)
+		{
+			issues.add("No information in DICOM file on frames of reference.");
+			return;
+		}
+
+		int nRefFOR = seqRefFOR.countItems();
+		fORList = new ReferencedFrameOfReference[nRefFOR];
+
+		for (int i=0; i<nRefFOR; i++)
+		{
+			fORList[i] = new ReferencedFrameOfReference();
+			DicomObject fOR = seqRefFOR.getDicomObject(i);
+
+			fORList[i].UID  = fOR.getString(Tag.FrameOfReferenceUID);
+
+			extractFrameOfReferenceRelationship(i, fOR, issues);
+			extractReferencedStudies(i, fOR, issues);            
+		}
    }
    
    
@@ -444,42 +409,34 @@ public class RTStruct extends DataRepresentation implements RtStructWriter
     * @param nf int DICOM referenced frame-of-reference number
     * @param fOR the DICOM object corresponding to item nf in the DICOM
     * "referenced frame of reference" sequence at tag (3006,0010)
-    * @return true if all studies are present, false if not or on error
+    * @param issues ArrayList to which any problems found will be added
     */
-   protected void extractFrameOfReferenceRelationship(int nf, DicomObject fOR)
-                  throws Exception
+   protected void extractFrameOfReferenceRelationship(int nf,
+			                             DicomObject fOR, ArrayList<String> issues)
    {
-      try
-      {
-         DicomElement seqFORRel = fOR.get(Tag.FrameOfReferenceRelationshipSequence);
-         if (seqFORRel == null) fORList[nf].nRelatedFOR = 0;
-         else
-         {
-            int nRel = seqFORRel.countItems();
-            fORList[nf].nRelatedFOR = nRel;
-            fORList[nf].relatedFOR  = new RelatedFrameOfReference[nRel];
+		DicomElement seqFORRel = fOR.get(Tag.FrameOfReferenceRelationshipSequence);
+		if (seqFORRel == null) fORList[nf].nRelatedFOR = 0;
+		else
+		{
+			int nRel = seqFORRel.countItems();
+			fORList[nf].nRelatedFOR = nRel;
+			fORList[nf].relatedFOR  = new RelatedFrameOfReference[nRel];
 
-            for (int i=0; i<nRel; i++)
-            {
-               fORList[nf].relatedFOR[i] = new RelatedFrameOfReference(); 
-               DicomObject relFOR = seqFORRel.getDicomObject(i);
+			for (int i=0; i<nRel; i++)
+			{
+				fORList[nf].relatedFOR[i] = new RelatedFrameOfReference(); 
+				DicomObject relFOR = seqFORRel.getDicomObject(i);
 
-               fORList[nf].relatedFOR[i].UID
-                   = relFOR.getString(Tag.RelatedFrameOfReferenceUID);
+				fORList[nf].relatedFOR[i].UID
+					 = relFOR.getString(Tag.RelatedFrameOfReferenceUID);
 
-               fORList[nf].relatedFOR[i].transformationComment
-                   = relFOR.getString(Tag.FrameOfReferenceTransformationComment);
+				fORList[nf].relatedFOR[i].transformationComment
+					 = relFOR.getString(Tag.FrameOfReferenceTransformationComment);
 
-               fORList[nf].relatedFOR[i].transformationMatrix
-                   = relFOR.getString(Tag.FrameOfReferenceTransformationMatrix);
-            }
-         }
-      }
-      catch (Exception ex)
-      {
-         throw new Exception("Problem reading information on related frames-of-reference.\n"
-                              + ex.getMessage() + "\n");
-      }
+				fORList[nf].relatedFOR[i].transformationMatrix
+					 = relFOR.getString(Tag.FrameOfReferenceTransformationMatrix);
+			}
+		}
    }
    
    
@@ -489,86 +446,86 @@ public class RTStruct extends DataRepresentation implements RtStructWriter
     * @param nf the item number in the DICOM "referenced frame of reference" sequence
     * @param fOR the DICOM object corresponding to item nf in the DICOM
     * "referenced frame of reference" sequence at tag (3006,0010)
-    * @return true if all studies are present, false if not or on error
+    * @param issues ArrayList to which any problems found will be added
     */
-   protected void extractReferencedStudies(int nf, DicomObject fOR)
-                  throws Exception
-   { 
-      try
-      {
-         // There is a separate DICOM sequence for each study. This caters with
-         // the situation, for example, where some outlining is done on CT and
-         // some on MRI.
-         DicomElement seqRtRefStudies = fOR.get(Tag.RTReferencedStudySequence);
-         if (seqRtRefStudies == null)
-            throw new Exception("Input does not contain required information about the"
-                            + " studies on which the regions-of-interest were drawn.\n\n");
-         
-         int nst = seqRtRefStudies.countItems();
-         fORList[nf].nStudies = nst;
-         fORList[nf].studies  = new RTReferencedStudy[nst];
-         
-         for (int i=0; i<nst; i++)
-         {
-            fORList[nf].studies[i] = new RTReferencedStudy();
-            DicomObject refStudy   = seqRtRefStudies.getDicomObject(i);
-            
-            String UID = refStudy.getString(Tag.ReferencedSOPInstanceUID);
-            fORList[nf].studies[i].SOPInstanceUID = UID;
-            studyUIDs.add(UID);
-            
-            DicomElement seqRefSeries = refStudy.get(Tag.RTReferencedSeriesSequence);
-            if (seqRefSeries == null)
-               throw new Exception("Input does not contain required information about"
-                               + " the series on which the regions-of-interest were drawn.\n\n");
+   protected void extractReferencedStudies(int nf, DicomObject fOR,
+			                                              ArrayList<String> issues)
+   {
+		// There is a separate DICOM sequence for each study. This caters with
+		// the situation, for example, where some outlining is done on CT and
+		// some on MRI.
+		DicomElement seqRtRefStudies = fOR.get(Tag.RTReferencedStudySequence);
+		if (seqRtRefStudies == null)
+		{
+			issues.add("Input does not contain required information about the"
+						  + " studies on which the regions-of-interest were drawn.");
+			return;
+		}
+		
+		int nst = seqRtRefStudies.countItems();
+		fORList[nf].nStudies = nst;
+		fORList[nf].studies  = new RTReferencedStudy[nst];
 
-            
-            int nse = seqRefSeries.countItems();
-            fORList[nf].studies[i].nSeries = nse;
-            fORList[nf].studies[i].series  = new RTReferencedSeries[nse];
-            
-            for (int j=0; j<nse; j++)
-            {
-               fORList[nf].studies[i].series[j] = new RTReferencedSeries();
-               DicomObject refSeries            = seqRefSeries.getDicomObject(j); 
-  
-               UID = refSeries.getString(Tag.SeriesInstanceUID);
-               fORList[nf].studies[i].series[j].UID = UID;
-               seriesUIDs.add(UID);
-               
-               DicomElement seqContourImage = refSeries.get(Tag.ContourImageSequence);
-               if (seqContourImage == null)
-                  throw new Exception("Input does not contain required information about "
-                                  + " the images on which the regions-of-interest were drawn.\n\n");
-               
-               int ni = seqContourImage.countItems();
-               fORList[nf].studies[i].series[j].nImages   = ni;
-               fORList[nf].studies[i].series[j].imageList = new ContourImage[ni];
-               
-               for (int k=0; k<ni; k++)
-               {
-                  fORList[nf].studies[i].series[j].imageList[k] = new ContourImage();
-                  DicomObject contourImage = seqContourImage.getDicomObject(k);
-                  
-                  UID = contourImage.getString(Tag.ReferencedSOPInstanceUID);
-                  fORList[nf].studies[i].series[j].imageList[k].SOPInstanceUID = UID;
-                  
-                  String SOPClassUID = contourImage.getString(Tag.ReferencedSOPClassUID); 
-                  fORList[nf].studies[i].series[j].imageList[k].SOPClassUID = SOPClassUID;
-                  
-                  SOPInstanceUIDs.add(UID);                
-               }  
-            }       
-         }         
-      }      
-      catch (Exception ex)
-      {
-         throw new Exception("Problem reading information on referenced DICOM studies,"
-                         + "series and images from input"
-                         + ".\n" + ex.getMessage() + "\n\n");
-      }
+		for (int i=0; i<nst; i++)
+		{
+			fORList[nf].studies[i] = new RTReferencedStudy();
+			DicomObject refStudy   = seqRtRefStudies.getDicomObject(i);
 
-   }
+			String UID = refStudy.getString(Tag.ReferencedSOPInstanceUID);
+			fORList[nf].studies[i].SOPInstanceUID = UID;
+			studyUIDs.add(UID);
+
+			DicomElement seqRefSeries = refStudy.get(Tag.RTReferencedSeriesSequence);
+			if (seqRefSeries == null)
+			{
+				issues.add("Input does not contain required information about"
+							  + " the series on which the regions-of-interest were drawn.");
+				return;
+			}
+
+			int nse = seqRefSeries.countItems();
+			fORList[nf].studies[i].nSeries = nse;
+			fORList[nf].studies[i].series  = new RTReferencedSeries[nse];
+
+			for (int j=0; j<nse; j++)
+			{
+				fORList[nf].studies[i].series[j] = new RTReferencedSeries();
+				DicomObject refSeries            = seqRefSeries.getDicomObject(j); 
+
+				UID = refSeries.getString(Tag.SeriesInstanceUID);
+				fORList[nf].studies[i].series[j].UID = UID;
+				seriesUIDs.add(UID);
+
+				DicomElement seqContourImage = refSeries.get(Tag.ContourImageSequence);
+				if (seqContourImage == null)
+				{
+					issues.add("Input does not contain required information about "
+									 + " the images on which the regions-of-interest were drawn.\n\n");
+					return;
+				}
+					
+					
+				int ni = seqContourImage.countItems();
+				fORList[nf].studies[i].series[j].nImages   = ni;
+				fORList[nf].studies[i].series[j].imageList = new ContourImage[ni];
+
+				for (int k=0; k<ni; k++)
+				{
+					fORList[nf].studies[i].series[j].imageList[k] = new ContourImage();
+					DicomObject contourImage = seqContourImage.getDicomObject(k);
+
+					UID = contourImage.getString(Tag.ReferencedSOPInstanceUID);
+					fORList[nf].studies[i].series[j].imageList[k].SOPInstanceUID = UID;
+
+					String SOPClassUID = contourImage.getString(Tag.ReferencedSOPClassUID); 
+					fORList[nf].studies[i].series[j].imageList[k].SOPClassUID = SOPClassUID;
+
+					SOPInstanceUIDs.add(UID);                
+				}  
+			}       
+		}         
+	}      
+
 
    
    
@@ -577,8 +534,7 @@ public class RTStruct extends DataRepresentation implements RtStructWriter
     * loaded into the XNAT database.
     * @return true if all studies are present, false if not or on error. 
     */
-   protected void dependenciesInDatabase(XNATProfile xnprf)
-                  throws XNATException, Exception   
+   protected void dependenciesInDatabase(XNATProfile xnprf, ArrayList<String> issues)
    {
       /* This operation is complicated by the facts that:
          - a structure set can reference more than one DICOM study;
@@ -597,7 +553,7 @@ public class RTStruct extends DataRepresentation implements RtStructWriter
          parts:
          
          1. We assume that the project has already been specified, so that we
-            can avoid searching through the entire basis. We find all the
+            can avoid searching through the entire database. We find all the
             information we can about matching DICOM sessions already uploaded
             within that project, and then work out how to populate the subject
             and sessions possibilities for disambiguation. If there is no
@@ -610,20 +566,14 @@ public class RTStruct extends DataRepresentation implements RtStructWriter
             determine whether all the individual scans required are present in
             the database.
       */
-      
-      try
-      {
-         // We need to generate this information only once.
-         if (ambiguousSubjExp.size() == 0) checkForSubjectSessionAmbiguities();
-         checkForScansInDatabase();
-      }
-      catch (XNATException exXNAT)
-      {
-         throw exXNAT;
-      }
+ 
+      // We need to generate this information only once.
+      if (ambiguousSubjExp.size() == 0) checkForSubjectSessionAmbiguities(issues);
+      checkForScansInDatabase(issues);
    }
+	
    
-   protected void checkForSubjectSessionAmbiguities() throws Exception
+   protected void checkForSubjectSessionAmbiguities(ArrayList<String> issues)
    {
       // The project has already been specified in the UI. In the current
       // incarnation, this comes about by uploading to a profile that consists
@@ -649,22 +599,25 @@ public class RTStruct extends DataRepresentation implements RtStructWriter
       }
       catch (XNATException exXNAT)
       {
-         throw exXNAT;
+         issues.add("Problem checking for subject and session ambiguities: "
+					     + exXNAT.getMessage());
+			return;
       }
       
-      // Check that the DICOM studies from the uploaded RT-STRUCT file present
+      // Check that the DICOM studies from the uploaded RT-STRUCT file are present
       // in the database and add the relevant XNAT experiment and subject IDs
       // to the lists for disambiguation.
       for (int i=0; i<studyUIDs.size(); i++)
       {
          if (!result.columnContains(1, studyUIDs.get(i)))
-            throw new XNATException(XNATException.DATA_NOT_PRESENT,
-                           "The DICOM study with UID " + studyUIDs.get(i) + "\n"
+			{
+            issues.add("The DICOM study with UID " + studyUIDs.get(i) + "\n"
                             + " is referenced by the file you are loading,"
                             + " but it is not yet in the database.\n"
                             + "Please ensure that all files on which this"
                             + " structure set is dependent are already loaded into XNAT.");
-            
+            return;
+			}
             
          for (int j=0; j<result.size(); j++)
          {
@@ -685,9 +638,11 @@ public class RTStruct extends DataRepresentation implements RtStructWriter
                   parseResult = XMLUtilities.getAttribute(resultDoc, XNATns, "xnat:Subject", "label");
                   subjLabel   = parseResult[0];
                }
-               catch (Exception ex)
+               catch (XMLException | XNATException ex)
                {
-                  throw ex;
+                  issues.add("Problem retrieving the subject label for subject ID" + subjID
+								     + ": " + ex.getMessage());
+						return;
                }
                
                if (!ambiguousSubjExp.containsKey(subjID))
@@ -710,7 +665,7 @@ public class RTStruct extends DataRepresentation implements RtStructWriter
    }
    
    
-   public void checkForScansInDatabase() throws Exception
+   public void checkForScansInDatabase(ArrayList<String> issues)
    {      
       String                RESTCommand;
       XNATRESTToolkit       xnrt = new XNATRESTToolkit(xnprf);
@@ -731,9 +686,11 @@ public class RTStruct extends DataRepresentation implements RtStructWriter
          parseResult = XMLUtilities.getAttributes(resultDoc, XNATns, "xnat:scan",
                                              new String[] {"ID", "UID"});
       }
-      catch (Exception ex)
+      catch (XMLException | XNATException ex)
       {
-         throw ex;
+         issues.add("Problem retrieving experiment list for subject " + XNATSubjectID
+					     + ": " + ex.getMessage());
+			return;
       }
       
       // Now process all the seriesUIDs found when passing the input DICOM file. 
@@ -754,12 +711,15 @@ public class RTStruct extends DataRepresentation implements RtStructWriter
             }
          }
       
-         if (!present) throw new XNATException(XNATException.DATA_NOT_PRESENT,
-                            "The DICOM series with UID " + studyUIDs.get(i) + "\n"
-                            + " is referenced by the file you are loading,"
-                            + " but it is not yet in the database.\n"
-                            + "Please ensure that all files on which this"
-                            + "structure set is dependent are already loaded into XNAT.\n'n");
+         if (!present)
+			{
+				issues.add("The DICOM series with UID " + studyUIDs.get(i) + "\n"
+                           + " is referenced by the file you are loading,"
+                           + " but it is not yet in the database.\n"
+                           + "Please ensure that all files on which this"
+                           + "structure set is dependent are already loaded into XNAT.");
+				return;
+			}
       }
       
       // We need a list of the actual data files in the repository
@@ -783,17 +743,22 @@ public class RTStruct extends DataRepresentation implements RtStructWriter
             parseResult = XMLUtilities.getAttributes(resultDoc, XNATns, "cat:entry",
                                                      new String[] {"URI", "UID"});
          }
-         catch(XNATException exXNAT)
+         catch(XNATException | XMLException ex)
          {
-            throw exXNAT;
+            issues.add("Problem finding correct image data files in the repository for subject "
+				           + XNATSubjectID + ": " + ex.getMessage());
+				return;
          }
          
          // Cater for the obscure case where parseResult comes back null. This
          // happened to me after I had (manually) screwed up the data repository.
-         if (parseResult == null) throw new XNATException(XNATException.DATA_INCONSISTENT,
-                            "There are no relevant DICOM image files. This might be an"
-                            + " inconsistent condition in the repository and be"
-                            + " worth investigating further.");
+         if (parseResult == null)
+			{
+				issues.add("There are no relevant DICOM image files. This might be an \n"
+                        + " inconsistent condition in the repository. Please contact \n"
+                        + " the system administrator.");
+				return;
+			}
 
          for (int j=0; j<parseResult.length; j++)
          {
@@ -822,9 +787,9 @@ public class RTStruct extends DataRepresentation implements RtStructWriter
          s = XMLUtilities.getElementText(resultDoc, XNATns, "xnat:dob");
          if (s != null) XNATDateOfBirth = s[0];      
       }
-      catch(XNATException exXNAT)
+      catch(XNATException | XMLException ex)
       {
-         throw exXNAT;
+         issues.add("Problems retrieving demographic information.");
       }
  
    }

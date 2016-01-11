@@ -129,7 +129,7 @@ public class RTStructureSetUploader extends QCAssessmentDataUploader
    {  
 		try
       {
-         rts                  = RTStruct.getInstanceFromDICOM(bdo, xnprf);
+         rts                  = new RTStruct(bdo, xnprf);
          rts.version          = version;
          date                 = rts.convertToXNATDate(rts.structureSetDate);
          time                 = rts.convertToXNATTime(rts.structureSetTime);
