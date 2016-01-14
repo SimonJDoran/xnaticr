@@ -41,99 +41,14 @@
 * Data structure parallelling the xnat:investigator element
 *********************************************************************/
 
-package xnatUploader;
+package xnatMetadataCreators;
 
 import java.util.ArrayList;
-
-/**
- *
- * @author Simon J Doran
- *
- * Java class: InvestigatorList.java
- * Data structure parallelling the xnat:investigator element
- *
- * First created on Nov 15, 2010 at 10:11:17 AM
- *
- */
-
+import java.util.List;
 
 public class InvestigatorList
 {
-
-   private Investigator[] invList;
-   private int chosenInvestigator;
-
-   public InvestigatorList(String[] titles,
-                           String[] firstNames,
-                           String[] lastNames,
-                           String[] institutions,
-                           String[] departments,
-                           String[] emails,
-                           String[] phoneNumbers)
-   {
-      // It is possible that the project has no investigators defined.
-      if (titles == null)
-      {
-         invList    = new Investigator[1];
-         invList[0] = new Investigator("",
-                                       "No project investigators specified",
-                                       "", "", "", "", "");
-      }
-      else
-      {
-         // It is a programming error if not all the arguments have the same
-         // length, so no error checking is needed here - just allow it to fail.
-         invList = new Investigator[titles.length];
-         for (int i=0; i<titles.length; i++)
-            invList[i] = new Investigator(titles[i],
-                                          firstNames[i],
-                                          lastNames[i],
-                                          institutions[i],
-                                          departments[i],
-                                          emails[i],
-                                          phoneNumbers[i]);
-      }
-      
-      // Start off with the default investigator being the first in the list.
-      chosenInvestigator = 0;
-   }
-   
-   
-   public void setInvestigatorNumber(int n)
-   {
-      chosenInvestigator = n;
-   }
-   
-   
-   public int getInvestigatorNumber()
-   {
-      return chosenInvestigator;
-   }
-   
-   
-   public Investigator getChosenInvestigator()
-   {
-      return invList[chosenInvestigator];
-   }
-   
-   
-   public Investigator getInvestigator(int n)
-   {
-      return invList[n];
-   }
-   
-   
-   public ArrayList<String> getFormattedList()
-   {
-      ArrayList<String> list = new ArrayList<String>();
-      for (int i=0; i<invList.length; i++)
-         list.add(new String(invList[i].firstName + " " + invList[i].lastName));
-      
-      return list;
-   }
-   
-   
-   public class Investigator
+	public class Investigator
    {
       public String title;
       public String firstName;
@@ -159,5 +74,76 @@ public class InvestigatorList
          this.email       = email;
          this.phoneNumber = phoneNumber;
       }
+   }
+		
+   private List<Investigator> invList;
+   private int chosenInvestigator;
+
+   public InvestigatorList(String[] titles,
+                           String[] firstNames,
+                           String[] lastNames,
+                           String[] institutions,
+                           String[] departments,
+                           String[] emails,
+                           String[] phoneNumbers)
+   {
+      // It is possible that the project has no investigators defined.
+      if (titles == null)
+      {
+         invList = new ArrayList<>();
+         invList.add(new Investigator("",
+                                      "No project investigators specified",
+                                      "", "", "", "", ""));
+      }
+      else
+      {
+         // It is a programming error if not all the arguments have the same
+         // length, so no error checking is needed here - just allow it to fail.
+         invList = new ArrayList<>();
+         for (int i=0; i<titles.length; i++)
+            invList.add(new Investigator(titles[i],
+                                          firstNames[i],
+                                          lastNames[i],
+                                          institutions[i],
+                                          departments[i],
+                                          emails[i],
+                                          phoneNumbers[i]));
+      }
+      
+      // Start off with the default investigator being the first in the list.
+      chosenInvestigator = 0;
+   }
+   
+   
+   public void setInvestigatorNumber(int n)
+   {
+      chosenInvestigator = n;
+   }
+   
+   
+   public int getInvestigatorNumber()
+   {
+      return chosenInvestigator;
+   }
+   
+   
+   public Investigator getChosenInvestigator()
+   {
+      return invList.get(chosenInvestigator);
+   }
+   
+   
+   public Investigator getInvestigator(int n)
+   {
+      return invList.get(n);
+   }
+   
+   
+   public List<String> getFullNames()
+   {
+      List<String> list = new ArrayList<>();
+		for (Investigator inv : invList) list.add(inv.firstName + " " + inv.lastName);
+      
+      return list;
    }
 }

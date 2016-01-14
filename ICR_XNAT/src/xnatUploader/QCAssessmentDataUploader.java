@@ -44,6 +44,7 @@
 
 package xnatUploader;
 
+import xnatMetadataCreators.InvestigatorList;
 import com.generationjava.io.xml.SimpleXmlWriter;
 import exceptions.XMLException;
 import java.io.*;
@@ -57,12 +58,11 @@ import xnatDAO.XNATProfile;
 
 
 public abstract class QCAssessmentDataUploader extends DataUploader
-{
-   static Logger logger = Logger.getLogger(DataUploader.class);
-   
+{  
    public QCAssessmentDataUploader(XNATProfile xnprf)
    {
       super(xnprf);
+		logger = Logger.getLogger(DataUploader.class);
    }
    
    

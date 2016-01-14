@@ -1,5 +1,96 @@
 /********************************************************************
-* Copyright (c) 2012, Institute of Cancer Research
+* Copyright (c) 2015, Institute of Cancer Research
+* All rights reserved.
+* 
+* Redistribution and use in source and binary forms, with or without
+* modification, are permitted provided that the following conditions
+* are met:
+* 
+* (1) Redistributions of source code must retain the above copyright
+*     notice, this list of conditions and the following disclaimer.
+* 
+* (2) Redistributions in binary form must reproduce the above
+*     copyright notice, this list of conditions and the following
+*     disclaimer in the documentation and/or other materials provided
+*     with the distribution.
+* 
+* (3) Neither the name of the Institute of Cancer Research nor the
+*     names of its contributors may be used to endorse or promote
+*     products derived from this software without specific prior
+*     written permission.
+* 
+* THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+* "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+* LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
+* FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+* COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT,
+* INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+* (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+* SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+* HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
+* STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+* ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
+* OF THE POSSIBILITY OF SUCH DAMAGE.
+*********************************************************************/
+
+/********************************************************************
+* @author Simon J Doran
+* Java class: ROISet.java
+* First created on Jan 12, 2016 at 5:44:23 PM
+*
+* Creation and upload of an XNAT roiSet. This is an integral part of
+* the XNAT Uploader framework, but this is not a subclass of
+* DataUploader, because the roiSet is an internal XNAT construct, not
+* an external thing to be uploaded.
+* 
+* When an external file containing a region-of-interest (e.g., an
+* RT-STRUCT file) is uploaded, an icr:roiSetData XML file
+* (potentially detailing many individual ROIs) is created and uploaded
+* to the XNAT PostgreSQL database. At the same structureSetTime a
+* separate icr:roiData XML file is uploaded to XNAT for each individual
+* ROI. Note that, as all the ROI contour data are contained within the
+* RTSTRUCT file, no additional file needs to be opened, parsed or
+* uploaded to the repository for the individual ROIs. There is thus
+* no need to configure the GUI interface. As a result, many of the
+* methods that formally require implementation are never used
+* and so are just empty.
+*********************************************************************/
+
+package dataRepresentations;
+
+import dataRepresentations.RTStruct;
+import dataRepresentations.RtStructWriter;
+import exceptions.DataFormatException;
+import exceptions.XNATException;
+import generalUtilities.UIDGenerator;
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.Set;
+import org.apache.log4j.Logger;
+import org.dcm4che2.data.BasicDicomObject;
+import org.dcm4che2.data.DicomObject;
+import org.dcm4che2.data.Tag;
+import org.dcm4che2.io.DicomInputStream;
+import org.dcm4che2.io.DicomOutputStream;
+import org.w3c.dom.Document;
+import xnatDAO.XNATGUI;
+import xnatDAO.XNATProfile;
+import xnatUploader.DataUploader;
+import xnatUploader.MetadataPanel;
+import xnatUploader.QCAssessmentDataUploader;
+
+public class ROISet
+{
+
+}
+/********************************************************************
+* Copyright (c) 2015, Institute of Cancer Research
 * All rights reserved.
 * 
 * Redistribution and use in source and binary forms, with or without
@@ -44,8 +135,6 @@
 
 package xnatUploader;
 
-import dataRepresentations.RTStructureSetUploader;
-import dataRepresentations.ROI;
 import java.util.ArrayList;
 import org.dcm4che2.data.BasicDicomObject;
 import org.dcm4che2.data.DicomObject;
@@ -283,7 +372,7 @@ public class RTStructureSetUploader extends QCAssessmentDataUploader
       // ROI's to be uploaded.
       // N.B. The only reason for instantiating the following uploader is to
       // access the method ru.getRootElement() below.
-      ROI ru = new ROI(xnprf);     
+      ROIUploader ru = new ROIUploader(xnprf);     
       for (int i=0; i<rts.roiList.length; i++)
       {
          rts.roiList[i].roiXNATID = ru.getRootElement()
@@ -353,7 +442,7 @@ public class RTStructureSetUploader extends QCAssessmentDataUploader
 		
       for (int i=0; i<rts.roiList.length; i++)
       {
-         ru = new ROI(rts, i, labelPrefix, uploadStructure);
+         ru = new ROIUploader(rts, i, labelPrefix, uploadStructure);
          try
          {
             ru.XNATAccessionID = rts.roiList[i].roiXNATID;
@@ -394,7 +483,7 @@ public class RTStructureSetUploader extends QCAssessmentDataUploader
 	@Override
 	public void createPrimaryResourceFile()
 	{
-		primaryFile					= new XNATResourceFile();
+		primaryFile					= new DataUploader.XNATResourceFile();
 		primaryFile.content		= "EXTERNAL";
 		primaryFile.description	= "DICOM RT-STRUCT file created in an external application";
 		primaryFile.format		= "DICOM";

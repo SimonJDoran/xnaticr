@@ -44,6 +44,7 @@
 
 package xnatUploader;
 
+import xnatMetadataCreators.InvestigatorList;
 import exceptions.XNATException;
 import generalUtilities.UIDGenerator;
 import generalUtilities.Vector2D;
@@ -71,12 +72,12 @@ import xnatDAO.XNATProfile;
 import xnatRestToolkit.XNATNamespaceContext;
 import xnatRestToolkit.XNATRESTToolkit;
 import xnatRestToolkit.XNATServerConnection;
-import xnatUploader.InvestigatorList.Investigator;
+import xnatMetadataCreators.InvestigatorList.Investigator;
 
 
 public abstract class DataUploader
 {
-	static    Logger                        logger = Logger.getLogger(DataUploader.class);
+	static  Logger logger = Logger.getLogger(MRIWDataUploader.class);
 	
 	public class XNATResourceFile
 	{
@@ -589,7 +590,7 @@ public abstract class DataUploader
    {
       // Some tasks are common for many types of upload.
       InvestigatorList xninv = getXNATInvestigators();
-      mdsp.populateJComboBox("Investigators", xninv.getFormattedList());
+      mdsp.populateJComboBox("Investigators", xninv.getFullNames());
            
       ArrayList<String> subjLabels = new ArrayList<String>();
       int i=0;

@@ -70,7 +70,7 @@ import xnatDAO.XNATProfile;
 import xnatRestToolkit.XNATNamespaceContext;
 import xnatRestToolkit.XNATRESTToolkit;
 
-public class MRIWOutput extends DataRepresentation implements RtStructWriter
+public final class MRIWOutput extends DataRepresentation implements RtStructWriter
 {
    static  Logger logger = Logger.getLogger(MRIWOutput.class);
    
@@ -270,57 +270,35 @@ public class MRIWOutput extends DataRepresentation implements RtStructWriter
    
    
    /**
-    * This constructor is private, because the public creation of these objects
-    * occurs via a call to MRIOutput.getInstanceFromXML.
+    * Public creator from an MRI file source.
+	 * Parse the MRIW_RECORD ResultSet or Batch file and place the results in
+	 * the object's structure.
+	 * Note that This implementation is currently incomplete because of lack
+	 * of appropriate examples of some of the tags.
+    * @param MRIWDoc an XML Document, whose contents represent a valid MRIW output
+    * @param xnprf an XNAT profile, already connected to an XNAT database, which
+    * we can use to query the databases for image dependencies.
+	 * @throws exceptions.DataFormatException
+	 * @throws exceptions.XMLException
+	 * @throws exceptions.XNATException
     */
-   private MRIWOutput()
+   public MRIWOutput(Document MRIWDoc, XNATProfile xnprf)
+                            throws DataFormatException, XMLException, XNATException
    {
+		this.doc   = MRIWDoc;
+      this.xnprf = xnprf;
+		
       prov = new MRIWProvenance();
       inp  = new MRIWInput();
       con  = new MRIWControl();
       res  = new MRIWResults();
       
-      inp.dynFilenames          = new ArrayList<String>();
-      inp.dynSOPInstanceUIDs    = new ArrayList<String>();
-      inp.dynSeriesInstanceUIDs = new ArrayList<String>();
-      fileSOPMap                = new TreeMap<String, String>();
-      fileScanMap               = new TreeMap<String, String>();
-      XNATns                    = new XNATNamespaceContext();      
-   }
-   
-   
-   /**
-    * Public creator from an MRI file source.
-    * @param inputFile a File, whose contents represent a valid MRI output
-    * @param xnprf an XNAT profile, already connected to an XNAT database, which
-    * we can use to query the databases for image dependencies.
-    * @return an MRIOutput instance populated from the inputFile
-    */
-   public static MRIWOutput getInstanceFromXML(Document MRIWDoc, XNATProfile xnprf)
-                            throws DataFormatException, XMLException, XNATException
-   {
-      MRIWOutput mriw = new MRIWOutput();
-      mriw.populateFromXML(MRIWDoc, xnprf);
-     
-      return mriw;
-   }
-   
-   
-   /**
-    * Parse the MRIW_RECORD ResultSet or Batch file and place the results in the
- object's structure. Note that This implementation is currently incomplete
-    * because of lack of appropriate examples of some of the tags.
-    * @param MRIWDoc
-    * @param xnprf
-    * @throws DataFormatException
-    * @throws XMLException 
-    */
-   protected void populateFromXML(Document MRIWDoc, XNATProfile xnprf)
-                  throws DataFormatException, XMLException, XNATException
-   {
-      this.doc   = MRIWDoc;
-      this.xnprf = xnprf;
-      
+      inp.dynFilenames          = new ArrayList<>();
+      inp.dynSOPInstanceUIDs    = new ArrayList<>();
+      inp.dynSeriesInstanceUIDs = new ArrayList<>();
+      fileSOPMap                = new TreeMap<>();
+      fileScanMap               = new TreeMap<>();
+      XNATns                    = new XNATNamespaceContext();            
       
       try
       {      
@@ -409,7 +387,7 @@ public class MRIWOutput extends DataRepresentation implements RtStructWriter
             if (encoding.equals("csv"))    res.converterOutputEndcoding = CSV;
             if (encoding.equals("base64")) res.converterOutputEndcoding = BASE64;
             
-            res.converterOutputData = getDataRecordsForElement("converter-output",
+            res.converterOutputData       = getDataRecordsForElement("converter-output",
                                                   res.converterOutputEndcoding); 
          }
     
@@ -450,16 +428,12 @@ public class MRIWOutput extends DataRepresentation implements RtStructWriter
          // (sliceLocation and frameOfReferenceUID).
          getDICOMParameters();
       }
-      catch (XNATException exXNAT)
+      catch (XNATException | XMLException ex)
       {
-         logger.error(exXNAT.getMessage());
-         throw exXNAT;
+         logger.error(ex.getMessage());
+         throw ex;
       }
-      catch (XMLException exXML)
-      {
-         logger.error(exXML.getMessage());
-         throw exXML;
-      }
+      
       catch (DataFormatException exDF)
       {
          logger.warn("Encountered the following data format error\n"
@@ -512,7 +486,7 @@ public class MRIWOutput extends DataRepresentation implements RtStructWriter
       }
  
       
-      HashSet<String> absentStudies = new HashSet<String>();
+      HashSet<String> absentStudies = new HashSet<>();
       if (!result.columnContains(1, inp.dynStudyUID)) absentStudies.add(inp.dynStudyUID);
       
       // Note that inp.refStudyUID is an optional field coming out of MRIW_RECORD.
@@ -526,8 +500,7 @@ public class MRIWOutput extends DataRepresentation implements RtStructWriter
          String isare = (absentStudies.size() == 1) ? "is" : "are";
          
          String msg   = "The patient " + st + " with DICOM " + UID + "\n";
-         for (String s : absentStudies)
-            msg += s + "\n";
+         for (String s : absentStudies) msg += s + "\n";
          msg += "associated with this MRIW Output " + isare + " absent\n"
                 + "from from project " + XNATProjectID + " in the chosen XNAT database."
                 + "\n(profile " + xnprf.getProfileName()
@@ -603,11 +576,11 @@ public class MRIWOutput extends DataRepresentation implements RtStructWriter
                  
       // Iterate only over unique series, so that we repeat the various
       // checks only as often as we need to.
-      HashSet<String> uniqueSeries = new HashSet<String>();
+      HashSet<String> uniqueSeries = new HashSet<>();
       for (String s : inp.dynSeriesInstanceUIDs) uniqueSeries.add(s);
       
-      HashSet<String> absentSeries = new HashSet<String>();
-      XNATScanID = new ArrayList<String>();
+      HashSet<String> absentSeries = new HashSet<>();
+      XNATScanID = new ArrayList<>();
       
       for (String series : uniqueSeries)
       {
@@ -702,9 +675,11 @@ public class MRIWOutput extends DataRepresentation implements RtStructWriter
          for (int j=0; j<parseResult.length; j++)
          {
             if (inp.dynSOPInstanceUIDs.contains(parseResult[j][1]) ||
-                inp.refSOPInstanceUID.equals(parseResult[j][1]))
+                           inp.refSOPInstanceUID.equals(parseResult[j][1]))
+				{
                fileSOPMap.put(parseResult[j][1], parseResult[j][0]);
                fileScanMap.put(parseResult[j][1], XNATScanID.get(i));
+				}
          }
       }
       
@@ -734,8 +709,14 @@ public class MRIWOutput extends DataRepresentation implements RtStructWriter
    }
    
    
-   
-   public DicomObject createDICOM() throws Exception
+   /**
+	 * Create a DICOM RT-STRUCT file using the region-of-interest contained
+	 * within the MRIWOutput file.
+	 * @return
+	 * @throws Exception 
+	 */
+	@Override
+	public DicomObject createDICOM() throws Exception
    {
       DicomObject odo = new BasicDicomObject();
       

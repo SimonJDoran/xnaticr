@@ -53,10 +53,9 @@ package xnatUploader;
  * First created on Nov 15, 2010 at 3:00:38 PM
  *
  */
-import com.generationjava.io.xml.SimpleXmlWriter;
+import dataRepresentations.RTStructureSetUploader;
 import dataRepresentations.ContourRenderer;
 import dataRepresentations.MRIWOutput;
-import dataRepresentations.RTStruct;
 import exceptions.DataFormatException;
 import exceptions.XMLException;
 import exceptions.XNATException;
@@ -73,20 +72,19 @@ import org.dcm4che2.data.DicomObject;
 import org.dcm4che2.data.TransferSyntax;
 import org.dcm4che2.io.DicomOutputStream;
 import org.w3c.dom.Document;
-import xmlUtilities.DelayedPrettyPrinterXmlWriter;
 import xnatDAO.XNATGUI;
 import xnatDAO.XNATProfile;
 
 
 public class MRIWDataUploader extends QCAssessmentDataUploader
 {
-   static  Logger                        logger = Logger.getLogger(MRIWDataUploader.class);
    private MRIWOutput                    mriw;
    private LinkedHashMap<String, String> simpleEntries;
 
    public MRIWDataUploader(XNATProfile xnprf)
    {
       super(xnprf);
+		logger = Logger.getLogger(MRIWDataUploader.class);
       
       // "Simple" in the sense that no special processing needs to be performed
       // to set these in the user interface once their values are available. I'm
@@ -127,7 +125,7 @@ public class MRIWDataUploader extends QCAssessmentDataUploader
    {     
       try
       {
-         mriw = MRIWOutput.getInstanceFromXML(doc, xnprf);
+         mriw = new MRIWOutput(doc, xnprf);
          
          date = DicomXnatDateTime.convertMriwToXnatDate(mriw.prov.creationDateTime);
          time = DicomXnatDateTime.convertMriwToXnatTime(mriw.prov.creationDateTime);

@@ -45,7 +45,7 @@
 * not xnat:mrAssessor, as in the case of xnat:QCimageAssessmentData.
 *********************************************************************/
 
-package xnatUploader;
+package xnatMetadataCreators;
 
 import com.generationjava.io.xml.SimpleXmlWriter;
 import exceptions.XMLException;
@@ -62,13 +62,14 @@ import org.w3c.dom.Document;
 import xmlUtilities.DelayedPrettyPrinterXmlWriter;
 import xmlUtilities.XMLUtilities;
 import xnatDAO.XNATProfile;
+import xnatUploader.DataUploader;
 
 
-public abstract class GenericImageAssessmentDataUploader extends DataUploader
+public abstract class IcrGenericImageAssessmentDataMDCreator extends XnatDerivedDataMDComplexType
 {
-   static Logger logger = Logger.getLogger(GenericImageAssessmentDataUploader.class);
+   static Logger logger = Logger.getLogger(IcrGenericImageAssessmentDataMDCreator.class);
    
-   public GenericImageAssessmentDataUploader(XNATProfile xnprf)
+   public IcrGenericImageAssessmentDataMDCreator(XNATProfile xnprf)
    {
       super(xnprf);
    }

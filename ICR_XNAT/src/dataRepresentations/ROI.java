@@ -35,13 +35,13 @@
 
 /*********************************************************************
 * @author Simon J Doran
-* Java class: ROIUploader.java
+* Java class: ROI.java
 * First created on Oct 24, 2011 at 2:02:05 PM
 * 
-* Creation and upload of an XNAT roi element. This is an integral part
-* of the XNAT Uploader framework, but this is not a subclass of
-* DataUploader, because the roi is an internal XNAT construct, not
-* an external thing to be uploaded.
+* Representation, creation and upload of an XNAT roi element.
+* This is an integral part of the XNAT Uploader framework, but this
+* is not a subclass of DataUploader, because the roi is an internal
+* XNAT construct, not an external thing to be uploaded.
 * 
 * When an external file containing a region-of-interest (e.g., an
 * RT-STRUCT file) is uploaded, an icr:roiSetData XML file
@@ -84,7 +84,7 @@ import xnatDAO.XNATProfile;
 import xnatRestToolkit.XNATRESTToolkit;
 import xnatUploader.MetadataPanel;
 import xnatUploader.UploadStructure;
-import static xnatUploader.RTStructureSetUploader.logger;
+import static dataRepresentations.RTStructureSetUploader.logger;
 
 
 public class ROI
@@ -98,20 +98,13 @@ public class ROI
 	protected ArrayList<String>				seriesUIDs;      
    protected ArrayList<String>				SOPInstanceUIDs;
    
-   /**
-    * Constructor for the ROIUploader. Note that the XNAT profile
-    * xnprf is not used here, but needed in the abstract class DataUploader.
-    * @param xnprf 
-    */
-   public ROI(XNATProfile xnprf)
-   {
-      super(xnprf);
-   }
+   
    
    
    /**
-    * This constructor signature caters for the situation in which the ROI
-    * to be uploaded has already been parsed by RTStructureSetUploader.
+    * This constructor signature caters for the situation in which the
+	 * region-of-interest to be uploaded originally derives from an RT-STRUCT
+	 * file and has already been parsed by RTStructureSetUploader.
     * @param xnprf XNATProfile, as required by the parent class constructor
     * @param rts RTStruct that has already parsed the ROI data
     * @param roiPos integer corresponding to position of the required ROI
@@ -124,7 +117,6 @@ public class ROI
                       UploadStructure uls)
           throws Exception
    {
-      super(rts.xnprf);
       this.rts = rts;
       
       // Most of the metadata are simply subsets of what has already been
