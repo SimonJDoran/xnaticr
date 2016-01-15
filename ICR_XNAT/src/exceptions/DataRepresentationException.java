@@ -1,3 +1,4 @@
+
 /********************************************************************
 * Copyright (c) 2015, Institute of Cancer Research
 * All rights reserved.
@@ -35,56 +36,42 @@
 
 /*********************************************************************
 * @author Simon J Doran
-* Java class: DataFormatException.java
-* First created on Dec 8, 2015 at 4:03:53 PM
+* Java class: DataRepresentationException.java
+* First created on Jan 12, 2016 at 10:09:58 AM
 * 
-* Exception that allows the additional specification of a return code
-* and explicitly enumerates the possible reasons for exceptions to be
-* generated.
+* Exception produced when it is not possible to create an instance
+* of the given data representation from the supplied data.
 *********************************************************************/
 
 package exceptions;
 
+import static exceptions.CodedException.CODE_NOT_FOUND;
 import org.apache.log4j.Logger;
 import java.util.HashMap;
 import java.util.Map;
 
 
-public class DataFormatException extends CodedException
+public class DataRepresentationException extends CodedException
 {
-	public static final int DATE         = 0;
-   public static final int TIME         = 1;
-	public static final int AIM          = 2;
-	public static final int TRUE_FALSE   = 3;
-	public static final int MRIW_RECORD  = 4;
-	public static final int MRIW_GENERAL = 5;
-	public static final int MRIW_MAP     = 6;
-	public static final int RTSTRUCT     = 7;
-	
+	public static final int RTSTRUCT = 0;
+
 	private static final HashMap<Integer, String> messages;
 	static Logger logger = Logger.getLogger(XNATException.class);
 	
 	static
 	{
 		messages = new HashMap();
-	   messages.put(DATE,         "Unexpected format for date");
-		messages.put(TIME,         "Unexpected format for time");
-		messages.put(AIM,          "Unexpected format for Annotation and Image Markup (AIM) instance file");
-		messages.put(TRUE_FALSE,   "Not a dichotomous true/false value");
-		messages.put(MRIW_RECORD,  "Invalid format for MRIW data-record");
-		messages.put(MRIW_GENERAL, "Not a valid MRIW output: should be either MRIW ResultSet or batch processing file");
-		messages.put(MRIW_MAP,     "Invalid format for MRIW map");
-		messages.put(RTSTRUCT,     "Invalid format for DICOM RT Structure Set file");
+	   messages.put(RTSTRUCT,     "Can't create RT-STRUCT object");
 	};
 
 
-	public DataFormatException(int diagnosticCode)
+	public DataRepresentationException(int diagnosticCode)
 	{
 		this(diagnosticCode, null);
 	}
 
 	
-   public DataFormatException(int diagnosticCode, String upstreamMessage)
+   public DataRepresentationException(int diagnosticCode, String upstreamMessage)
    {
       super(diagnosticCode, upstreamMessage);
    }
@@ -104,3 +91,4 @@ public class DataFormatException extends CodedException
 		return messages.get(code);
 	}
 }
+

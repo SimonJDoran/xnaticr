@@ -74,7 +74,6 @@ import java.util.Map;
 import java.util.zip.DataFormatException;
 import org.dcm4che2.data.DicomObject;
 import xnatDAO.XNATProfile;
-import xnatUploader.RTStructureSetUploader;
 
 public class ContourRenderer
 {

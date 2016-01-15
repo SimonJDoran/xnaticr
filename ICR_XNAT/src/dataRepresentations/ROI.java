@@ -35,15 +35,16 @@
 
 /*********************************************************************
 * @author Simon J Doran
-* Java class: ROIUploader.java
+* Java class: ROI.java
 * First created on Oct 24, 2011 at 2:02:05 PM
 * 
-* Note that ROIUploader is mostly a shell at present, the reason being
-* that all ROIs are currently obtained from DICOM RTSTRUCT files. It is
-* intended that the latter should be the only type of ROI file that is
-* archived in the data repository.
+* Representation, creation and upload of an XNAT roi element.
+* This is an integral part of the XNAT Uploader framework, but this
+* is not a subclass of DataUploader, because the roi is an internal
+* XNAT construct, not an external thing to be uploaded.
 * 
-* When an RTSTRUCT file is uploaded, an icr:roiSetData XML file
+* When an external file containing a region-of-interest (e.g., an
+* RT-STRUCT file) is uploaded, an icr:roiSetData XML file
 * (potentially detailing many individual ROIs) is created and uploaded
 * to the XNAT PostgreSQL database. At the same structureSetTime a
 * separate icr:roiData XML file is uploaded to XNAT for each individual
@@ -55,7 +56,7 @@
 * and so are just empty.
 *********************************************************************/
 
-package xnatUploader;
+package dataRepresentations;
 
 import dataRepresentations.ContourRenderer;
 import com.generationjava.io.xml.SimpleXmlWriter;
@@ -81,10 +82,12 @@ import java.util.Vector;
 import xmlUtilities.DelayedPrettyPrinterXmlWriter;
 import xnatDAO.XNATProfile;
 import xnatRestToolkit.XNATRESTToolkit;
-import static xnatUploader.RTStructureSetUploader.logger;
+import xnatUploader.MetadataPanel;
+import xnatUploader.UploadStructure;
+import static dataRepresentations.RTStructureSetUploader.logger;
 
 
-public class ROIUploader extends QCAssessmentDataUploader
+public class ROI
 {
    protected RTStruct                     rts;
    protected StructureSetROI              ssRoi;
@@ -95,20 +98,13 @@ public class ROIUploader extends QCAssessmentDataUploader
 	protected ArrayList<String>				seriesUIDs;      
    protected ArrayList<String>				SOPInstanceUIDs;
    
-   /**
-    * Constructor for the ROIUploader. Note that the XNAT profile
-    * xnprf is not used here, but needed in the abstract class DataUploader.
-    * @param xnprf 
-    */
-   public ROIUploader(XNATProfile xnprf)
-   {
-      super(xnprf);
-   }
+   
    
    
    /**
-    * This constructor signature caters for the situation in which the ROI
-    * to be uploaded has already been parsed by RTStructureSetUploader.
+    * This constructor signature caters for the situation in which the
+	 * region-of-interest to be uploaded originally derives from an RT-STRUCT
+	 * file and has already been parsed by RTStructureSetUploader.
     * @param xnprf XNATProfile, as required by the parent class constructor
     * @param rts RTStruct that has already parsed the ROI data
     * @param roiPos integer corresponding to position of the required ROI
@@ -117,11 +113,10 @@ public class ROIUploader extends QCAssessmentDataUploader
     *        uploaded data
     * @
     */
-   public ROIUploader(RTStruct rts, int roiPos, String labelPrefix,
+   public ROI(RTStruct rts, int roiPos, String labelPrefix,
                       UploadStructure uls)
           throws Exception
    {
-      super(rts.xnprf);
       this.rts = rts;
       
       // Most of the metadata are simply subsets of what has already been

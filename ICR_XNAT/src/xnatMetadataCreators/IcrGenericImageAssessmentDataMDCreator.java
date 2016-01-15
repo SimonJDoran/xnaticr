@@ -1,5 +1,5 @@
 /********************************************************************
-* Copyright (c) 2012, Institute of Cancer Research
+* Copyright (c) 2015, Institute of Cancer Research
 * All rights reserved.
 * 
 * Redistribution and use in source and binary forms, with or without
@@ -33,21 +33,28 @@
 * OF THE POSSIBILITY OF SUCH DAMAGE.
 *********************************************************************/
 
-/*********************************************************************
+/********************************************************************
 * @author Simon J Doran
-* Java class: QCAssessmentDataUploader.java
-* First created on Dec 16, 2010 at 12:56:16 PM
+* Java class: GenericImageAssessmentDataUploader.java
+* First created on Dec 15, 2015 at 4:09:03 PM
 * 
-* Abstract subclass of DataUploader that caters specifically for the
-* fields required in the xnat:qcAssessmentData schema.
+* Note that this class is virtually identical to
+* QCImageAssessmentDataUploader and is a direct replacement. The only
+* difference is that the XNAT complexType
+* icr:genericImageAssessmentData is an extension of xnat:imageAssessor
+* not xnat:mrAssessor, as in the case of xnat:QCimageAssessmentData.
 *********************************************************************/
 
-package xnatUploader;
+package xnatMetadataCreators;
 
-import xnatMetadataCreators.InvestigatorList;
 import com.generationjava.io.xml.SimpleXmlWriter;
 import exceptions.XMLException;
-import java.io.*;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 import java.util.regex.Pattern;
 import org.apache.log4j.Logger;
@@ -55,14 +62,16 @@ import org.w3c.dom.Document;
 import xmlUtilities.DelayedPrettyPrinterXmlWriter;
 import xmlUtilities.XMLUtilities;
 import xnatDAO.XNATProfile;
+import xnatUploader.DataUploader;
 
 
-public abstract class QCAssessmentDataUploader extends DataUploader
-{  
-   public QCAssessmentDataUploader(XNATProfile xnprf)
+public abstract class IcrGenericImageAssessmentDataMDCreator extends XnatDerivedDataMDComplexType
+{
+   static Logger logger = Logger.getLogger(IcrGenericImageAssessmentDataMDCreator.class);
+   
+   public IcrGenericImageAssessmentDataMDCreator(XNATProfile xnprf)
    {
       super(xnprf);
-		logger = Logger.getLogger(DataUploader.class);
    }
    
    
@@ -401,7 +410,7 @@ public abstract class QCAssessmentDataUploader extends DataUploader
       
       if (!errorOccurred)
 		{
-			XNATResourceFile rf	= new XNATResourceFile();
+			DataUploader.XNATResourceFile rf	= new DataUploader.XNATResourceFile();
 			rf.content				= "FILE_CATALOGUE";
 			rf.description			= "catalogue of primary data files contributing to this region-of-interest";
 			rf.format				= "XML";
@@ -548,14 +557,15 @@ public abstract class QCAssessmentDataUploader extends DataUploader
    @Override
    public String getRootElement()
    {
-      return "QCAssessment";
+      return "GenericImageAssessment";
    }
    
    
    @Override
    public String getRootComplexType()
    {
-      return "xnat:qcAssessmentData";
+      return "icr:genericImageAssessmentData";
    }
 
 }
+

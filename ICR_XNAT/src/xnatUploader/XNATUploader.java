@@ -44,6 +44,7 @@
 
 package xnatUploader;
 
+import dataRepresentations.RTStructureSetUploader;
 import generalUtilities.NextMatchingFileWorker;
 import generalUtilities.SimpleColourTable;
 import generalUtilities.UIDGenerator;

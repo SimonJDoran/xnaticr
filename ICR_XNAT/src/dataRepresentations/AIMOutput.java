@@ -44,6 +44,7 @@
 
 package dataRepresentations;
 
+import etherj.aim.ImageAnnotationCollection;
 import exceptions.DataFormatException;
 import exceptions.XMLException;
 import exceptions.XNATException;
@@ -71,160 +72,44 @@ import xnatRestToolkit.XNATRESTToolkit;
 public class AIMOutput extends DataRepresentation implements RtStructWriter
 {
    static Logger logger = Logger.getLogger(AIMOutput.class);
-	public Document                     doc;
-   public XNATNamespaceContext         XNATns;
+	public Document                  doc;
+   public XNATNamespaceContext      XNATns;
+	public ImageAnnotationCollection iac;
    
+	// The XNAT data model does not attempt to reproduce all the fields
+	// in the AIM instance document. There are two issues here. Firstly,
+	// there is a significant grey area here as to what constitutes data
+	// and what items are metadata. I am going to take the view that the
+	// metadata are those items that are useful for finding the AIM
+	// output in the database. Secondly, there is a lot of overlap between
+	// the metadata stored by AIM and that in roiData and roiSetData.
+	public String version;
+	public int    nImageAnnotations;
+	
    /**
-    * This constructor is private, because the public creation of these objects
-    * occurs via a call to MRIOutput.getInstanceFromXML.
-    */
-   private AIMOutput()
-   {
-   
-   }
-   
-   
-   /**
-    * Public creator from an AIM file source.
-    * @param AIMDoc a File, whose contents represent a valid AIM output
+    * Public creator from an instance of etherj.aim.ImageAnnotationCollection.
+    * @param iac an ImageAnnotationCollection already parsed by etherj.aim.XmlParser.
     * @param xnprf an XNAT profile, already connected to an XNAT database, which
     * we can use to query the databases for image dependencies.
 	 * @throws exceptions.XMLException
 	 * @throws exceptions.XNATException
-	 * @throws java.util.zip.DataFormatException
+	 * @throws exceptions.DataFormatException
     */
-   public AIMOutput(Document AIMDoc, XNATProfile xnprf)
+   public AIMOutput(ImageAnnotationCollection iac, XNATProfile xnprf)
           throws XMLException, XNATException, DataFormatException
    {
-      fileSOPMap  = new TreeMap<>();
+      this.iac    = iac;
+		this.xnprf  = xnprf;
+		
+		fileSOPMap  = new TreeMap<>();
       fileScanMap = new TreeMap<>();
-      XNATns      = new XNATNamespaceContext();    
+      XNATns      = new XNATNamespaceContext();
+		
 
-      this.doc    = AIMDoc;
-      this.xnprf  = xnprf;
-      
+		
+  
   /*    
-      try
-      {      
-         if (XMLUtilities.getElement(doc, XNATns, "mriw-result-set") != null)
-            outputType = RESULT_SET;
-
-         else if (XMLUtilities.getElement(doc, XNATns, "mriwBatchMode") != null)
-            outputType = BATCH_MODE;
-
-         else
-         {
-            throw new DataFormatException("This does not appear to be a valid MRIW_RECORD output file.\n"
-                     + "Valid files should be either MRIW_RECORD result sets or\n"
-                     + "MRIW_RECORD batch processing instruction sets.");
-         }
-         
-         prov.programName                 = getAttr("program",   "name");
-         prov.programVersion              = getAttr("program",   "version");
-         prov.programBuildID              = getAttr("program",   "build-id");        
-         prov.creationDateTime            = getAttr("creation",  "time");         
-         prov.creationUser                = getAttr("creation",  "user");      
-         prov.platformMachineArchitecture = getAttr("machine",   "architecture");
-         prov.platformMachineOSName       = getAttr("machine",   "os-name");
-         prov.platformMachineOSType       = getAttr("machine",   "os-type");  
-         prov.platformRuntimeName         = getAttr("runtime",   "name");         
-         prov.platformRuntimeVersion      = getAttr("runtime",   "version");
-         
-         inp.modality                     = getAttr("input",     "modality");         
-         inp.subtype                      = getAttr("input",     "subtype");
-         inp.refFilepath                  = getAttr("reference", "path");
-         inp.refStudyUID                  = getAttr("reference", "study-uid");
-         inp.refFilename                  = getFirstXPathResult("//reference/file/@name");
-         inp.refSOPInstanceUID            = getFirstXPathResult("//reference/file/@sop-instance-uid");
-         inp.refSeriesInstanceUID         = getFirstXPathResult("//reference/file/@series-uid");
-         inp.dynPath                      = getAttr("dynamic",   "path");
-         inp.dynStudyUID                  = getAttr("dynamic",   "study-uid");
-         inp.dynNSlices                   = getAttrAsInteger("dynamic", "slices");
-         inp.dynFilenames                 = getXPathResult("//dynamic/file/@name");
-         inp.dynSeriesInstanceUIDs        = getXPathResult("//dynamic/file/@series-uid");
-         inp.dynSOPInstanceUIDs           = getXPathResult("//dynamic/file/@sop-instance-uid"); 
-         con.converterClass               = getAttr("converter", "class");
-         con.converterKeyValue            = getKeyValue("converter");
-         con.modelClass                   = getAttr("model",     "class");
-         con.modelOnset                   = getAttr("model",     "onset");
-         con.modelAggregateAll            = getAttrAsBoolean("model", "aggregate-all");
-         con.modelValidateInput           = getAttrAsBoolean("model", "validate-input");
-         con.modelValidateOutput          = getAttrAsBoolean("model", "validate-output");
-         con.modelCheckPersistence        = getAttrAsBoolean("model", "check-persistence");
-         con.modelKeyValue                = getKeyValue("model");
-         con.modelRangesKeyValue          = getKeyValue("ranges");
-         con.solverClass                  = getAttr("solver", "class");
-         con.solverKeyValue               = getKeyValue("solver");
-         con.agentName                    = getAttr("agent", "name");
-         con.agentVolume                  = getAttrAsFloat("agent", "volume");
-         con.agentR1                      = getAttrAsFloat("agent", "r1");
-         con.agentR2                      = getAttrAsFloat("agent", "r2");
-         con.patientWeight                = getAttrAsFloat("patient", "weight");
-         con.helpersCurveExtractor        = getAttr("helpers",   "curve-extractor");
-         con.helpersOnsetLocator          = getAttr("helpers",   "onset-locator");
-         con.helpersROICurveExtractor     = getAttr("helpers",   "roi-curve-extractor");
-         con.roiXSize                     = getAttrAsInteger("roi", "x-size");
-         con.roiYSize                     = getAttrAsInteger("roi", "y-size");
-         
-         String encoding                  = getAttr("roi",       "encoding");
-         if (encoding != null)
-         {
-            if (encoding.equals("csv"))
-            {
-               con.roiEncoding = CSV;
-               con.roiX = getFloatArrayListFromElementCSV("roi-x");
-               con.roiY = getFloatArrayListFromElementCSV("roi-y");
-            }
-            if (encoding.equals("base64"))
-            {
-               con.roiEncoding = BASE64;
-               // TODO As soon as I have a relevant test dataset, create this function.
-               //  con.roiX = getFloatArrayFromElementBase64("roi-x");
-               //  con.roiX = getFloatArrayFromElementBase64("roi-y");
-            }
-         }
-         
-         res.converterOutputXSize         = getAttrAsInteger("converter-output", "x-size");
-         res.converterOutputYSize         = getAttrAsInteger("converter-output", "y-size");
-         res.converterOutputPointCount    = getAttrAsInteger("converter-output", "point-count");
-         encoding                         = getAttr("converter-output",  "encoding");
-         if (encoding != null)
-         {
-            if (encoding.equals("csv"))    res.converterOutputEndcoding = CSV;
-            if (encoding.equals("base64")) res.converterOutputEndcoding = BASE64;
-            
-            res.converterOutputData = getDataRecordsForElement("converter-output",
-                                                  res.converterOutputEndcoding); 
-         }
-    
-         encoding                         = getAttr("computed-maps", "encoding");
-         if (encoding != null)
-         {
-            if (encoding.equals("csv"))    res.computedMapEncoding = CSV;
-            if (encoding.equals("base64")) res.computedMapEncoding = BASE64;
-         
-            res.computedMaps = getMapsForElement("computed-maps", res.computedMapEncoding);
-            res.failMaps     = getMapsForElement("failures", res.computedMapEncoding);
-         }
-         
-         res.failCodes                    = getStringArrayListFromElementCSV("fail-codes");
-         
-         
-         
-         encoding                         = getAttr("aggregate-results", "encoding");
-         if (encoding != null)
-         {
-            if (encoding.equals("csv"))
-            {
-               res.aggregateResultsEncoding = CSV;
-               res.aggregateData            = getFloatArrayListFromElementCSV("aggregate-data");
-            }
-            if (encoding.equals("base64")) res.aggregateResultsEncoding = BASE64;
-         }
-         
-         res.aggregateKeyValue            = getKeyValue("aggregate-values");
-         
-         
+      
          // Check that all the studies, series and SOPInstances referenced are
          // already present in the database.
          dependenciesInDatabase(xnprf);

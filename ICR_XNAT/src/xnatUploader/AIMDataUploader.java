@@ -53,6 +53,7 @@ package xnatUploader;
  * First created on Nov 15, 2010 at 3:00:38 PM
  *
  */
+import dataRepresentations.RTStructureSetUploader;
 import com.generationjava.io.xml.SimpleXmlWriter;
 import dataRepresentations.AIMOutput;
 import dataRepresentations.ContourRenderer;
@@ -84,9 +85,10 @@ import xnatDAO.XNATProfile;
 
 public class AIMDataUploader extends QCAssessmentDataUploader
 {
-   static  Logger                        logger = Logger.getLogger(AIMDataUploader.class);
-   private AIMOutput                     aim;
-   private LinkedHashMap<String, String> simpleEntries;
+   static    Logger                        logger = Logger.getLogger(AIMDataUploader.class);
+   protected ImageAnnotationCollection     iac;
+	protected AIMOutput                     aim;
+   protected LinkedHashMap<String, String> simpleEntries;
 
    public AIMDataUploader(XNATProfile xnprf)
    {
@@ -108,7 +110,7 @@ public class AIMDataUploader extends QCAssessmentDataUploader
     * Note that the default type of file is XML, but this method will be over-
     * ridden in subclasses to allow us to open arbitrary file types, such as
     * DICOM.
-    * @return a boolean variable with true if the file was opened successfuly
+    * @return a boolean variable with true if the file was opened successfully
     *         and false otherwise.
     */
 	@Override
@@ -118,38 +120,34 @@ public class AIMDataUploader extends QCAssessmentDataUploader
 		try
 		{
 			iac = XmlParser.parse(uploadFile);
-			System.out.println("Here");
 		}
-		catch (XmlException exXML)
+		catch (XmlException | IOException ex)
 		{
-			System.out.println("Parse error");
+			String msg = "Problem reading AIM instance file: " + ex.getMessage();
+			logger.error(msg);
+			errorOccurred = true;
+         errorMessage  = msg;
+			return false;
 		}
-		catch (IOException exIO)
-		{
-			System.out.println("IO error");
-		}
-//      try
-//      {
-//         FileInputStream fis = new FileInputStream(uploadFile);
-//         doc = XMLUtil.getDOMDocument(fis);
-//      }
-//      catch (Exception ex)
-//      {
-//         errorOccurred = true;
-//         errorMessage  = "Unable to open selected file. \n\n" + ex.getMessage();
-//         return false;
-//      }
 
-      return true;
-				
+      return true;				
    }
 	
+	/**
+    * Parse an AIM instance to extract the relevant metadata.
+	 * Note that because an external library Ether is being used, most of the
+	 * parsing of the XML is actually performed in etherj.aim.XmlParser.
+	 * The transformation of the etherj.aim.ImageAnnotationCollection to an
+	 * AIMOutput DataRepresentation occurs in the relevant constructor called
+	 * here. This method extracts the variables that are needed by the uploader.
+	 * @return true if the parsing is successful, false otherwise.
+    */
 	@Override
    public boolean parseFile()
    {     
       try
       {
-         aim = new AIMOutput(doc, xnprf);
+         aim = new AIMOutput(iac, xnprf);
          
  //        date = convertToXNATDate(aim.prov.creationDateTime);
  //        time = convertToXNATTime(aim.prov.creationDateTime);
