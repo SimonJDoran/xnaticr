@@ -48,6 +48,11 @@ import java.util.List;
 
 public class InvestigatorList
 {
+
+	private Exception IllegalArgumentException(String invalid_investigator_number)
+	{
+		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+	}
 	public class Investigator
    {
       public String title;
@@ -77,65 +82,66 @@ public class InvestigatorList
    }
 		
    private List<Investigator> invList;
-   private int chosenInvestigator;
+   private int chosenInvNum;
 
-   public InvestigatorList(String[] titles,
-                           String[] firstNames,
-                           String[] lastNames,
-                           String[] institutions,
-                           String[] departments,
-                           String[] emails,
-                           String[] phoneNumbers)
+   public InvestigatorList(List<String> titles,
+                           List<String> firstNames,
+                           List<String> lastNames,
+                           List<String> institutions,
+                           List<String> departments,
+                           List<String> emails,
+                           List<String> phoneNumbers)
    {
-      // It is possible that the project has no investigators defined.
-      if (titles == null)
-      {
-         invList = new ArrayList<>();
-         invList.add(new Investigator("",
-                                      "No project investigators specified",
-                                      "", "", "", "", ""));
-      }
-      else
-      {
-         // It is a programming error if not all the arguments have the same
-         // length, so no error checking is needed here - just allow it to fail.
-         invList = new ArrayList<>();
-         for (int i=0; i<titles.length; i++)
-            invList.add(new Investigator(titles[i],
-                                          firstNames[i],
-                                          lastNames[i],
-                                          institutions[i],
-                                          departments[i],
-                                          emails[i],
-                                          phoneNumbers[i]));
+      invList = new ArrayList<>();
+
+		// It is a programming error if any of the fields are null
+		// or if the constituent lists have different numbers of
+		// entries, so just let the program crash if this happens.
+		// However, it is perfectly permissable for the entries all
+		// to have zero length.
+		for (int i=0; i<titles.size(); i++)
+		{
+			invList.add(new Investigator(titles.get(i),
+												  firstNames.get(i),
+												  lastNames.get(i),
+												  institutions.get(i),
+												  departments.get(i),
+												  emails.get(i),
+												  phoneNumbers.get(i)));
       }
       
       // Start off with the default investigator being the first in the list.
-      chosenInvestigator = 0;
+      chosenInvNum = 0;
    }
    
    
-   public void setInvestigatorNumber(int n)
+   public void setChosenInvestigatorNumber(int n) throws IllegalArgumentException 
    {
-      chosenInvestigator = n;
+      if ((n < 0) || (n>invList.size()-1))
+			throw new IllegalArgumentException("Invalid investigator number");
+		
+      chosenInvNum = n;
    }
    
    
-   public int getInvestigatorNumber()
+   public int getChosenInvestigatorNumber()
    {
-      return chosenInvestigator;
+      return chosenInvNum;
    }
    
    
    public Investigator getChosenInvestigator()
    {
-      return invList.get(chosenInvestigator);
+      return invList.get(chosenInvNum);
    }
    
    
-   public Investigator getInvestigator(int n)
+   public Investigator getInvestigator(int n) throws IllegalArgumentException 
    {
-      return invList.get(n);
+      if ((n < 0) || (n>invList.size()-1))
+			throw new IllegalArgumentException("Invalid investigator number");
+
+		return invList.get(n);
    }
    
    

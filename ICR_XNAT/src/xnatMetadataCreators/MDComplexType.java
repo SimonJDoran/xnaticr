@@ -56,11 +56,8 @@ import xmlUtilities.DelayedPrettyPrinterXmlWriter;
 
 public abstract class MDComplexType
 {
-	protected DelayedPrettyPrinterXmlWriter dppXML;
-	
-	protected void insertMetaDataXML(DelayedPrettyPrinterXmlWriter dppXML)
+	void insertMetaDataXML(DelayedPrettyPrinterXmlWriter dppXML)
 			         throws IOException, XMLException
 	{		
 	}
-
 }

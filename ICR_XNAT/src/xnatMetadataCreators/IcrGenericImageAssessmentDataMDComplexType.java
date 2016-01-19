@@ -65,103 +65,17 @@ import xnatDAO.XNATProfile;
 import xnatUploader.DataUploader;
 
 
-public abstract class IcrGenericImageAssessmentDataMDCreator extends XnatDerivedDataMDComplexType
+public abstract class IcrGenericImageAssessmentDataMDComplexType extends XnatDerivedDataMDComplexType
 {
-   static Logger logger = Logger.getLogger(IcrGenericImageAssessmentDataMDCreator.class);
-   
-   public IcrGenericImageAssessmentDataMDCreator(XNATProfile xnprf)
-   {
-      super(xnprf);
-   }
-   
-   
-/**
-    * Utility function used in createMetadataXML below
-    * @param provString String containing processStep entries in a provenance
-    * list, separated by the characteristic identifier !PS!
-    * @return an ArrayList of the separated values
-    */
-   private ArrayList<String> splitProvenanceString(String provString)
-   {
-      ArrayList<String> list = new ArrayList<String>();
-      int    ind;
-      String s = new String(provString);
-      
-      if (s != null) do
-      {
-         ind = s.indexOf("!PS! ", 0);
-         if (ind == -1)
-         {
-            // XNAT objects if the provenance entry is blank.
-            if (s.equals("")) s = "Unknown";
-            list.add(s);
-         }
-         else
-         {
-            list.add(s.substring(0, ind - 1));
-            s = s.substring(ind + 5);
-         }
-      }
-      while (ind != -1);
-      
-      return list;
-   }
+   static Logger logger = Logger.getLogger(IcrGenericImageAssessmentDataMDComplexType.class);
 
-
-   /**
-    * Create the XML that is uploaded to XNAT and contains all the metadata
-    * that will go into the PostgreSQL database.
-    * @return a Document to be uploaded into XNAT
-    */
-   @Override
-   public Document createMetadataXML()
-   {
-      initialiseXML();
-      createQCMetadataXML();
-      createScanListXML();
-      createSpecificMetadataXML();
-      finishWritingXML();
-      
-      return getXMLDocument();
-   }
+	public insertMetadataXML(DelayedPrettyPrinterXml dppXML)
+	{
+		
+	}
    
  
-   
-   /**
-    * Create the output stream and writer for the metadata XML and write
-    * the root element.
-    */
-   protected void initialiseXML()
-   {          
-      baos    = new ByteArrayOutputStream();
-      dppXML  = new DelayedPrettyPrinterXmlWriter(
-                   new SimpleXmlWriter(
-                      new OutputStreamWriter(baos)));
-      
-      String label;
-      String note;
-      if (isBatchMode)
-         currentLabel = batchLabelPrefix + (new Long(System.nanoTime())).toString();
-      else
-         currentLabel = getStringField("Label");
-      
-      try
-      {
-         dppXML.setIndent("   ")
-               .writeXmlVersion()
-               .writeEntity(getRootElement())
-               .writeAttribute("xmlns:xnat", "http://nrg.wustl.edu/xnat")
-               .writeAttribute("xmlns:xsi",  "http://www.w3.org/2001/XMLSchema-instance")
-               .writeAttribute("xmlns:prov", "http://www.nbirn.net/prov")
-               .writeAttribute("xmlns:icr",  "http://www.icr.ac.uk/icr")
-               .writeAttribute("ID",         XNATAccessionID)
-               .writeAttribute("label",      currentLabel)
-               .writeAttribute("project",    XNATProject);
-      }
-         
 
-      catch (IOException exIO){reportError(exIO, "initialise XML");}
-   }
 
    
    

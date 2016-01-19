@@ -49,108 +49,83 @@ import java.util.List;
 public class ProvenanceList
 {
 	private static final String PROV_STRING = "_!PS!_";
+	private static final String LIB_STRING  = "_!LS!_";
 	private static final String UNKNOWN_STRING = "Unknown";
 			  
-	public class Provenance
+	public class ProvenanceEntry
    {
-      public String title;
-      public String firstName;
-      public String lastName;
-      public String institution;
-      public String department;
-      public String email;
-      public String phoneNumber;
+      public String program;
+      public String timestamp;
+      public String cvs;
+      public String user;
+      public String machine;
+      public String platform;
+		public String compiler;
+		public List<String> libraryList;
       
-      public Investigator(String title,
-                          String firstName,
-                          String lastName,
-                          String institution,
-                          String department,
-                          String email,
-                          String phoneNumber)
+      public ProvenanceEntry(String programName,
+									  String programVersion,
+									  String programArguments,
+                             String timestamp,
+                             String cvs,
+                             String user,
+                             String machine,
+                             String platform,
+                             String compiler,
+								     List<String> libraryList)
       {
-         this.title       = title;
-         this.firstName   = firstName;
-         this.lastName    = lastName;
-         this.institution = institution;
-         this.department  = department;
-         this.email       = email;
-         this.phoneNumber = phoneNumber;
+         this.program     = program;
+         this.timestamp   = timestamp;
+         this.cvs         = cvs;
+         this.user        = user;
+         this.machine     = machine;
+         this.platform    = platform;
+         this.compiler    = compiler;
+			this.libraryList = libraryList; 
       }
    }
 		
-   private List<Investigator> invList;
-   private int chosenInvestigator;
+   private List<ProvenanceEntry> provList;
+	
+   public ProvenanceList(List<String> programs,
+                         List<String> timestamps,
+                         List<String> cvss,
+                         List<String> users,
+                         List<String> machines,
+                         List<String> platforms,
+                         List<String> compilers,
+	                      List<List<String>> libraryLists)
+   {
+     
+		provList = new ArrayList<>();
 
-   public InvestigatorList(String[] titles,
-                           String[] firstNames,
-                           String[] lastNames,
-                           String[] institutions,
-                           String[] departments,
-                           String[] emails,
-                           String[] phoneNumbers)
-   {
-      // It is possible that the project has no investigators defined.
-      if (titles == null)
-      {
-         invList = new ArrayList<>();
-         invList.add(new Investigator("",
-                                      "No project investigators specified",
-                                      "", "", "", "", ""));
+		// It is a programming error if any of the fields are null
+		// or if the constituent lists have different numbers of
+		// entries, so just let the program crash if this happens.
+		// However, it is perfectly permissable for the entries all
+		// to have zero length.
+		for (int i=0; i<programs.size(); i++)
+		{
+			provList.add(new ProvenanceEntry(programs.get(i),
+												      timestamps.get(i),
+												      cvss.get(i),
+				                              users.get(i),
+				                              machines.get(i),
+				                              platforms.get(i),
+				                              compilers.get(i),
+							                     libraryLists.get(i)));
+
       }
-      else
-      {
-         // It is a programming error if not all the arguments have the same
-         // length, so no error checking is needed here - just allow it to fail.
-         invList = new ArrayList<>();
-         for (int i=0; i<titles.length; i++)
-            invList.add(new Investigator(titles[i],
-                                          firstNames[i],
-                                          lastNames[i],
-                                          institutions[i],
-                                          departments[i],
-                                          emails[i],
-                                          phoneNumbers[i]));
-      }
-      
-      // Start off with the default investigator being the first in the list.
-      chosenInvestigator = 0;
    }
    
-   
-   public void setInvestigatorNumber(int n)
+   public ProvenanceEntry getProvenanceEntry(int n) throws IllegalArgumentException
    {
-      chosenInvestigator = n;
+      if ((n < 0) || (n>provList.size()-1))
+			throw new IllegalArgumentException("Invalid investigator number");
+		
+      return provList.get(n);
    }
    
-   
-   public int getInvestigatorNumber()
-   {
-      return chosenInvestigator;
-   }
-   
-   
-   public Investigator getChosenInvestigator()
-   {
-      return invList.get(chosenInvestigator);
-   }
-   
-   
-   public Investigator getInvestigator(int n)
-   {
-      return invList.get(n);
-   }
-   
-   
-   public List<String> getFullNames()
-   {
-      List<String> list = new ArrayList<>();
-		for (Investigator inv : invList) list.add(inv.firstName + " " + inv.lastName);
-      
-      return list;
-   }
-	
-	
 	/**
 	 * Turn a list of String entries into a single string separated by a "unique"
 	 * marker. This is a kludge to solve a display problem. It is useful to have

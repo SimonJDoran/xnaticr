@@ -50,7 +50,13 @@
 
 package xnatMetadataCreators;
 
+import java.util.ArrayList;
+import xmlUtilities.DelayedPrettyPrinterXmlWriter;
+
 public class IcrRoiSetDataMDComplexType extends IcrGenericImageAssessmentDataMDComplexType
 {
-
+	public void insertMetadataXML(DelayedPrettyPrinterXmlWriter dppXML)
+	{
+		
+	}
 }
