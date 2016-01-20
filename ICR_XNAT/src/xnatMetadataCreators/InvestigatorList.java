@@ -48,11 +48,9 @@ import java.util.List;
 
 public class InvestigatorList
 {
-
-	private Exception IllegalArgumentException(String invalid_investigator_number)
-	{
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-	}
+   // Note that there is no "implementation" as such for this class; it is
+	// merely a structure for collecting together Strings. As such, it makes no
+	// sense not to make the variables public and to use getter or setter methods.
 	public class Investigator
    {
       public String title;
@@ -81,7 +79,9 @@ public class InvestigatorList
       }
    }
 		
-   private List<Investigator> invList;
+   // By contrast, the InvestigatorList could possibly be implemented differently
+	// internally and is hidden.
+	private List<Investigator> invList;
    private int chosenInvNum;
 
    public InvestigatorList(List<String> titles,

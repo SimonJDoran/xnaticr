@@ -1,5 +1,5 @@
 /********************************************************************
-* Copyright (c) 2015, Institute of Cancer Research
+* Copyright (c) 2016, Institute of Cancer Research
 * All rights reserved.
 * 
 * Redistribution and use in source and binary forms, with or without
@@ -35,67 +35,81 @@
 
 /********************************************************************
 * @author Simon J Doran
-** Java class: MDComplexType.java
-* First created on Jan 13, 2016 at 12:04:49 PM
+* Java class: XnatImageAssessorData.java
+* First created on Jan 20, 2016 at 8:53:59 AM
 * 
-* Base class for creation of the metadata XML needed to upload
-* data to XNAT. The difference between this base class and the
-* MDElement class is that the complexType is not written by itself,
-* but always included into the XML already created by MDElement.
+* Creation of metadata XML for xnat:imageAssessorData
 * 
 * Eventually, the plan for this whole package is to replace the
 * explicit writing of the XML files with a higher level interface,
-* e.g., JAXB. However, this is for a later refactoring.
+* e.g., JAXB. However, this is for a later refactoring. In addition
+* note that, at present, only a subset of xnat:experimentData is
+* implemented.
 *********************************************************************/
 
 package xnatMetadataCreators;
 
-import com.generationjava.io.xml.SimpleXmlWriter;
 import exceptions.XMLException;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.OutputStreamWriter;
+import java.util.List;
 import xmlUtilities.DelayedPrettyPrinterXmlWriter;
+import xnatMetadataCreators.AbstractResource.Tag;
 
-public abstract class MDComplexType
+public class XnatImageAssessorData extends XnatDerivedDataMDComplexType
 {
-	public DelayedPrettyPrinterXmlWriter createWriter()
+	protected List<AbstractResource> inList;
+	protected List<AbstractResource> outList;
+	protected String                 imageSessionId;
+	protected List<AdditionalField>  paramList; 
+	
+	public void setInList(List<AbstractResource> lar)
 	{
-      return new DelayedPrettyPrinterXmlWriter(
-                 new SimpleXmlWriter(
-                     new OutputStreamWriter(
-							    new ByteArrayOutputStream())));
+		inList = lar;
 	}
 	
 	
-	public void createXmlAsRootElement(String rootElementName,
-												  DelayedPrettyPrinterXmlWriter dppXML)
-		         throws IOException, XMLException
+	public void setOutList(List<AbstractResource> lar)
 	{
-		dppXML.setIndent("   ")
-				.writeXmlVersion()
-				.writeEntity(rootElementName)
-				.writeAttribute("xmlns:xnat", "http://nrg.wustl.edu/xnat")
-				.writeAttribute("xmlns:xsi",  "http://www.w3.org/2001/XMLSchema-instance")
-				.writeAttribute("xmlns:prov", "http://www.nbirn.net/prov")
-				.writeAttribute("xmlns:icr",  "http://www.icr.ac.uk/icr");
-		
-		      insertXml(dppXML);
-		
-		dppXML.endEntity();
+		outList = lar;
 	}
 	
 	
-	public void insertXmlAsElement(String elementName,
-                                  DelayedPrettyPrinterXmlWriter dppXML)
-		         throws IOException, XMLException
+	public void setImageSessionId(String s)
 	{
-		dppXML.delayedWriteEntity(elementName);
-		      insertXml(dppXML);
+		imageSessionId = s;
+	}
+	
+	
+	@Override
+	public void insertXml(DelayedPrettyPrinterXmlWriter dppXML)
+			      throws IOException, XMLException
+	{
+		super.insertXml(dppXML);
+		
+		dppXML.delayedWriteEntity("in");
+		for (AbstractResource ar : inList)
+		{
+			(new XnatAbstractResourceMDComplexType(ar)).insertXmlAsElement("file", dppXML);
+		}
 		dppXML.delayedEndEntity();
-	}
-	
-	
-	abstract void insertXml(DelayedPrettyPrinterXmlWriter dppXML)
-			        throws IOException, XMLException;
+		
+		dppXML.delayedWriteEntity("out");
+		for (AbstractResource ar : outList)
+		{
+			(new XnatAbstractResourceMDComplexType(ar)).insertXmlAsElement("file", dppXML);
+		}
+		dppXML.delayedEndEntity();
+		
+		dppXML.delayedWriteEntityWithText("imageSession_ID", imageSessionId);
+		
+		dppXML.delayedWriteEntity("parameters");
+		for (AdditionalField af : paramList)
+		{
+			(new XnatAddFieldMDComplexType(af)).insertXmlAsElement("addParam", dppXML);
+		}
+		dppXML.delayedEndEntity();
+		}
+		
+		
+	}		
 }

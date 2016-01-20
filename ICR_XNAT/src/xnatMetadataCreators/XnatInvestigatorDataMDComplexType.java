@@ -37,7 +37,7 @@
 * @author Simon J Doran
 * Java class: XnatInvestigatorDataMDComplexType.java
 * First created on Jan 19, 2016 at 8:26:00 PM
-* 
+
 * Creation of metadata XML for xnat:investigatorData
 * 
 * Eventually, the plan for this whole package is to replace the
@@ -51,15 +51,12 @@ import exceptions.XMLException;
 import java.io.IOException;
 import xmlUtilities.DelayedPrettyPrinterXmlWriter;
 
-/**
- *
- * @author simon
- */
 public class XnatInvestigatorDataMDComplexType extends MDComplexType
 {
 	protected InvestigatorList.Investigator investigator;
+	protected String id;
 	
-	void setInvestigator(InvestigatorList.Investigator inv)
+	public void setInvestigator(InvestigatorList.Investigator inv)
 	{
 		this.investigator = inv;
 	}
@@ -69,6 +66,8 @@ public class XnatInvestigatorDataMDComplexType extends MDComplexType
 	public void insertXml(DelayedPrettyPrinterXmlWriter dppXML)
 			      throws IOException, XMLException
 	{		
+		dppXML.delayedWriteAttribute("ID", id);
+		
 		dppXML.delayedWriteEntity("title")
 					.writeText(investigator.title)
 				.delayedEndEntity()
@@ -96,5 +95,11 @@ public class XnatInvestigatorDataMDComplexType extends MDComplexType
 				.delayedWriteEntity("phone")
 					.writeText(investigator.phoneNumber)
 				.delayedEndEntity();	
+	}
+	
+	
+	public void setId(String id)
+	{
+		this.id = id;
 	}
 }

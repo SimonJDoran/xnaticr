@@ -1,5 +1,5 @@
 /********************************************************************
-* Copyright (c) 2015, Institute of Cancer Research
+* Copyright (c) 2016, Institute of Cancer Research
 * All rights reserved.
 * 
 * Redistribution and use in source and binary forms, with or without
@@ -35,67 +35,58 @@
 
 /********************************************************************
 * @author Simon J Doran
-** Java class: MDComplexType.java
-* First created on Jan 13, 2016 at 12:04:49 PM
+* Java class: InOut.java
+* First created on Jan 20, 2016 at 9:00:08 AM
 * 
-* Base class for creation of the metadata XML needed to upload
-* data to XNAT. The difference between this base class and the
-* MDElement class is that the complexType is not written by itself,
-* but always included into the XML already created by MDElement.
+* Representation of the "in" and "out" elements in an XNAT XML file.
 * 
 * Eventually, the plan for this whole package is to replace the
 * explicit writing of the XML files with a higher level interface,
-* e.g., JAXB. However, this is for a later refactoring.
+* e.g., JAXB. However, this is for a later refactoring. In addition
+* note that, at present, only a subset of xnat:experimentData is
+* implemented.
 *********************************************************************/
 
 package xnatMetadataCreators;
 
-import com.generationjava.io.xml.SimpleXmlWriter;
 import exceptions.XMLException;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.OutputStreamWriter;
 import xmlUtilities.DelayedPrettyPrinterXmlWriter;
+import xnatMetadataCreators.AbstractResource.Tag;
 
-public abstract class MDComplexType
+public class XnatAbstractResourceMDComplexType extends MDComplexType
 {
-	public DelayedPrettyPrinterXmlWriter createWriter()
+	public AbstractResource ar;
+	
+	public XnatAbstractResourceMDComplexType(AbstractResource ar)
 	{
-      return new DelayedPrettyPrinterXmlWriter(
-                 new SimpleXmlWriter(
-                     new OutputStreamWriter(
-							    new ByteArrayOutputStream())));
+		this.ar = ar;
 	}
 	
-	
-	public void createXmlAsRootElement(String rootElementName,
-												  DelayedPrettyPrinterXmlWriter dppXML)
-		         throws IOException, XMLException
+	@Override
+	public void insertXml(DelayedPrettyPrinterXmlWriter dppXML)
+			      throws IOException, XMLException
 	{
-		dppXML.setIndent("   ")
-				.writeXmlVersion()
-				.writeEntity(rootElementName)
-				.writeAttribute("xmlns:xnat", "http://nrg.wustl.edu/xnat")
-				.writeAttribute("xmlns:xsi",  "http://www.w3.org/2001/XMLSchema-instance")
-				.writeAttribute("xmlns:prov", "http://www.nbirn.net/prov")
-				.writeAttribute("xmlns:icr",  "http://www.icr.ac.uk/icr");
+		dppXML.delayedWriteAttribute("label",      ar.label)
+				.delayedWriteAttribute("file_count", ar.fileCount)
+				.delayedWriteAttribute("file_size",  ar.fileSize)
+				.delayedWriteEntityWithText("note",  ar.note)
+				.delayedWriteEntity("tags");
 		
-		      insertXml(dppXML);
-		
-		dppXML.endEntity();
-	}
-	
-	
-	public void insertXmlAsElement(String elementName,
-                                  DelayedPrettyPrinterXmlWriter dppXML)
-		         throws IOException, XMLException
-	{
-		dppXML.delayedWriteEntity(elementName);
-		      insertXml(dppXML);
+				for (Tag tag : ar.tags)
+				{
+					dppXML.delayedWriteEntity("tag")
+								.delayedWriteAttribute("name", tag.name)
+								.delayedWriteText(tag.value)
+							.delayedEndEntity();
+				}
+				
 		dppXML.delayedEndEntity();
+				  
 	}
 	
-	
-	abstract void insertXml(DelayedPrettyPrinterXmlWriter dppXML)
-			        throws IOException, XMLException;
+	public void setResource(AbstractResource ar)
+	{
+		this.ar = ar;
+	}
 }

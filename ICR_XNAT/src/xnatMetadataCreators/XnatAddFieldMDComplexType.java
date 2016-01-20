@@ -1,5 +1,5 @@
 /********************************************************************
-* Copyright (c) 2015, Institute of Cancer Research
+* Copyright (c) 2016, Institute of Cancer Research
 * All rights reserved.
 * 
 * Redistribution and use in source and binary forms, with or without
@@ -35,13 +35,10 @@
 
 /********************************************************************
 * @author Simon J Doran
-** Java class: MDComplexType.java
-* First created on Jan 13, 2016 at 12:04:49 PM
+* Java class: XnatAddFieldMDComplexType.java
+* First created on Jan 20, 2016 at 12:00:11 PM
 * 
-* Base class for creation of the metadata XML needed to upload
-* data to XNAT. The difference between this base class and the
-* MDElement class is that the complexType is not written by itself,
-* but always included into the XML already created by MDElement.
+* Creation of metadata XML for xnat:addField
 * 
 * Eventually, the plan for this whole package is to replace the
 * explicit writing of the XML files with a higher level interface,
@@ -50,52 +47,48 @@
 
 package xnatMetadataCreators;
 
-import com.generationjava.io.xml.SimpleXmlWriter;
 import exceptions.XMLException;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.OutputStreamWriter;
 import xmlUtilities.DelayedPrettyPrinterXmlWriter;
 
-public abstract class MDComplexType
+public class XnatAddFieldMDComplexType extends MDComplexType
 {
-	public DelayedPrettyPrinterXmlWriter createWriter()
+	protected AdditionalField af;
+	
+	// Since there are only two variables to set, allow a variety of methods
+	// fof initialisation for flexibility.
+	public XnatAddFieldMDComplexType(AdditionalField af)
 	{
-      return new DelayedPrettyPrinterXmlWriter(
-                 new SimpleXmlWriter(
-                     new OutputStreamWriter(
-							    new ByteArrayOutputStream())));
+		this.af = af;
+	}
+	
+	public XnatAddFieldMDComplexType(String name, String value)
+	{
+		af = new AdditionalField(name, value);
+	}
+	
+	public XnatAddFieldMDComplexType()
+	{
+		af = new AdditionalField();
+	}	
+	
+	public void setName(String s)
+	{
+		af.name = s;
+	}
+	
+	public void setValue(String s)
+	{
+		af.value = s;
 	}
 	
 	
-	public void createXmlAsRootElement(String rootElementName,
-												  DelayedPrettyPrinterXmlWriter dppXML)
-		         throws IOException, XMLException
-	{
-		dppXML.setIndent("   ")
-				.writeXmlVersion()
-				.writeEntity(rootElementName)
-				.writeAttribute("xmlns:xnat", "http://nrg.wustl.edu/xnat")
-				.writeAttribute("xmlns:xsi",  "http://www.w3.org/2001/XMLSchema-instance")
-				.writeAttribute("xmlns:prov", "http://www.nbirn.net/prov")
-				.writeAttribute("xmlns:icr",  "http://www.icr.ac.uk/icr");
-		
-		      insertXml(dppXML);
-		
-		dppXML.endEntity();
+	@Override
+	public void insertXml(DelayedPrettyPrinterXmlWriter dppXML)
+			      throws IOException, XMLException
+	{		
+		dppXML.delayedWriteAttribute("name", af.name)
+				.delayedWriteText(af.value);
 	}
-	
-	
-	public void insertXmlAsElement(String elementName,
-                                  DelayedPrettyPrinterXmlWriter dppXML)
-		         throws IOException, XMLException
-	{
-		dppXML.delayedWriteEntity(elementName);
-		      insertXml(dppXML);
-		dppXML.delayedEndEntity();
-	}
-	
-	
-	abstract void insertXml(DelayedPrettyPrinterXmlWriter dppXML)
-			        throws IOException, XMLException;
+			   
 }

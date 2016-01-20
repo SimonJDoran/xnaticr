@@ -1,5 +1,5 @@
 /********************************************************************
-* Copyright (c) 2015, Institute of Cancer Research
+* Copyright (c) 2016, Institute of Cancer Research
 * All rights reserved.
 * 
 * Redistribution and use in source and binary forms, with or without
@@ -56,6 +56,7 @@ import xmlUtilities.DelayedPrettyPrinterXmlWriter;
 
 public class XnatExperimentDataMDComplexType extends MDComplexType
 {
+	protected String id;
 	protected String project;
 	protected String visit;
 	protected String visit_id;
@@ -69,59 +70,19 @@ public class XnatExperimentDataMDComplexType extends MDComplexType
 	protected InvestigatorList.Investigator investigator;
 	protected String investigatorID;
 	
-	@Override
-	public void createXmlAsRootElement(String rootElementName,
-												  String id,
-												  DelayedPrettyPrinterXmlWriter dppXML)
-		         throws IOException, XMLException
-	{
-		// Note that, below, delayedWriteAttribute is used for items that
-		// we expect to be absent on some occasions, whereas ID and
-		// project should always be defined.
-		dppXML.setIndent("   ")
-				.writeXmlVersion()
-				.writeEntity(rootElementName)
-				.writeAttribute("xmlns:xnat",      "http://nrg.wustl.edu/xnat")
-				.writeAttribute("xmlns:xsi",       "http://www.w3.org/2001/XMLSchema-instance")
-				.writeAttribute("xmlns:prov",      "http://www.nbirn.net/prov")
-				.writeAttribute("xmlns:icr",       "http://www.icr.ac.uk/icr")
-				.writeAttribute("ID",              id)
-		      .writeAttribute("project",         project)
-				.delayedWriteAttribute("visit_id", visit_id)
-				.delayedWriteAttribute("visit",    visit)
-			   .delayedWriteAttribute("version",  version)
-				.delayedWriteAttribute("label",    label);
-		
-		      insertXml(dppXML);
-		
-		dppXML.endEntity();
-	}
-	
-	
-	public void insertXmlAsElement(String elementName,
-											 String id,
-                                  DelayedPrettyPrinterXmlWriter dppXML)
-		         throws IOException, XMLException
-	{
-		dppXML.delayedWriteEntity(elementName)
-			   .delayedWriteAttribute("ID",       id)
-		      .delayedWriteAttribute("project",  project)
-				.delayedWriteAttribute("visit_id", visit_id)
-				.delayedWriteAttribute("visit",    visit)
-			   .delayedWriteAttribute("version",  version)
-				.delayedWriteAttribute("label",    label);
-			
-		      insertXml(dppXML);
-				
-		dppXML.delayedEndEntity();
-	}
-	
 	
 	@Override
 	public void insertXml(DelayedPrettyPrinterXmlWriter dppXML)
 			      throws IOException, XMLException
 	{
-		dppXML.delayedWriteEntity("date")
+		dppXML.delayedWriteAttribute("id",       id)
+				.delayedWriteAttribute("project",  project)
+				.delayedWriteAttribute("visit_id", visit_id)
+				.delayedWriteAttribute("visit",    visit)
+			   .delayedWriteAttribute("version",  version)
+				.delayedWriteAttribute("label",    label)
+				  
+				.delayedWriteEntity("date")
 					.delayedWriteText(date)
 				.delayedEndEntity()
 
@@ -135,7 +96,7 @@ public class XnatExperimentDataMDComplexType extends MDComplexType
 		
 				XnatInvestigatorDataMDComplexType xid = new XnatInvestigatorDataMDComplexType();
 				xid.setInvestigator(investigator);
-				xid.insertXmlAsElement("investigator", investigatorID, dppXML);
+				xid.insertXmlAsElement("investigator", dppXML);
 	}
 	
 	public void setDate(String s)
@@ -148,6 +109,13 @@ public class XnatExperimentDataMDComplexType extends MDComplexType
 	{
 		label = s;
 	}
+	
+	
+	public void setId(String s)
+	{
+		id = s;
+	}
+	
 	
 	public void setNote(String s)
 	{

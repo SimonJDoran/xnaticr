@@ -1,5 +1,5 @@
 /********************************************************************
-* Copyright (c) 2015, Institute of Cancer Research
+* Copyright (c) 2016, Institute of Cancer Research
 * All rights reserved.
 * 
 * Redistribution and use in source and binary forms, with or without
@@ -35,35 +35,59 @@
 
 /********************************************************************
 * @author Simon J Doran
-* Java class: DerivedMDCreator.java
-* First created on Jan 13, 2016 at 10:25:51 AM
+* Java class: AbstractResource.java
+* First created on Jan 20, 2016 at 10:24:37 AM
 * 
-* Creation of metadata XML for xnat:derivedData
+* Representation an XNAT AbstractResource
 * 
-* Eventually, the plan for this whole package is to replace the
-* explicit writing of the XML files with a higher level interface,
-* e.g., JAXB. However, this is for a later refactoring. In addition
-* note that, at present, only a subset of xnat:experimentData is
-* implemented.
 *********************************************************************/
+
 
 package xnatMetadataCreators;
 
-import exceptions.XMLException;
-import java.io.IOException;
-import xmlUtilities.DelayedPrettyPrinterXmlWriter;
+import java.util.List;
 
-public class XnatDerivedDataMDComplexType extends XnatExperimentDataMDComplexType
+public class AbstractResource
 {
-	Provenance prov;
-	
-	@Override
-	public void insertXml(DelayedPrettyPrinterXmlWriter dppXML)
-			 throws IOException, XMLException
+	public final class Tag
 	{
-		super.insertXml(dppXML);
-	
-		ProvProcessMDComplexType ppct = new ProvProcessMDComplexType(prov);
-		ppct.insertXmlAsElement("provenance", dppXML);	
+		public String name;
+		public String value;
+		
+	   public Tag(String name, String value)
+		{
+			this.name = name;
+			this.value = value;
+		}
+		
+		public void setName(String s)
+		{
+			name = s;
+		}
+		
+		public void setValue(String s)
+		{
+			value = s;
+		}
 	}
+	
+	public String    label;
+	public Integer   fileCount;
+	public Long      fileSize;
+	public String    note;
+	public List<Tag> tags;
+
+	// Give users the option to use either a single-line constructor (with
+	// possible nulls). Given that there is no "implementation" as such -
+	// these are just variables - there seems no reason to invoke setter
+	// methods and I will just expose the variables publicly.
+	public AbstractResource(String label, Integer fileCount, Long fileSize,
+			                  String note, List<Tag> tags)
+	{
+		this.label     = label;
+		this.fileCount = fileCount;
+		this.fileSize  = fileSize;
+		this.note      = note;
+		this.tags      = tags;
+	}	
 }
