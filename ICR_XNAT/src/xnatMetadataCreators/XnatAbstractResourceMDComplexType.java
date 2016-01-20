@@ -35,10 +35,10 @@
 
 /********************************************************************
 * @author Simon J Doran
-* Java class: InOut.java
+* Java class: XnatAbstractResourceMDComplexType.java
 * First created on Jan 20, 2016 at 9:00:08 AM
 * 
-* Representation of the "in" and "out" elements in an XNAT XML file.
+* Creation of metadata XML for xnat:abstractResource
 * 
 * Eventually, the plan for this whole package is to replace the
 * explicit writing of the XML files with a higher level interface,
@@ -56,7 +56,11 @@ import xnatMetadataCreators.AbstractResource.Tag;
 
 public class XnatAbstractResourceMDComplexType extends MDComplexType
 {
-	public AbstractResource ar;
+	protected AbstractResource ar;
+	
+	
+	// Give the user two options for constructing the object.
+	public XnatAbstractResourceMDComplexType() {}
 	
 	public XnatAbstractResourceMDComplexType(AbstractResource ar)
 	{

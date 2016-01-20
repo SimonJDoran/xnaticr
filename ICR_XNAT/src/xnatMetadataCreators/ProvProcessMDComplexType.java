@@ -38,7 +38,7 @@
 * Java class: GenericImageAssessmentDataUploader.java
 * First created on Jan 15, 2016 at 3:21:03 PM
 * 
-* * Creation of metadata XML for prov:process
+* Creation of metadata XML for prov:process
 * 
 * Eventually, the plan for this whole package is to replace the
 * explicit writing of the XML files with a higher level interface,
@@ -58,7 +58,7 @@ import xnatMetadataCreators.Provenance.ProvenanceEntry;
 
 public class ProvProcessMDComplexType extends MDComplexType
 {
-	Provenance prov;
+	protected Provenance prov;
 	
 	public ProvProcessMDComplexType(Provenance p)
 	{

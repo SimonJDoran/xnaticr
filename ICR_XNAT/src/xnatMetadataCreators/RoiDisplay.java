@@ -1,5 +1,5 @@
 /********************************************************************
-* Copyright (c) 2015, Institute of Cancer Research
+* Copyright (c) 2016, Institute of Cancer Research
 * All rights reserved.
 * 
 * Redistribution and use in source and binary forms, with or without
@@ -33,48 +33,38 @@
 * OF THE POSSIBILITY OF SUCH DAMAGE.
 *********************************************************************/
 
-/********************************************************************
+/*********************************************************************
 * @author Simon J Doran
-* Java class: IcrRoiSetDataMDComplexType.java
-* First created on Jan 13, 2016 at 4:49:53 PM
+* Java class: RoiDisplay.java
+* First created on Jan 20, 2016 at 4:20:18 PM
 * 
-* Creation of metadata XML for icr:roiSetData
-* 
-* Eventually, the plan for this whole package is to replace the
-* explicit writing of the XML files with a higher level interface,
-* e.g., JAXB. However, this is for a later refactoring. In addition
-* note that, at present, only a subset of xnat:experimentData is
-* implemented.
+* Data structure parallelling the icr:roiDisplay element and used in
+* conjunction with icrRoiDisplayDataMDComplexType.
 *********************************************************************/
-
 
 package xnatMetadataCreators;
 
-import java.util.ArrayList;
-import java.util.List;
-import xmlUtilities.DelayedPrettyPrinterXmlWriter;
-
-public class IcrRoiSetDataMDComplexType extends IcrGenericImageAssessmentDataMDComplexType
+public class RoiDisplay
 {
-	protected String           originalUid;
-	protected String           originalDataType;
-	protected String           originalLabel;
-	protected String           originatingApplicationName;
-	protected String           originatingApplicationVersion;
-	protected Integer          nRois;
-	protected List<RoiDisplay> roiDisplayList;
-	protected String           structureSetLabel;
-	protected String           structureSetName;
-	protected String           structureSetDescription;
-	protected String           instanceNumber;
-	protected String           structureSetDate;
-	protected String           structureSetTime;
-	protected String
-			  
+	public String roiID;
+	public String lineType;
+	public String lineColour;
+	public String shadingType;
+	public String shadingColour;
+	public String shadingTransparency;
 	
+	public RoiDisplay(){}
 	
-	public void insertMetadataXML(DelayedPrettyPrinterXmlWriter dppXML)
+	public RoiDisplay(String roiID, String lineType, String lineColour,
+			            String shadingType, String shadingColour,
+							String shadingTransparency)
 	{
-		
+		this.roiID               = roiID;
+		this.lineType            = lineType;
+		this.lineColour          = lineColour;
+		this.shadingType         = shadingType;
+		this.shadingColour       = shadingColour;
+		this.shadingTransparency = shadingTransparency;
 	}
+			  
 }

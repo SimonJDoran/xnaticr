@@ -1,5 +1,5 @@
 /********************************************************************
-* Copyright (c) 2015, Institute of Cancer Research
+* Copyright (c) 2016, Institute of Cancer Research
 * All rights reserved.
 * 
 * Redistribution and use in source and binary forms, with or without
@@ -35,10 +35,10 @@
 
 /********************************************************************
 * @author Simon J Doran
-* Java class: IcrRoiSetDataMDComplexType.java
-* First created on Jan 13, 2016 at 4:49:53 PM
+* Java class: IcrRoiDisplayDataMDComplexType.java
+* First created on Jan 20, 2016 at 4:06:56 PM
 * 
-* Creation of metadata XML for icr:roiSetData
+* Creation of metadata XML for icr:roiDisplayData
 * 
 * Eventually, the plan for this whole package is to replace the
 * explicit writing of the XML files with a higher level interface,
@@ -50,31 +50,64 @@
 
 package xnatMetadataCreators;
 
-import java.util.ArrayList;
-import java.util.List;
+import exceptions.XMLException;
+import java.io.IOException;
 import xmlUtilities.DelayedPrettyPrinterXmlWriter;
 
-public class IcrRoiSetDataMDComplexType extends IcrGenericImageAssessmentDataMDComplexType
+public class IcrRoiDisplayDataMDComplexType extends MDComplexType
 {
-	protected String           originalUid;
-	protected String           originalDataType;
-	protected String           originalLabel;
-	protected String           originatingApplicationName;
-	protected String           originatingApplicationVersion;
-	protected Integer          nRois;
-	protected List<RoiDisplay> roiDisplayList;
-	protected String           structureSetLabel;
-	protected String           structureSetName;
-	protected String           structureSetDescription;
-	protected String           instanceNumber;
-	protected String           structureSetDate;
-	protected String           structureSetTime;
-	protected String
-			  
+	protected String roiId;
+	protected String lineType;
+	protected String lineColour;
+	protected String shadingType;
+	protected String shadingColour;
+	protected String shadingTransparency;
 	
-	
-	public void insertMetadataXML(DelayedPrettyPrinterXmlWriter dppXML)
+	@Override
+	public void insertXml(DelayedPrettyPrinterXmlWriter dppXML)
+			      throws IOException, XMLException
 	{
-		
+		dppXML.delayedWriteEntityWithText("roiID",               roiId)
+		      .delayedWriteEntityWithText("lineType",            lineType)
+				.delayedWriteEntityWithText("lineColour",          lineColour)
+				.delayedWriteEntityWithText("shadingType",         shadingType)
+				.delayedWriteEntityWithText("shadingColour",       shadingColour)
+				.delayedWriteEntityWithText("shadingTransparency", shadingTransparency);
+	}
+	
+	
+	public void setRoiId(String s)
+	{
+		roiId = s;
+	}
+	
+	
+	public void setLineType(String s)
+	{
+		lineType = s;
+	}
+	
+	
+	public void setLineColour(String s)
+	{
+		lineColour = s;
+	}
+	
+	
+	public void setShadingType(String s)
+	{
+		shadingType = s;
+	}
+	
+	
+	public void setShadingColour(String s)
+	{
+		shadingColour = s;
+	}
+	
+	
+	public void setShadingTransparency(String s)
+	{
+		shadingTransparency = s;
 	}
 }
