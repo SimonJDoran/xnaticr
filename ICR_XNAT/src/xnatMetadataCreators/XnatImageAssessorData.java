@@ -92,6 +92,7 @@ public class XnatImageAssessorData extends XnatDerivedDataMDComplexType
 			(new XnatAbstractResourceMDComplexType(ar)).insertXmlAsElement("file", dppXML);
 		}
 		dppXML.delayedEndEntity();
+	
 		
 		dppXML.delayedWriteEntity("out");
 		for (AbstractResource ar : outList)
@@ -100,7 +101,9 @@ public class XnatImageAssessorData extends XnatDerivedDataMDComplexType
 		}
 		dppXML.delayedEndEntity();
 		
+		
 		dppXML.delayedWriteEntityWithText("imageSession_ID", imageSessionId);
+		
 		
 		dppXML.delayedWriteEntity("parameters");
 		for (AdditionalField af : paramList)
@@ -108,8 +111,5 @@ public class XnatImageAssessorData extends XnatDerivedDataMDComplexType
 			(new XnatAddFieldMDComplexType(af)).insertXmlAsElement("addParam", dppXML);
 		}
 		dppXML.delayedEndEntity();
-		}
-		
-		
 	}		
 }

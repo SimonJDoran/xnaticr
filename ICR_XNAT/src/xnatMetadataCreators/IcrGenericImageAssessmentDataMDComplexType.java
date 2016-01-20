@@ -1,5 +1,5 @@
 /********************************************************************
-* Copyright (c) 2015, Institute of Cancer Research
+* Copyright (c) 2016, Institute of Cancer Research
 * All rights reserved.
 * 
 * Redistribution and use in source and binary forms, with or without
@@ -35,451 +35,92 @@
 
 /********************************************************************
 * @author Simon J Doran
-* Java class: GenericImageAssessmentDataUploader.java
-* First created on Dec 15, 2015 at 4:09:03 PM
+* Java class: IcrGenericImageAssessmentDataMDCompleType.java
+* First created on Jan 20, 2016 at 8:53:59 AM
 * 
-* Note that this class is virtually identical to
-* QCImageAssessmentDataUploader and is a direct replacement. The only
-* difference is that the XNAT complexType
-* icr:genericImageAssessmentData is an extension of xnat:imageAssessor
-* not xnat:mrAssessor, as in the case of xnat:QCimageAssessmentData.
+* Creation of metadata XML for icr:genericImageAssessmentData
+* 
+* This is virtually identical to xnat:qcAssessmentData, but based on
+* imageAssessorData not mrAssessorData.
+* 
+* Eventually, the plan for this whole package is to replace the
+* explicit writing of the XML files with a higher level interface,
+* e.g., JAXB. However, this is for a later refactoring. In addition
+* note that, at present, only a subset of xnat:experimentData is
+* implemented.
 *********************************************************************/
 
 package xnatMetadataCreators;
 
-import com.generationjava.io.xml.SimpleXmlWriter;
 import exceptions.XMLException;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
-import java.io.OutputStreamWriter;
-import java.util.ArrayList;
-import java.util.regex.Pattern;
-import org.apache.log4j.Logger;
-import org.w3c.dom.Document;
+import java.util.List;
 import xmlUtilities.DelayedPrettyPrinterXmlWriter;
-import xmlUtilities.XMLUtilities;
-import xnatDAO.XNATProfile;
-import xnatUploader.DataUploader;
+import xnatMetadataCreators.Scan.Slice;
 
-
-public abstract class IcrGenericImageAssessmentDataMDComplexType extends XnatDerivedDataMDComplexType
+public class IcrGenericImageAssessmentDataMDComplexType extends XnatImageAssessorData
 {
-   static Logger logger = Logger.getLogger(IcrGenericImageAssessmentDataMDComplexType.class);
-
-	public insertMetadataXML(DelayedPrettyPrinterXml dppXML)
+	protected String     type;
+	protected String     xnatSubjId;
+	protected String     dicomSubjName;
+	protected List<Scan> scanList;
+	
+	public void setType(String s)
 	{
-		
+		type = s;
 	}
-   
- 
-
-
-   
-   
-   /**
-    * Create the generic QCAssessmentData element.
-    * This method does not return anything, because the XML that it is building
-    * is a work in progress that will be completed by another method.
-    */
-   protected void createQCMetadataXML()
-   {
-      XMLUtilities xmlUtil = new XMLUtilities();
-      
-      // Each document needs a label unique within the project(?), which is
-      // used when creating lists in various display contexts. So, we need to
-      // check that the specified label has not been used.
-      try
-      {
-         RESTCommand = "/data/archive/projects/" + XNATProject
-                       + "/subjects/"            + XNATSubjectID
-                       + "/experiments/"         + XNATExperimentID
-                       + "/assessors"
-                       + "?format=xml";
-         result      = xnrt.RESTGetResultSet(RESTCommand);
-      }
-      catch (Exception ex)
-      {
-         errorOccurred = true;
-         errorMessage  = "Error retrieving data from XNAT while preparing\n"
-                         + "metadata for upload\n\n" + ex.getMessage();
-         logger.error(errorMessage);
-         return;
-      }
-      
-      if (result.columnContains(5, getStringField("Label")))
-      {
-         errorOccurred = true;
-         errorMessage  = "You must ensure that the label you enter is unique\n"
-                         + "so that all assessments can be correctly listed.\n"
-                         + "Please try again with a different label.";
-         logger.error(errorMessage);
-         return;
-      }
-      
-      
-      // Check for the presence of illegal characters. Note that XNAT will use
-      // the label to form a UNIX directory name and this should not contain
-      // spaces.
-      if (!Pattern.matches("\\w+", getStringField("Label")))
-      {
-         errorOccurred = true;
-         errorMessage  = "The label name must contain only alphanumeric characters\n"
-                         + "or an underscore. No other characters are permitted.\n"
-                         + "Please try again with a different label.";
-         logger.error(errorMessage);
-         return;
-      }   
-      
-      
-      // The next step is a bit of a kludge to allow a straightforward
-      // display and archiving of multiple process steps. If these are
-      // present, we separate them with the characteristic
-      // identifier !PS! If this is not found, then there is only one step.
-      ArrayList<String> provProgs     = splitProvenanceString(
-                                        getStringField("Provenance: program"));
-      ArrayList<String> provVersions  = splitProvenanceString(
-                                        getStringField("Provenance: version"));
-      ArrayList<String> provArguments = splitProvenanceString(
-                                        getStringField("Provenance: arguments"));
-      ArrayList<String> provUsers     = splitProvenanceString(
-                                        getStringField("Provenance: user"));
-      ArrayList<String> provMachines  = splitProvenanceString(
-                                        getStringField("Provenance: machine"));
-      ArrayList<String> provPlatforms = splitProvenanceString(
-                                        getStringField("Provenance: platform"));
-
-      if ((provProgs.size() != provVersions.size())  ||
-          (provProgs.size() != provArguments.size()) ||
-          (provProgs.size() != provUsers.size())     ||
-          (provProgs.size() != provMachines.size())  ||
-          (provProgs.size() != provPlatforms.size()))
-         {
-            reportError(null, "creating qcAssessmentData: provenance");
-            return;
-         }
-      
-      InvestigatorList.Investigator xninv   = getXNATInvestigators()
-                                                 .getChosenInvestigator();
-
-      
-      // Write the data out.
-      try
-      {
-         dppXML.delayedWriteEntity("date")
-                  .delayedWriteText(date)
-               .delayedEndEntity()
-               
-               .delayedWriteEntity("time")
-                  .delayedWriteText(time)
-               .delayedEndEntity()
-               
-               .writeEntity("note")
-                  .writeText(isBatchMode ? batchNote : getStringField("Note"))
-               .endEntity()
-               
-               .writeEntity("investigator")
-                  .writeEntity("title")
-                     .writeText(xninv.title)
-                  .endEntity()
-                  .writeEntity("firstname")
-                     .writeText(xninv.firstName)
-                  .endEntity()
-                  .writeEntity("lastname")
-                     .writeText(xninv.lastName)
-                  .endEntity()
-                  .writeEntity("institution")
-                     .writeText(xninv.institution)
-                  .endEntity()
-                  .writeEntity("department")
-                     .writeText(xninv.department)
-                  .endEntity()
-                  .writeEntity("email")
-                     .writeText(xninv.email)
-                  .endEntity()
-                  .writeEntity("phone")
-                     .writeText(xninv.phoneNumber)
-                  .endEntity()
-               .endEntity();
-
-         if (!provProgs.isEmpty())
-         {
-            dppXML.writeEntity("provenance");
-            for (int i=0; i<provProgs.size(); i++)
-            {
-               dppXML.writeEntity("processStep")
-                  .delayedWriteEntity("program")
-                     .delayedWriteAttribute("version", provVersions.get(i))
-                     .delayedWriteAttribute("arguments", provArguments.get(i))
-                     .delayedWriteText(provProgs.get(i))
-                  .delayedEndEntity()
-                  .delayedWriteEntity("timestamp")
-                     .delayedWriteText(date + " " + time)
-                  .delayedEndEntity()
-                  .delayedWriteEntity("cvs")
-                     .delayedWriteText("not specified")
-                  .delayedEndEntity()
-                  .delayedWriteEntity("user")
-                     .delayedWriteText(provUsers.get(i))
-                  .delayedEndEntity()
-                  .delayedWriteEntity("machine")
-                     .delayedWriteText(provMachines.get(i))
-                  .delayedEndEntity()
-                  .delayedWriteEntity("platform")
-                     .delayedWriteText(provPlatforms.get(i))
-                  .delayedEndEntity()
-               .endEntity();
-            }
-            dppXML.endEntity();
-         }
-         
-         // Note that I write out only an "in" section. The philosophy of the
-         // uploader is that all files used to create the qcAssessment must
-         // already be present in the database and the catalog file created
-         // here records them. By contrast, the upload procedure itself may
-         // create new files (such as thumbnails) and these are placed in the
-         // repository by the XNAT Uploader. XNAT automatically records all
-         // new files uploaded in its own catalog file.
-//         createInputCatalogFile();
-//         dppXML.writeEntity("in")
-//                  .writeEntity("file")
-//                     .writeEntity("tags")
-//                        .writeEntity("tag")
-//                           .writeAttribute("name", "URI")
-//                           .writeText(XNATAccessionID +"_input_catalogue.xml")
-//                        .endEntity()
-//                        .writeEntity("tag")
-//                           .writeAttribute("name", "format")
-//                           .writeText("XML")
-//                        .endEntity()
-//                     .endEntity()
-//                  .endEntity()
-//               .endEntity()
-//               .writeEntity("imageSession_ID")
-//                  .writeText(XNATExperimentID)
-//               .endEntity();
-                                
-      } 
-   
-      catch (IOException exIO) {reportError(exIO, "creating qcAssessmentData");}
-   }
-             
-           
-	
-	/**
-    * Create an XML representation of the metadata relating to the input files
-    * referred to and output files created by the application whose data we are
-    * uploading.
-    */
-   protected void createInputCatalogueFile(String format, String content, String description)
-   {      
-      String homeDir       = System.getProperty("user.home");
-      String fileSep       = System.getProperty("file.separator");
-      String XNAT_DAO_HOME = homeDir + fileSep + ".XNAT_DAO" + fileSep;
-      String catFilename   = XNAT_DAO_HOME + "temp" + fileSep 
-                              + XNATAccessionID + "_input_catalogue.xml";
-      File   catFile       = new File(catFilename);
-      
-      try
-      {
-         File parent = catFile.getParentFile();
-         if (!parent.exists()) parent.mkdirs();
-         
-         DelayedPrettyPrinterXmlWriter ppXML
-              = new DelayedPrettyPrinterXmlWriter(
-                   new SimpleXmlWriter(
-                      new FileWriter(catFile)));
-         
-         ppXML.setIndent("   ")
-               .writeXmlVersion()
-               .writeEntity("cat:Catalog")
-               .writeAttribute("xmlns:cat", "http://nrg.wustl.edu/catalog")
-               .writeAttribute("xmlns:xsi", "http://www.w3.org/2001/XMLSchema-instance");
-               
-              
-         // Now add the files, using the "delayed" method so that an empty
-         // "cat:entries" section is not written if there are not files.
-         ArrayList<String> catEntries = getInputCatEntries();
-			ppXML.writeEntity("cat:entries");
-         
-         for (String fileURI : catEntries)
-         {         
-            ppXML.delayedWriteEntity("cat:entry")
-               .delayedWriteAttribute("URI", fileURI)
-               .delayedWriteAttribute("format", format)
-               .delayedWriteAttribute("content", content)
-					.delayedWriteAttribute("description", description)
-            .delayedEndEntity();
-         }
-         ppXML.endEntity();
-         ppXML.endEntity();
-         ppXML.close();
-      }
-      catch (Exception ex)
-      {
-         reportError(ex, "create input catalogue file");
-      }
-      
-      if (!errorOccurred)
-		{
-			DataUploader.XNATResourceFile rf	= new DataUploader.XNATResourceFile();
-			rf.content				= "FILE_CATALOGUE";
-			rf.description			= "catalogue of primary data files contributing to this region-of-interest";
-			rf.format				= "XML";
-			rf.file					= catFile;
-			rf.name					= "INPUT_CATALOGUE";
-			rf.inOut					= "in";
-			auxiliaryFiles.add(rf);
-		}
-   }
-   
-
-	
-	/**
-	 * Get the list of files containing the input data used in the creation of this
-	 * XNAT assessor. Each subclass implements its own method for populating the
-	 * list returned.
-	 * @return 
-	 */
-   protected abstract ArrayList<String> getInputCatEntries();
-   
 	
 	
-	/**
-    *  Add the list of scans (which might potentially be empty).
-    */
-   protected void createScanListXML()
-   {
-      try
-      {
-         dppXML.delayedWriteEntity("scans");
-
-         for (String scan : XNATScanID)
-         {
-            dppXML.delayedWriteEntity("scan")
-                  .delayedWriteAttribute("id", scan)
-            .delayedEndEntity();
-         }
-         dppXML.delayedEndEntity();
-      }
-      catch (IOException exIO) {reportError(exIO, "create scan list");}
-   }
-   
-   
-   
-   /**
-    * Allow subclasses of QCAssessmentDataUploader to record data specific to
-    * the application whose data we are uploading.
-    */
-   protected void createSpecificMetadataXML()
-   {
-      // For the xnat:qcAssessmentData there are not specific additional fields.
-   }
-  
-   
-   
-   /**
-    * Close open elements and finish writing XML.
-    */
-   protected void finishWritingXML()
-   {
-      try
-      {
-         dppXML.endEntity();
-         dppXML.close();
-      }
-      catch (IOException exIO) {reportError(exIO, "finish writing XML");}
-   }
-   
-  
-   
-   /**
-    * Retrieve the XML describing the metadata from the output stream.
-    * @return a Document containing the information
-    */
-   protected Document getXMLDocument()
-   {
-      Document metaDoc = null;
-      try
-      {
-         ByteArrayInputStream bis = new ByteArrayInputStream(baos.toByteArray());     
-         metaDoc = (new XMLUtilities()).getDOMDocument(bis);
-      }
-      catch (XMLException exXML)
-      {
-         reportError(exXML, "convert OutputStream to Document");
-      }
-      
-      return metaDoc;
-   }
-
-   
-   
-   /**
-    * Error reporting method that takes some often repeated lines out of the
-    * other methods
-    * @param ex the Exception that gave rise to this call
-    * @param operation a String giving details of what the program was doing
-    */
-   protected void reportError(Exception ex, String operation)
-   {
-      logger.error("Error during operation " + operation + " of metadata XML creation.");
-      
-      errorOccurred = true;
-      errorMessage  = "Unable to create XML document required for uploading the data.\n";
-      errorMessage  = "Error during operation " + operation + "\n\n";
-      
-      if (ex == null) return;
-      if (ex.getMessage() != null) errorMessage += "The detailed error message was:\n"
-                                                     + ex.getMessage();
-   }
-   
-   
-   
-   @Override
-   public boolean rightMetadataPresent()
-   {
-      return (!getStringField("Label").equals("")) &&
-             (!getStringField("Note").equals(""))  &&
-             (!XNATSubjectID.equals(""))           &&
-             (!XNATExperimentID.equals(""))        &&
-             (!XNATScanID.get(0).equals(""));
-   }
-   
+	public void setXnatSubjId(String s)
+	{
+		xnatSubjId = s;
+	}
 	
-   
-   @Override
-   public String[] getRequiredFields()
-   {
-      return new String[]{"Label", "Note"};
-   }
-   
 	
-   
-   @Override
-   public String getUploadRootCommand(String uploadItem)
-   {
-		return "/data/archive/projects/" + XNATProject
-             + "/subjects/"            + XNATSubjectID
-             + "/experiments/"         + XNATExperimentID
-             + "/assessors/"           + uploadItem;
-   }
-
-
-   @Override
-   public String getRootElement()
-   {
-      return "GenericImageAssessment";
-   }
-   
-   
-   @Override
-   public String getRootComplexType()
-   {
-      return "icr:genericImageAssessmentData";
-   }
-
+	public void setDicomSubjName(String s)
+	{
+		dicomSubjName = s;
+	}
+	
+	
+	public void setScanList(List<Scan> lsc)
+	{
+		scanList = lsc;
+	}
+	
+	
+	@Override
+	public void insertXml(DelayedPrettyPrinterXmlWriter dppXML)
+			      throws IOException, XMLException
+	{
+		dppXML.delayedWriteAttribute("type", type)
+				.delayedWriteEntityWithText("xnatSubjID",    xnatSubjId)
+				.delayedWriteEntityWithText("dicomSubjName", dicomSubjName)
+				.delayedWriteEntity("scans");
+		
+				for (Scan scan : scanList)
+				{
+					dppXML.delayedWriteEntity("scan")
+							.delayedWriteAttribute("id", scan.id)
+					      .delayedWriteEntity("sliceQC");
+					
+					      for (Slice slice : scan.sliceList)
+							{
+								dppXML.delayedWriteEntity("slice")
+										   .delayedWriteAttribute("number", slice.number);
+										   if (slice.sliceStatistics != null)
+											{
+												slice.sliceStatistics.insertXmlAsElement("sliceStatistics", dppXML);
+											}
+								dppXML.delayedEndEntity();
+							}
+							
+					if (scan.scanStatistics != null)
+					{
+						scan.scanStatistics.insertXmlAsElement("scanStatistics", dppXML);
+					}
+					
+					dppXML.delayedEndEntity();
+				}		
+	}
 }
-

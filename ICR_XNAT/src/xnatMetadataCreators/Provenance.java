@@ -102,6 +102,11 @@ public class Provenance
 		}
 	}
 	
+	// Allow users two different ways to instantiate the two Provenance classes
+	// below: (a) no arguments and just set the variables; (b) provide all the
+	// variables in an argument list. Here the objects are really little more than
+	// a structure of variables - there is no real "implementation", so no reason
+	// for complicating with getter and setter methods.
 	public class ProvenanceEntry
    {
       public Program       program;
@@ -135,7 +140,13 @@ public class Provenance
 		
    public List<ProvenanceEntry> entries;
 	
-   public Provenance(List<Program>       programs,
+   
+	public Provenance()
+	{
+		entries = new ArrayList<>();
+	}
+	
+	public Provenance(List<Program>       programs,
                      List<String>        timestamps,
                      List<String>        cvss,
                      List<String>        users,
@@ -143,8 +154,7 @@ public class Provenance
                      List<Platform>      platforms,
                      List<Compiler>      compilers,
 	                  List<List<Library>> libraryLists)
-   {
-     
+   { 
 		entries = new ArrayList<>();
 
 		// It is a programming error if any of the fields are null

@@ -1,5 +1,5 @@
 /********************************************************************
-* Copyright (c) 2015, Institute of Cancer Research
+* Copyright (c) 2012, Institute of Cancer Research
 * All rights reserved.
 * 
 * Redistribution and use in source and binary forms, with or without
@@ -33,37 +33,46 @@
 * OF THE POSSIBILITY OF SUCH DAMAGE.
 *********************************************************************/
 
-/********************************************************************
+/*********************************************************************
 * @author Simon J Doran
-* Java class: IcrRoiSetDataMDComplexType.java
-* First created on Jan 13, 2016 at 4:49:53 PM
+* Java class: Scan.java
+* First created on Jan 20, 2016 at 2:37:31 PM
 * 
-* Creation of metadata XML for icr:roiSetData
-* 
-* Eventually, the plan for this whole package is to replace the
-* explicit writing of the XML files with a higher level interface,
-* e.g., JAXB. However, this is for a later refactoring. In addition
-* note that, at present, only a subset of xnat:experimentData is
-* implemented.
+* Data structure parallelling the scan element of
+* xnat:qcAssessmentData
 *********************************************************************/
 
 
 package xnatMetadataCreators;
 
 import java.util.ArrayList;
-import xmlUtilities.DelayedPrettyPrinterXmlWriter;
+import java.util.List;
 
-public class IcrRoiSetDataMDComplexType extends IcrGenericImageAssessmentDataMDComplexType
+public class Scan
 {
-	protected String  originalUid;
-	protected String  originalDataType;
-	protected String  originalLabel;
-	protected String  originatingApplicationName;
-	protected String  originatingApplicationVersion;
-	protected Integer nRois;
-	
-	public void insertMetadataXML(DelayedPrettyPrinterXmlWriter dppXML)
+	public class Slice
 	{
-		
+		String        number;
+		MDComplexType sliceStatistics;
+	}
+	
+	public String        id;
+	public List<Slice>   sliceList;
+	public MDComplexType scanStatistics;
+	
+	public Scan()
+	{
+		sliceList = new ArrayList<>();
+	}
+	
+	public void setId(String id)
+	{
+		this.id = id;
+	}
+	
+	
+	public void setScanStatistics(MDComplexType mdct)
+	{
+		scanStatistics = mdct;
 	}
 }

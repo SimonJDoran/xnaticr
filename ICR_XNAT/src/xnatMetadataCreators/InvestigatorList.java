@@ -83,6 +83,11 @@ public class InvestigatorList
 	// internally and is hidden.
 	private List<Investigator> invList;
    private int chosenInvNum;
+	
+	public InvestigatorList()
+	{
+		invList = new ArrayList<>();
+	}
 
    public InvestigatorList(List<String> titles,
                            List<String> firstNames,
