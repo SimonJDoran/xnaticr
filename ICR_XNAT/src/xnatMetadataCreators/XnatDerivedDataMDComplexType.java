@@ -54,42 +54,16 @@ import java.io.IOException;
 import xmlUtilities.DelayedPrettyPrinterXmlWriter;
 
 public class XnatDerivedDataMDComplexType extends XnatExperimentDataMDComplexType
-{	
+{
+	Provenance prov;
+	
 	@Override
-	public void insertMetaDataXML(DelayedPrettyPrinterXmlWriter dppXML)
+	public void insertXml(DelayedPrettyPrinterXmlWriter dppXML)
 			 throws IOException, XMLException
 	{
-		super.insertMetaDataXML(dppXML);
-		
-		if (!provProgs.isEmpty())
-		{
-			dppXML.writeEntity("provenance");
-			for (int i=0; i<provProgs.size(); i++)
-			{
-				dppXML.writeEntity("processStep")
-					.delayedWriteEntity("program")
-						.delayedWriteAttribute("version", provVersions.get(i))
-						.delayedWriteAttribute("arguments", provArguments.get(i))
-						.delayedWriteText(provProgs.get(i))
-					.delayedEndEntity()
-					.delayedWriteEntity("timestamp")
-						.delayedWriteText(date + " " + time)
-					.delayedEndEntity()
-					.delayedWriteEntity("cvs")
-						.delayedWriteText("not specified")
-					.delayedEndEntity()
-					.delayedWriteEntity("user")
-						.delayedWriteText(provUsers.get(i))
-					.delayedEndEntity()
-					.delayedWriteEntity("machine")
-						.delayedWriteText(provMachines.get(i))
-					.delayedEndEntity()
-					.delayedWriteEntity("platform")
-						.delayedWriteText(provPlatforms.get(i))
-					.delayedEndEntity()
-				.endEntity();
-			}
-			dppXML.endEntity();
-		}
+		super.insertXml(dppXML);
+	
+		ProvProcessMDComplexType ppct = new ProvProcessMDComplexType(prov);
+		ppct.insertXmlAsElement("provenance", null, dppXML);	
 	}
 }

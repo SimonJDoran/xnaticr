@@ -50,14 +50,58 @@
 
 package xnatMetadataCreators;
 
+import com.generationjava.io.xml.SimpleXmlWriter;
 import exceptions.XMLException;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
 import xmlUtilities.DelayedPrettyPrinterXmlWriter;
 
 public abstract class MDComplexType
 {
-	void insertMetaDataXML(DelayedPrettyPrinterXmlWriter dppXML)
-			         throws IOException, XMLException
-	{		
+	public DelayedPrettyPrinterXmlWriter createWriter()
+	{
+      return new DelayedPrettyPrinterXmlWriter(
+                 new SimpleXmlWriter(
+                     new OutputStreamWriter(
+							    new ByteArrayOutputStream())));
 	}
+	
+	
+	public void createXmlAsRootElement(String rootElementName,
+												  String id,
+												  DelayedPrettyPrinterXmlWriter dppXML)
+		         throws IOException, XMLException
+	{
+		dppXML.setIndent("   ")
+				.writeXmlVersion()
+				.writeEntity(rootElementName)
+				.writeAttribute("xmlns:xnat", "http://nrg.wustl.edu/xnat")
+				.writeAttribute("xmlns:xsi",  "http://www.w3.org/2001/XMLSchema-instance")
+				.writeAttribute("xmlns:prov", "http://www.nbirn.net/prov")
+				.writeAttribute("xmlns:icr",  "http://www.icr.ac.uk/icr")
+				.writeAttribute("ID",         id);
+		
+		      insertXml(dppXML);
+		
+		dppXML.endEntity();
+	}
+	
+	
+	public void insertXmlAsElement(String elementName,
+											 String id,
+                                  DelayedPrettyPrinterXmlWriter dppXML)
+		         throws IOException, XMLException
+	{
+		dppXML.delayedWriteEntity(elementName)
+			   .delayedWriteAttribute("ID", id);
+			
+		      insertXml(dppXML);
+				
+		dppXML.delayedEndEntity();
+	}
+	
+	
+	abstract void insertXml(DelayedPrettyPrinterXmlWriter dppXML)
+			        throws IOException, XMLException;
 }

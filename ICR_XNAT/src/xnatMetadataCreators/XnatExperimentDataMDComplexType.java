@@ -56,17 +56,71 @@ import xmlUtilities.DelayedPrettyPrinterXmlWriter;
 
 public class XnatExperimentDataMDComplexType extends MDComplexType
 {
-	protected String                        date;
-	protected String                        time;
-	protected String                        note;
+	protected String project;
+	protected String visit;
+	protected String visit_id;
+	protected String version;
+	protected String original;
+	protected String protocol;
+	protected String label;
+	protected String date;
+	protected String time;
+	protected String note;
 	protected InvestigatorList.Investigator investigator;
+	protected String investigatorID;
 	
 	@Override
-	public void insertMetaDataXML(DelayedPrettyPrinterXmlWriter dppXML)
+	public void createXmlAsRootElement(String rootElementName,
+												  String id,
+												  DelayedPrettyPrinterXmlWriter dppXML)
+		         throws IOException, XMLException
+	{
+		// Note that, below, delayedWriteAttribute is used for items that
+		// we expect to be absent on some occasions, whereas ID and
+		// project should always be defined.
+		dppXML.setIndent("   ")
+				.writeXmlVersion()
+				.writeEntity(rootElementName)
+				.writeAttribute("xmlns:xnat",      "http://nrg.wustl.edu/xnat")
+				.writeAttribute("xmlns:xsi",       "http://www.w3.org/2001/XMLSchema-instance")
+				.writeAttribute("xmlns:prov",      "http://www.nbirn.net/prov")
+				.writeAttribute("xmlns:icr",       "http://www.icr.ac.uk/icr")
+				.writeAttribute("ID",              id)
+		      .writeAttribute("project",         project)
+				.delayedWriteAttribute("visit_id", visit_id)
+				.delayedWriteAttribute("visit",    visit)
+			   .delayedWriteAttribute("version",  version)
+				.delayedWriteAttribute("label",    label);
+		
+		      insertXml(dppXML);
+		
+		dppXML.endEntity();
+	}
+	
+	
+	public void insertXmlAsElement(String elementName,
+											 String id,
+                                  DelayedPrettyPrinterXmlWriter dppXML)
+		         throws IOException, XMLException
+	{
+		dppXML.delayedWriteEntity(elementName)
+			   .delayedWriteAttribute("ID",       id)
+		      .delayedWriteAttribute("project",  project)
+				.delayedWriteAttribute("visit_id", visit_id)
+				.delayedWriteAttribute("visit",    visit)
+			   .delayedWriteAttribute("version",  version)
+				.delayedWriteAttribute("label",    label);
+			
+		      insertXml(dppXML);
+				
+		dppXML.delayedEndEntity();
+	}
+	
+	
+	@Override
+	public void insertXml(DelayedPrettyPrinterXmlWriter dppXML)
 			      throws IOException, XMLException
 	{
-		super.insertMetaDataXML(dppXML);
-		
 		dppXML.delayedWriteEntity("date")
 					.delayedWriteText(date)
 				.delayedEndEntity()
@@ -77,31 +131,11 @@ public class XnatExperimentDataMDComplexType extends MDComplexType
 
 				.delayedWriteEntity("note")
 					.delayedWriteText(note)
-				.endEntity()
-
-				.writeEntity("investigator")
-					.writeEntity("title")
-						.writeText(investigator.title)
-					.endEntity()
-					.writeEntity("firstname")
-						.writeText(investigator.firstName)
-					.endEntity()
-					.writeEntity("lastname")
-						.writeText(investigator.lastName)
-					.endEntity()
-					.writeEntity("institution")
-						.writeText(investigator.institution)
-					.endEntity()
-					.writeEntity("department")
-						.writeText(investigator.department)
-					.endEntity()
-					.writeEntity("email")
-						.writeText(investigator.email)
-					.endEntity()
-					.writeEntity("phone")
-						.writeText(investigator.phoneNumber)
-					.endEntity()
-				.endEntity();		
+				.delayedEndEntity();
+		
+				XnatInvestigatorDataMDComplexType xid = new XnatInvestigatorDataMDComplexType();
+				xid.setInvestigator(investigator);
+				xid.insertXmlAsElement("investigator", investigatorID, dppXML);
 	}
 	
 	public void setDate(String s)
@@ -110,9 +144,20 @@ public class XnatExperimentDataMDComplexType extends MDComplexType
 	}
 	
 	
+	public void setLabel(String s)
+	{
+		label = s;
+	}
+	
 	public void setNote(String s)
 	{
 		note = s;
+	}
+	
+	
+	public void setProject(String s)
+	{
+		project = s;
 	}
 	
 	
@@ -122,8 +167,27 @@ public class XnatExperimentDataMDComplexType extends MDComplexType
 	}
 	
 	
-	public void setInvestigator(InvestigatorList.Investigator inv)
+	public void setVersion(String s)
 	{
-		investigator = inv;
+		version = s;
+	}
+	
+	
+	public void setVisit(String s)
+	{
+		visit = s;
+	}
+	
+	
+	public void setVisitID(String s)
+	{
+		visit_id = s;
+	}
+	
+	
+	public void setInvestigator(InvestigatorList.Investigator inv, String invID)
+	{
+		investigator   = inv;
+		investigatorID = invID;
 	}
 }

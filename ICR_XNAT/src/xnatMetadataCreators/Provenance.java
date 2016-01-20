@@ -46,33 +46,81 @@ package xnatMetadataCreators;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ProvenanceList
+public class Provenance
 {
 	private static final String PROV_STRING = "_!PS!_";
 	private static final String LIB_STRING  = "_!LS!_";
 	private static final String UNKNOWN_STRING = "Unknown";
 			  
+	public class Program
+	{
+		public String name;
+		public String version;
+		public String arguments;
+		
+		public Program(String name, String version, String arguments)
+		{
+			this.name      = name;
+			this.version   = version;
+			this.arguments = arguments;
+		}
+	}
+	
+	public class Platform
+	{
+		public String name;
+		public String version;
+		
+		public Platform(String name, String version)
+		{
+			this.name    = name;
+			this.version = version;
+		}
+	}
+	
+	public class Compiler
+	{
+		public String name;
+		public String version;
+		
+		public Compiler(String name, String version)
+		{
+			this.name    = name;
+			this.version = version;
+		}
+	}
+	
+	public class Library
+	{
+		public String name;
+		public String version;
+		
+		public Library(String name, String version)
+		{
+			this.name    = name;
+			this.version = version;
+		}
+	}
+	
 	public class ProvenanceEntry
    {
-      public String program;
-      public String timestamp;
-      public String cvs;
-      public String user;
-      public String machine;
-      public String platform;
-		public String compiler;
-		public List<String> libraryList;
+      public Program       program;
+      public String        timestamp;
+      public String        cvs;
+      public String        user;
+      public String        machine;
+      public Platform      platform;
+		public Compiler      compiler;
+		public List<Library> libraryList;
       
-      public ProvenanceEntry(String programName,
-									  String programVersion,
-									  String programArguments,
-                             String timestamp,
-                             String cvs,
-                             String user,
-                             String machine,
-                             String platform,
-                             String compiler,
-								     List<String> libraryList)
+      public ProvenanceEntry(Program       program,
+                             String        timestamp,
+                             String        cvs,
+                             String        user,
+                             String        machine,
+                             Platform      platform,
+                             Compiler      compiler,
+								     List<Library> libraryList)
       {
          this.program     = program;
          this.timestamp   = timestamp;
@@ -85,19 +133,19 @@ public class ProvenanceList
       }
    }
 		
-   private List<ProvenanceEntry> provList;
+   public List<ProvenanceEntry> entries;
 	
-   public ProvenanceList(List<String> programs,
-                         List<String> timestamps,
-                         List<String> cvss,
-                         List<String> users,
-                         List<String> machines,
-                         List<String> platforms,
-                         List<String> compilers,
-	                      List<List<String>> libraryLists)
+   public Provenance(List<Program>       programs,
+                     List<String>        timestamps,
+                     List<String>        cvss,
+                     List<String>        users,
+                     List<String>        machines,
+                     List<Platform>      platforms,
+                     List<Compiler>      compilers,
+	                  List<List<Library>> libraryLists)
    {
      
-		provList = new ArrayList<>();
+		entries = new ArrayList<>();
 
 		// It is a programming error if any of the fields are null
 		// or if the constituent lists have different numbers of
@@ -106,24 +154,24 @@ public class ProvenanceList
 		// to have zero length.
 		for (int i=0; i<programs.size(); i++)
 		{
-			provList.add(new ProvenanceEntry(programs.get(i),
-												      timestamps.get(i),
-												      cvss.get(i),
-				                              users.get(i),
-				                              machines.get(i),
-				                              platforms.get(i),
-				                              compilers.get(i),
-							                     libraryLists.get(i)));
+			entries.add(new ProvenanceEntry(programs.get(i),
+												     timestamps.get(i),
+												     cvss.get(i),
+				                             users.get(i),
+				                             machines.get(i),
+				                             platforms.get(i),
+				                             compilers.get(i),
+							                    libraryLists.get(i)));
 
       }
    }
    
    public ProvenanceEntry getProvenanceEntry(int n) throws IllegalArgumentException
    {
-      if ((n < 0) || (n>provList.size()-1))
+      if ((n < 0) || (n>entries.size()-1))
 			throw new IllegalArgumentException("Invalid investigator number");
 		
-      return provList.get(n);
+      return entries.get(n);
    }
    
 	/**
