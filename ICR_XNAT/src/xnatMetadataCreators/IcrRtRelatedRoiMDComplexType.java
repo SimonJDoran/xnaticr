@@ -35,10 +35,10 @@
 
 /********************************************************************
 * @author Simon J Doran
-* Java class: XnatAddFieldMDComplexType.java
-* First created on Jan 20, 2016 at 12:00:11 PM
+* Java class: IcrRtRelatedRoiMDComplexType.java
+* First created on Jan 21, 2016 at 4:54:04 PM
 * 
-* Creation of metadata XML for xnat:addField
+* Creation of metadata XML for icr:rtRelatedRoi
 * 
 * Eventually, the plan for this whole package is to replace the
 * explicit writing of the XML files with a higher level interface,
@@ -51,31 +51,32 @@ import exceptions.XMLException;
 import java.io.IOException;
 import xmlUtilities.DelayedPrettyPrinterXmlWriter;
 
-public class XnatAddFieldMDComplexType extends MDComplexType
+public class IcrRtRelatedRoiMDComplexType extends MDComplexType
 {
-	protected AdditionalField af;
+	protected RtRelatedRoi rrr;
 	
-	public XnatAddFieldMDComplexType(AdditionalField af)
+	public IcrRtRelatedRoiMDComplexType(RtRelatedRoi rrr)
 	{
-		this.af = af;
+		this.rrr = rrr;
 	}
 	
-	public XnatAddFieldMDComplexType()
+	
+	public IcrRtRelatedRoiMDComplexType()
 	{
-		af = new AdditionalField();
+		rrr = new RtRelatedRoi();
 	}	
 	
-	public void setAdditionalField(AdditionalField af)
+	
+	public void setAdditionalField(RtRelatedRoi rrr)
 	{
-		this.af = af;
+		this.rrr = rrr;
 	}
 	
 	@Override
 	public void insertXml(DelayedPrettyPrinterXmlWriter dppXML)
 			      throws IOException, XMLException
 	{		
-		dppXML.delayedWriteAttribute("name", af.name)
-				.delayedWriteText(af.value);
+		dppXML.delayedWriteEntityWithText("referencedRoiNumber", rrr.referencedRoiNumber)
+				.delayedWriteEntityWithText("rtRoiRelationship",   rrr.rtRoiRelationship);
 	}
-			   
 }

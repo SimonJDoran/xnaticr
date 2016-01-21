@@ -35,47 +35,26 @@
 
 /********************************************************************
 * @author Simon J Doran
-* Java class: XnatAddFieldMDComplexType.java
-* First created on Jan 20, 2016 at 12:00:11 PM
+* Java class: ElementalComposition.java
+* First created on Jan 21, 2016 at 5:04:18 PM
 * 
-* Creation of metadata XML for xnat:addField
-* 
-* Eventually, the plan for this whole package is to replace the
-* explicit writing of the XML files with a higher level interface,
-* e.g., JAXB. However, this is for a later refactoring.
+* Data structure parallelling the icr:elementalCompositionData
+* element and used in conjunction with
+* IcrElementalCompositionDataMDComplexType.
 *********************************************************************/
 
 package xnatMetadataCreators;
 
-import exceptions.XMLException;
-import java.io.IOException;
-import xmlUtilities.DelayedPrettyPrinterXmlWriter;
-
-public class XnatAddFieldMDComplexType extends MDComplexType
+public class ElementalComposition
 {
-	protected AdditionalField af;
+	public String atomicNumber;
+	public String atomicMassFraction;
 	
-	public XnatAddFieldMDComplexType(AdditionalField af)
+	public ElementalComposition(String an, String amf)
 	{
-		this.af = af;
+		atomicNumber       = an;
+		atomicMassFraction = amf;
 	}
 	
-	public XnatAddFieldMDComplexType()
-	{
-		af = new AdditionalField();
-	}	
-	
-	public void setAdditionalField(AdditionalField af)
-	{
-		this.af = af;
-	}
-	
-	@Override
-	public void insertXml(DelayedPrettyPrinterXmlWriter dppXML)
-			      throws IOException, XMLException
-	{		
-		dppXML.delayedWriteAttribute("name", af.name)
-				.delayedWriteText(af.value);
-	}
-			   
+	public ElementalComposition() {}
 }

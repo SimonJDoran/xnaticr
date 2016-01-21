@@ -49,26 +49,39 @@
 
 package xnatMetadataCreators;
 
+import java.util.List;
+
 public class IcrRoiDataMDComplexType extends IcrGenericImageAssessmentDataMDComplexType
 {
-	protected List<String> associatedRoiSetIDs;
-	protected String       originalUid;
-	protected String       originalDataType;
-	protected String       originalLabel;
-	protected String       originatingApplicationName;
-	protected String       originatingApplicationVersion;
-	protected String       originalContainsMultipleRois;
-	protected String       roiNumberInOriginal;
-	protected String       roiDisplayColorInStructureSet;
-	protected String       referencedFrameOfReferenceUid;
-	protected String       roiName;
-	protected String       roiDescription;
-	protected String       roiVolume;
-	protected String       roiGenerationAlgorithm;
-	protected String       roiGenerationDescription;
-	protected String       roiGeometricType;
-	protected String       nDicomContours;
-	protected String       derivationCode;
-	protected List<RtRelatedRoi>       roiName;
-	protected String       roiDescription;
+	protected List<String>              associatedRoiSetIDList;
+	protected String                    originalUid;
+	protected String                    originalDataType;
+	protected String                    originalLabel;
+	protected String                    originatingApplicationName;
+	protected String                    originatingApplicationVersion;
+	protected String                    originalContainsMultipleRois;
+	protected String                    roiNumberInOriginal;
+	protected String                    roiDisplayColorInStructureSet;
+	protected String                    referencedFrameOfReferenceUid;
+	protected String                    roiName;
+	protected String                    roiDescription;
+	protected String                    roiVolume;
+	protected String                    roiGenerationAlgorithm;
+	protected String                    roiGenerationDescription;
+	protected String                    roiGeometricType;
+	protected String                    nDicomContours;
+	protected String                    derivationCode;
+	protected String                    observationNumber;
+	protected String                    observationLabel;
+	protected String                    observationDescription;
+	protected List<RtRelatedRoi>        rrrList;
+	protected String                    rtRoiInterpretedType;
+	protected String                    roiInterpreter;
+	protected String                    roiMaterialId;
+	protected List<RoiPhysicalProperty> rppList;
+	protected List<String>              associatedRoiParameterStatisticsList;
+	
+	
+	
+	
 }

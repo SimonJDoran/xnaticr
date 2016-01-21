@@ -33,49 +33,31 @@
 * OF THE POSSIBILITY OF SUCH DAMAGE.
 *********************************************************************/
 
-/********************************************************************
+/*********************************************************************
 * @author Simon J Doran
-* Java class: XnatAddFieldMDComplexType.java
-* First created on Jan 20, 2016 at 12:00:11 PM
+* Java class: RoiPhysicalProperty.java
+* First created on Jan 21, 2016 at 5:18:28 PM
 * 
-* Creation of metadata XML for xnat:addField
-* 
-* Eventually, the plan for this whole package is to replace the
-* explicit writing of the XML files with a higher level interface,
-* e.g., JAXB. However, this is for a later refactoring.
+* Data structure parallelling the icr:roiPhysicalProperty element and
+* used in conjunction with icrRoiPhysicalPropertyMDComplexType.java
 *********************************************************************/
 
 package xnatMetadataCreators;
 
-import exceptions.XMLException;
-import java.io.IOException;
-import xmlUtilities.DelayedPrettyPrinterXmlWriter;
+import java.util.List;
 
-public class XnatAddFieldMDComplexType extends MDComplexType
+public class RoiPhysicalProperty
 {
-	protected AdditionalField af;
+	public String                     propertyName;
+	public String                     propertyValue;
+	public List<ElementalComposition> elementalCompositionList;
 	
-	public XnatAddFieldMDComplexType(AdditionalField af)
+	public RoiPhysicalProperty() {}
+	
+	public RoiPhysicalProperty(String name, String value, List<ElementalComposition> ec)
 	{
-		this.af = af;
+		this.propertyName             = name;
+		this.propertyValue            = value;
+		this.elementalCompositionList = ec;
 	}
-	
-	public XnatAddFieldMDComplexType()
-	{
-		af = new AdditionalField();
-	}	
-	
-	public void setAdditionalField(AdditionalField af)
-	{
-		this.af = af;
-	}
-	
-	@Override
-	public void insertXml(DelayedPrettyPrinterXmlWriter dppXML)
-			      throws IOException, XMLException
-	{		
-		dppXML.delayedWriteAttribute("name", af.name)
-				.delayedWriteText(af.value);
-	}
-			   
 }

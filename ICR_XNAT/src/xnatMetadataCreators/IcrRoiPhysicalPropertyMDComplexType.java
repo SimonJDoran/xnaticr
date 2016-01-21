@@ -35,10 +35,10 @@
 
 /********************************************************************
 * @author Simon J Doran
-* Java class: XnatAddFieldMDComplexType.java
-* First created on Jan 20, 2016 at 12:00:11 PM
+* Java class: IcrRoiPhysicalPropertyMDComplexType.java
+* First created on Jan 21, 2016 at 5:24:26 PM
 * 
-* Creation of metadata XML for xnat:addField
+* Creation of metadata XML for icr:roiPhysicalProperty
 * 
 * Eventually, the plan for this whole package is to replace the
 * explicit writing of the XML files with a higher level interface,
@@ -51,31 +51,36 @@ import exceptions.XMLException;
 import java.io.IOException;
 import xmlUtilities.DelayedPrettyPrinterXmlWriter;
 
-public class XnatAddFieldMDComplexType extends MDComplexType
+public class IcrRoiPhysicalPropertyMDComplexType extends MDComplexType
 {
-	protected AdditionalField af;
+	protected RoiPhysicalProperty rpp;
 	
-	public XnatAddFieldMDComplexType(AdditionalField af)
+	public IcrRoiPhysicalPropertyMDComplexType(RoiPhysicalProperty rpp)
 	{
-		this.af = af;
+		this.rpp = rpp;
 	}
 	
-	public XnatAddFieldMDComplexType()
-	{
-		af = new AdditionalField();
-	}	
+	public IcrRoiPhysicalPropertyMDComplexType() {}
 	
-	public void setAdditionalField(AdditionalField af)
+	
+	public void setRoiPhysicalProperty(RoiPhysicalProperty rpp)
 	{
-		this.af = af;
+		this.rpp = rpp;
 	}
+	
 	
 	@Override
 	public void insertXml(DelayedPrettyPrinterXmlWriter dppXML)
 			      throws IOException, XMLException
 	{		
-		dppXML.delayedWriteAttribute("name", af.name)
-				.delayedWriteText(af.value);
+		dppXML.delayedWriteEntityWithText("propertyName",  rpp.propertyName)
+				.delayedWriteEntityWithText("propertyValue", rpp.propertyValue);
+		
+		dppXML.delayedWriteEntity("elementalCompositionList");
+		      for (ElementalComposition ec : rpp.elementalCompositionList)
+				{
+					(new IcrElementalCompositionDataMDComplexType(ec)).insertXmlAsElement("elementalComposition", dppXML);
+				}
+		dppXML.delayedEndEntity();		  
 	}
-			   
 }

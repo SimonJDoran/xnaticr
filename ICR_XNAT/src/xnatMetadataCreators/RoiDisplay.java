@@ -39,7 +39,7 @@
 * First created on Jan 20, 2016 at 4:20:18 PM
 * 
 * Data structure parallelling the icr:roiDisplay element and used in
-* conjunction with icrRoiDisplayDataMDComplexType.
+* conjunction with icrRoiDisplayDataMDComplexType.java
 *********************************************************************/
 
 package xnatMetadataCreators;
@@ -65,6 +65,5 @@ public class RoiDisplay
 		this.shadingType         = shadingType;
 		this.shadingColour       = shadingColour;
 		this.shadingTransparency = shadingTransparency;
-	}
-			  
+	}			  
 }
