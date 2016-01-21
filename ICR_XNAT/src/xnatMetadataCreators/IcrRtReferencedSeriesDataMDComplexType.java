@@ -44,9 +44,14 @@
 * explicit writing of the XML files with a higher level interface,
 * e.g., JAXB. However, this is for a later refactoring.
 *********************************************************************/
+
 package xnatMetadataCreators;
 
-public class IcrRtReferencedSeriesDataMDComplexType
+import exceptions.XMLException;
+import java.io.IOException;
+import xmlUtilities.DelayedPrettyPrinterXmlWriter;
+
+public class IcrRtReferencedSeriesDataMDComplexType extends MDComplexType
 {
 	protected RtReferencedSeries rrs;
 	
@@ -57,8 +62,23 @@ public class IcrRtReferencedSeriesDataMDComplexType
 	
 	public IcrRtReferencedSeriesDataMDComplexType() {}
 	
+	
 	public void setRtReferencedSeries(RtReferencedSeries rrs)
 	{
 		this.rrs = rrs;
+	}
+	
+	
+	@Override
+	public void insertXml(DelayedPrettyPrinterXmlWriter dppXML)
+			      throws IOException, XMLException
+	{		
+		dppXML.delayedWriteEntityWithText("seriesInstanceUID", rrs.seriesInstanceUid)
+				.delayedWriteEntity("ContourImages");
+		
+		      for (ContourImage ci : rrs.contourImageList)
+				{
+					(new IcrContourImageDataMDComplexType(ci)).insertXmlAsElement("ContourImage", dppXML);
+				}
 	}
 }

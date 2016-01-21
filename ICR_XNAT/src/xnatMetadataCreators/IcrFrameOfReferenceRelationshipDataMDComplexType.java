@@ -33,38 +33,49 @@
 * OF THE POSSIBILITY OF SUCH DAMAGE.
 *********************************************************************/
 
-/*********************************************************************
+/********************************************************************
 * @author Simon J Doran
-* Java class: RoiDisplay.java
-* First created on Jan 20, 2016 at 4:20:18 PM
+* Java class: IcrFrameOfReferenceRelationshipDataMDComplexType.java
+* First created on Jan 21, 2016 at 9:43:28 AM
 * 
-* Data structure parallelling the icr:roiDisplay element and used in
-* conjunction with icrRoiDisplayDataMDComplexType.
+* Creation of metadata XML for icr:frameOfReferenceRelationshipData
+* 
+* Eventually, the plan for this whole package is to replace the
+* explicit writing of the XML files with a higher level interface,
+* e.g., JAXB. However, this is for a later refactoring.
 *********************************************************************/
 
 package xnatMetadataCreators;
 
-public class RoiDisplay
+import exceptions.XMLException;
+import java.io.IOException;
+import xmlUtilities.DelayedPrettyPrinterXmlWriter;
+
+public class IcrFrameOfReferenceRelationshipDataMDComplexType extends MDComplexType
 {
-	public String roiId;
-	public String lineType;
-	public String lineColour;
-	public String shadingType;
-	public String shadingColour;
-	public String shadingTransparency;
+	protected FrameOfReferenceRelationship forr;
 	
-	public RoiDisplay(){}
-	
-	public RoiDisplay(String roiId, String lineType, String lineColour,
-			            String shadingType, String shadingColour,
-							String shadingTransparency)
+	public IcrFrameOfReferenceRelationshipDataMDComplexType(FrameOfReferenceRelationship forr)
 	{
-		this.roiId               = roiId;
-		this.lineType            = lineType;
-		this.lineColour          = lineColour;
-		this.shadingType         = shadingType;
-		this.shadingColour       = shadingColour;
-		this.shadingTransparency = shadingTransparency;
+		this.forr = forr;
 	}
-			  
+	
+	public IcrFrameOfReferenceRelationshipDataMDComplexType() {}
+	
+	
+	public void setFrameOfReferenceRelationship(FrameOfReferenceRelationship forr)
+	{
+		this.forr = forr;
+	}
+	
+	
+	@Override
+	public void insertXml(DelayedPrettyPrinterXmlWriter dppXML)
+			      throws IOException, XMLException
+	{		
+		dppXML.delayedWriteEntityWithText("relatedFrameOfReferenceUID",            forr.relatedFrameOfReferenceUid)
+				.delayedWriteEntityWithText("frameOfReferenceTransformationMatrix",  forr.frameOfReferenceTransformationMatrix)
+				.delayedWriteEntityWithText("frameOfReferenceTransformationComment", forr.frameOfReferenceTransformationComment)
+				.delayedEndEntity();		  
+	}
 }

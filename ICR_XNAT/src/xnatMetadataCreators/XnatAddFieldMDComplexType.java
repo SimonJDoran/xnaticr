@@ -62,26 +62,15 @@ public class XnatAddFieldMDComplexType extends MDComplexType
 		this.af = af;
 	}
 	
-	public XnatAddFieldMDComplexType(String name, String value)
-	{
-		af = new AdditionalField(name, value);
-	}
-	
 	public XnatAddFieldMDComplexType()
 	{
 		af = new AdditionalField();
 	}	
 	
-	public void setName(String s)
+	public void setAdditionalField(AdditionalField af)
 	{
-		af.name = s;
+		this.af = af;
 	}
-	
-	public void setValue(String s)
-	{
-		af.value = s;
-	}
-	
 	
 	@Override
 	public void insertXml(DelayedPrettyPrinterXmlWriter dppXML)

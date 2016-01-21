@@ -33,38 +33,30 @@
 * OF THE POSSIBILITY OF SUCH DAMAGE.
 *********************************************************************/
 
-/*********************************************************************
+/********************************************************************
 * @author Simon J Doran
-* Java class: RoiDisplay.java
-* First created on Jan 20, 2016 at 4:20:18 PM
+* Java class: RtReferencedSeries.java
+* First created on Jan 21, 2016 at 00:16:00 AM
 * 
-* Data structure parallelling the icr:roiDisplay element and used in
-* conjunction with icrRoiDisplayDataMDComplexType.
+* Data structure parallelling the icr:frameOfReferenceRelationshipData
+* element and used in conjunction with
+* IcrFrameOfReferenceRelationshipDataMDComplexType.
 *********************************************************************/
 
 package xnatMetadataCreators;
 
-public class RoiDisplay
+public class FrameOfReferenceRelationship
 {
-	public String roiId;
-	public String lineType;
-	public String lineColour;
-	public String shadingType;
-	public String shadingColour;
-	public String shadingTransparency;
+	public String relatedFrameOfReferenceUid;
+	public String frameOfReferenceTransformationMatrix;
+	public String frameOfReferenceTransformationComment;
 	
-	public RoiDisplay(){}
-	
-	public RoiDisplay(String roiId, String lineType, String lineColour,
-			            String shadingType, String shadingColour,
-							String shadingTransparency)
+	public FrameOfReferenceRelationship(String uid, String matrix, String comment)
 	{
-		this.roiId               = roiId;
-		this.lineType            = lineType;
-		this.lineColour          = lineColour;
-		this.shadingType         = shadingType;
-		this.shadingColour       = shadingColour;
-		this.shadingTransparency = shadingTransparency;
+		relatedFrameOfReferenceUid            = uid;
+		frameOfReferenceTransformationMatrix  = matrix;
+		frameOfReferenceTransformationComment = comment;
 	}
-			  
-}
+	
+	public FrameOfReferenceRelationship() {}
+}  

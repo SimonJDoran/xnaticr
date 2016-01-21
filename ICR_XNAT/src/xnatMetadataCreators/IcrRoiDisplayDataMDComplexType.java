@@ -56,58 +56,34 @@ import xmlUtilities.DelayedPrettyPrinterXmlWriter;
 
 public class IcrRoiDisplayDataMDComplexType extends MDComplexType
 {
-	protected String roiId;
-	protected String lineType;
-	protected String lineColour;
-	protected String shadingType;
-	protected String shadingColour;
-	protected String shadingTransparency;
+	protected RoiDisplay rd;
+	
+	public IcrRoiDisplayDataMDComplexType(RoiDisplay rd)
+	{
+		this.rd = rd;
+	}
+	
+	public IcrRoiDisplayDataMDComplexType() {}
+	
+	
+	public void setRoiDisplay(RoiDisplay rd)
+	{
+		this.rd = rd;
+	}
+	
 	
 	@Override
 	public void insertXml(DelayedPrettyPrinterXmlWriter dppXML)
 			      throws IOException, XMLException
 	{
-		dppXML.delayedWriteEntityWithText("roiID",               roiId)
-		      .delayedWriteEntityWithText("lineType",            lineType)
-				.delayedWriteEntityWithText("lineColour",          lineColour)
-				.delayedWriteEntityWithText("shadingType",         shadingType)
-				.delayedWriteEntityWithText("shadingColour",       shadingColour)
-				.delayedWriteEntityWithText("shadingTransparency", shadingTransparency);
+		dppXML.delayedWriteEntityWithText("roiID",               rd.roiId)
+		      .delayedWriteEntityWithText("lineType",            rd.lineType)
+				.delayedWriteEntityWithText("lineColour",          rd.lineColour)
+				.delayedWriteEntityWithText("shadingType",         rd.shadingType)
+				.delayedWriteEntityWithText("shadingColour",       rd.shadingColour)
+				.delayedWriteEntityWithText("shadingTransparency", rd.shadingTransparency);
 	}
 	
 	
-	public void setRoiId(String s)
-	{
-		roiId = s;
-	}
 	
-	
-	public void setLineType(String s)
-	{
-		lineType = s;
-	}
-	
-	
-	public void setLineColour(String s)
-	{
-		lineColour = s;
-	}
-	
-	
-	public void setShadingType(String s)
-	{
-		shadingType = s;
-	}
-	
-	
-	public void setShadingColour(String s)
-	{
-		shadingColour = s;
-	}
-	
-	
-	public void setShadingTransparency(String s)
-	{
-		shadingTransparency = s;
-	}
 }

@@ -44,6 +44,7 @@
 * explicit writing of the XML files with a higher level interface,
 * e.g., JAXB. However, this is for a later refactoring.
 *********************************************************************/
+
 package xnatMetadataCreators;
 
 import exceptions.XMLException;
@@ -53,17 +54,18 @@ import xmlUtilities.DelayedPrettyPrinterXmlWriter;
 
 public class IcrRtReferencedStudyDataMDComplexType extends MDComplexType
 {
-	protected List<RtReferencedSeries> rrs;
+	protected RtReferencedStudy rrs;
 	
 	public IcrRtReferencedStudyDataMDComplexType(RtReferencedStudy rrs)
 	{
 		this.rrs = rrs;
 	}
 	
+	
 	public IcrRtReferencedStudyDataMDComplexType() {}
 
 	
-	public void setRtReferencedSeries(RtReferencedStudy rrs)
+	public void setRtReferencedStudy(RtReferencedStudy rrs)
 	{
 		this.rrs = rrs;
 	}
@@ -72,7 +74,13 @@ public class IcrRtReferencedStudyDataMDComplexType extends MDComplexType
 	public void insertXml(DelayedPrettyPrinterXmlWriter dppXML)
 			      throws IOException, XMLException
 	{		
-		dppXML.delayedWriteAttribute("name", af.name)
-				.delayedWriteText(af.value);
+		dppXML.delayedWriteEntityWithText("referencedSOPInstanceUID", rrs.referencedSopInstanceUid);
+		
+		dppXML.delayedWriteEntity("rtReferencedSeriess");
+		      for (RtReferencedSeries series : rrs.rtReferencedSeriesList)
+				{
+					(new IcrRtReferencedSeriesDataMDComplexType(series)).insertXmlAsElement("rtReferencedSeries", dppXML);
+				}
+		dppXML.endEntity();
 	}
 }

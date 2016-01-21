@@ -33,38 +33,42 @@
 * OF THE POSSIBILITY OF SUCH DAMAGE.
 *********************************************************************/
 
-/*********************************************************************
+/********************************************************************
 * @author Simon J Doran
-* Java class: RoiDisplay.java
-* First created on Jan 20, 2016 at 4:20:18 PM
+* Java class: IcrRoiDataMDComplexType.java
+* First created on Jan 21, 2016 at 3:12:50 PM
 * 
-* Data structure parallelling the icr:roiDisplay element and used in
-* conjunction with icrRoiDisplayDataMDComplexType.
+* Creation of metadata XML for icr:roiData
+* 
+* Eventually, the plan for this whole package is to replace the
+* explicit writing of the XML files with a higher level interface,
+* e.g., JAXB. However, this is for a later refactoring. In addition
+* note that, at present, only a subset of xnat:experimentData is
+* implemented.
 *********************************************************************/
 
 package xnatMetadataCreators;
 
-public class RoiDisplay
+public class IcrRoiDataMDComplexType extends IcrGenericImageAssessmentDataMDComplexType
 {
-	public String roiId;
-	public String lineType;
-	public String lineColour;
-	public String shadingType;
-	public String shadingColour;
-	public String shadingTransparency;
-	
-	public RoiDisplay(){}
-	
-	public RoiDisplay(String roiId, String lineType, String lineColour,
-			            String shadingType, String shadingColour,
-							String shadingTransparency)
-	{
-		this.roiId               = roiId;
-		this.lineType            = lineType;
-		this.lineColour          = lineColour;
-		this.shadingType         = shadingType;
-		this.shadingColour       = shadingColour;
-		this.shadingTransparency = shadingTransparency;
-	}
-			  
+	protected List<String> associatedRoiSetIDs;
+	protected String       originalUid;
+	protected String       originalDataType;
+	protected String       originalLabel;
+	protected String       originatingApplicationName;
+	protected String       originatingApplicationVersion;
+	protected String       originalContainsMultipleRois;
+	protected String       roiNumberInOriginal;
+	protected String       roiDisplayColorInStructureSet;
+	protected String       referencedFrameOfReferenceUid;
+	protected String       roiName;
+	protected String       roiDescription;
+	protected String       roiVolume;
+	protected String       roiGenerationAlgorithm;
+	protected String       roiGenerationDescription;
+	protected String       roiGeometricType;
+	protected String       nDicomContours;
+	protected String       derivationCode;
+	protected List<RtRelatedRoi>       roiName;
+	protected String       roiDescription;
 }

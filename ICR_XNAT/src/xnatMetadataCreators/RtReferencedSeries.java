@@ -55,8 +55,6 @@ public class RtReferencedSeries
 		seriesInstanceUid = series;
 		contourImageList  = ciList;
 	}
-	
-	
+		
 	public RtReferencedSeries() {}
-	
 }

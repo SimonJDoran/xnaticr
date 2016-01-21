@@ -33,38 +33,34 @@
 * OF THE POSSIBILITY OF SUCH DAMAGE.
 *********************************************************************/
 
-/*********************************************************************
+/********************************************************************
 * @author Simon J Doran
-* Java class: RoiDisplay.java
-* First created on Jan 20, 2016 at 4:20:18 PM
+* Java class: ReferencedFrameOfReference.java
+* First created on Jan 21, 2016 at 10:19:41 AM
 * 
-* Data structure parallelling the icr:roiDisplay element and used in
-* conjunction with icrRoiDisplayDataMDComplexType.
+* Data structure parallelling the icr:referenceFrameOfReferenceData
+* element and used in conjunction with
+* IcrReferencedFrameOfReferenceDataMDComplexType.
 *********************************************************************/
 
 package xnatMetadataCreators;
 
-public class RoiDisplay
+import java.util.List;
+
+public class ReferencedFrameOfReference
 {
-	public String roiId;
-	public String lineType;
-	public String lineColour;
-	public String shadingType;
-	public String shadingColour;
-	public String shadingTransparency;
+	public String                             frameOfReferenceUid;
+	public List<FrameOfReferenceRelationship> frameOfReferenceRelationshipList;
+	public List<RtReferencedStudy>            rtReferencedStudyList;
 	
-	public RoiDisplay(){}
-	
-	public RoiDisplay(String roiId, String lineType, String lineColour,
-			            String shadingType, String shadingColour,
-							String shadingTransparency)
+	public ReferencedFrameOfReference(String uid,
+			                            List<FrameOfReferenceRelationship> forrList,
+												 List<RtReferencedStudy> rrsList)
 	{
-		this.roiId               = roiId;
-		this.lineType            = lineType;
-		this.lineColour          = lineColour;
-		this.shadingType         = shadingType;
-		this.shadingColour       = shadingColour;
-		this.shadingTransparency = shadingTransparency;
+		frameOfReferenceUid              = uid;
+		frameOfReferenceRelationshipList = forrList;
+		rtReferencedStudyList            = rrsList;
 	}
-			  
+	
+	public ReferencedFrameOfReference() {}
 }

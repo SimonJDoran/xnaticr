@@ -56,26 +56,12 @@ public class IcrContourImageDataMDComplexType extends MDComplexType
 {
 	protected ContourImage ci;
 	
-	public IcrContourImageDataMDComplexType()
-	{
-		ci = new ContourImage();
-	}
-	
-	
 	public IcrContourImageDataMDComplexType(ContourImage ci)
 	{
 		this.ci = ci;
 	}
 	
-	
-	public IcrContourImageDataMDComplexType(String sopInstance, String sopClass,
-												       String frameNumber)
-	{
-		ci = new ContourImage();
-		ci.referencedSopInstanceUid = sopInstance;
-		ci.referencedSopClassUid    = sopClass;
-		ci.referencedFrameNumber    = frameNumber;
-	}
+	public IcrContourImageDataMDComplexType() {}
 	
 	
 	public void setContourImage(ContourImage ci)
@@ -84,30 +70,12 @@ public class IcrContourImageDataMDComplexType extends MDComplexType
 	}
 	
 	
-	public void setSopInstance(String sopInstance)
-	{
-		ci.referencedSopInstanceUid = sopInstance;
-	}
-	
-	
-	public void setSopClass(String sopClass)
-	{
-		ci.referencedSopClassUid = sopClass;
-	}
-	
-	
-	public void setFrameNumber(String frameNumber)
-	{
-		ci.referencedFrameNumber = frameNumber;
-	}
-	
-	
 	@Override
 	public void insertXml(DelayedPrettyPrinterXmlWriter dppXML)
 			 throws IOException, XMLException
 	{
-		dppXML.delayedWriteEntityWithText("referenceSOPInstanceUID", ci.referencedSopInstanceUid)
-			   .delayedWriteEntityWithText("referenceSOPClassUID",    ci.referencedSopClassUid)
+		dppXML.delayedWriteEntityWithText("referencedSOPInstanceUID", ci.referencedSopInstanceUid)
+			   .delayedWriteEntityWithText("referencedSOPClassUID",    ci.referencedSopClassUid)
 			   .delayedWriteEntityWithText("referencedFrameNmber",    ci.referencedFrameNumber);
 	}
 	

@@ -35,36 +35,25 @@
 
 /*********************************************************************
 * @author Simon J Doran
-* Java class: RoiDisplay.java
-* First created on Jan 20, 2016 at 4:20:18 PM
+* Java class: RtRelatedRoi.java
+* First created on Jan 21, 2016 at 4:41:58 PM
 * 
-* Data structure parallelling the icr:roiDisplay element and used in
-* conjunction with icrRoiDisplayDataMDComplexType.
+* Data structure parallelling the icr:rtRelatedRoi element and used in
+* conjunction with icrRtRelatedRoiMDComplexType.
 *********************************************************************/
 
 package xnatMetadataCreators;
 
-public class RoiDisplay
+public class RtRelatedRoi
 {
-	public String roiId;
-	public String lineType;
-	public String lineColour;
-	public String shadingType;
-	public String shadingColour;
-	public String shadingTransparency;
+	public String referencedRoiNumber;
+	public String rtRoiRelationship;
 	
-	public RoiDisplay(){}
+	public RtRelatedRoi() {}
 	
-	public RoiDisplay(String roiId, String lineType, String lineColour,
-			            String shadingType, String shadingColour,
-							String shadingTransparency)
+	public RtRelatedRoi(String roiNumber, String relationship)
 	{
-		this.roiId               = roiId;
-		this.lineType            = lineType;
-		this.lineColour          = lineColour;
-		this.shadingType         = shadingType;
-		this.shadingColour       = shadingColour;
-		this.shadingTransparency = shadingTransparency;
+		referencedRoiNumber = roiNumber;
+		rtRoiRelationship   = relationship;
 	}
-			  
 }

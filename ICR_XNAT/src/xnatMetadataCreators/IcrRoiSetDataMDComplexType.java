@@ -1,5 +1,5 @@
 /********************************************************************
-* Copyright (c) 2015, Institute of Cancer Research
+* Copyright (c) 2016, Institute of Cancer Research
 * All rights reserved.
 * 
 * Redistribution and use in source and binary forms, with or without
@@ -50,31 +50,150 @@
 
 package xnatMetadataCreators;
 
+import exceptions.XMLException;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import xmlUtilities.DelayedPrettyPrinterXmlWriter;
 
 public class IcrRoiSetDataMDComplexType extends IcrGenericImageAssessmentDataMDComplexType
 {
-	protected String           originalUid;
-	protected String           originalDataType;
-	protected String           originalLabel;
-	protected String           originatingApplicationName;
-	protected String           originatingApplicationVersion;
-	protected Integer          nRois;
-	protected List<RoiDisplay> roiDisplayList;
-	protected String           structureSetLabel;
-	protected String           structureSetName;
-	protected String           structureSetDescription;
-	protected String           instanceNumber;
-	protected String           structureSetDate;
-	protected String           structureSetTime;
-	protected String
+	protected String                           originalUid;
+	protected String                           originalDataType;
+	protected String                           originalLabel;
+	protected String                           originatingApplicationName;
+	protected String                           originatingApplicationVersion;
+	protected Integer                          nRois;
+	protected List<RoiDisplay>                 roiDisplayList;
+	protected String                           structureSetLabel;
+	protected String                           structureSetName;
+	protected String                           structureSetDescription;
+	protected String                           instanceNumber;
+	protected String                           structureSetDate;
+	protected String                           structureSetTime;
+	protected List<ReferencedFrameOfReference> rforList;
 			  
-	
-	
-	public void insertMetadataXML(DelayedPrettyPrinterXmlWriter dppXML)
+	@Override
+	public void insertXml(DelayedPrettyPrinterXmlWriter dppXML)
+			 throws IOException, XMLException
 	{
+		super.insertXml(dppXML);
 		
+		dppXML.delayedWriteEntity("originatingRoiSetSource")
+				   .delayedWriteAttribute("originalUID",                   originalUid)
+				   .delayedWriteAttribute("originalDataType",              originalDataType)
+				   .delayedWriteAttribute("originalLabel",                 originalLabel)
+				   .delayedWriteAttribute("originatingApplicationName",    originatingApplicationName)
+				   .delayedWriteAttribute("originatingApplicationVersion", originatingApplicationVersion)
+				.delayedEndEntity()
+				.delayedWriteEntityWithText("nRois", nRois);
+		
+		dppXML.delayedWriteEntity("roiDisplays");
+		         for (RoiDisplay rd : roiDisplayList)
+					{
+						(new IcrRoiDisplayDataMDComplexType(rd)).insertXmlAsElement("roiDisplay", dppXML);
+					}
+	   dppXML.delayedEndEntity();
+			
+		dppXML.delayedWriteEntityWithText("structureSetLabel",       structureSetLabel)
+				.delayedWriteEntityWithText("structureSetName",        structureSetName)
+				.delayedWriteEntityWithText("structureSetDescription", structureSetDescription)
+				.delayedWriteEntityWithText("instanceNumber",          instanceNumber)
+				.delayedWriteEntityWithText("structureSetDate",        structureSetDate)
+				.delayedWriteEntityWithText("structureSetTime",        structureSetTime);
+		
+		dppXML.delayedWriteEntity("referencedFramesOfReference");
+		      for (ReferencedFrameOfReference rfor : rforList)
+				{
+					(new IcrReferencedFrameOfReferenceDataMDComplexType(rfor)).insertXmlAsElement("referencedFrameOfReference", dppXML);
+				}		  
 	}
+	
+	
+	public void setOriginalUid(String s)
+	{
+		originalUid = s;
+	}
+	
+	
+	public void setOriginalDataType(String s)
+	{
+		originalDataType = s;
+	}
+		
+		
+	public void setOriginalLabel(String s)
+	{
+		originalLabel = s;
+	}
+	
+	
+	public void setOriginatingApplicationName(String s)
+	{
+		originatingApplicationName = s;
+	}
+			
+			
+	public void setOriginatingApplicationVersion(String s)
+	{
+		originatingApplicationVersion = s;
+	}
+	
+	
+	public void setNRois(Integer n)
+	{
+		nRois = n;
+	}
+	
+	
+	public void setRoiDisplayList(List<RoiDisplay> rdList)
+	{
+		roiDisplayList = rdList;
+	}
+	
+	
+	public void setStructureSetLabel(String s)
+	{
+		structureSetLabel = s;
+	}
+	
+	
+	public void setStructureSetName(String s)
+	{
+		structureSetName = s;
+	}
+	
+	
+	public void setStructureSetDescription(String s)
+	{
+		structureSetDescription = s;
+	}
+	
+	
+	public void setStructureInstanceNumber(String s)
+	{
+		instanceNumber = s;
+	}
+	
+	
+	public void setStructureSetDate(String s)
+	{
+		structureSetDate = s;
+	}
+	
+	
+	public void seSttructureSetTime(String s)
+	{
+		structureSetTime = s;
+	}
+	
+	
+	public void setReferencedFrameOfReferenceList(List<ReferencedFrameOfReference> rl)
+	{
+		this.rforList = rl;
+	}
+	
+	
+	
+	
 }

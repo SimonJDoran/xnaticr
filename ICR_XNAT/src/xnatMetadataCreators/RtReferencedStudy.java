@@ -41,20 +41,21 @@
 * Data structure parallelling the icr:rtReferencedStudyData element
 * and used in conjunction with IcrRtReferencedStudyDataMDComplexType.
 *********************************************************************/
+
 package xnatMetadataCreators;
 
 import java.util.List;
 
 public class RtReferencedStudy
 {
-	public String                   sopInstanceUid;
+	public String                   referencedSopInstanceUid;
 	public List<RtReferencedSeries> rtReferencedSeriesList;
 	
 	public RtReferencedStudy(String sopInstance,
 									 List<RtReferencedSeries> seriesList)
 	{
-		sopInstanceUid         = sopInstance;
-		rtReferencedSeriesList = seriesList;
+		referencedSopInstanceUid = sopInstance;
+		rtReferencedSeriesList   = seriesList;
 	}
 	
 	public RtReferencedStudy() {}
