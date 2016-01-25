@@ -35,15 +35,18 @@
 
 /********************************************************************
 * @author Simon J Doran
-* Java class: XnatAddFieldMDComplexType.java
-* First created on Jan 20, 2016 at 12:00:11 PM
+* Java class: ExperimentMDCreator.java
+* First created on Jan 13, 2016 at 11:07:01 AM
 * 
-* Creation of metadata XML for xnat:addField
+* Creation of metadata XML for xnat:experimentData
 * 
 * Eventually, the plan for this whole package is to replace the
 * explicit writing of the XML files with a higher level interface,
-* e.g., JAXB. However, this is for a later refactoring.
+* e.g., JAXB. However, this is for a later refactoring. In addition
+* note that, at present, only a subset of xnat:experimentData is
+* implemented.
 *********************************************************************/
+
 
 package xnatMetadataCreators;
 
@@ -51,31 +54,108 @@ import exceptions.XMLException;
 import java.io.IOException;
 import xmlUtilities.DelayedPrettyPrinterXmlWriter;
 
-public class XnatAddFieldMDComplexType extends MDComplexType
+public class XnatExperimentDataMdComplexType extends MdComplexType
 {
-	protected AdditionalField af;
+	protected String id;
+	protected String project;
+	protected String visit;
+	protected String visit_id;
+	protected String version;
+	protected String original;
+	protected String protocol;
+	protected String label;
+	protected String date;
+	protected String time;
+	protected String note;
+	protected InvestigatorList.Investigator investigator;
+	protected String investigatorID;
 	
-	public XnatAddFieldMDComplexType(AdditionalField af)
-	{
-		this.af = af;
-	}
-	
-	public XnatAddFieldMDComplexType()
-	{
-		af = new AdditionalField();
-	}	
-	
-	public void setAdditionalField(AdditionalField af)
-	{
-		this.af = af;
-	}
 	
 	@Override
 	public void insertXml(DelayedPrettyPrinterXmlWriter dppXML)
 			      throws IOException, XMLException
-	{		
-		dppXML.delayedWriteAttribute("name", af.name)
-				.delayedWriteText(af.value);
+	{
+		dppXML.delayedWriteAttribute("id",       id)
+				.delayedWriteAttribute("project",  project)
+				.delayedWriteAttribute("visit_id", visit_id)
+				.delayedWriteAttribute("visit",    visit)
+			   .delayedWriteAttribute("version",  version)
+				.delayedWriteAttribute("label",    label)
+				  
+				.delayedWriteEntity("date")
+					.delayedWriteText(date)
+				.delayedEndEntity()
+
+				.delayedWriteEntity("time")
+					.delayedWriteText(time)
+				.delayedEndEntity()
+
+				.delayedWriteEntity("note")
+					.delayedWriteText(note)
+				.delayedEndEntity();
+		
+				XnatInvestigatorDataMdComplexType xid = new XnatInvestigatorDataMdComplexType();
+				xid.setInvestigator(investigator);
+				xid.insertXmlAsElement("investigator", dppXML);
 	}
-			   
+	
+	public void setDate(String s)
+	{
+		date = s;
+	}
+	
+	
+	public void setLabel(String s)
+	{
+		label = s;
+	}
+	
+	
+	public void setId(String s)
+	{
+		id = s;
+	}
+	
+	
+	public void setNote(String s)
+	{
+		note = s;
+	}
+	
+	
+	public void setProject(String s)
+	{
+		project = s;
+	}
+	
+	
+	public void setTime(String s)
+	{
+		time = s;
+	}
+	
+	
+	public void setVersion(String s)
+	{
+		version = s;
+	}
+	
+	
+	public void setVisit(String s)
+	{
+		visit = s;
+	}
+	
+	
+	public void setVisitID(String s)
+	{
+		visit_id = s;
+	}
+	
+	
+	public void setInvestigator(InvestigatorList.Investigator inv, String invID)
+	{
+		investigator   = inv;
+		investigatorID = invID;
+	}
 }

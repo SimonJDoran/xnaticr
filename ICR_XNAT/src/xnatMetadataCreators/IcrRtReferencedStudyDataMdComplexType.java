@@ -36,9 +36,9 @@
 /********************************************************************
 * @author Simon J Doran
 * Java class: RtReferencedSeriesDataMDComplexType.java
-* First created on Jan 21, 2016 at 00:14:00 AM
+* First created on Jan 21, 2016 at 00:30:00 AM
 * 
-* Creation of metadata XML for icr:rtReferencedSeriesData
+* Creation of metadata XML for icr:rtReferencedStudyData
 * 
 * Eventually, the plan for this whole package is to replace the
 * explicit writing of the XML files with a higher level interface,
@@ -49,36 +49,38 @@ package xnatMetadataCreators;
 
 import exceptions.XMLException;
 import java.io.IOException;
+import java.util.List;
 import xmlUtilities.DelayedPrettyPrinterXmlWriter;
 
-public class IcrRtReferencedSeriesDataMDComplexType extends MDComplexType
+public class IcrRtReferencedStudyDataMdComplexType extends MdComplexType
 {
-	protected RtReferencedSeries rrs;
+	protected RtReferencedStudy rrs;
 	
-	public IcrRtReferencedSeriesDataMDComplexType(RtReferencedSeries rrs)
+	public IcrRtReferencedStudyDataMdComplexType(RtReferencedStudy rrs)
 	{
 		this.rrs = rrs;
 	}
 	
-	public IcrRtReferencedSeriesDataMDComplexType() {}
 	
+	public IcrRtReferencedStudyDataMdComplexType() {}
+
 	
-	public void setRtReferencedSeries(RtReferencedSeries rrs)
+	public void setRtReferencedStudy(RtReferencedStudy rrs)
 	{
 		this.rrs = rrs;
 	}
-	
 	
 	@Override
 	public void insertXml(DelayedPrettyPrinterXmlWriter dppXML)
 			      throws IOException, XMLException
 	{		
-		dppXML.delayedWriteEntityWithText("seriesInstanceUID", rrs.seriesInstanceUid)
-				.delayedWriteEntity("ContourImages");
+		dppXML.delayedWriteEntityWithText("referencedSOPInstanceUID", rrs.referencedSopInstanceUid);
 		
-		      for (ContourImage ci : rrs.contourImageList)
+		dppXML.delayedWriteEntity("rtReferencedSeriess");
+		      for (RtReferencedSeries series : rrs.rtReferencedSeriesList)
 				{
-					(new IcrContourImageDataMDComplexType(ci)).insertXmlAsElement("ContourImage", dppXML);
+					(new IcrRtReferencedSeriesDataMdComplexType(series)).insertXmlAsElement("rtReferencedSeries", dppXML);
 				}
+		dppXML.endEntity();
 	}
 }

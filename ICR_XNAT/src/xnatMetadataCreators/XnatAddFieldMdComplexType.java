@@ -35,10 +35,10 @@
 
 /********************************************************************
 * @author Simon J Doran
-* Java class: IcrElementalCompositionDataMDComplexType.java
-* First created on Jan 21, 2016 at 5:08:25 PM
+* Java class: XnatAddFieldMDComplexType.java
+* First created on Jan 20, 2016 at 12:00:11 PM
 * 
-* Creation of metadata XML for icr:elementalCompositionData
+* Creation of metadata XML for xnat:addField
 * 
 * Eventually, the plan for this whole package is to replace the
 * explicit writing of the XML files with a higher level interface,
@@ -51,30 +51,31 @@ import exceptions.XMLException;
 import java.io.IOException;
 import xmlUtilities.DelayedPrettyPrinterXmlWriter;
 
-public class IcrElementalCompositionDataMDComplexType extends MDComplexType
+public class XnatAddFieldMdComplexType extends MdComplexType
 {
-	protected ElementalComposition ec;
+	protected AdditionalField af;
 	
-	public IcrElementalCompositionDataMDComplexType(ElementalComposition ec)
+	public XnatAddFieldMdComplexType(AdditionalField af)
 	{
-		this.ec = ec;
+		this.af = af;
 	}
 	
-	public IcrElementalCompositionDataMDComplexType() {}
-	
-	
-	public void setElementalComposition(ElementalComposition ec)
+	public XnatAddFieldMdComplexType()
 	{
-		this.ec = ec;
-	}
+		af = new AdditionalField();
+	}	
 	
+	public void setAdditionalField(AdditionalField af)
+	{
+		this.af = af;
+	}
 	
 	@Override
 	public void insertXml(DelayedPrettyPrinterXmlWriter dppXML)
 			      throws IOException, XMLException
 	{		
-		dppXML.delayedWriteEntityWithText("atomicNumber",       ec.atomicNumber)
-				.delayedWriteEntityWithText("atomicMassFraction", ec.atomicMassFraction)
-				.delayedEndEntity();		  
+		dppXML.delayedWriteAttribute("name", af.name)
+				.delayedWriteText(af.value);
 	}
+			   
 }

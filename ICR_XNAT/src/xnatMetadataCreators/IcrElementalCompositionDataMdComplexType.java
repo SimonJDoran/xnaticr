@@ -33,46 +33,48 @@
 * OF THE POSSIBILITY OF SUCH DAMAGE.
 *********************************************************************/
 
-/*********************************************************************
+/********************************************************************
 * @author Simon J Doran
-* Java class: Scan.java
-* First created on Jan 20, 2016 at 2:37:31 PM
+* Java class: IcrElementalCompositionDataMDComplexType.java
+* First created on Jan 21, 2016 at 5:08:25 PM
 * 
-* Data structure parallelling the scan element of
-* xnat:qcAssessmentData
+* Creation of metadata XML for icr:elementalCompositionData
+* 
+* Eventually, the plan for this whole package is to replace the
+* explicit writing of the XML files with a higher level interface,
+* e.g., JAXB. However, this is for a later refactoring.
 *********************************************************************/
-
 
 package xnatMetadataCreators;
 
-import java.util.ArrayList;
-import java.util.List;
+import exceptions.XMLException;
+import java.io.IOException;
+import xmlUtilities.DelayedPrettyPrinterXmlWriter;
 
-public class Scan
+public class IcrElementalCompositionDataMdComplexType extends MdComplexType
 {
-	public class Slice
+	protected ElementalComposition ec;
+	
+	public IcrElementalCompositionDataMdComplexType(ElementalComposition ec)
 	{
-		String        number;
-		MdComplexType sliceStatistics;
+		this.ec = ec;
 	}
 	
-	public String        id;
-	public List<Slice>   sliceList;
-	public MdComplexType scanStatistics;
+	public IcrElementalCompositionDataMdComplexType() {}
 	
-	public Scan()
-	{
-		sliceList = new ArrayList<>();
-	}
 	
-	public void setId(String id)
+	public void setElementalComposition(ElementalComposition ec)
 	{
-		this.id = id;
+		this.ec = ec;
 	}
 	
 	
-	public void setScanStatistics(MdComplexType mdct)
-	{
-		scanStatistics = mdct;
+	@Override
+	public void insertXml(DelayedPrettyPrinterXmlWriter dppXML)
+			      throws IOException, XMLException
+	{		
+		dppXML.delayedWriteEntityWithText("atomicNumber",       ec.atomicNumber)
+				.delayedWriteEntityWithText("atomicMassFraction", ec.atomicMassFraction)
+				.delayedEndEntity();		  
 	}
 }

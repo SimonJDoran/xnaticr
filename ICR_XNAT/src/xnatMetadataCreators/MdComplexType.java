@@ -1,5 +1,5 @@
 /********************************************************************
-* Copyright (c) 2016, Institute of Cancer Research
+* Copyright (c) 2015, Institute of Cancer Research
 * All rights reserved.
 * 
 * Redistribution and use in source and binary forms, with or without
@@ -35,10 +35,13 @@
 
 /********************************************************************
 * @author Simon J Doran
-* Java class: IcrRtRelatedRoiMDComplexType.java
-* First created on Jan 21, 2016 at 4:54:04 PM
+** Java class: MDComplexType.java
+* First created on Jan 13, 2016 at 12:04:49 PM
 * 
-* Creation of metadata XML for icr:rtRelatedRoi
+* Base class for creation of the metadata XML needed to upload
+* data to XNAT. The difference between this base class and the
+* MDElement class is that the complexType is not written by itself,
+* but always included into the XML already created by MDElement.
 * 
 * Eventually, the plan for this whole package is to replace the
 * explicit writing of the XML files with a higher level interface,
@@ -47,36 +50,52 @@
 
 package xnatMetadataCreators;
 
+import com.generationjava.io.xml.SimpleXmlWriter;
 import exceptions.XMLException;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
 import xmlUtilities.DelayedPrettyPrinterXmlWriter;
 
-public class IcrRtRelatedRoiMDComplexType extends MDComplexType
+public abstract class MdComplexType
 {
-	protected RtRelatedRoi rrr;
-	
-	public IcrRtRelatedRoiMDComplexType(RtRelatedRoi rrr)
+	public DelayedPrettyPrinterXmlWriter createWriter()
 	{
-		this.rrr = rrr;
+      return new DelayedPrettyPrinterXmlWriter(
+                 new SimpleXmlWriter(
+                     new OutputStreamWriter(
+							    new ByteArrayOutputStream())));
 	}
 	
 	
-	public IcrRtRelatedRoiMDComplexType()
+	public void createXmlAsRootElement(String rootElementName,
+												  DelayedPrettyPrinterXmlWriter dppXML)
+		         throws IOException, XMLException
 	{
-		rrr = new RtRelatedRoi();
-	}	
-	
-	
-	public void setAdditionalField(RtRelatedRoi rrr)
-	{
-		this.rrr = rrr;
+		dppXML.setIndent("   ")
+				.writeXmlVersion()
+				.writeEntity(rootElementName)
+				.writeAttribute("xmlns:xnat", "http://nrg.wustl.edu/xnat")
+				.writeAttribute("xmlns:xsi",  "http://www.w3.org/2001/XMLSchema-instance")
+				.writeAttribute("xmlns:prov", "http://www.nbirn.net/prov")
+				.writeAttribute("xmlns:icr",  "http://www.icr.ac.uk/icr");
+		
+		      insertXml(dppXML);
+		
+		dppXML.endEntity();
 	}
 	
-	@Override
-	public void insertXml(DelayedPrettyPrinterXmlWriter dppXML)
-			      throws IOException, XMLException
-	{		
-		dppXML.delayedWriteEntityWithText("referencedRoiNumber", rrr.referencedRoiNumber)
-				.delayedWriteEntityWithText("rtRoiRelationship",   rrr.rtRoiRelationship);
+	
+	public void insertXmlAsElement(String elementName,
+                                  DelayedPrettyPrinterXmlWriter dppXML)
+		         throws IOException, XMLException
+	{
+		dppXML.delayedWriteEntity(elementName);
+		      insertXml(dppXML);
+		dppXML.delayedEndEntity();
 	}
+	
+	
+	abstract void insertXml(DelayedPrettyPrinterXmlWriter dppXML)
+			        throws IOException, XMLException;
 }

@@ -1,5 +1,5 @@
 /********************************************************************
-* Copyright (c) 2016, Institute of Cancer Research
+* Copyright (c) 2012, Institute of Cancer Research
 * All rights reserved.
 * 
 * Redistribution and use in source and binary forms, with or without
@@ -35,44 +35,23 @@
 
 /*********************************************************************
 * @author Simon J Doran
-* Java class: Scan.java
-* First created on Jan 20, 2016 at 2:37:31 PM
+* Java class: RtStruct.java
+* First created on Jul 12, 2012 at 10:53:42 PM
 * 
-* Data structure parallelling the scan element of
-* xnat:qcAssessmentData
+* Define a representation of the RT-STRUCT data structure, including
+* methods to read the data in from a DICOM file and create a new
+* DICOM file from an instance. Significantly refactored on 25.1.16.
 *********************************************************************/
 
+/********************************************************************
+* @author Simon J Doran
+* Java class: RtStruct.java
+* First created on Jan 25, 2016 at 3:53:12 PM
+*********************************************************************/
 
-package xnatMetadataCreators;
+package dataRepresentations;
 
-import java.util.ArrayList;
-import java.util.List;
-
-public class Scan
+public class RtStruct
 {
-	public class Slice
-	{
-		String        number;
-		MdComplexType sliceStatistics;
-	}
-	
-	public String        id;
-	public List<Slice>   sliceList;
-	public MdComplexType scanStatistics;
-	
-	public Scan()
-	{
-		sliceList = new ArrayList<>();
-	}
-	
-	public void setId(String id)
-	{
-		this.id = id;
-	}
-	
-	
-	public void setScanStatistics(MdComplexType mdct)
-	{
-		scanStatistics = mdct;
-	}
+
 }

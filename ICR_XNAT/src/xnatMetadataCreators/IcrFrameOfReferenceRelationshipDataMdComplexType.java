@@ -35,16 +35,14 @@
 
 /********************************************************************
 * @author Simon J Doran
-* Java class: DerivedMDCreator.java
-* First created on Jan 13, 2016 at 10:25:51 AM
+* Java class: IcrFrameOfReferenceRelationshipDataMDComplexType.java
+* First created on Jan 21, 2016 at 9:43:28 AM
 * 
-* Creation of metadata XML for xnat:derivedData
+* Creation of metadata XML for icr:frameOfReferenceRelationshipData
 * 
 * Eventually, the plan for this whole package is to replace the
 * explicit writing of the XML files with a higher level interface,
-* e.g., JAXB. However, this is for a later refactoring. In addition
-* note that, at present, only a subset of xnat:experimentData is
-* implemented.
+* e.g., JAXB. However, this is for a later refactoring.
 *********************************************************************/
 
 package xnatMetadataCreators;
@@ -53,17 +51,31 @@ import exceptions.XMLException;
 import java.io.IOException;
 import xmlUtilities.DelayedPrettyPrinterXmlWriter;
 
-public class XnatDerivedDataMDComplexType extends XnatExperimentDataMDComplexType
+public class IcrFrameOfReferenceRelationshipDataMdComplexType extends MdComplexType
 {
-	Provenance prov;
+	protected FrameOfReferenceRelationship forr;
+	
+	public IcrFrameOfReferenceRelationshipDataMdComplexType(FrameOfReferenceRelationship forr)
+	{
+		this.forr = forr;
+	}
+	
+	public IcrFrameOfReferenceRelationshipDataMdComplexType() {}
+	
+	
+	public void setFrameOfReferenceRelationship(FrameOfReferenceRelationship forr)
+	{
+		this.forr = forr;
+	}
+	
 	
 	@Override
 	public void insertXml(DelayedPrettyPrinterXmlWriter dppXML)
-			 throws IOException, XMLException
-	{
-		super.insertXml(dppXML);
-	
-		ProvProcessMDComplexType ppct = new ProvProcessMDComplexType(prov);
-		ppct.insertXmlAsElement("provenance", dppXML);	
+			      throws IOException, XMLException
+	{		
+		dppXML.delayedWriteEntityWithText("relatedFrameOfReferenceUID",            forr.relatedFrameOfReferenceUid)
+				.delayedWriteEntityWithText("frameOfReferenceTransformationMatrix",  forr.frameOfReferenceTransformationMatrix)
+				.delayedWriteEntityWithText("frameOfReferenceTransformationComment", forr.frameOfReferenceTransformationComment)
+				.delayedEndEntity();		  
 	}
 }

@@ -63,8 +63,8 @@ import org.dcm4che2.data.BasicDicomObject;
 import org.dcm4che2.data.Tag;
 import org.dcm4che2.io.DicomInputStream;
 import org.dcm4che2.iod.module.composite.ImagePixel;
-import dataRepresentations.RTStruct.Contour;
-import dataRepresentations.RTStruct.ROIContour;
+import dataRepresentations.RTStruct_old.Contour;
+import dataRepresentations.RTStruct_old.ROIContour;
 import exceptions.XNATException;
 import java.awt.BasicStroke;
 import java.awt.geom.GeneralPath;
@@ -78,7 +78,7 @@ import xnatDAO.XNATProfile;
 public class ContourRenderer
 {
    // The "R" in this auxilliary class name is to distinguish it from the 
-   // Contour class in RTStruct.java.
+   // Contour class in RTStruct_old.java.
    public class RContour
    {
       public String              baseImageUID;
@@ -100,13 +100,13 @@ public class ContourRenderer
      
    
    /**
-    * Constructor creates a new renderer of a given RTStruct object.
-    * @param rts RTStruct that contains all the
-    * information necessary for rendering the set of contours.
+    * Constructor creates a new renderer of a given RTStruct_old object.
+    * @param rts RTStruct_old that contains all the
+ information necessary for rendering the set of contours.
     * @param contourNumber integer value containing the number of the contour
     * to be rendered in list of contours represented by rts.
     */
-   public ContourRenderer(RTStruct rts, int contourNumber,
+   public ContourRenderer(RTStruct_old rts, int contourNumber,
 			                 Map<String, File> cachedImageFiles)
                          throws DataFormatException
    {

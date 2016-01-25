@@ -35,52 +35,48 @@
 
 /********************************************************************
 * @author Simon J Doran
-* Java class: RtReferencedSeriesDataMDComplexType.java
-* First created on Jan 21, 2016 at 00:30:00 AM
+* Java class: IcrContourImageData.java
+* First created on Jan 20, 2016 at 11:32:00 PM
 * 
-* Creation of metadata XML for icr:rtReferencedStudyData
+* Creation of metadata XML for icr:contourImageData
 * 
 * Eventually, the plan for this whole package is to replace the
 * explicit writing of the XML files with a higher level interface,
-* e.g., JAXB. However, this is for a later refactoring.
+* e.g., JAXB. However, this is for a later refactoring. In addition
+* note that, at present, only a subset of xnat:experimentData is
+* implemented.
 *********************************************************************/
-
 package xnatMetadataCreators;
 
 import exceptions.XMLException;
 import java.io.IOException;
-import java.util.List;
 import xmlUtilities.DelayedPrettyPrinterXmlWriter;
 
-public class IcrRtReferencedStudyDataMDComplexType extends MDComplexType
+public class IcrContourImageDataMdComplexType extends MdComplexType
 {
-	protected RtReferencedStudy rrs;
+	protected ContourImage ci;
 	
-	public IcrRtReferencedStudyDataMDComplexType(RtReferencedStudy rrs)
+	public IcrContourImageDataMdComplexType(ContourImage ci)
 	{
-		this.rrs = rrs;
+		this.ci = ci;
 	}
 	
+	public IcrContourImageDataMdComplexType() {}
 	
-	public IcrRtReferencedStudyDataMDComplexType() {}
-
 	
-	public void setRtReferencedStudy(RtReferencedStudy rrs)
+	public void setContourImage(ContourImage ci)
 	{
-		this.rrs = rrs;
+		this.ci = ci;
 	}
+	
 	
 	@Override
 	public void insertXml(DelayedPrettyPrinterXmlWriter dppXML)
-			      throws IOException, XMLException
-	{		
-		dppXML.delayedWriteEntityWithText("referencedSOPInstanceUID", rrs.referencedSopInstanceUid);
-		
-		dppXML.delayedWriteEntity("rtReferencedSeriess");
-		      for (RtReferencedSeries series : rrs.rtReferencedSeriesList)
-				{
-					(new IcrRtReferencedSeriesDataMDComplexType(series)).insertXmlAsElement("rtReferencedSeries", dppXML);
-				}
-		dppXML.endEntity();
+			 throws IOException, XMLException
+	{
+		dppXML.delayedWriteEntityWithText("referencedSOPInstanceUID", ci.referencedSopInstanceUid)
+			   .delayedWriteEntityWithText("referencedSOPClassUID",    ci.referencedSopClassUid)
+			   .delayedWriteEntityWithText("referencedFrameNmber",    ci.referencedFrameNumber);
 	}
+	
 }

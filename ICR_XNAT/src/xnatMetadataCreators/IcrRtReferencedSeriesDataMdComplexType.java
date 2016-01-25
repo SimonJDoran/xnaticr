@@ -1,5 +1,5 @@
 /********************************************************************
-* Copyright (c) 2015, Institute of Cancer Research
+* Copyright (c) 2016, Institute of Cancer Research
 * All rights reserved.
 * 
 * Redistribution and use in source and binary forms, with or without
@@ -35,82 +35,50 @@
 
 /********************************************************************
 * @author Simon J Doran
-* Java class: GenericImageAssessmentDataUploader.java
-* First created on Jan 15, 2016 at 3:21:03 PM
+* Java class: RtReferencedSeriesDataMDComplexType.java
+* First created on Jan 21, 2016 at 00:14:00 AM
 * 
-* Creation of metadata XML for prov:process
+* Creation of metadata XML for icr:rtReferencedSeriesData
 * 
 * Eventually, the plan for this whole package is to replace the
 * explicit writing of the XML files with a higher level interface,
-* e.g., JAXB. However, this is for a later refactoring. In addition
-* note that, at present, only a subset of xnat:experimentData is
-* implemented.
+* e.g., JAXB. However, this is for a later refactoring.
 *********************************************************************/
 
 package xnatMetadataCreators;
 
 import exceptions.XMLException;
 import java.io.IOException;
-import java.util.ArrayList;
 import xmlUtilities.DelayedPrettyPrinterXmlWriter;
-import xnatMetadataCreators.Provenance.Library;
-import xnatMetadataCreators.Provenance.ProvenanceEntry;
 
-public class ProvProcessMDComplexType extends MDComplexType
+public class IcrRtReferencedSeriesDataMdComplexType extends MdComplexType
 {
-	protected Provenance prov;
+	protected RtReferencedSeries rrs;
 	
-	public ProvProcessMDComplexType(Provenance p)
+	public IcrRtReferencedSeriesDataMdComplexType(RtReferencedSeries rrs)
 	{
-		prov = p;
+		this.rrs = rrs;
 	}
 	
-	public void setProvenance(Provenance p)
+	public IcrRtReferencedSeriesDataMdComplexType() {}
+	
+	
+	public void setRtReferencedSeries(RtReferencedSeries rrs)
 	{
-		prov = p;
+		this.rrs = rrs;
 	}
+	
 	
 	@Override
 	public void insertXml(DelayedPrettyPrinterXmlWriter dppXML)
-			 throws IOException, XMLException
+			      throws IOException, XMLException
 	{		
-		for (Provenance.ProvenanceEntry pe: prov.entries)
-		{
-			dppXML.writeEntity("processStep")
-				.delayedWriteEntity("program")
-					.delayedWriteAttribute("version", pe.program.version)
-					.delayedWriteAttribute("arguments", pe.program.arguments)
-					.delayedWriteText(pe.platform.name)
-				.delayedEndEntity()
-				.delayedWriteEntity("timestamp")
-					.delayedWriteText(pe.timestamp)
-				.delayedEndEntity()
-				.delayedWriteEntity("cvs")
-					.delayedWriteText(pe.cvs)
-				.delayedEndEntity()
-				.delayedWriteEntity("user")
-					.delayedWriteText(pe.user)
-				.delayedEndEntity()
-				.delayedWriteEntity("machine")
-					.delayedWriteText(pe.machine)
-				.delayedEndEntity()
-				.delayedWriteEntity("platform")
-					.delayedWriteAttribute("version", pe.platform.version)
-					.delayedWriteText(pe.platform.name)
-				.delayedEndEntity()
-				.delayedWriteEntity("compiler")
-					.delayedWriteAttribute("version", pe.compiler.version)
-					.delayedWriteText(pe.compiler.name)
-				.delayedEndEntity();
-
-				for (Library lib: pe.libraryList)
+		dppXML.delayedWriteEntityWithText("seriesInstanceUID", rrs.seriesInstanceUid)
+				.delayedWriteEntity("ContourImages");
+		
+		      for (ContourImage ci : rrs.contourImageList)
 				{
-					dppXML.delayedWriteEntity("library")
-						.delayedWriteAttribute("version", lib.version)
-						.delayedWriteText(lib.name)
-					.delayedEndEntity();
+					(new IcrContourImageDataMdComplexType(ci)).insertXmlAsElement("ContourImage", dppXML);
 				}
-			dppXML.endEntity();
-		}
 	}
 }

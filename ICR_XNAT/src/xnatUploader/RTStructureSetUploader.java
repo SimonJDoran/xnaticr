@@ -59,7 +59,7 @@ import java.io.*;
 import java.util.Set;
 import org.dcm4che2.io.DicomOutputStream;
 import dataRepresentations.RtStructWriter;
-import dataRepresentations.RTStruct;
+import dataRepresentations.RTStruct_old;
 import generalUtilities.UIDGenerator;
 import org.apache.log4j.Logger;
 import xnatDAO.XNATGUI;
@@ -69,7 +69,7 @@ public class RTStructureSetUploader extends QCAssessmentDataUploader
 {
    static    Logger      logger = Logger.getLogger(RTStructureSetUploader.class);
    protected DicomObject bdo;
-   protected RTStruct    rts;
+   protected RTStruct_old    rts;
    
    
    /**
@@ -114,9 +114,9 @@ public class RTStructureSetUploader extends QCAssessmentDataUploader
    
    /**
     * Parse a DICOM RT-Structure Set file to extract the relevant metadata.
-	 * The parsing to create the RTStruct DataRepresentation occurs in the
-	 * relevant constructor. This routine extracts the variables that are
-	 * needed by the uploader.
+	 * The parsing to create the RTStruct_old DataRepresentation occurs in the
+ relevant constructor. This routine extracts the variables that are
+ needed by the uploader.
 	 * @return true if the parsing is successful, false otherwise.
     */
    @Override
@@ -124,7 +124,7 @@ public class RTStructureSetUploader extends QCAssessmentDataUploader
    {  
 		try
       {
-         rts                  = new RTStruct(bdo, xnprf);
+         rts                  = new RTStruct_old(bdo, xnprf);
          rts.version          = version;
          date                 = rts.convertToXNATDate(rts.structureSetDate);
          time                 = rts.convertToXNATTime(rts.structureSetTime);

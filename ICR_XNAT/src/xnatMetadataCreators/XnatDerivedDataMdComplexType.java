@@ -35,13 +35,10 @@
 
 /********************************************************************
 * @author Simon J Doran
-* Java class: IcrGenericImageAssessmentDataMDCompleType.java
-* First created on Jan 20, 2016 at 8:53:59 AM
+* Java class: DerivedMDCreator.java
+* First created on Jan 13, 2016 at 10:25:51 AM
 * 
-* Creation of metadata XML for icr:genericImageAssessmentData
-* 
-* This is virtually identical to xnat:qcAssessmentData, but based on
-* imageAssessorData not mrAssessorData.
+* Creation of metadata XML for xnat:derivedData
 * 
 * Eventually, the plan for this whole package is to replace the
 * explicit writing of the XML files with a higher level interface,
@@ -54,73 +51,19 @@ package xnatMetadataCreators;
 
 import exceptions.XMLException;
 import java.io.IOException;
-import java.util.List;
 import xmlUtilities.DelayedPrettyPrinterXmlWriter;
-import xnatMetadataCreators.Scan.Slice;
 
-public class IcrGenericImageAssessmentDataMDComplexType extends XnatImageAssessorData
+public class XnatDerivedDataMdComplexType extends XnatExperimentDataMdComplexType
 {
-	protected String     type;
-	protected String     xnatSubjId;
-	protected String     dicomSubjName;
-	protected List<Scan> scanList;
-	
-	public void setType(String s)
-	{
-		type = s;
-	}
-	
-	
-	public void setXnatSubjId(String s)
-	{
-		xnatSubjId = s;
-	}
-	
-	
-	public void setDicomSubjName(String s)
-	{
-		dicomSubjName = s;
-	}
-	
-	
-	public void setScanList(List<Scan> lsc)
-	{
-		scanList = lsc;
-	}
-	
+	Provenance prov;
 	
 	@Override
 	public void insertXml(DelayedPrettyPrinterXmlWriter dppXML)
-			      throws IOException, XMLException
+			 throws IOException, XMLException
 	{
-		dppXML.delayedWriteAttribute("type", type)
-				.delayedWriteEntityWithText("xnatSubjID",    xnatSubjId)
-				.delayedWriteEntityWithText("dicomSubjName", dicomSubjName)
-				.delayedWriteEntity("scans");
-		
-				for (Scan scan : scanList)
-				{
-					dppXML.delayedWriteEntity("scan")
-							.delayedWriteAttribute("id", scan.id)
-					      .delayedWriteEntity("sliceQC");
-					
-					      for (Slice slice : scan.sliceList)
-							{
-								dppXML.delayedWriteEntity("slice")
-										   .delayedWriteAttribute("number", slice.number);
-										   if (slice.sliceStatistics != null)
-											{
-												slice.sliceStatistics.insertXmlAsElement("sliceStatistics", dppXML);
-											}
-								dppXML.delayedEndEntity();
-							}
-							
-					if (scan.scanStatistics != null)
-					{
-						scan.scanStatistics.insertXmlAsElement("scanStatistics", dppXML);
-					}
-					
-					dppXML.delayedEndEntity();
-				}		
+		super.insertXml(dppXML);
+	
+		ProvProcessMdComplexType ppct = new ProvProcessMdComplexType(prov);
+		ppct.insertXmlAsElement("provenance", dppXML);	
 	}
 }

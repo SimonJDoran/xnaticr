@@ -35,10 +35,10 @@
 
 /********************************************************************
 * @author Simon J Doran
-* Java class: ExperimentMDCreator.java
-* First created on Jan 13, 2016 at 11:07:01 AM
+* Java class: XnatAbstractResourceMDComplexType.java
+* First created on Jan 20, 2016 at 9:00:08 AM
 * 
-* Creation of metadata XML for xnat:experimentData
+* Creation of metadata XML for xnat:abstractResource
 * 
 * Eventually, the plan for this whole package is to replace the
 * explicit writing of the XML files with a higher level interface,
@@ -47,115 +47,50 @@
 * implemented.
 *********************************************************************/
 
-
 package xnatMetadataCreators;
 
 import exceptions.XMLException;
 import java.io.IOException;
 import xmlUtilities.DelayedPrettyPrinterXmlWriter;
+import xnatMetadataCreators.AbstractResource.Tag;
 
-public class XnatExperimentDataMDComplexType extends MDComplexType
+public class XnatAbstractResourceMdComplexType extends MdComplexType
 {
-	protected String id;
-	protected String project;
-	protected String visit;
-	protected String visit_id;
-	protected String version;
-	protected String original;
-	protected String protocol;
-	protected String label;
-	protected String date;
-	protected String time;
-	protected String note;
-	protected InvestigatorList.Investigator investigator;
-	protected String investigatorID;
+	protected AbstractResource ar;
 	
+	
+	// Give the user two options for constructing the object.
+	public XnatAbstractResourceMdComplexType() {}
+	
+	public XnatAbstractResourceMdComplexType(AbstractResource ar)
+	{
+		this.ar = ar;
+	}
 	
 	@Override
 	public void insertXml(DelayedPrettyPrinterXmlWriter dppXML)
 			      throws IOException, XMLException
 	{
-		dppXML.delayedWriteAttribute("id",       id)
-				.delayedWriteAttribute("project",  project)
-				.delayedWriteAttribute("visit_id", visit_id)
-				.delayedWriteAttribute("visit",    visit)
-			   .delayedWriteAttribute("version",  version)
-				.delayedWriteAttribute("label",    label)
-				  
-				.delayedWriteEntity("date")
-					.delayedWriteText(date)
-				.delayedEndEntity()
-
-				.delayedWriteEntity("time")
-					.delayedWriteText(time)
-				.delayedEndEntity()
-
-				.delayedWriteEntity("note")
-					.delayedWriteText(note)
-				.delayedEndEntity();
+		dppXML.delayedWriteAttribute("label",      ar.label)
+				.delayedWriteAttribute("file_count", ar.fileCount)
+				.delayedWriteAttribute("file_size",  ar.fileSize)
+				.delayedWriteEntityWithText("note",  ar.note)
+				.delayedWriteEntity("tags");
 		
-				XnatInvestigatorDataMDComplexType xid = new XnatInvestigatorDataMDComplexType();
-				xid.setInvestigator(investigator);
-				xid.insertXmlAsElement("investigator", dppXML);
+				for (Tag tag : ar.tags)
+				{
+					dppXML.delayedWriteEntity("tag")
+								.delayedWriteAttribute("name", tag.name)
+								.delayedWriteText(tag.value)
+							.delayedEndEntity();
+				}
+				
+		dppXML.delayedEndEntity();
+				  
 	}
 	
-	public void setDate(String s)
+	public void setResource(AbstractResource ar)
 	{
-		date = s;
-	}
-	
-	
-	public void setLabel(String s)
-	{
-		label = s;
-	}
-	
-	
-	public void setId(String s)
-	{
-		id = s;
-	}
-	
-	
-	public void setNote(String s)
-	{
-		note = s;
-	}
-	
-	
-	public void setProject(String s)
-	{
-		project = s;
-	}
-	
-	
-	public void setTime(String s)
-	{
-		time = s;
-	}
-	
-	
-	public void setVersion(String s)
-	{
-		version = s;
-	}
-	
-	
-	public void setVisit(String s)
-	{
-		visit = s;
-	}
-	
-	
-	public void setVisitID(String s)
-	{
-		visit_id = s;
-	}
-	
-	
-	public void setInvestigator(InvestigatorList.Investigator inv, String invID)
-	{
-		investigator   = inv;
-		investigatorID = invID;
+		this.ar = ar;
 	}
 }

@@ -35,14 +35,20 @@
 
 /********************************************************************
 * @author Simon J Doran
-* Java class: IcrFrameOfReferenceRelationshipDataMDComplexType.java
-* First created on Jan 21, 2016 at 9:43:28 AM
+* Java class: IcrAimAnnotationCollectionDataMDComplexType.java
+* First created on Jan 25, 2016 at 12:16:54 PM
 * 
-* Creation of metadata XML for icr:frameOfReferenceRelationshipData
+* Creation of metadata XML for icr:aimAnnotationCollectionData
 * 
 * Eventually, the plan for this whole package is to replace the
 * explicit writing of the XML files with a higher level interface,
 * e.g., JAXB. However, this is for a later refactoring.
+*********************************************************************/
+
+/********************************************************************
+* @author Simon J Doran
+* Java class: IcrAimAnnotationCollectionDataMDComplexType.java
+* First created on Jan 25, 2016 at 12:16:54 PM
 *********************************************************************/
 
 package xnatMetadataCreators;
@@ -51,31 +57,40 @@ import exceptions.XMLException;
 import java.io.IOException;
 import xmlUtilities.DelayedPrettyPrinterXmlWriter;
 
-public class IcrFrameOfReferenceRelationshipDataMDComplexType extends MDComplexType
+public class IcrAimAnnotationCollectionDataMdComplexType extends IcrGenericImageAssessmentDataMdComplexType
 {
-	protected FrameOfReferenceRelationship forr;
-	
-	public IcrFrameOfReferenceRelationshipDataMDComplexType(FrameOfReferenceRelationship forr)
-	{
-		this.forr = forr;
-	}
-	
-	public IcrFrameOfReferenceRelationshipDataMDComplexType() {}
-	
-	
-	public void setFrameOfReferenceRelationship(FrameOfReferenceRelationship forr)
-	{
-		this.forr = forr;
-	}
-	
+	protected String aimVersion;
+	protected String numImageAnnotations;
+	protected String associatedRoiSetId;
 	
 	@Override
 	public void insertXml(DelayedPrettyPrinterXmlWriter dppXML)
 			      throws IOException, XMLException
-	{		
-		dppXML.delayedWriteEntityWithText("relatedFrameOfReferenceUID",            forr.relatedFrameOfReferenceUid)
-				.delayedWriteEntityWithText("frameOfReferenceTransformationMatrix",  forr.frameOfReferenceTransformationMatrix)
-				.delayedWriteEntityWithText("frameOfReferenceTransformationComment", forr.frameOfReferenceTransformationComment)
-				.delayedEndEntity();		  
+	{
+		super.insertXml(dppXML);
+		
+		dppXML.delayedWriteEntityWithText("aimVersion",          aimVersion)
+				.delayedWriteEntityWithText("numImageAnnotations", numImageAnnotations)
+				.delayedWriteEntityWithText("associatedRoiSetID",  associatedRoiSetId);
 	}
+	
+	
+	public void setAimVersion(String s)
+	{
+		aimVersion = s;
+	}
+	
+	
+	public void setnumImageAnnotations(String s)
+	{
+		numImageAnnotations = s;
+	}
+	
+	
+	public void setAssociatedRoiSetId(String s)
+	{
+		associatedRoiSetId = s;
+	}
+	
+	
 }

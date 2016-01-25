@@ -35,53 +35,58 @@
 
 /********************************************************************
 * @author Simon J Doran
-* Java class: IcrRoiDataMDComplexType.java
-* First created on Jan 21, 2016 at 3:12:50 PM
+* Java class: IcrReferencedFrameOfReferenceMDComplexType.java
+* First created on Jan 21, 2016 at 10:27:34 AM
 * 
-* Creation of metadata XML for icr:roiData
+* Creation of metadata XML for icr:referencedFrameOfReferenceData
 * 
 * Eventually, the plan for this whole package is to replace the
 * explicit writing of the XML files with a higher level interface,
-* e.g., JAXB. However, this is for a later refactoring. In addition
-* note that, at present, only a subset of xnat:experimentData is
-* implemented.
+* e.g., JAXB. However, this is for a later refactoring.
 *********************************************************************/
 
 package xnatMetadataCreators;
 
-import java.util.List;
+import exceptions.XMLException;
+import java.io.IOException;
+import xmlUtilities.DelayedPrettyPrinterXmlWriter;
 
-public class IcrRoiDataMDComplexType extends IcrGenericImageAssessmentDataMDComplexType
+public class IcrReferencedFrameOfReferenceDataMdComplexType extends MdComplexType
 {
-	protected List<String>              associatedRoiSetIDList;
-	protected String                    originalUid;
-	protected String                    originalDataType;
-	protected String                    originalLabel;
-	protected String                    originatingApplicationName;
-	protected String                    originatingApplicationVersion;
-	protected String                    originalContainsMultipleRois;
-	protected String                    roiNumberInOriginal;
-	protected String                    roiDisplayColorInStructureSet;
-	protected String                    referencedFrameOfReferenceUid;
-	protected String                    roiName;
-	protected String                    roiDescription;
-	protected String                    roiVolume;
-	protected String                    roiGenerationAlgorithm;
-	protected String                    roiGenerationDescription;
-	protected String                    roiGeometricType;
-	protected String                    nDicomContours;
-	protected String                    derivationCode;
-	protected String                    observationNumber;
-	protected String                    observationLabel;
-	protected String                    observationDescription;
-	protected List<RtRelatedRoi>        rrrList;
-	protected String                    rtRoiInterpretedType;
-	protected String                    roiInterpreter;
-	protected String                    roiMaterialId;
-	protected List<RoiPhysicalProperty> rppList;
-	protected List<String>              associatedRoiParameterStatisticsList;
+	protected ReferencedFrameOfReference rfor;
+	
+	public IcrReferencedFrameOfReferenceDataMdComplexType(ReferencedFrameOfReference rfor)
+	{
+		this.rfor = rfor;
+	}
+	
+	public IcrReferencedFrameOfReferenceDataMdComplexType() {}
 	
 	
+	public void setReferencedFrameOfReference(ReferencedFrameOfReference rfor)
+	{
+		this.rfor = rfor;
+	}
 	
 	
+	@Override
+	public void insertXml(DelayedPrettyPrinterXmlWriter dppXML)
+			      throws IOException, XMLException
+	{		
+		dppXML.delayedWriteEntityWithText("frameOfReferenceUID", rfor.frameOfReferenceUid);
+		
+		dppXML.delayedWriteEntity("frameOfReferenceRelationships");
+		      for (FrameOfReferenceRelationship forr : rfor.frameOfReferenceRelationshipList)
+				{
+					(new IcrFrameOfReferenceRelationshipDataMdComplexType(forr)).insertXmlAsElement("frameOfReferenceRelationship", dppXML);
+				}
+		dppXML.delayedEndEntity();
+		
+		dppXML.delayedWriteEntity("rtReferencedStudies");
+		      for (RtReferencedStudy rrs : rfor.rtReferencedStudyList)
+				{
+					(new IcrRtReferencedStudyDataMdComplexType(rrs)).insertXmlAsElement("rtReferencedStudy", dppXML);
+				}
+		dppXML.delayedEndEntity();
+	}
 }

@@ -35,58 +35,92 @@
 
 /********************************************************************
 * @author Simon J Doran
-* Java class: IcrReferencedFrameOfReferenceMDComplexType.java
-* First created on Jan 21, 2016 at 10:27:34 AM
+* Java class: IcrGenericImageAssessmentDataMDCompleType.java
+* First created on Jan 20, 2016 at 8:53:59 AM
 * 
-* Creation of metadata XML for icr:referencedFrameOfReferenceData
+* Creation of metadata XML for icr:genericImageAssessmentData
+* 
+* This is virtually identical to xnat:qcAssessmentData, but based on
+* imageAssessorData not mrAssessorData.
 * 
 * Eventually, the plan for this whole package is to replace the
 * explicit writing of the XML files with a higher level interface,
-* e.g., JAXB. However, this is for a later refactoring.
+* e.g., JAXB. However, this is for a later refactoring. In addition
+* note that, at present, only a subset of xnat:experimentData is
+* implemented.
 *********************************************************************/
 
 package xnatMetadataCreators;
 
 import exceptions.XMLException;
 import java.io.IOException;
+import java.util.List;
 import xmlUtilities.DelayedPrettyPrinterXmlWriter;
+import xnatMetadataCreators.Scan.Slice;
 
-public class IcrReferencedFrameOfReferenceDataMDComplexType extends MDComplexType
+public class IcrGenericImageAssessmentDataMdComplexType extends XnatImageAssessorDataMdComplexType
 {
-	protected ReferencedFrameOfReference rfor;
+	protected String     type;
+	protected String     xnatSubjId;
+	protected String     dicomSubjName;
+	protected List<Scan> scanList;
 	
-	public IcrReferencedFrameOfReferenceDataMDComplexType(ReferencedFrameOfReference rfor)
+	public void setType(String s)
 	{
-		this.rfor = rfor;
+		type = s;
 	}
 	
-	public IcrReferencedFrameOfReferenceDataMDComplexType() {}
 	
-	
-	public void setReferencedFrameOfReference(ReferencedFrameOfReference rfor)
+	public void setXnatSubjId(String s)
 	{
-		this.rfor = rfor;
+		xnatSubjId = s;
+	}
+	
+	
+	public void setDicomSubjName(String s)
+	{
+		dicomSubjName = s;
+	}
+	
+	
+	public void setScanList(List<Scan> lsc)
+	{
+		scanList = lsc;
 	}
 	
 	
 	@Override
 	public void insertXml(DelayedPrettyPrinterXmlWriter dppXML)
 			      throws IOException, XMLException
-	{		
-		dppXML.delayedWriteEntityWithText("frameOfReferenceUID", rfor.frameOfReferenceUid);
+	{
+		dppXML.delayedWriteAttribute("type", type)
+				.delayedWriteEntityWithText("xnatSubjID",    xnatSubjId)
+				.delayedWriteEntityWithText("dicomSubjName", dicomSubjName)
+				.delayedWriteEntity("scans");
 		
-		dppXML.delayedWriteEntity("frameOfReferenceRelationships");
-		      for (FrameOfReferenceRelationship forr : rfor.frameOfReferenceRelationshipList)
+				for (Scan scan : scanList)
 				{
-					(new IcrFrameOfReferenceRelationshipDataMDComplexType(forr)).insertXmlAsElement("frameOfReferenceRelationship", dppXML);
-				}
-		dppXML.delayedEndEntity();
-		
-		dppXML.delayedWriteEntity("rtReferencedStudies");
-		      for (RtReferencedStudy rrs : rfor.rtReferencedStudyList)
-				{
-					(new IcrRtReferencedStudyDataMDComplexType(rrs)).insertXmlAsElement("rtReferencedStudy", dppXML);
-				}
-		dppXML.delayedEndEntity();
+					dppXML.delayedWriteEntity("scan")
+							.delayedWriteAttribute("id", scan.id)
+					      .delayedWriteEntity("sliceQC");
+					
+					      for (Slice slice : scan.sliceList)
+							{
+								dppXML.delayedWriteEntity("slice")
+										   .delayedWriteAttribute("number", slice.number);
+										   if (slice.sliceStatistics != null)
+											{
+												slice.sliceStatistics.insertXmlAsElement("sliceStatistics", dppXML);
+											}
+								dppXML.delayedEndEntity();
+							}
+							
+					if (scan.scanStatistics != null)
+					{
+						scan.scanStatistics.insertXmlAsElement("scanStatistics", dppXML);
+					}
+					
+					dppXML.delayedEndEntity();
+				}		
 	}
 }

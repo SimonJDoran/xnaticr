@@ -35,10 +35,10 @@
 
 /********************************************************************
 * @author Simon J Doran
-* Java class: IcrRoiPhysicalPropertyMDComplexType.java
-* First created on Jan 21, 2016 at 5:24:26 PM
+* Java class: IcrRtRelatedRoiMDComplexType.java
+* First created on Jan 21, 2016 at 4:54:04 PM
 * 
-* Creation of metadata XML for icr:roiPhysicalProperty
+* Creation of metadata XML for icr:rtRelatedRoi
 * 
 * Eventually, the plan for this whole package is to replace the
 * explicit writing of the XML files with a higher level interface,
@@ -51,36 +51,32 @@ import exceptions.XMLException;
 import java.io.IOException;
 import xmlUtilities.DelayedPrettyPrinterXmlWriter;
 
-public class IcrRoiPhysicalPropertyMDComplexType extends MDComplexType
+public class IcrRtRelatedRoiMdComplexType extends MdComplexType
 {
-	protected RoiPhysicalProperty rpp;
+	protected RtRelatedRoi rrr;
 	
-	public IcrRoiPhysicalPropertyMDComplexType(RoiPhysicalProperty rpp)
+	public IcrRtRelatedRoiMdComplexType(RtRelatedRoi rrr)
 	{
-		this.rpp = rpp;
+		this.rrr = rrr;
 	}
 	
-	public IcrRoiPhysicalPropertyMDComplexType() {}
 	
-	
-	public void setRoiPhysicalProperty(RoiPhysicalProperty rpp)
+	public IcrRtRelatedRoiMdComplexType()
 	{
-		this.rpp = rpp;
-	}
+		rrr = new RtRelatedRoi();
+	}	
 	
+	
+	public void setAdditionalField(RtRelatedRoi rrr)
+	{
+		this.rrr = rrr;
+	}
 	
 	@Override
 	public void insertXml(DelayedPrettyPrinterXmlWriter dppXML)
 			      throws IOException, XMLException
 	{		
-		dppXML.delayedWriteEntityWithText("propertyName",  rpp.propertyName)
-				.delayedWriteEntityWithText("propertyValue", rpp.propertyValue);
-		
-		dppXML.delayedWriteEntity("elementalCompositionList");
-		      for (ElementalComposition ec : rpp.elementalCompositionList)
-				{
-					(new IcrElementalCompositionDataMDComplexType(ec)).insertXmlAsElement("elementalComposition", dppXML);
-				}
-		dppXML.delayedEndEntity();		  
+		dppXML.delayedWriteEntityWithText("referencedRoiNumber", rrr.referencedRoiNumber)
+				.delayedWriteEntityWithText("rtRoiRelationship",   rrr.rtRoiRelationship);
 	}
 }

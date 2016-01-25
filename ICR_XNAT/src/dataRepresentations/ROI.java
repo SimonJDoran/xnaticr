@@ -66,10 +66,10 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import javax.imageio.ImageIO;
-import dataRepresentations.RTStruct;
-import dataRepresentations.RTStruct.ROIContour;
-import dataRepresentations.RTStruct.RTROIObservation;
-import dataRepresentations.RTStruct.StructureSetROI;
+import dataRepresentations.RTStruct_old;
+import dataRepresentations.RTStruct_old.ROIContour;
+import dataRepresentations.RTStruct_old.RTROIObservation;
+import dataRepresentations.RTStruct_old.StructureSetROI;
 import exceptions.XNATException;
 import generalUtilities.Vector2D;
 import java.io.BufferedInputStream;
@@ -89,7 +89,7 @@ import static dataRepresentations.RTStructureSetUploader.logger;
 
 public class ROI
 {
-   protected RTStruct                     rts;
+   protected RTStruct_old                     rts;
    protected StructureSetROI              ssRoi;
    protected ROIContour                   roiCont;
    protected RTROIObservation             roiObs;
@@ -106,14 +106,14 @@ public class ROI
 	 * region-of-interest to be uploaded originally derives from an RT-STRUCT
 	 * file and has already been parsed by RTStructureSetUploader.
     * @param xnprf XNATProfile, as required by the parent class constructor
-    * @param rts RTStruct that has already parsed the ROI data
+    * @param rts RTStruct_old that has already parsed the ROI data
     * @param roiPos integer corresponding to position of the required ROI
-    *        in the roiList of the RTStruct 
+        in the roiList of the RTStruct_old 
     * @param labelPrefix String containing the prefix for the label of the
     *        uploaded data
     * @
     */
-   public ROI(RTStruct rts, int roiPos, String labelPrefix,
+   public ROI(RTStruct_old rts, int roiPos, String labelPrefix,
                       UploadStructure uls)
           throws Exception
    {

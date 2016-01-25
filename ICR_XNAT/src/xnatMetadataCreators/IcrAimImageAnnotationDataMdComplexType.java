@@ -35,17 +35,22 @@
 
 /********************************************************************
 * @author Simon J Doran
-* Java class: XnatImageAssessorData.java
-* First created on Jan 20, 2016 at 8:53:59 AM
+* Java class: IcrAimAnnotationCollectionDataMDComplexType.java
+* First created on Jan 25, 2016 at 12:16:54 PM
 * 
-* Creation of metadata XML for xnat:imageAssessorData
+* Creation of metadata XML for icr:aimImageAnnotationData
 * 
 * Eventually, the plan for this whole package is to replace the
 * explicit writing of the XML files with a higher level interface,
-* e.g., JAXB. However, this is for a later refactoring. In addition
-* note that, at present, only a subset of xnat:experimentData is
-* implemented.
+* e.g., JAXB. However, this is for a later refactoring.
 *********************************************************************/
+
+/********************************************************************
+* @author Simon J Doran
+* Java class: AimImageAnnotationData.java
+* First created on Jan 25, 2016 at 2:09:14 PM
+*********************************************************************/
+
 
 package xnatMetadataCreators;
 
@@ -53,32 +58,13 @@ import exceptions.XMLException;
 import java.io.IOException;
 import java.util.List;
 import xmlUtilities.DelayedPrettyPrinterXmlWriter;
-import xnatMetadataCreators.AbstractResource.Tag;
 
-public class XnatImageAssessorData extends XnatDerivedDataMDComplexType
+public class IcrAimImageAnnotationDataMdComplexType extends IcrGenericImageAssessmentDataMdComplexType
 {
-	protected List<AbstractResource> inList;
-	protected List<AbstractResource> outList;
-	protected String                 imageSessionId;
-	protected List<AdditionalField>  paramList; 
-	
-	public void setInList(List<AbstractResource> lar)
-	{
-		inList = lar;
-	}
-	
-	
-	public void setOutList(List<AbstractResource> lar)
-	{
-		outList = lar;
-	}
-	
-	
-	public void setImageSessionId(String s)
-	{
-		imageSessionId = s;
-	}
-	
+	protected String       comment;
+	protected String       description;
+	protected String       associatedRoiSetId;
+	protected List<String> aimEntitySubclassIdList;
 	
 	@Override
 	public void insertXml(DelayedPrettyPrinterXmlWriter dppXML)
@@ -86,30 +72,38 @@ public class XnatImageAssessorData extends XnatDerivedDataMDComplexType
 	{
 		super.insertXml(dppXML);
 		
-		dppXML.delayedWriteEntity("in");
-		for (AbstractResource ar : inList)
+		dppXML.delayedWriteEntityWithText("comment",     comment)
+				.delayedWriteEntityWithText("description", description)
+				.delayedWriteEntityWithText("roiSetID",    associatedRoiSetId);
+		
+		dppXML.delayedWriteEntity("aimEntitySubclassIDs");
+		for (String s : aimEntitySubclassIdList)
 		{
-			(new XnatAbstractResourceMDComplexType(ar)).insertXmlAsElement("file", dppXML);
+			dppXML.delayedWriteEntityWithText("aimEntitySubclassID", s);
 		}
 		dppXML.delayedEndEntity();
+	}
 	
-		
-		dppXML.delayedWriteEntity("out");
-		for (AbstractResource ar : outList)
-		{
-			(new XnatAbstractResourceMDComplexType(ar)).insertXmlAsElement("file", dppXML);
-		}
-		dppXML.delayedEndEntity();
-		
-		
-		dppXML.delayedWriteEntityWithText("imageSession_ID", imageSessionId);
-		
-		
-		dppXML.delayedWriteEntity("parameters");
-		for (AdditionalField af : paramList)
-		{
-			(new XnatAddFieldMDComplexType(af)).insertXmlAsElement("addParam", dppXML);
-		}
-		dppXML.delayedEndEntity();
-	}		
+	public void setComment(String s)
+	{
+		comment = s;
+	}
+	
+	
+	public void setDescription(String s)
+	{
+		description = s;
+	}
+	
+	
+	public void setAssociatedRoiSetId(String s)
+	{
+		associatedRoiSetId = s;
+	}
+	
+	
+	public void setAimEntitySubclassIdList(List<String> ls)
+	{
+		aimEntitySubclassIdList = ls;
+	}
 }

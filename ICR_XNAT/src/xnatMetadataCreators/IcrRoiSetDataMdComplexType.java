@@ -56,7 +56,7 @@ import java.util.ArrayList;
 import java.util.List;
 import xmlUtilities.DelayedPrettyPrinterXmlWriter;
 
-public class IcrRoiSetDataMDComplexType extends IcrGenericImageAssessmentDataMDComplexType
+public class IcrRoiSetDataMdComplexType extends IcrGenericImageAssessmentDataMdComplexType
 {
 	protected String                           originalUid;
 	protected String                           originalDataType;
@@ -91,7 +91,7 @@ public class IcrRoiSetDataMDComplexType extends IcrGenericImageAssessmentDataMDC
 		dppXML.delayedWriteEntity("roiDisplays");
 		         for (RoiDisplay rd : roiDisplayList)
 					{
-						(new IcrRoiDisplayDataMDComplexType(rd)).insertXmlAsElement("roiDisplay", dppXML);
+						(new IcrRoiDisplayDataMdComplexType(rd)).insertXmlAsElement("roiDisplay", dppXML);
 					}
 	   dppXML.delayedEndEntity();
 			
@@ -105,7 +105,7 @@ public class IcrRoiSetDataMDComplexType extends IcrGenericImageAssessmentDataMDC
 		dppXML.delayedWriteEntity("referencedFramesOfReference");
 		      for (ReferencedFrameOfReference rfor : rforList)
 				{
-					(new IcrReferencedFrameOfReferenceDataMDComplexType(rfor)).insertXmlAsElement("referencedFrameOfReference", dppXML);
+					(new IcrReferencedFrameOfReferenceDataMdComplexType(rfor)).insertXmlAsElement("referencedFrameOfReference", dppXML);
 				}		  
 	}
 	

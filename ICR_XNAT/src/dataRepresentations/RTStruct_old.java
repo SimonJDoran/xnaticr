@@ -62,9 +62,9 @@ import xnatRestToolkit.XNATNamespaceContext;
 import xnatRestToolkit.XNATRESTToolkit;
 import xnatUploader.AmbiguousSubjectAndExperiment;
 
-public final class RTStruct extends DataRepresentation implements RtStructWriter
+public final class RTStruct_old extends DataRepresentation implements RtStructWriter
 {
-   static    Logger             logger      = Logger.getLogger(RTStruct.class);
+   static    Logger             logger      = Logger.getLogger(RTStruct_old.class);
    
    protected static final int   DUMMY_INT   = -999;
    protected static final float DUMMY_FLOAT = -999.9f; 
@@ -245,7 +245,7 @@ public final class RTStruct extends DataRepresentation implements RtStructWriter
     * @param src a valid source RTStruct object
     * @param rois a subset of rois in the original object to be used for the creation of the new one. 
     */ 
-  public RTStruct(RTStruct src, Set<Integer> rois)
+  public RTStruct_old(RTStruct_old src, Set<Integer> rois)
 	{  
   		version                 = src.version;
 		bdo                     = src.bdo;
@@ -328,7 +328,7 @@ public final class RTStruct extends DataRepresentation implements RtStructWriter
 	 * @throws exceptions.DataFormatException 
 	 * @throws DataRepresentationException 
     */
-	public RTStruct(DicomObject bdo, XNATProfile xnprf)
+	public RTStruct_old(DicomObject bdo, XNATProfile xnprf)
           throws DataFormatException, DataRepresentationException
    {
       this.bdo         = bdo;
@@ -613,7 +613,7 @@ public final class RTStruct extends DataRepresentation implements RtStructWriter
          - even for a single XNAT subject, it is possible to create multiple
            sessions using the same DICOM data.
       
-         Normally, the reason we are parsing an RTStruct is to upload a given
+         Normally, the reason we are parsing an RTStruct_old is to upload a given
          file to a particular XNAT Session and so some disambiguation is needed.
          This is achieved by splitting the parsing for dependencies into two
          parts:

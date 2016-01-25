@@ -51,7 +51,7 @@ import exceptions.XMLException;
 import java.io.IOException;
 import xmlUtilities.DelayedPrettyPrinterXmlWriter;
 
-public class XnatInvestigatorDataMDComplexType extends MDComplexType
+public class XnatInvestigatorDataMdComplexType extends MdComplexType
 {
 	protected InvestigatorList.Investigator investigator;
 	protected String id;

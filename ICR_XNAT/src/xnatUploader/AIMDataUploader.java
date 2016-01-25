@@ -58,7 +58,7 @@ import com.generationjava.io.xml.SimpleXmlWriter;
 import dataRepresentations.AIMOutput;
 import dataRepresentations.ContourRenderer;
 import dataRepresentations.MRIWOutput;
-import dataRepresentations.RTStruct;
+import dataRepresentations.RTStruct_old;
 import etherj.XmlException;
 import etherj.aim.ImageAnnotationCollection;
 import etherj.aim.XmlParser;
@@ -468,8 +468,8 @@ public class AIMDataUploader extends QCAssessmentDataUploader
 	
 	
 	/**
-    * Create additional thumbnail files and RTStruct file for upload with the
-	 * AIM object.
+    * Create additional thumbnail files and RTStruct_old file for upload with the
+ AIM object.
     */
    @Override
    public void createAuxiliaryResourceFiles()

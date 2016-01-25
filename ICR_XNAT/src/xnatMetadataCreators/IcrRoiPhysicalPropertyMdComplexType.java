@@ -35,18 +35,15 @@
 
 /********************************************************************
 * @author Simon J Doran
-* Java class: IcrRoiDisplayDataMDComplexType.java
-* First created on Jan 20, 2016 at 4:06:56 PM
+* Java class: IcrRoiPhysicalPropertyMDComplexType.java
+* First created on Jan 21, 2016 at 5:24:26 PM
 * 
-* Creation of metadata XML for icr:roiDisplayData
+* Creation of metadata XML for icr:roiPhysicalProperty
 * 
 * Eventually, the plan for this whole package is to replace the
 * explicit writing of the XML files with a higher level interface,
-* e.g., JAXB. However, this is for a later refactoring. In addition
-* note that, at present, only a subset of xnat:experimentData is
-* implemented.
+* e.g., JAXB. However, this is for a later refactoring.
 *********************************************************************/
-
 
 package xnatMetadataCreators;
 
@@ -54,36 +51,36 @@ import exceptions.XMLException;
 import java.io.IOException;
 import xmlUtilities.DelayedPrettyPrinterXmlWriter;
 
-public class IcrRoiDisplayDataMDComplexType extends MDComplexType
+public class IcrRoiPhysicalPropertyMdComplexType extends MdComplexType
 {
-	protected RoiDisplay rd;
+	protected RoiPhysicalProperty rpp;
 	
-	public IcrRoiDisplayDataMDComplexType(RoiDisplay rd)
+	public IcrRoiPhysicalPropertyMdComplexType(RoiPhysicalProperty rpp)
 	{
-		this.rd = rd;
+		this.rpp = rpp;
 	}
 	
-	public IcrRoiDisplayDataMDComplexType() {}
+	public IcrRoiPhysicalPropertyMdComplexType() {}
 	
 	
-	public void setRoiDisplay(RoiDisplay rd)
+	public void setRoiPhysicalProperty(RoiPhysicalProperty rpp)
 	{
-		this.rd = rd;
+		this.rpp = rpp;
 	}
 	
 	
 	@Override
 	public void insertXml(DelayedPrettyPrinterXmlWriter dppXML)
 			      throws IOException, XMLException
-	{
-		dppXML.delayedWriteEntityWithText("roiID",               rd.roiId)
-		      .delayedWriteEntityWithText("lineType",            rd.lineType)
-				.delayedWriteEntityWithText("lineColour",          rd.lineColour)
-				.delayedWriteEntityWithText("shadingType",         rd.shadingType)
-				.delayedWriteEntityWithText("shadingColour",       rd.shadingColour)
-				.delayedWriteEntityWithText("shadingTransparency", rd.shadingTransparency);
+	{		
+		dppXML.delayedWriteEntityWithText("propertyName",  rpp.propertyName)
+				.delayedWriteEntityWithText("propertyValue", rpp.propertyValue);
+		
+		dppXML.delayedWriteEntity("elementalCompositionList");
+		      for (ElementalComposition ec : rpp.elementalCompositionList)
+				{
+					(new IcrElementalCompositionDataMdComplexType(ec)).insertXmlAsElement("elementalComposition", dppXML);
+				}
+		dppXML.delayedEndEntity();		  
 	}
-	
-	
-	
 }

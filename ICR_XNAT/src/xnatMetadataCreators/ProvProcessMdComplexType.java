@@ -1,5 +1,5 @@
 /********************************************************************
-* Copyright (c) 2016, Institute of Cancer Research
+* Copyright (c) 2015, Institute of Cancer Research
 * All rights reserved.
 * 
 * Redistribution and use in source and binary forms, with or without
@@ -35,10 +35,10 @@
 
 /********************************************************************
 * @author Simon J Doran
-* Java class: IcrContourImageData.java
-* First created on Jan 20, 2016 at 11:32:00 PM
+* Java class: GenericImageAssessmentDataUploader.java
+* First created on Jan 15, 2016 at 3:21:03 PM
 * 
-* Creation of metadata XML for icr:contourImageData
+* Creation of metadata XML for prov:process
 * 
 * Eventually, the plan for this whole package is to replace the
 * explicit writing of the XML files with a higher level interface,
@@ -46,37 +46,71 @@
 * note that, at present, only a subset of xnat:experimentData is
 * implemented.
 *********************************************************************/
+
 package xnatMetadataCreators;
 
 import exceptions.XMLException;
 import java.io.IOException;
+import java.util.ArrayList;
 import xmlUtilities.DelayedPrettyPrinterXmlWriter;
+import xnatMetadataCreators.Provenance.Library;
+import xnatMetadataCreators.Provenance.ProvenanceEntry;
 
-public class IcrContourImageDataMDComplexType extends MDComplexType
+public class ProvProcessMdComplexType extends MdComplexType
 {
-	protected ContourImage ci;
+	protected Provenance prov;
 	
-	public IcrContourImageDataMDComplexType(ContourImage ci)
+	public ProvProcessMdComplexType(Provenance p)
 	{
-		this.ci = ci;
+		prov = p;
 	}
 	
-	public IcrContourImageDataMDComplexType() {}
-	
-	
-	public void setContourImage(ContourImage ci)
+	public void setProvenance(Provenance p)
 	{
-		this.ci = ci;
+		prov = p;
 	}
-	
 	
 	@Override
 	public void insertXml(DelayedPrettyPrinterXmlWriter dppXML)
 			 throws IOException, XMLException
-	{
-		dppXML.delayedWriteEntityWithText("referencedSOPInstanceUID", ci.referencedSopInstanceUid)
-			   .delayedWriteEntityWithText("referencedSOPClassUID",    ci.referencedSopClassUid)
-			   .delayedWriteEntityWithText("referencedFrameNmber",    ci.referencedFrameNumber);
+	{		
+		for (Provenance.ProvenanceEntry pe: prov.entries)
+		{
+			dppXML.writeEntity("processStep")
+				.delayedWriteEntity("program")
+					.delayedWriteAttribute("version", pe.program.version)
+					.delayedWriteAttribute("arguments", pe.program.arguments)
+					.delayedWriteText(pe.platform.name)
+				.delayedEndEntity()
+				.delayedWriteEntity("timestamp")
+					.delayedWriteText(pe.timestamp)
+				.delayedEndEntity()
+				.delayedWriteEntity("cvs")
+					.delayedWriteText(pe.cvs)
+				.delayedEndEntity()
+				.delayedWriteEntity("user")
+					.delayedWriteText(pe.user)
+				.delayedEndEntity()
+				.delayedWriteEntity("machine")
+					.delayedWriteText(pe.machine)
+				.delayedEndEntity()
+				.delayedWriteEntity("platform")
+					.delayedWriteAttribute("version", pe.platform.version)
+					.delayedWriteText(pe.platform.name)
+				.delayedEndEntity()
+				.delayedWriteEntity("compiler")
+					.delayedWriteAttribute("version", pe.compiler.version)
+					.delayedWriteText(pe.compiler.name)
+				.delayedEndEntity();
+
+				for (Library lib: pe.libraryList)
+				{
+					dppXML.delayedWriteEntity("library")
+						.delayedWriteAttribute("version", lib.version)
+						.delayedWriteText(lib.name)
+					.delayedEndEntity();
+				}
+			dppXML.endEntity();
+		}
 	}
-	
 }
