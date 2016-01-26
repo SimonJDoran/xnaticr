@@ -74,8 +74,8 @@ public class IcrRoiDataMdComplexType extends IcrGenericImageAssessmentDataMdComp
 	protected String                    nDicomContours;
 	protected String                    derivationCode;
 	protected String                    observationNumber;
-	protected String                    observationLabel;
-	protected String                    observationDescription;
+	protected String                    roiObservationLabel;
+	protected String                    roiObservationDescription;
 	protected List<RtRelatedRoi>        rrrList;
 	protected String                    rtRoiInterpretedType;
 	protected String                    roiInterpreter;
@@ -83,65 +83,67 @@ public class IcrRoiDataMdComplexType extends IcrGenericImageAssessmentDataMdComp
 	protected List<RoiPhysicalProperty> rppList;
 	protected List<String>              associatedRoiParameterStatisticsIdList;
 	
-	
+			  
 	@Override
 	public void insertXml(DelayedPrettyPrinterXmlWriter dppXML)
-			      throws IOException, XMLException
+			 throws IOException, XMLException
 	{
 		super.insertXml(dppXML);
 		
 		dppXML.delayedWriteEntity("associatedRoiSetIDs");
 		for (String s : associatedRoiSetIdList)
-		{
+				{
 			dppXML.delayedWriteEntityWithText("assocRoiSetID", s);
-		}
+				}
+		dppXML.delayedEndEntity();
 		
 		dppXML.delayedWriteEntity("originatingRoiSource")
-				   .delayedWriteAttribute("originalUID",                     originalUid)
-				   .delayedWriteAttribute("originalDataType",                originalDataType)
-				   .delayedWriteAttribute("originalLabel",                   originalLabel)
-				   .delayedWriteAttribute("originatingApplicationName",      originatingApplicationName)
-				   .delayedWriteAttribute("originatingApplicationVersion",   originatingApplicationVersion)
-				   .delayedWriteAttribute("originalContainsMultipleRois",    originalContainsMultipleRois)
-		         .delayedWriteAttribute("roiNumberInOriginal",             roiNumberInOriginal)
+			      .delayedWriteAttribute("originalUID",                     originalUid)
+			      .delayedWriteAttribute("originalDataType",                originalDataType)
+					.delayedWriteAttribute("originalLabel",                   originalLabel)
+			      .delayedWriteAttribute("originatingApplicationName",      originatingApplicationName)
+		         .delayedWriteAttribute("originatingApplicationVersion",   originatingApplicationVersion)
+		         .delayedWriteAttribute("originalContainsMultipleRois",    originalContainsMultipleRois)
+			      .delayedWriteAttribute("roiNumberInOriginal",             roiNumberInOriginal)
 			   .delayedEndEntity()
-				.delayedWriteEntityWithText("roiDisplayColorInStructureSet", roiDisplayColorInStructureSet)
-		      .delayedWriteEntityWithText("referencedFrameOfReferenceUID", referencedFrameOfReferenceUid)
-			   .delayedWriteEntityWithText("roiName",                       roiName)
+			   .delayedWriteEntityWithText("roiDisplayColorInStructureSet", roiDisplayColorInStructureSet)
+			   .delayedWriteEntityWithText("referencedFrameOfReferenceUID", referencedFrameOfReferenceUid)
+				.delayedWriteEntityWithText("roiName",                       roiName)
 				.delayedWriteEntityWithText("roiDescription",                roiDescription)
 				.delayedWriteEntityWithText("roiVolume",                     roiVolume)
 				.delayedWriteEntityWithText("roiGenerationAlgorithm",        roiGenerationAlgorithm)
 				.delayedWriteEntityWithText("roiGenerationDescription",      roiGenerationDescription)
-				.delayedWriteEntityWithText("roiGeometricType",              roiGeometricType)
+			   .delayedWriteEntityWithText("roiGeometricType",              roiGeometricType)
 				.delayedWriteEntityWithText("nDICOMContours",                nDicomContours)
-				.delayedWriteEntityWithText("derivationCode",                derivationCode)
-				.delayedWriteEntityWithText("observationNumber",             observationNumber)
-				.delayedWriteEntityWithText("observationDescription",        observationDescription);
-
+			   .delayedWriteEntityWithText("derivationCode",                derivationCode)
+			   .delayedWriteEntityWithText("observationNumber",             observationNumber)
+			   .delayedWriteEntityWithText("roiObservationLabel",           roiObservationLabel)
+			   .delayedWriteEntityWithText("roiObservationDescription",     roiObservationDescription);
+				
 		dppXML.delayedWriteEntity("rtRelatedRois");
-		for (RtRelatedRoi rrr : rrrList)
-		{
+		      for (RtRelatedRoi rrr : rrrList)
+				{
 			(new IcrRtRelatedRoiMdComplexType(rrr)).insertXmlAsElement("rtRelatedRoi", dppXML);
-		}
+				}
+		dppXML.delayedEndEntity();
 		
 		dppXML.delayedWriteEntityWithText("rtRoiInterpretedType",          rtRoiInterpretedType)
-				.delayedWriteEntityWithText("roiInterpreter",                roiInterpreter)
-				.delayedWriteEntityWithText("roiMaterialID",                 roiMaterialId);
+			   .delayedWriteEntityWithText("roiInterpreter",                roiInterpreter)
+			   .delayedWriteEntityWithText("roiMaterialID",                 roiMaterialId);
 		
-				  
 		dppXML.delayedWriteEntity("roiPhysicalProperties");
-		for (RoiPhysicalProperty rpp : rppList)
-		{
-			(new IcrRoiPhysicalPropertyMdComplexType(rpp)).insertXmlAsElement("roiPhysicalProperty", dppXML);
-		}
+		      for (RoiPhysicalProperty rpp : rppList)
+				{
+					(new IcrRoiPhysicalPropertyMdComplexType(rpp)).insertXmlAsElement("roiPhysicalProperty", dppXML);
+				}
 		dppXML.delayedEndEntity();
 		
-		dppXML.delayedWriteEntity("associateRoiParameterStatisticsIDs");
+		dppXML.delayedWriteEntity("associatedRoiParameterStatisticsIDs");
 		for (String s : associatedRoiParameterStatisticsIdList)
-		{
+				{
 			dppXML.delayedWriteEntityWithText("assocRoiParStatsID", s);
-		}
-		dppXML.delayedEndEntity();
+				}
+		dppXML.delayedEndEntity();		
 	}
 	
 	
@@ -149,7 +151,7 @@ public class IcrRoiDataMdComplexType extends IcrGenericImageAssessmentDataMdComp
 	{
 		associatedRoiSetIdList = ls;
 	}
-	
+
 	
 	public void setOriginalUid(String s)
 	{
@@ -260,15 +262,15 @@ public class IcrRoiDataMdComplexType extends IcrGenericImageAssessmentDataMdComp
 	}
 	
 	
-	public void setObservationLabel(String s)
+	public void setRoiObservationLabel(String s)
 	{
-		observationLabel = s;
+		roiObservationLabel = s;
 	}
 	
 	
-	public void setObservationDescription(String s)
+	public void setRoiObservationDescription(String s)
 	{
-		observationDescription = s;
+		roiObservationDescription = s;
 	}
 	
 	
