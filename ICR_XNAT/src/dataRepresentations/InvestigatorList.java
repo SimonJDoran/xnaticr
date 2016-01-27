@@ -41,7 +41,7 @@
 * Data structure parallelling the xnat:investigator element
 *********************************************************************/
 
-package xnatMetadataCreators;
+package dataRepresentations;
 
 import java.util.ArrayList;
 import java.util.List;

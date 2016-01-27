@@ -48,6 +48,7 @@
 *********************************************************************/
 package xnatMetadataCreators;
 
+import dataRepresentations.ContourImage;
 import exceptions.XMLException;
 import java.io.IOException;
 import xmlUtilities.DelayedPrettyPrinterXmlWriter;

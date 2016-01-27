@@ -35,28 +35,27 @@
 
 /********************************************************************
 * @author Simon J Doran
-* Java class: RtReferencedSeries.java
-* First created on Jan 21, 2016 at 00:16:00 AM
+* Java class: RtRoiObservation.java
+* First created on Jan 27, 2016 at 10:41:16 AM
 * 
-* Data structure parallelling the icr:frameOfReferenceRelationshipData
-* element and used in conjunction with
-* IcrFrameOfReferenceRelationshipDataMDComplexType.
+* Data structure parallelling relating to the DICOM tag (3006,0080)
+* RT ROI Observations Sequence.
 *********************************************************************/
 
-package xnatMetadataCreators;
+package dataRepresentations;
 
-public class FrameOfReferenceRelationship
+import java.util.List;
+
+public class RtRoiObservation
 {
-	public String relatedFrameOfReferenceUid;
-	public String frameOfReferenceTransformationMatrix;
-	public String frameOfReferenceTransformationComment;
-	
-	public FrameOfReferenceRelationship(String uid, String matrix, String comment)
-	{
-		relatedFrameOfReferenceUid            = uid;
-		frameOfReferenceTransformationMatrix  = matrix;
-		frameOfReferenceTransformationComment = comment;
-	}
-	
-	public FrameOfReferenceRelationship() {}
-}  
+     public int                       obsNumber;
+      public int                       referencedRoiNumber;
+      public String                    obsLabel;
+      public String                    obsDescription;
+      public List<RtRelatedRoi>        relatedRoiList;
+      public List<Integer>             relatedRoiObservationsList;
+      public String                    rtRoiInterpretedType;
+      public String                    roiInterpreter;
+      public String                    roiMaterialID;
+      public List<RoiPhysicalProperty> roiPhysicalPropertyList;
+}

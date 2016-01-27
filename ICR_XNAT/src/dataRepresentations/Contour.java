@@ -35,29 +35,35 @@
 
 /********************************************************************
 * @author Simon J Doran
-* Java class: AdditionalField.java
-* First created on Jan 20, 2016 at 12:12:48 PM
+* Java class: Contour.java
+* First created on Jan 27, 2016 at 10:34:36 AM
 * 
-* Formally declare an additional field (e.g., custom variable). This
-* class is used in conjunction with XnatAddFieldMDComplexType.
-* 
-* Eventually, the plan for this whole package is to replace the
-* explicit writing of the XML files with a higher level interface,
-* e.g., JAXB. However, this is for a later refactoring.
+* Data structure parallelling relating to the DICOM tag (3006,0040)
+* Contour Sequence.
 *********************************************************************/
 
-package xnatMetadataCreators;
+/********************************************************************
+* @author Simon J Doran
+* Java class: Contour.java
+* First created on Jan 27, 2016 at 10:34:36 AM
+*********************************************************************/
 
-public class AdditionalField
+package dataRepresentations;
+
+import static dataRepresentations.RTStruct_old.DUMMY_INT;
+import static dataRepresentations.RtStruct.DUMMY_FLOAT;
+
+public class Contour
 {
-	public String name;
-	public String value;
-	
-	public AdditionalField(){}
-	
-	public AdditionalField(String name, String value)
-	{
-		this.name  = name;
-		this.value = value;
-	}
+   public class Contour
+   {
+      public int                       contourNumber    = DUMMY_INT;
+      public int[]                     attachedContours = {DUMMY_INT};
+      public ContourImage[]            imageList;
+      public String                    geometricType;
+      public float                     slabThickness = DUMMY_FLOAT;
+      public float[]                   offsetVector  = {DUMMY_FLOAT, DUMMY_FLOAT, DUMMY_FLOAT};
+      public int                       nContourPoints;
+      public float[][]                 contourPoints;
+   }
 }

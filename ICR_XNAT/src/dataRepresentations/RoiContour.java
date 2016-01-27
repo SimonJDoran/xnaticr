@@ -33,37 +33,24 @@
 * OF THE POSSIBILITY OF SUCH DAMAGE.
 *********************************************************************/
 
-/*********************************************************************
+/********************************************************************
 * @author Simon J Doran
-* Java class: RoiDisplay.java
-* First created on Jan 20, 2016 at 4:20:18 PM
+* Java class: RoiContour.java
+* First created on Jan 27, 2016 at 10:29:38 AM
 * 
-* Data structure parallelling the icr:roiDisplay element and used in
-* conjunction with icrRoiDisplayDataMDComplexType.java
+* Data structure parallelling relating to the DICOM tag (3006,0039)
+* ROI Contour Sequence.
 *********************************************************************/
 
-package xnatMetadataCreators;
+package dataRepresentations;
 
-public class RoiDisplay
+import static dataRepresentations.RTStruct_old.DUMMY_INT;
+import java.util.List;
+
+public class RoiContour
 {
-	public String roiId;
-	public String lineType;
-	public String lineColour;
-	public String shadingType;
-	public String shadingColour;
-	public String shadingTransparency;
-	
-	public RoiDisplay(){}
-	
-	public RoiDisplay(String roiId, String lineType, String lineColour,
-			            String shadingType, String shadingColour,
-							String shadingTransparency)
-	{
-		this.roiId               = roiId;
-		this.lineType            = lineType;
-		this.lineColour          = lineColour;
-		this.shadingType         = shadingType;
-		this.shadingColour       = shadingColour;
-		this.shadingTransparency = shadingTransparency;
-	}			  
+      public int                       referencedRoiNumber;
+      public int[]                     roiDisplayColour = {DUMMY_INT, DUMMY_INT, DUMMY_INT};
+      public String                    frameOfReferenceUID;
+      public List<Contour>             contourList;
 }

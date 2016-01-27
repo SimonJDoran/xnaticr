@@ -47,6 +47,7 @@
 
 package xnatMetadataCreators;
 
+import dataRepresentations.FrameOfReferenceRelationship;
 import exceptions.XMLException;
 import java.io.IOException;
 import xmlUtilities.DelayedPrettyPrinterXmlWriter;

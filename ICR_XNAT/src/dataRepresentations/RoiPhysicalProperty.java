@@ -33,61 +33,32 @@
 * OF THE POSSIBILITY OF SUCH DAMAGE.
 *********************************************************************/
 
-/********************************************************************
+/*********************************************************************
 * @author Simon J Doran
-* Java class: AbstractResource.java
-* First created on Jan 20, 2016 at 10:24:37 AM
+* Java class: RoiPhysicalProperty.java
+* First created on Jan 21, 2016 at 5:18:28 PM
 * 
-* Representation an XNAT AbstractResource
-* 
+* Data structure parallelling the icr:roiPhysicalProperty element and
+* used in conjunction with icrRoiPhysicalPropertyMDComplexType.java
 *********************************************************************/
 
+package dataRepresentations;
 
-package xnatMetadataCreators;
-
+import dataRepresentations.ElementalComposition;
 import java.util.List;
 
-public class AbstractResource
+public class RoiPhysicalProperty
 {
-	public final class Tag
-	{
-		public String name;
-		public String value;
-		
-	   public Tag(String name, String value)
-		{
-			this.name = name;
-			this.value = value;
-		}
-		
-		public void setName(String s)
-		{
-			name = s;
-		}
-		
-		public void setValue(String s)
-		{
-			value = s;
-		}
-	}
+	public String                     propertyName;
+	public String                     propertyValue;
+	public List<ElementalComposition> elementalCompositionList;
 	
-	public String    label;
-	public Integer   fileCount;
-	public Long      fileSize;
-	public String    note;
-	public List<Tag> tags;
-
-	// Give users the option to use either a single-line constructor (with
-	// possible nulls). Given that there is no "implementation" as such -
-	// these are just variables - there seems no reason to invoke setter
-	// methods and I will just expose the variables publicly.
-	public AbstractResource(String label, Integer fileCount, Long fileSize,
-			                  String note, List<Tag> tags)
+	public RoiPhysicalProperty() {}
+	
+	public RoiPhysicalProperty(String name, String value, List<ElementalComposition> ec)
 	{
-		this.label     = label;
-		this.fileCount = fileCount;
-		this.fileSize  = fileSize;
-		this.note      = note;
-		this.tags      = tags;
-	}	
+		this.propertyName             = name;
+		this.propertyValue            = value;
+		this.elementalCompositionList = ec;
+	}
 }

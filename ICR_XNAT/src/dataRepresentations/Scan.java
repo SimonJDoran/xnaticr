@@ -43,10 +43,11 @@
 *********************************************************************/
 
 
-package xnatMetadataCreators;
+package dataRepresentations;
 
 import java.util.ArrayList;
 import java.util.List;
+import xnatMetadataCreators.MdComplexType;
 
 public class Scan
 {

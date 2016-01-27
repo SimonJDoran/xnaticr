@@ -42,19 +42,21 @@
 * and used in conjunction with IcrRtReferencedStudyDataMDComplexType.
 *********************************************************************/
 
-package xnatMetadataCreators;
+package dataRepresentations;
 
 import java.util.List;
 
 public class RtReferencedStudy
 {
+	public String                   referencedSopClassUid;
 	public String                   referencedSopInstanceUid;
 	public List<RtReferencedSeries> rtReferencedSeriesList;
 	
-	public RtReferencedStudy(String sopInstance,
+	public RtReferencedStudy(String sopClass, String sopInstance,
 									 List<RtReferencedSeries> seriesList)
 	{
-		referencedSopInstanceUid = sopInstance;
+		referencedSopClassUid    = sopClass;
+		referencedSopInstanceUid = sopInstance; 
 		rtReferencedSeriesList   = seriesList;
 	}
 	

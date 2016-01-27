@@ -47,6 +47,8 @@
 
 package xnatMetadataCreators;
 
+import dataRepresentations.RoiPhysicalProperty;
+import dataRepresentations.ElementalComposition;
 import exceptions.XMLException;
 import java.io.IOException;
 import xmlUtilities.DelayedPrettyPrinterXmlWriter;

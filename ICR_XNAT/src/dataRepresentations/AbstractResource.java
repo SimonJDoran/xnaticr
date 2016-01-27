@@ -35,32 +35,59 @@
 
 /********************************************************************
 * @author Simon J Doran
-* Java class: ReferencedFrameOfReference.java
-* First created on Jan 21, 2016 at 10:19:41 AM
+* Java class: AbstractResource.java
+* First created on Jan 20, 2016 at 10:24:37 AM
 * 
-* Data structure parallelling the icr:referenceFrameOfReferenceData
-* element and used in conjunction with
-* IcrReferencedFrameOfReferenceDataMDComplexType.
+* Representation an XNAT AbstractResource
+* 
 *********************************************************************/
 
-package xnatMetadataCreators;
+
+package dataRepresentations;
 
 import java.util.List;
 
-public class ReferencedFrameOfReference
+public class AbstractResource
 {
-	public String                             frameOfReferenceUid;
-	public List<FrameOfReferenceRelationship> frameOfReferenceRelationshipList;
-	public List<RtReferencedStudy>            rtReferencedStudyList;
-	
-	public ReferencedFrameOfReference(String uid,
-			                            List<FrameOfReferenceRelationship> forrList,
-												 List<RtReferencedStudy> rrsList)
+	public final class Tag
 	{
-		frameOfReferenceUid              = uid;
-		frameOfReferenceRelationshipList = forrList;
-		rtReferencedStudyList            = rrsList;
+		public String name;
+		public String value;
+		
+	   public Tag(String name, String value)
+		{
+			this.name = name;
+			this.value = value;
+		}
+		
+		public void setName(String s)
+		{
+			name = s;
+		}
+		
+		public void setValue(String s)
+		{
+			value = s;
+		}
 	}
 	
-	public ReferencedFrameOfReference() {}
+	public String    label;
+	public Integer   fileCount;
+	public Long      fileSize;
+	public String    note;
+	public List<Tag> tags;
+
+	// Give users the option to use either a single-line constructor (with
+	// possible nulls). Given that there is no "implementation" as such -
+	// these are just variables - there seems no reason to invoke setter
+	// methods and I will just expose the variables publicly.
+	public AbstractResource(String label, Integer fileCount, Long fileSize,
+			                  String note, List<Tag> tags)
+	{
+		this.label     = label;
+		this.fileCount = fileCount;
+		this.fileSize  = fileSize;
+		this.note      = note;
+		this.tags      = tags;
+	}	
 }

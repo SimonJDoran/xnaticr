@@ -153,7 +153,7 @@ public final class RTStruct_old extends DataRepresentation implements RtStructWr
    }
    
    
-   public class Contour
+   public class Contourx
    {
       public int                       contourNumber    = DUMMY_INT;
       public int[]                     attachedContours = {DUMMY_INT};

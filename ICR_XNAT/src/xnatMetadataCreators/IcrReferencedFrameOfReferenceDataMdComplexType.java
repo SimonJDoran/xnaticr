@@ -47,6 +47,9 @@
 
 package xnatMetadataCreators;
 
+import dataRepresentations.RtReferencedStudy;
+import dataRepresentations.ReferencedFrameOfReference;
+import dataRepresentations.FrameOfReferenceRelationship;
 import exceptions.XMLException;
 import java.io.IOException;
 import xmlUtilities.DelayedPrettyPrinterXmlWriter;

@@ -33,27 +33,28 @@
 * OF THE POSSIBILITY OF SUCH DAMAGE.
 *********************************************************************/
 
-/*********************************************************************
+/********************************************************************
 * @author Simon J Doran
-* Java class: RtRelatedRoi.java
-* First created on Jan 21, 2016 at 4:41:58 PM
+* Java class: ElementalComposition.java
+* First created on Jan 21, 2016 at 5:04:18 PM
 * 
-* Data structure parallelling the icr:rtRelatedRoi element and used in
-* conjunction with icrRtRelatedRoiMDComplexType.
+* Data structure parallelling the icr:elementalCompositionData
+* element and used in conjunction with
+* IcrElementalCompositionDataMDComplexType.
 *********************************************************************/
 
-package xnatMetadataCreators;
+package dataRepresentations;
 
-public class RtRelatedRoi
+public class ElementalComposition
 {
-	public String referencedRoiNumber;
-	public String rtRoiRelationship;
+	public String atomicNumber;
+	public String atomicMassFraction;
 	
-	public RtRelatedRoi() {}
-	
-	public RtRelatedRoi(String roiNumber, String relationship)
+	public ElementalComposition(String an, String amf)
 	{
-		referencedRoiNumber = roiNumber;
-		rtRoiRelationship   = relationship;
+		atomicNumber       = an;
+		atomicMassFraction = amf;
 	}
+	
+	public ElementalComposition() {}
 }

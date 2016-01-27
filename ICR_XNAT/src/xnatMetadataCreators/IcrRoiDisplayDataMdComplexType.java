@@ -50,6 +50,7 @@
 
 package xnatMetadataCreators;
 
+import dataRepresentations.RoiDisplay;
 import exceptions.XMLException;
 import java.io.IOException;
 import xmlUtilities.DelayedPrettyPrinterXmlWriter;

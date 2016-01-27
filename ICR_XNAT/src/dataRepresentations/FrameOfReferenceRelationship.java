@@ -33,31 +33,30 @@
 * OF THE POSSIBILITY OF SUCH DAMAGE.
 *********************************************************************/
 
-/*********************************************************************
+/********************************************************************
 * @author Simon J Doran
-* Java class: RoiPhysicalProperty.java
-* First created on Jan 21, 2016 at 5:18:28 PM
+* Java class: RtReferencedSeries.java
+* First created on Jan 21, 2016 at 00:16:00 AM
 * 
-* Data structure parallelling the icr:roiPhysicalProperty element and
-* used in conjunction with icrRoiPhysicalPropertyMDComplexType.java
+* Data structure parallelling the icr:frameOfReferenceRelationshipData
+* element and used in conjunction with
+* IcrFrameOfReferenceRelationshipDataMDComplexType.
 *********************************************************************/
 
-package xnatMetadataCreators;
+package dataRepresentations;
 
-import java.util.List;
-
-public class RoiPhysicalProperty
+public class FrameOfReferenceRelationship
 {
-	public String                     propertyName;
-	public String                     propertyValue;
-	public List<ElementalComposition> elementalCompositionList;
+	public String relatedFrameOfReferenceUid;
+	public String frameOfReferenceTransformationMatrix;
+	public String frameOfReferenceTransformationComment;
 	
-	public RoiPhysicalProperty() {}
-	
-	public RoiPhysicalProperty(String name, String value, List<ElementalComposition> ec)
+	public FrameOfReferenceRelationship(String uid, String matrix, String comment)
 	{
-		this.propertyName             = name;
-		this.propertyValue            = value;
-		this.elementalCompositionList = ec;
+		relatedFrameOfReferenceUid            = uid;
+		frameOfReferenceTransformationMatrix  = matrix;
+		frameOfReferenceTransformationComment = comment;
 	}
-}
+	
+	public FrameOfReferenceRelationship() {}
+}  

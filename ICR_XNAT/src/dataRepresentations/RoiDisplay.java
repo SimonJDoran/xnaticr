@@ -33,65 +33,37 @@
 * OF THE POSSIBILITY OF SUCH DAMAGE.
 *********************************************************************/
 
-/********************************************************************
+/*********************************************************************
 * @author Simon J Doran
-* Java class: XnatAbstractResourceMDComplexType.java
-* First created on Jan 20, 2016 at 9:00:08 AM
+* Java class: RoiDisplay.java
+* First created on Jan 20, 2016 at 4:20:18 PM
 * 
-* Creation of metadata XML for xnat:abstractResource
-* 
-* Eventually, the plan for this whole package is to replace the
-* explicit writing of the XML files with a higher level interface,
-* e.g., JAXB. However, this is for a later refactoring. In addition
-* note that, at present, only a subset of xnat:experimentData is
-* implemented.
+* Data structure parallelling the icr:roiDisplay element and used in
+* conjunction with icrRoiDisplayDataMDComplexType.java
 *********************************************************************/
 
-package xnatMetadataCreators;
+package dataRepresentations;
 
-import dataRepresentations.AbstractResource;
-import exceptions.XMLException;
-import java.io.IOException;
-import xmlUtilities.DelayedPrettyPrinterXmlWriter;
-import dataRepresentations.AbstractResource.Tag;
-
-public class XnatAbstractResourceMdComplexType extends MdComplexType
+public class RoiDisplay
 {
-	protected AbstractResource ar;
+	public String roiId;
+	public String lineType;
+	public String lineColour;
+	public String shadingType;
+	public String shadingColour;
+	public String shadingTransparency;
 	
+	public RoiDisplay(){}
 	
-	// Give the user two options for constructing the object.
-	public XnatAbstractResourceMdComplexType() {}
-	
-	public XnatAbstractResourceMdComplexType(AbstractResource ar)
+	public RoiDisplay(String roiId, String lineType, String lineColour,
+			            String shadingType, String shadingColour,
+							String shadingTransparency)
 	{
-		this.ar = ar;
-	}
-	
-	@Override
-	public void insertXml(DelayedPrettyPrinterXmlWriter dppXML)
-			      throws IOException, XMLException
-	{
-		dppXML.delayedWriteAttribute("label",      ar.label)
-				.delayedWriteAttribute("file_count", ar.fileCount)
-				.delayedWriteAttribute("file_size",  ar.fileSize)
-				.delayedWriteEntityWithText("note",  ar.note)
-				.delayedWriteEntity("tags");
-		
-				for (Tag tag : ar.tags)
-				{
-					dppXML.delayedWriteEntity("tag")
-								.delayedWriteAttribute("name", tag.name)
-								.delayedWriteText(tag.value)
-							.delayedEndEntity();
-				}
-				
-		dppXML.delayedEndEntity();
-				  
-	}
-	
-	public void setResource(AbstractResource ar)
-	{
-		this.ar = ar;
-	}
+		this.roiId               = roiId;
+		this.lineType            = lineType;
+		this.lineColour          = lineColour;
+		this.shadingType         = shadingType;
+		this.shadingColour       = shadingColour;
+		this.shadingTransparency = shadingTransparency;
+	}			  
 }

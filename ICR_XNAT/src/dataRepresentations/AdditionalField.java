@@ -35,26 +35,29 @@
 
 /********************************************************************
 * @author Simon J Doran
-* Java class: ElementalComposition.java
-* First created on Jan 21, 2016 at 5:04:18 PM
+* Java class: AdditionalField.java
+* First created on Jan 20, 2016 at 12:12:48 PM
 * 
-* Data structure parallelling the icr:elementalCompositionData
-* element and used in conjunction with
-* IcrElementalCompositionDataMDComplexType.
+* Formally declare an additional field (e.g., custom variable). This
+* class is used in conjunction with XnatAddFieldMDComplexType.
+* 
+* Eventually, the plan for this whole package is to replace the
+* explicit writing of the XML files with a higher level interface,
+* e.g., JAXB. However, this is for a later refactoring.
 *********************************************************************/
 
-package xnatMetadataCreators;
+package dataRepresentations;
 
-public class ElementalComposition
+public class AdditionalField
 {
-	public String atomicNumber;
-	public String atomicMassFraction;
+	public String name;
+	public String value;
 	
-	public ElementalComposition(String an, String amf)
+	public AdditionalField(){}
+	
+	public AdditionalField(String name, String value)
 	{
-		atomicNumber       = an;
-		atomicMassFraction = amf;
+		this.name  = name;
+		this.value = value;
 	}
-	
-	public ElementalComposition() {}
 }

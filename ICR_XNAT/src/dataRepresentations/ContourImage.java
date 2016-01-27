@@ -41,7 +41,7 @@
 * Data structure parallelling the icr:contourImageData element and
 * used in conjunction with IcrContourImageDataMDComplexType.
 *********************************************************************/
-package xnatMetadataCreators;
+package dataRepresentations;
 
 public class ContourImage
 {

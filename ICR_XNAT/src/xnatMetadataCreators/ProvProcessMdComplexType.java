@@ -49,12 +49,13 @@
 
 package xnatMetadataCreators;
 
+import dataRepresentations.Provenance;
 import exceptions.XMLException;
 import java.io.IOException;
 import java.util.ArrayList;
 import xmlUtilities.DelayedPrettyPrinterXmlWriter;
-import xnatMetadataCreators.Provenance.Library;
-import xnatMetadataCreators.Provenance.ProvenanceEntry;
+import dataRepresentations.Provenance.Library;
+import dataRepresentations.Provenance.ProvenanceEntry;
 
 public class ProvProcessMdComplexType extends MdComplexType
 {

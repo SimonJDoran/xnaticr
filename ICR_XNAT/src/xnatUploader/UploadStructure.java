@@ -48,7 +48,7 @@
 
 package xnatUploader;
 
-import xnatMetadataCreators.InvestigatorList;
+import dataRepresentations.InvestigatorList;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Vector;

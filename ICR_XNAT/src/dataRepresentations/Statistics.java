@@ -42,8 +42,9 @@
 * used in conjunction with XnatStatisticsDataMDComplexType.java
 *********************************************************************/
 
-package xnatMetadataCreators;
+package dataRepresentations;
 
+import dataRepresentations.AdditionalField;
 import java.util.List;
 
 public class Statistics

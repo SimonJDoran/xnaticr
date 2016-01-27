@@ -41,8 +41,9 @@
 * Data structure parallelling the icr:rtReferencedSeriesData element
 * and used in conjunction with IcrRtReferencedSeriesDataMDComplexType.
 *********************************************************************/
-package xnatMetadataCreators;
+package dataRepresentations;
 
+import dataRepresentations.ContourImage;
 import java.util.List;
 
 public class RtReferencedSeries
