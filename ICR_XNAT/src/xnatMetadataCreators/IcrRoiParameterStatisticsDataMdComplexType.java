@@ -53,7 +53,7 @@ import exceptions.XMLException;
 import java.io.IOException;
 import xmlUtilities.DelayedPrettyPrinterXmlWriter;
 
-public class RoiParameterStatisticsDataMDComplexType extends MDComplexType
+public class IcrRoiParameterStatisticsDataMdComplexType extends MdComplexType
 {
 	protected String           Id;
 	protected String           label;
@@ -72,9 +72,9 @@ public class RoiParameterStatisticsDataMDComplexType extends MDComplexType
 			   .delayedWriteEntityWithText("associatedRoiID", associatedRoiId)
 			   .delayedWriteEntityWithText("parameterName",   parameterName);
 		
-		(new XnatStatisticsDataMDComplexType(roiParameterStats)).createXmlAsRootElement("roiParameterStats", dppXML);
+		(new XnatStatisticsDataMdComplexType(roiParameterStats)).insertXmlAsElement("roiParameterStats", dppXML);
 		
-		(new XnatAbstractResourceMDComplexType(roiParameterHistoFile)).createXmlAsRootElement("roiParameterHistoFile", dppXML);
+		(new XnatAbstractResourceMdComplexType(roiParameterHistoFile)).insertXmlAsElement("roiParameterHistoFile", dppXML);
 		
 		dppXML.delayedWriteEntityWithText("parameterMapID", parameterMapId);
 			

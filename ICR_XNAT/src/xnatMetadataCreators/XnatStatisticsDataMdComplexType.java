@@ -53,17 +53,17 @@ import exceptions.XMLException;
 import java.io.IOException;
 import xmlUtilities.DelayedPrettyPrinterXmlWriter;
 
-public class XnatStatisticsDataMDComplexType extends MDComplexType
+public class XnatStatisticsDataMdComplexType extends MdComplexType
 {
 	protected Statistics xns;
 	
-	public XnatStatisticsDataMDComplexType(Statistics xns)
+	public XnatStatisticsDataMdComplexType(Statistics xns)
 	{
 		this.xns = xns;
 	}
 	
 	
-	public XnatStatisticsDataMDComplexType() {}
+	public XnatStatisticsDataMdComplexType() {}
 	
 	
 	@Override
