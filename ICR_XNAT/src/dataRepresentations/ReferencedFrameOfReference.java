@@ -52,8 +52,13 @@ import xnatMetadataCreators.RtReferencedStudy;
 public class ReferencedFrameOfReference
 {
 	public String                             frameOfReferenceUid;
-	public List<FrameOfReferenceRelationship> frameOfReferenceRelationshipList;
 	public List<RtReferencedStudy>            rtReferencedStudyList;
+	
+	// Note that since the first coding of this software, the frame of reference
+	// relationship tag has been withdrawn from the DICOM standard and replaced
+	// by the Spatial Registration IOD.
+	public List<FrameOfReferenceRelationship> frameOfReferenceRelationshipList;
+	
 	
 	public ReferencedFrameOfReference(String uid,
 			                            List<FrameOfReferenceRelationship> forrList,

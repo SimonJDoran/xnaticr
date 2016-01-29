@@ -148,39 +148,12 @@ public class RtStruct extends DataRepresentation implements RtStructWriter
 		errors   = new ArrayList<>();
 		warnings = new ArrayList<>();
 
-		// Get information on the (potentially multiple) studies referenced
-		// by this DICOM RT-Struct file.
-		extractReferencedStudyInfo();
-
-		// Nested within the frames-of-reference DICOM sequence is also all the
-		// information on the referenced studies, on which the contours are
-		// defined. Both the Java classes above and the corresponding custom
-		// XNAT schema are designed to relate directly to the DICOM structures.
-		extractFramesOfReferenceInfo();
-
-		// Check that all the studies, series and SOPInstances referenced are
-		// already present in the database.
-		dependenciesInDatabase();
-
-		// Extract overview information about the ROIs contained in the
-		// structure set file, such as name, structureSetDescription, volumne, generating
-		// algorithm, etc.
-		extractStructureSetROIInfo();
-
-		// Extract information on the individual contours that make up each
-		// of the ROIs. Note that we extract only the metadata, not the actual
-		// contour coordinates themselves.
-		extractContourInfo();
-
-		// Extract information on the radiotherapy-related interpretation
-		// of the ROIs. This includes the identification as an organ, PTV,
-		// marker, etc. and its physical composition.
-		extractRtRoiObservationsInfo();
 		
-		if (!issues.isEmpty())
+		
+		if (!errors.isEmpty())
 		{
 			StringBuilder sb = new StringBuilder();
-			for (String issue : issues) sb.append(issue).append("\n");
+			for (String er : errors) sb.append(er).append("\n");
 			throw new DataRepresentationException(DataRepresentationException.RTSTRUCT,
 			                                       sb.toString());
 		}
@@ -234,7 +207,69 @@ public class RtStruct extends DataRepresentation implements RtStructWriter
 	}
 	
 	
-   /**
+   
+	/** Extract the frame-of-reference-information.
+    * This entails not only the SOPInstanceUID of the frame-of-reference in which the
+    * structure set contours themselves are defined, but also the SOPInstanceUID's
+    * of any related frames of reference, together with their relationship
+    * to the frame-of-reference of this structure set. As an added complication
+    * if the ROIs were drawn on more than one series, then there are multiple
+    * items in this sequence.
+    * @param issues ArrayList to which any problems found will be added
+    */
+   protected void buildReferencedFrameOfReferenceList()
+   {   
+		int          rforTag = Tag.ReferencedFrameOfReferenceSequence;
+		DicomElement rforSeq = bdo.get(rforTag);
+
+		if (rforSeq == null)
+		{
+			warnings.add("Optional tag " + rforTag + " " + bdo.nameOf(rforTag)
+					          + " is not present in input.");
+			return;
+		}
+
+		int nRfor = rforSeq.countItems();
+		rforList  = new ArrayList<>();
+
+		for (int i=0; i<nRfor; i++)
+		{
+			DicomObject rforDo = rforSeq.getDicomObject(i);
+			ReferencedFrameOfReference rfor = buildReferencedFrameOfReference(rforDo);
+			if (rfor != null) rforList.add(rfor);           
+		}
+   }
+	
+	
+	protected ReferencedFrameOfReference buildReferencedFrameOfReference(DicomObject rforDo)
+	{
+		ReferencedFrameOfReference rfor = new ReferencedFrameOfReference();
+		rfor.frameOfReferenceUid = assignString(Tag.FrameOfReferenceUID, 1);
+		
+		int rrsTag          = Tag.RTReferencedStudySequence;
+		DicomElement rrsSeq = rforDo.get(rrsTag);
+		
+		if (rrsSeq == null)
+		{
+			warnings.add("Optional tag " + rrsTag + " " + bdo.nameOf(rrsTag)
+					          + " is not present in input.");
+			return null;
+		}
+		
+		int nRrs = rrsSeq.countItems(); 
+		List<RtReferencedStudy> rrsList = new ArrayList<>();
+		
+		for (int i=0; i<nRrs; i++)
+		{
+			DicomObject rforDo = rforSeq.getDicomObject(i);
+			ReferencedFrameOfReference rfor = buildReferencedFrameOfReference(rforDo);
+			if (rfor != null) rforList.add(rfor);           
+		}
+		
+		return rfor;
+	}
+	
+	/**
     * Read the information on any studies referred to and place in object instance
     * variables. 
 	 * @param issues ArrayList to which any problems found will be added

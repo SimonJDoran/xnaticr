@@ -43,11 +43,14 @@
 * 
 * Eventually, the plan for this whole package is to replace the
 * explicit writing of the XML files with a higher level interface,
-* e.g., JAXB. However, this is for a later refactoring. 
+* e.g., JAXB. However, this is for a later refactoring.
+* 
 *********************************************************************/
 
 package xnatMetadataCreators;
 
+import dataRepresentations.RtRelatedRoi;
+import dataRepresentations.RoiPhysicalProperty;
 import exceptions.XMLException;
 import java.io.IOException;
 import java.util.List;
