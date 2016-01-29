@@ -62,7 +62,7 @@ import xnatRestToolkit.XNATNamespaceContext;
 import xnatRestToolkit.XNATRESTToolkit;
 import xnatUploader.AmbiguousSubjectAndExperiment;
 
-public final class RTStruct_old extends DataRepresentation implements RtStructWriter
+public final class RTStruct_old extends XnatUploadRepresentation implements RtStructWriter
 {
    static    Logger             logger      = Logger.getLogger(RTStruct_old.class);
    

@@ -46,7 +46,7 @@ package dataRepresentations;
 import java.util.ArrayList;
 import java.util.List;
 
-public class InvestigatorList
+public class InvestigatorList extends XnatSchemaElementRepresentation
 {
    // Note that there is no "implementation" as such for this class; it is
 	// merely a structure for collecting together Strings. As such, it makes no

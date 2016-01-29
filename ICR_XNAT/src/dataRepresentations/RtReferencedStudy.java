@@ -46,7 +46,7 @@ package dataRepresentations;
 
 import java.util.List;
 
-public class RtReferencedStudy
+public class RtReferencedStudy extends DicomEntityRepresentation
 {
 	public String                   referencedSopClassUid;
 	public String                   referencedSopInstanceUid;
@@ -59,6 +59,5 @@ public class RtReferencedStudy
 		referencedSopInstanceUid = sopInstance; 
 		rtReferencedSeriesList   = seriesList;
 	}
-	
-	public RtReferencedStudy() {}
+
 }

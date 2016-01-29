@@ -88,7 +88,7 @@ public class ContourRenderer
    
    static    Logger              logger = Logger.getLogger(ContourRenderer.class);
    private   static final int    THUMBNAIL_SIZE = 128;
-   protected DataRepresentation  dr;
+   protected XnatUploadRepresentation  dr;
 	protected Map<String, File>   cachedImageFiles;
    protected float[]             pixelSpacing;
    protected float[]             dirCosines;

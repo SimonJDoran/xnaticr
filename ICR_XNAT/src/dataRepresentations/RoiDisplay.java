@@ -44,7 +44,7 @@
 
 package dataRepresentations;
 
-public class RoiDisplay
+public class RoiDisplay extends XnatSchemaElementRepresentation
 {
 	public String roiId;
 	public String lineType;

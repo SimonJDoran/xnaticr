@@ -45,11 +45,15 @@
 
 package dataRepresentations;
 
-public class FrameOfReferenceRelationship
+import generalUtilities.DicomUtilities;
+import org.dcm4che2.data.DicomObject;
+
+public class FrameOfReferenceRelationship extends DicomEntityRepresentation
 {
 	public String relatedFrameOfReferenceUid;
 	public String frameOfReferenceTransformationMatrix;
 	public String frameOfReferenceTransformationComment;
+	
 	
 	public FrameOfReferenceRelationship(String uid, String matrix, String comment)
 	{
@@ -58,5 +62,10 @@ public class FrameOfReferenceRelationship
 		frameOfReferenceTransformationComment = comment;
 	}
 	
-	public FrameOfReferenceRelationship() {}
+	
+	public FrameOfReferenceRelationship(DicomObject frrDo,
+													DicomUtilities.AssignStringStatus frrAs)
+	{
+		
+	}	
 }  

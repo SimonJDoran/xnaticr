@@ -43,13 +43,11 @@
 *********************************************************************/
 package dataRepresentations;
 
-public class ContourImage
+public class ContourImage extends DicomEntityRepresentation
 {
 	public String referencedSopInstanceUid;
 	public String referencedSopClassUid;
 	public String referencedFrameNumber;
-	
-	public ContourImage() {}
 	
 	public ContourImage(String sopInstance, String sopClass, String frame)
 	{

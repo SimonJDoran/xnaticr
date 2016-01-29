@@ -44,13 +44,11 @@
 
 package dataRepresentations;
 
-public class RtRelatedRoi
+public class RtRelatedRoi extends DicomEntityRepresentation
 {
 	public String referencedRoiNumber;
 	public String rtRoiRelationship;
-	
-	public RtRelatedRoi() {}
-	
+
 	public RtRelatedRoi(String roiNumber, String relationship)
 	{
 		referencedRoiNumber = roiNumber;

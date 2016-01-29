@@ -45,7 +45,7 @@
 package xnatUploader;
 
 import dataRepresentations.RTStructureSetUploader;
-import dataRepresentations.ROI;
+import dataRepresentations.ROI_old;
 import java.util.ArrayList;
 import org.dcm4che2.data.BasicDicomObject;
 import org.dcm4che2.data.DicomObject;
@@ -277,13 +277,13 @@ public class RTStructureSetUploader extends QCAssessmentDataUploader
       errorOccurred = false;
       
       // The icr:roiSetData and icr:roiData XML files are mutually dependent
-      // inasmuch as the ROI Set needs to know the IDs of the contained ROIs,
-      // whereas each ROI needs to know the ID's of all the ROI Sets that contain
+      // inasmuch as the ROI_old Set needs to know the IDs of the contained ROIs,
+      // whereas each ROI_old needs to know the ID's of all the ROI_old Sets that contain
       // it. In this case, it makes sense to pre-calculate the IDs for all the
-      // ROI's to be uploaded.
+      // ROI_old's to be uploaded.
       // N.B. The only reason for instantiating the following uploader is to
       // access the method ru.getRootElement() below.
-      ROI ru = new ROI(xnprf);     
+      ROI_old ru = new ROI_old(xnprf);     
       for (int i=0; i<rts.roiList.length; i++)
       {
          rts.roiList[i].roiXNATID = ru.getRootElement()
@@ -343,7 +343,7 @@ public class RTStructureSetUploader extends QCAssessmentDataUploader
       
       // ----------------------------------------------------------
       // Step 2: Upload the icr:roiData metadata and data files for
-      //         each ROI referred to by the structure set.
+      //         each ROI_old referred to by the structure set.
       // ----------------------------------------------------------    
       
 		if (errorOccurred)
@@ -353,7 +353,7 @@ public class RTStructureSetUploader extends QCAssessmentDataUploader
 		
       for (int i=0; i<rts.roiList.length; i++)
       {
-         ru = new ROI(rts, i, labelPrefix, uploadStructure);
+         ru = new ROI_old(rts, i, labelPrefix, uploadStructure);
          try
          {
             ru.XNATAccessionID = rts.roiList[i].roiXNATID;
@@ -412,10 +412,10 @@ public class RTStructureSetUploader extends QCAssessmentDataUploader
    public void createAuxiliaryResourceFiles()
    {
       // In the first instance, the only auxiliary file needed is the
-		// input catalogue, since the referenced ROI objects already contain
+		// input catalogue, since the referenced ROI_old objects already contain
 		// the required thumbnails.
       // TODO: Consider whether some composite visualisation is needed to
-      // summarise all the ROI's making up the ROISet object.
+      // summarise all the ROI_old's making up the ROISet object.
 		createInputCatalogueFile("DICOM", "RAW", "referenced contour image");
    }
    
@@ -473,11 +473,11 @@ public class RTStructureSetUploader extends QCAssessmentDataUploader
          for (int i=0; i<rts.roiList.length; i++)
          {
             // Most of the elements of icr:roiDisplayData cannot be
-            // filled in. The ROI line colour is present in
+            // filled in. The ROI_old line colour is present in
             // the structure set, but the other properties are
             // extensions not found in the structure set and the intention is
             // to let future applications have the option of assigning non-
-            // DICOM properties such as ROI shading to the roiSet.
+            // DICOM properties such as ROI_old shading to the roiSet.
             int[] c = rts.roiContourList[rts.roiList[i].correspondingROIContour].roiDisplayColour;
             dppXML.delayedWriteEntity("roiDisplay")
                

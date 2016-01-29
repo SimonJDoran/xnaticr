@@ -49,7 +49,7 @@ import java.util.ArrayList;
 import java.util.List;
 import xnatMetadataCreators.MdComplexType;
 
-public class Scan
+public class Scan extends XnatSchemaElementRepresentation
 {
 	public class Slice
 	{

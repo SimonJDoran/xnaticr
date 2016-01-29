@@ -14,7 +14,7 @@ package dataRepresentations;
 
 import static dataRepresentations.RtStruct.DUMMY_FLOAT;
 
-public class StructureSetRoi extends DataRepresentation
+public class StructureSetRoi extends DicomEntityRepresentation
 {
       public int                       roiNumber;
       public int                       correspondingROIContour;

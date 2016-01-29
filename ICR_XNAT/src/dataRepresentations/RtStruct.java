@@ -55,6 +55,7 @@ package dataRepresentations;
 import static dataRepresentations.RTStruct_old.DUMMY_INT;
 import exceptions.DataFormatException;
 import exceptions.DataRepresentationException;
+import generalUtilities.DicomUtilities;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -66,7 +67,7 @@ import org.dcm4che2.data.Tag;
 import xnatDAO.XNATProfile;
 import xnatUploader.AmbiguousSubjectAndExperiment;
 
-public class RtStruct extends DataRepresentation implements RtStructWriter
+public class RtStruct extends XnatUploadRepresentation implements RtStructWriter
 {
    static    Logger                        logger = Logger.getLogger(RtStruct.class);
    
@@ -166,43 +167,10 @@ public class RtStruct extends DataRepresentation implements RtStructWriter
 	
 	public final String assignString(int tag, String requirementType)
 	{
-		String  tagValue   = null;
-		boolean tagPresent = bdo.contains(tag);
-		if (tagPresent) tagValue = bdo.getString(tag);
-		
-		switch(requirementType)
-		{
-			case "1":  // Required
-			case "1C": // Conditionally required. This is hard to treat for the general
-				        // case. Treat as if required and handle the conditions in the
-				        // calling code.
-				if ((!tagPresent) || (tagValue == null) || (tagValue.length() == 0))
-				{
-					errors.add("Required tag not found in input: "
-							         + Integer.toHexString(tag) + bdo.nameOf(tag));
-					return null;
-				}
-			
-			case "2":  // Required
-			case "2C": // Conditionally required but can have zero length.
-				        // This is hard to treat for the general case. Treat as
-				        // required but can have zero length and handle the
-				        // conditions in the calling code.
-				if (!tagPresent)
-				{
-					errors.add("Required tag not found in input: "
-							         + Integer.toHexString(tag) + bdo.nameOf(tag));
-					return null;
-				}
-			
-			case "3":  // Optional
-				if (!tagPresent)
-				{
-					warnings.add("Optional tag not present in input: "
-							         + Integer.toHexString(tag) + bdo.nameOf(tag));
-					return null;
-				}
-		}
+		DicomUtilities.AssignStringStatus as = new DicomUtilities.AssignStringStatus();
+		String tagValue = DicomUtilities.assignString(bdo, tag, requirementType, as);
+		if (as.error   != null) errors.add(as.error);
+		if (as.warning != null) warnings.add(as.error);
 		return tagValue;
 	}
 	
@@ -231,43 +199,17 @@ public class RtStruct extends DataRepresentation implements RtStructWriter
 
 		int nRfor = rforSeq.countItems();
 		rforList  = new ArrayList<>();
-
 		for (int i=0; i<nRfor; i++)
 		{
 			DicomObject rforDo = rforSeq.getDicomObject(i);
-			ReferencedFrameOfReference rfor = buildReferencedFrameOfReference(rforDo);
+			DicomUtilities.AssignStringStatus ass = new DicomUtilities.AssignStringStatus();
+			ReferencedFrameOfReference rfor = new ReferencedFrameOfReference(rforDo, ass);
+			errors.addAll(ass.errors);
+			warnings.addAll(ass.warnings);
 			if (rfor != null) rforList.add(rfor);           
 		}
    }
 	
-	
-	protected ReferencedFrameOfReference buildReferencedFrameOfReference(DicomObject rforDo)
-	{
-		ReferencedFrameOfReference rfor = new ReferencedFrameOfReference();
-		rfor.frameOfReferenceUid = assignString(Tag.FrameOfReferenceUID, 1);
-		
-		int rrsTag          = Tag.RTReferencedStudySequence;
-		DicomElement rrsSeq = rforDo.get(rrsTag);
-		
-		if (rrsSeq == null)
-		{
-			warnings.add("Optional tag " + rrsTag + " " + bdo.nameOf(rrsTag)
-					          + " is not present in input.");
-			return null;
-		}
-		
-		int nRrs = rrsSeq.countItems(); 
-		List<RtReferencedStudy> rrsList = new ArrayList<>();
-		
-		for (int i=0; i<nRrs; i++)
-		{
-			DicomObject rforDo = rforSeq.getDicomObject(i);
-			ReferencedFrameOfReference rfor = buildReferencedFrameOfReference(rforDo);
-			if (rfor != null) rforList.add(rfor);           
-		}
-		
-		return rfor;
-	}
 	
 	/**
     * Read the information on any studies referred to and place in object instance

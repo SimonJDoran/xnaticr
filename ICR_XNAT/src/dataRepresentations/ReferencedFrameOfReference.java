@@ -47,9 +47,15 @@ package dataRepresentations;
 
 import dataRepresentations.FrameOfReferenceRelationship;
 import java.util.List;
-import xnatMetadataCreators.RtReferencedStudy;
+import dataRepresentations.RtReferencedStudy;
+import generalUtilities.DicomUtilities;
+import static generalUtilities.DicomUtilities.assignString;
+import java.util.ArrayList;
+import org.dcm4che2.data.DicomElement;
+import org.dcm4che2.data.DicomObject;
+import org.dcm4che2.data.Tag;
 
-public class ReferencedFrameOfReference
+public class ReferencedFrameOfReference extends DicomEntityRepresentation
 {
 	public String                             frameOfReferenceUid;
 	public List<RtReferencedStudy>            rtReferencedStudyList;
@@ -69,5 +75,52 @@ public class ReferencedFrameOfReference
 		rtReferencedStudyList            = rrsList;
 	}
 	
-	public ReferencedFrameOfReference() {}
+	
+	public ReferencedFrameOfReference(DicomObject rforDo,
+												 DicomUtilities.AssignStringStatus ass)
+	{
+		frameOfReferenceUid = assignString(rforDo, Tag.FrameOfReferenceUID, 1, ass);
+		errors.addAll(ass.errors);
+		warnings.addAll(ass.warnings);
+		
+		int frrTag          = Tag.FrameOfReferenceRelationshipSequence;
+		DicomElement frrSeq = rforDo.get(frrTag);
+		if (frrSeq != null)
+		{
+			warnings.add("Retired tag " + frrTag + " " + rforDo.nameOf(frrTag)
+					          + " is present in input.");
+			int nFrr = frrSeq.countItems();
+			frameOfReferenceRelationshipList = new ArrayList<>();
+			for (int i=0; i<nFrr; i++)
+			{
+				DicomObject frrDo = frrSeq.getDicomObject(i);
+				DicomUtilities.AssignStringStatus frrAs = new DicomUtilities.AssignStringStatus();
+			   FrameOfReferenceRelationship      frr   = new FrameOfReferenceRelationship(frrDo, frrAs);
+			}
+		}
+		
+		
+		int rrsTag          = Tag.RTReferencedStudySequence;
+		DicomElement rrsSeq = rforDo.get(rrsTag);
+		
+		if (rrsSeq == null)
+		{
+			warnings.add("Optional tag " + rrsTag + " " + bdo.nameOf(rrsTag)
+					          + " is not present in input.");
+			return null;
+		}
+		
+		int nRrs = rrsSeq.countItems(); 
+		List<RtReferencedStudy> rrsList = new ArrayList<>();
+		
+		for (int i=0; i<nRrs; i++)
+		{
+			DicomObject rforDo = rforSeq.getDicomObject(i);
+			ReferencedFrameOfReference rfor = buildReferencedFrameOfReference(rforDo);
+			if (rfor != null) rforList.add(rfor);           
+		}
+		
+		return rfor;
+	}
+	}
 }

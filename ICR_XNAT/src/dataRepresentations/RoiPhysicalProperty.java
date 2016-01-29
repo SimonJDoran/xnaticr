@@ -47,7 +47,7 @@ package dataRepresentations;
 import dataRepresentations.ElementalComposition;
 import java.util.List;
 
-public class RoiPhysicalProperty
+public class RoiPhysicalProperty extends DicomEntityRepresentation
 {
 	public String                     propertyName;
 	public String                     propertyValue;

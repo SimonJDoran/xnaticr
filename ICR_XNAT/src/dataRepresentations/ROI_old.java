@@ -87,7 +87,7 @@ import xnatUploader.UploadStructure;
 import static dataRepresentations.RTStructureSetUploader.logger;
 
 
-public class ROI
+public class ROI_old
 {
    protected RTStruct_old                     rts;
    protected StructureSetROI              ssRoi;
@@ -113,7 +113,7 @@ public class ROI
     *        uploaded data
     * @
     */
-   public ROI(RTStruct_old rts, int roiPos, String labelPrefix,
+   public ROI_old(RTStruct_old rts, int roiPos, String labelPrefix,
                       UploadStructure uls)
           throws Exception
    {
@@ -130,8 +130,8 @@ public class ROI
       roiCont = rts.roiContourList[ssRoi.correspondingROIContour];
       
 
-      // Don't throw an error here. DICOM specifies that each ROI should have
-      // a corresponding RT ROI Observation, but we won't have this metadata for
+      // Don't throw an error here. DICOM specifies that each ROI_old should have
+      // a corresponding RT ROI_old Observation, but we won't have this metadata for
       // non-radiotherapy ROIs.
       if (ssRoi.correspondingROIObservation != -1)
          roiObs = rts.roiObsList[ssRoi.correspondingROIObservation];
@@ -152,11 +152,11 @@ public class ROI
       setStringField("Label", labelPrefix + "_ROI" + roiNum);
       
       // Extract the subset of series and SOPInstance UIDs that are
-      // related to the current ROI. Note that there is a chance that we may
-      // over-report the studies for a given ROI. The structure set file has a
+      // related to the current ROI_old. Note that there is a chance that we may
+      // over-report the studies for a given ROI_old. The structure set file has a
       // section that lists the studies referenced by the set of ROIs as a whole.
-      // By contrast, the DICOM contour sequence for a given ROI lists the images
-      // (not their series) referenced by the individual ROI. Theoretically, we
+      // By contrast, the DICOM contour sequence for a given ROI_old lists the images
+      // (not their series) referenced by the individual ROI_old. Theoretically, we
       // could download each image in the SOPList below and add its Series Instance
       // SOPInstanceUID to the list. However, this is very inefficient for our purposes
       // here. Most of the structureSetTime, the line below is just fine.
@@ -221,7 +221,7 @@ public class ROI
 	@Override
 	public void createPrimaryResourceFile()
 	{
-		// There is no primary data file, because every ROI is the "child" of an
+		// There is no primary data file, because every ROI_old is the "child" of an
 		// ROISet, which is where the primary file is uploaded.
 	}
    
@@ -297,7 +297,7 @@ public class ROI
    @Override
    public void createSpecificMetadataXML()
    {
-      // Establish whether the ROI is represented by all the same type
+      // Establish whether the ROI_old is represented by all the same type
       // of contour of a mixed type.
       String contourType = roiCont.contourList[0].geometricType;
       for (int i=1; i<roiCont.contourList.length; i++)

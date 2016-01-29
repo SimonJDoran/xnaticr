@@ -45,7 +45,7 @@
 
 package dataRepresentations;
 
-public class ElementalComposition
+public class ElementalComposition extends DicomEntityRepresentation
 {
 	public String atomicNumber;
 	public String atomicMassFraction;
@@ -55,6 +55,4 @@ public class ElementalComposition
 		atomicNumber       = an;
 		atomicMassFraction = amf;
 	}
-	
-	public ElementalComposition() {}
 }

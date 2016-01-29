@@ -46,7 +46,7 @@ package dataRepresentations;
 
 import java.util.List;
 
-public class RtRoiObservation
+public class RtRoiObservation extends DicomEntityRepresentation
 {
      public int                       obsNumber;
       public int                       referencedRoiNumber;

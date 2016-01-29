@@ -35,43 +35,25 @@
 
 /*********************************************************************
 * @author Simon J Doran
-* Java class: XnatStatistics.java
-* First created on Jan 20, 2016 at 4:20:18 PM
+* Java class: DicomEntityRepresentation.java
+* First created on Jan 29, 2016 at 12:08:00 PM
 * 
-* Data structure parallelling the xnat:statisticsData element and
-* used in conjunction with XnatStatisticsDataMDComplexType.java
+* Provide the common features that will be used by all classes that
+* represent DICOM entities (this will normally relate to a
+* representation of a DICOM sequence.
 *********************************************************************/
-
 package dataRepresentations;
 
-import dataRepresentations.AdditionalField;
-import java.util.List;
+import generalUtilities.DicomUtilities;
+import java.util.ArrayList;
+import org.dcm4che2.data.DicomObject;
 
-public class Statistics extends XnatSchemaElementRepresentation
+public abstract class DicomEntityRepresentation
 {
-	public Double  mean;
-	public Double  snr;
-	public Double  min;
-	public Double  max;
-	public Double  stdev;
-	public Integer nVoxels;
-	public List<AdditionalField> additionalStatisticsList;
-	public List<AdditionalField> addFieldList;
+	public ArrayList<String> errors   = new ArrayList<>();
+	public ArrayList<String> warnings = new ArrayList<>();
 	
-	public Statistics() {}
-	
-	public Statistics( Double mean, Double snr, Double min, Double max,
-					           Double stdev, Integer nVoxels,
-								  List<AdditionalField> addStatList,
-								  List<AdditionalField> addFieldList)
-	{
-		this.mean                     = mean;
-		this.snr                      = snr;
-		this.min                      = min;
-		this.max                      = max;
-		this.stdev                    = stdev;
-		this.nVoxels                  = nVoxels;
-		this.additionalStatisticsList = addStatList;
-		this.addFieldList             = addFieldList;
-	}
+	protected DicomEntityRepresentation(){}
+	protected DicomEntityRepresentation(DicomObject src,
+													DicomUtilities.AssignStringStatus as){}
 }

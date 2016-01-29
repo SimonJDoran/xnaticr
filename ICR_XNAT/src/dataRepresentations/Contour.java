@@ -53,7 +53,7 @@ package dataRepresentations;
 import static dataRepresentations.RTStruct_old.DUMMY_INT;
 import static dataRepresentations.RtStruct.DUMMY_FLOAT;
 
-public class Contour
+public class Contour extends DicomEntityRepresentation
 {
    public class Contour
    {

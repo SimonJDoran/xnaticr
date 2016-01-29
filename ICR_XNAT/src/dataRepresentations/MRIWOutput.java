@@ -70,7 +70,7 @@ import xnatDAO.XNATProfile;
 import xnatRestToolkit.XNATNamespaceContext;
 import xnatRestToolkit.XNATRESTToolkit;
 
-public final class MRIWOutput extends DataRepresentation implements RtStructWriter
+public final class MRIWOutput extends XnatUploadRepresentation implements RtStructWriter
 {
    static  Logger logger = Logger.getLogger(MRIWOutput.class);
    

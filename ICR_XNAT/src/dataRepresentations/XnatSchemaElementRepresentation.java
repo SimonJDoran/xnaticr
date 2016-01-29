@@ -35,43 +35,16 @@
 
 /*********************************************************************
 * @author Simon J Doran
-* Java class: XnatStatistics.java
-* First created on Jan 20, 2016 at 4:20:18 PM
+* Java class: XnatSchemaElementRepresentation.java
+* First created on Jan 29, 2016 at 12:08:00 PM
 * 
-* Data structure parallelling the xnat:statisticsData element and
-* used in conjunction with XnatStatisticsDataMDComplexType.java
+* Provide the common features that will be used by all classes that
+* represent XNAT schema objects. In fact, at present, there is no
+* additional code needed, but this class simply marks out formally
+* what the purpose is of the inheriting concrete classes.
 *********************************************************************/
-
 package dataRepresentations;
 
-import dataRepresentations.AdditionalField;
-import java.util.List;
-
-public class Statistics extends XnatSchemaElementRepresentation
-{
-	public Double  mean;
-	public Double  snr;
-	public Double  min;
-	public Double  max;
-	public Double  stdev;
-	public Integer nVoxels;
-	public List<AdditionalField> additionalStatisticsList;
-	public List<AdditionalField> addFieldList;
-	
-	public Statistics() {}
-	
-	public Statistics( Double mean, Double snr, Double min, Double max,
-					           Double stdev, Integer nVoxels,
-								  List<AdditionalField> addStatList,
-								  List<AdditionalField> addFieldList)
-	{
-		this.mean                     = mean;
-		this.snr                      = snr;
-		this.min                      = min;
-		this.max                      = max;
-		this.stdev                    = stdev;
-		this.nVoxels                  = nVoxels;
-		this.additionalStatisticsList = addStatList;
-		this.addFieldList             = addFieldList;
-	}
+public abstract class XnatSchemaElementRepresentation
+{	
 }

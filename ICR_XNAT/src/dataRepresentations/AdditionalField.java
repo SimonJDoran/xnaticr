@@ -48,7 +48,7 @@
 
 package dataRepresentations;
 
-public class AdditionalField
+public class AdditionalField extends XnatSchemaElementRepresentation
 {
 	public String name;
 	public String value;

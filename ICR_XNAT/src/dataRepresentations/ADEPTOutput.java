@@ -53,7 +53,7 @@ import org.dcm4che2.data.DicomObject;
 import org.w3c.dom.Document;
 import xnatDAO.XNATProfile;
 
-public class ADEPTOutput extends DataRepresentation implements RtStructWriter
+public class ADEPTOutput extends XnatUploadRepresentation implements RtStructWriter
 {
 	public Document doc;
 	

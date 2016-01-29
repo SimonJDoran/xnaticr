@@ -48,7 +48,7 @@ import java.util.ArrayList;
 import java.util.SortedMap;
 import xnatDAO.XNATProfile;
 
-public abstract class DataRepresentation
+public abstract class XnatUploadRepresentation
 {
    // Question: Does it make sense to place XNAT-specific information in an
    // object that is describing a concept external to XNAT?

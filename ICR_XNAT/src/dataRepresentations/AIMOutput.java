@@ -69,7 +69,7 @@ import xnatDAO.XNATProfile;
 import xnatRestToolkit.XNATNamespaceContext;
 import xnatRestToolkit.XNATRESTToolkit;
 
-public class AIMOutput extends DataRepresentation implements RtStructWriter
+public class AIMOutput extends XnatUploadRepresentation implements RtStructWriter
 {
    static Logger logger = Logger.getLogger(AIMOutput.class);
 	public Document                  doc;

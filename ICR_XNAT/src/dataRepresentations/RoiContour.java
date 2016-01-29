@@ -47,7 +47,7 @@ package dataRepresentations;
 import static dataRepresentations.RTStruct_old.DUMMY_INT;
 import java.util.List;
 
-public class RoiContour
+public class RoiContour extends DicomEntityRepresentation
 {
       public int                       referencedRoiNumber;
       public int[]                     roiDisplayColour = {DUMMY_INT, DUMMY_INT, DUMMY_INT};

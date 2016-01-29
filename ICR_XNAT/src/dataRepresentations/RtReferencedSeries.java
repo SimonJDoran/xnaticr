@@ -46,7 +46,7 @@ package dataRepresentations;
 import dataRepresentations.ContourImage;
 import java.util.List;
 
-public class RtReferencedSeries
+public class RtReferencedSeries extends DicomEntityRepresentation
 {
 	public String             seriesInstanceUid;
 	public List<ContourImage> contourImageList;
@@ -56,6 +56,4 @@ public class RtReferencedSeries
 		seriesInstanceUid = series;
 		contourImageList  = ciList;
 	}
-		
-	public RtReferencedSeries() {}
 }
