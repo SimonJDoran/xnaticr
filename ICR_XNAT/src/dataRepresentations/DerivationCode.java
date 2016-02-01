@@ -54,6 +54,7 @@ import org.dcm4che2.data.Tag;
 
 public class DerivationCode extends DicomEntityRepresentation
 {
+	public static final String SEPARATOR = "_!DC!_"; 
 	public String codeValue;
 	public String codingSchemeDesignator;
 	public String codingSchemeVersion;
@@ -73,7 +74,7 @@ public class DerivationCode extends DicomEntityRepresentation
 		codingSchemeVersion    = das.assignString(dcDo, Tag.CodingSchemeVersion, "1C");
 		codeMeaning            = das.assignString(dcDo, Tag.CodeMeaning, 1);
 		contextIdentifier      = das.assignString(dcDo, Tag.ContextIdentifier, 3);
-		contextUid             = das.assignString(dcDo, Tag.ContextUid, 3);
+		contextUid             = das.assignString(dcDo, Tag.ContextUID, 3);
 		
 		if (contextIdentifier != null)
 		   mappingResource     = das.assignString(dcDo, Tag.MappingResource, 1);
@@ -81,12 +82,46 @@ public class DerivationCode extends DicomEntityRepresentation
 		if (contextIdentifier != null)
 		   contextGroupVersion = das.assignString(dcDo, Tag.MappingResource, 1);
 		
-		codeValue = das.assignString(dcDo, Tag.CodeValue, 1);
-		codeValue = das.assignString(dcDo, Tag.CodeValue, 1);
-		codeValue = das.assignString(dcDo, Tag.CodeValue, 1);
-		codeValue = das.assignString(dcDo, Tag.CodeValue, 1);
-		codeValue = das.assignString(dcDo, Tag.CodeValue, 1);
-		codeValue = das.assignString(dcDo, Tag.CodeValue, 1);
+		contextGroupExtensionFlag
+		                       = das.assignString(dcDo, Tag.ContextGroupExtensionFlag, 3);
+		if (contextGroupExtensionFlag != null)
+		{
+			if (contextGroupExtensionFlag.equals("Y"))
+			{
+				contextGroupLocalVersion
+		                       = das.assignString(dcDo, Tag.ContextGroupLocalVersion, "1C");
+				contextGroupExtensionCreatorUid
+					              = das.assignString(dcDo, Tag.ContextGroupExtensionCreatorUID, "1C");
+			}
+		}		
+	}
+	
+	public String getAsSingleString()
+	{
+		StringBuilder sb = new StringBuilder();
+		sb.append((codeValue == null) ? "" : codeValue);
+		sb.append(SEPARATOR);
+		sb.append((codingSchemeDesignator == null) ? "" : codingSchemeDesignator);
+		sb.append(SEPARATOR);
+		sb.append((codingSchemeVersion == null) ? "" : codingSchemeVersion);
+		sb.append(SEPARATOR);
+		sb.append((codeMeaning == null) ? "" : codeMeaning);
+		sb.append(SEPARATOR);
+		sb.append((contextIdentifier == null) ? "" : contextIdentifier);
+		sb.append(SEPARATOR);
+		sb.append((contextUid == null) ? "" : contextUid);
+		sb.append(SEPARATOR);
+		sb.append((mappingResource == null) ? "" : mappingResource);
+		sb.append(SEPARATOR);
+		sb.append((contextGroupVersion == null) ? "" : contextGroupVersion);
+		sb.append(SEPARATOR);
+		sb.append((contextGroupExtensionFlag == null) ? "" : contextGroupExtensionFlag);
+		sb.append(SEPARATOR);
+		sb.append((contextGroupLocalVersion == null) ? "" : contextGroupLocalVersion);
+		sb.append(SEPARATOR);
+		sb.append((contextGroupExtensionCreatorUid == null) ? "" : contextGroupExtensionCreatorUid);
+		sb.append(SEPARATOR);
 		
+		return sb.toString();
 	}
 }

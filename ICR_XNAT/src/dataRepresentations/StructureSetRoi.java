@@ -44,6 +44,7 @@
 package dataRepresentations;
 
 import static dataRepresentations.RtStruct.DUMMY_FLOAT;
+import org.dcm4che2.data.DicomElement;
 import org.dcm4che2.data.DicomObject;
 import org.dcm4che2.data.Tag;
 
@@ -69,9 +70,22 @@ public class StructureSetRoi extends DicomEntityRepresentation
 		referencedFrameOfReferenceUid = das.assignString(ssrDo, Tag.ReferencedFrameOfReferenceUID, 1);
 	   roiName                       = das.assignString(ssrDo, Tag.ROIName, 2);
 		roiDescription                = das.assignString(ssrDo, Tag.ROIDescription, 3);
-		roiVolume                     = das.assignString(ssrDo, Tag.ROIVolume,3);
+		
+		s = das.assignString(ssrDo, Tag.ROIVolume, 3);
+		if (s != null) roiVolume = Float.parseFloat(s);
+		
 		roiGenerationAlgorithm        = das.assignString(ssrDo, Tag.ROIGenerationAlgorithm, 2);
 		roiGenerationDescription      = das.assignString(ssrDo, Tag.ROIGenerationDescription, 3);
-		derivationCode                = 
+		
+		int            dcTag = Tag.DerivationCodeSequence;
+		DicomElement   dcSeq = ssrDo.get(dcTag);
+		DerivationCode dc    = new DerivationCode();
+		if (dcSeq == null)
+		{
+			das.warnings.add("Optional tag " + dcTag + " " + ssrDo.nameOf(dcTag)
+					          + " is not present in input.");
+			return;
+		}
+		derivationCode = 
 	}
 }
