@@ -48,8 +48,7 @@ package dataRepresentations;
 import dataRepresentations.FrameOfReferenceRelationship;
 import java.util.List;
 import dataRepresentations.RtReferencedStudy;
-import generalUtilities.DicomUtilities;
-import static generalUtilities.DicomUtilities.assignString;
+import generalUtilities.DicomAssignString;
 import java.util.ArrayList;
 import org.dcm4che2.data.DicomElement;
 import org.dcm4che2.data.DicomObject;
@@ -76,26 +75,27 @@ public class ReferencedFrameOfReference extends DicomEntityRepresentation
 	}
 	
 	
-	public ReferencedFrameOfReference(DicomObject rforDo,
-												 DicomUtilities.AssignStringStatus ass)
+	public ReferencedFrameOfReference(DicomObject rforDo)
 	{
-		frameOfReferenceUid = assignString(rforDo, Tag.FrameOfReferenceUID, 1, ass);
-		errors.addAll(ass.errors);
-		warnings.addAll(ass.warnings);
+		frameOfReferenceUid              = das.assignString(rforDo, Tag.FrameOfReferenceUID, 1);
+		frameOfReferenceRelationshipList = new ArrayList<>();
+		rtReferencedStudyList            = new ArrayList<>();
+		
 		
 		int frrTag          = Tag.FrameOfReferenceRelationshipSequence;
 		DicomElement frrSeq = rforDo.get(frrTag);
 		if (frrSeq != null)
 		{
-			warnings.add("Retired tag " + frrTag + " " + rforDo.nameOf(frrTag)
+			das.warnings.add("Retired tag " + frrTag + " " + rforDo.nameOf(frrTag)
 					          + " is present in input.");
-			int nFrr = frrSeq.countItems();
-			frameOfReferenceRelationshipList = new ArrayList<>();
-			for (int i=0; i<nFrr; i++)
+			
+			for (int i=0; i<frrSeq.countItems(); i++)
 			{
-				DicomObject frrDo = frrSeq.getDicomObject(i);
-				DicomUtilities.AssignStringStatus frrAs = new DicomUtilities.AssignStringStatus();
-			   FrameOfReferenceRelationship      frr   = new FrameOfReferenceRelationship(frrDo, frrAs);
+				DicomObject                  frrDo = frrSeq.getDicomObject(i);
+			   FrameOfReferenceRelationship frr   = new FrameOfReferenceRelationship(frrDo);
+				if (frr.das.errors.isEmpty()) frameOfReferenceRelationshipList.add(frr);
+				das.errors.addAll(frr.das.errors);
+				das.warnings.addAll(frr.das.warnings);
 			}
 		}
 		
@@ -105,22 +105,18 @@ public class ReferencedFrameOfReference extends DicomEntityRepresentation
 		
 		if (rrsSeq == null)
 		{
-			warnings.add("Optional tag " + rrsTag + " " + bdo.nameOf(rrsTag)
+			das.warnings.add("Optional tag " + rrsTag + " " + rforDo.nameOf(rrsTag)
 					          + " is not present in input.");
-			return null;
+			return;
 		}
-		
-		int nRrs = rrsSeq.countItems(); 
-		List<RtReferencedStudy> rrsList = new ArrayList<>();
-		
-		for (int i=0; i<nRrs; i++)
+
+		for (int i=0; i<rrsSeq.countItems(); i++)
 		{
-			DicomObject rforDo = rforSeq.getDicomObject(i);
-			ReferencedFrameOfReference rfor = buildReferencedFrameOfReference(rforDo);
-			if (rfor != null) rforList.add(rfor);           
+			DicomObject       rrsDo  = rrsSeq.getDicomObject(i);
+			RtReferencedStudy rrs    = new RtReferencedStudy(rrsDo) ;
+			if (rrs.das.errors.isEmpty()) rtReferencedStudyList.add(rrs);
+			das.errors.addAll(rrs.das.errors);
+			das.warnings.addAll(rrs.das.warnings);       
 		}
-		
-		return rfor;
-	}
 	}
 }

@@ -55,7 +55,8 @@ package dataRepresentations;
 import static dataRepresentations.RTStruct_old.DUMMY_INT;
 import exceptions.DataFormatException;
 import exceptions.DataRepresentationException;
-import generalUtilities.DicomUtilities;
+import generalUtilities.DicomAssignString;
+import generalUtilities.DicomAssignString.AssignStringStatus;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -84,8 +85,8 @@ public class RtStruct extends XnatUploadRepresentation implements RtStructWriter
    public String                           structureSetDescription;
    public String                           instanceNumber;
    public List<RtReferencedStudy>          refStudyList;
-   public List<ReferencedFrameOfReference> rforList;
-   public List<StructureSetRoi>            ssrList;
+   public List<ReferencedFrameOfReference> referencedFrameOfReferenceList;
+   public List<StructureSetRoi>            structureSetRoiList;
    public List<RoiContour>                 roiContourList;
    public List<RtRoiObservation>           roiObsList;   
    public String                           roiSetID;
@@ -101,8 +102,7 @@ public class RtStruct extends XnatUploadRepresentation implements RtStructWriter
    public String                           XNATGender;
    public LinkedHashMap<String,
 			   AmbiguousSubjectAndExperiment> ambiguousSubjExp;
-	public ArrayList<String>                warnings;
-	public ArrayList<String>                errors;
+	public DicomAssignString                das;
 	
 	
 	/**
@@ -126,6 +126,7 @@ public class RtStruct extends XnatUploadRepresentation implements RtStructWriter
       fileSOPMap       = new TreeMap<>();
       fileScanMap      = new TreeMap<>();
       ambiguousSubjExp = new LinkedHashMap<>();
+		das              = new DicomAssignString();
            
 		// Before we start, check that this really is a structure set!
 		if (!bdo.getString(Tag.Modality).equals("RTSTRUCT"))
@@ -134,45 +135,29 @@ public class RtStruct extends XnatUploadRepresentation implements RtStructWriter
 						 "Can't create an RTStruct object.\n");
 		}
 
-		structureSetUID         = assignString(Tag.SOPInstanceUID, 1);
-		structureSetLabel       = assignString(Tag.StructureSetLabel, 1);
-		structureSetName        = assignString(Tag.StructureSetName, 3);
-		structureSetDescription = assignString(Tag.StructureSetDescription, 3);
-		instanceNumber          = assignString(Tag.InstanceNumber, 3);
-		structureSetDate        = assignString(Tag.StructureSetDate, 2);
-		structureSetTime        = assignString(Tag.StructureSetTime, 2);
-		studyDate               = assignString(Tag.StudyDate, 2);
-		studyTime               = assignString(Tag.StudyTime, 2);
-		studyDescription        = assignString(Tag.StudyDescription, 3);
-		patientName             = assignString(Tag.PatientName, 2);
-
-		errors   = new ArrayList<>();
-		warnings = new ArrayList<>();
-
+		structureSetUID         = das.assignString(bdo, Tag.SOPInstanceUID, 1);
+		studyDate               = das.assignString(bdo, Tag.StudyDate, 2);
+		studyTime               = das.assignString(bdo, Tag.StudyTime, 2);
+		studyDescription        = das.assignString(bdo, Tag.StudyDescription, 3);
+		patientName             = das.assignString(bdo, Tag.PatientName, 2);	
+		structureSetLabel       = das.assignString(bdo, Tag.StructureSetLabel, 1);
+		structureSetName        = das.assignString(bdo, Tag.StructureSetName, 3);
+		structureSetDescription = das.assignString(bdo, Tag.StructureSetDescription, 3);
+		instanceNumber          = das.assignString(bdo, Tag.InstanceNumber, 3);
+		structureSetDate        = das.assignString(bdo, Tag.StructureSetDate, 2);
+		structureSetTime        = das.assignString(bdo, Tag.StructureSetTime, 2);
 		
-		
-		if (!errors.isEmpty())
+		referencedFrameOfReferenceList = buildReferencedFrameOfReferenceList();
+		structureSetRoiList     = buildStructureSetRoiList();
+		if (!das.errors.isEmpty())
 		{
 			StringBuilder sb = new StringBuilder();
-			for (String er : errors) sb.append(er).append("\n");
+			for (String er : das.errors) sb.append(er).append("\n");
 			throw new DataRepresentationException(DataRepresentationException.RTSTRUCT,
 			                                       sb.toString());
 		}
    }
 	
-	public final String assignString(int tag, int requirementType)
-	{
-		return assignString(tag, Integer.toString(requirementType));
-	}
-	
-	public final String assignString(int tag, String requirementType)
-	{
-		DicomUtilities.AssignStringStatus as = new DicomUtilities.AssignStringStatus();
-		String tagValue = DicomUtilities.assignString(bdo, tag, requirementType, as);
-		if (as.error   != null) errors.add(as.error);
-		if (as.warning != null) warnings.add(as.error);
-		return tagValue;
-	}
 	
 	
    
@@ -185,30 +170,58 @@ public class RtStruct extends XnatUploadRepresentation implements RtStructWriter
     * items in this sequence.
     * @param issues ArrayList to which any problems found will be added
     */
-   protected void buildReferencedFrameOfReferenceList()
-   {   
-		int          rforTag = Tag.ReferencedFrameOfReferenceSequence;
-		DicomElement rforSeq = bdo.get(rforTag);
+   protected List<ReferencedFrameOfReference> buildReferencedFrameOfReferenceList()
+   {
+		List<ReferencedFrameOfReference> rforList = new ArrayList<>();
+		int                              rforTag  = Tag.ReferencedFrameOfReferenceSequence;
+		DicomElement                     rforSeq  = bdo.get(rforTag);
 
 		if (rforSeq == null)
 		{
-			warnings.add("Optional tag " + rforTag + " " + bdo.nameOf(rforTag)
+			das.warnings.add("Optional tag " + rforTag + " " + bdo.nameOf(rforTag)
 					          + " is not present in input.");
-			return;
+			return rforList;
 		}
 
-		int nRfor = rforSeq.countItems();
-		rforList  = new ArrayList<>();
-		for (int i=0; i<nRfor; i++)
+		for (int i=0; i<rforSeq.countItems(); i++)
 		{
 			DicomObject rforDo = rforSeq.getDicomObject(i);
-			DicomUtilities.AssignStringStatus ass = new DicomUtilities.AssignStringStatus();
-			ReferencedFrameOfReference rfor = new ReferencedFrameOfReference(rforDo, ass);
-			errors.addAll(ass.errors);
-			warnings.addAll(ass.warnings);
-			if (rfor != null) rforList.add(rfor);           
+			ReferencedFrameOfReference rfor = new ReferencedFrameOfReference(rforDo);
+			if (rfor.das.errors.isEmpty()) rforList.add(rfor); 
+			das.errors.addAll(rfor.das.errors);
+			das.warnings.addAll(rfor.das.warnings);          
 		}
+		
+		return rforList;
    }
+	
+	
+	
+	protected List<StructureSetRoi> buildStrutureSetRoiList()
+   {
+		List<StructureSetRoi> ssrList = new ArrayList<>();
+		int                   ssrTag  = Tag.StructureSetROISequence;
+		DicomElement          ssrSeq  = bdo.get(ssrTag);
+
+		if (ssrSeq == null)
+		{
+			das.errors.add("Required tag " + ssrTag + " " + bdo.nameOf(ssrTag)
+					          + " is not present in input.");
+			return ssrList;
+		}
+
+		for (int i=0; i<ssrSeq.countItems(); i++)
+		{
+			DicomObject ssrDo = ssrSeq.getDicomObject(i);
+			StructureSetRoi ssr = new StructureSetRoi(ssrDo);
+			if (ssr.das.errors.isEmpty()) ssrList.add(ssr); 
+			das.errors.addAll(ssr.das.errors);
+			das.warnings.addAll(ssr.das.warnings);          
+		}
+		
+		return ssrList;
+   }
+	
 	
 	
 	/**

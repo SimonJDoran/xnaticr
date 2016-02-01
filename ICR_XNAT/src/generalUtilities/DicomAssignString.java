@@ -12,20 +12,18 @@ import org.dcm4che2.data.DicomObject;
  *
  * @author simon
  */
-public class DicomUtilities
+public class DicomAssignString
 {
-	public static class AssignStringStatus
+	public ArrayList<String> errors   = new ArrayList<>();
+	public ArrayList<String> warnings = new ArrayList<>();
+
+	
+	public String assignString(DicomObject bdo, int tag, int requirementType)
 	{
-		public ArrayList<String> errors   = new ArrayList<>();
-		public ArrayList<String> warnings = new ArrayList<>();
+		return assignString(bdo, tag, Integer.toString(requirementType));
 	}
 	
-	public static String assignString(DicomObject bdo, int tag, int requirementType, AssignStringStatus status)
-	{
-		return assignString(bdo, tag, Integer.toString(requirementType), status);
-	}
-	
-	public static String assignString(DicomObject bdo, int tag, String requirementType, AssignStringStatus status)
+	public String assignString(DicomObject bdo, int tag, String requirementType)
 	{
 		String  tagValue   = null;
 		boolean tagPresent = bdo.contains(tag);
@@ -39,7 +37,7 @@ public class DicomUtilities
 				        // calling code.
 				if ((!tagPresent) || (tagValue == null) || (tagValue.length() == 0))
 				{
-					status.errors.add("Required tag not found in input: "
+					errors.add("Required tag not found in input: "
 					                   + Integer.toHexString(tag) + bdo.nameOf(tag));
 					return null;
 				}
@@ -51,7 +49,7 @@ public class DicomUtilities
 				        // conditions in the calling code.
 				if (!tagPresent)
 				{
-					status.errors.add("Required tag not found in input: "
+					errors.add("Required tag not found in input: "
 							          + Integer.toHexString(tag) + bdo.nameOf(tag));
 					return null;
 				}
@@ -59,7 +57,7 @@ public class DicomUtilities
 			case "3":  // Optional
 				if (!tagPresent)
 				{
-					status.warnings.add("Optional tag not present in input: "
+					warnings.add("Optional tag not present in input: "
 							         + Integer.toHexString(tag) + bdo.nameOf(tag));
 					return null;
 				}

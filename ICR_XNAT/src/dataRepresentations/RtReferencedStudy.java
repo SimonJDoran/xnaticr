@@ -45,6 +45,11 @@
 package dataRepresentations;
 
 import java.util.List;
+import org.dcm4che2.data.DicomObject;
+import generalUtilities.DicomAssignString;
+import java.util.ArrayList;
+import org.dcm4che2.data.DicomElement;
+import org.dcm4che2.data.Tag;
 
 public class RtReferencedStudy extends DicomEntityRepresentation
 {
@@ -58,6 +63,32 @@ public class RtReferencedStudy extends DicomEntityRepresentation
 		referencedSopClassUid    = sopClass;
 		referencedSopInstanceUid = sopInstance; 
 		rtReferencedSeriesList   = seriesList;
+	}
+	
+	
+	public RtReferencedStudy(DicomObject rrsDo)
+	{
+		referencedSopClassUid    = das.assignString(rrsDo, Tag.ReferencedSOPClassUID,    1);
+		referencedSopInstanceUid = das.assignString(rrsDo, Tag.ReferencedSOPInstanceUID, 1);
+	   rtReferencedSeriesList   = new ArrayList<>();
+		int rrseTag              = Tag.RTReferencedSeriesSequence;
+		DicomElement rrseSeq     = rrsDo.get(rrseTag);
+		
+		if (rrseSeq == null)
+		{
+			das.errors.add("Required tag " + rrseTag + " " + rrsDo.nameOf(rrseTag)
+					          + " is not present in input.");
+			return;
+		}
+		
+		for (int i=0; i<rrseSeq.countItems(); i++)
+		{
+			DicomObject        rrseDo = rrseSeq.getDicomObject(i);
+			RtReferencedSeries rrse   = new RtReferencedSeries(rrseDo);
+			if (rrse.das.errors.isEmpty()) rtReferencedSeriesList.add(rrse);
+			das.errors.addAll(rrse.das.errors);
+			das.warnings.addAll(rrse.das.warnings);       
+		}
 	}
 
 }

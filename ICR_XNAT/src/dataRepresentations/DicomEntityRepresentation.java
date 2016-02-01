@@ -44,16 +44,14 @@
 *********************************************************************/
 package dataRepresentations;
 
-import generalUtilities.DicomUtilities;
+import generalUtilities.DicomAssignString;
 import java.util.ArrayList;
 import org.dcm4che2.data.DicomObject;
 
 public abstract class DicomEntityRepresentation
 {
-	public ArrayList<String> errors   = new ArrayList<>();
-	public ArrayList<String> warnings = new ArrayList<>();
+	public DicomAssignString das = new DicomAssignString();
 	
 	protected DicomEntityRepresentation(){}
-	protected DicomEntityRepresentation(DicomObject src,
-													DicomUtilities.AssignStringStatus as){}
+	protected DicomEntityRepresentation(DicomObject src){}
 }

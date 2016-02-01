@@ -35,43 +35,58 @@
 
 /*********************************************************************
 * @author Simon J Doran
-* Java class: StructureSetRoi.java
-* First created on Jan 27, 2016 at 10:16:34 AM
+* Java class: DerivationCode.java
+* First created on Feb 1, 2016 at 5:00:03 PM
 * 
-* Define a representation of the StructureSetROI DICOM sequence
+* Define a representation of the Derivation Code DICOM sequence
+*********************************************************************/
+
+/********************************************************************
+* @author Simon J Doran
+* Java class: DerivationCode.java
+* First created on Feb 1, 2016 at 5:00:03 PM
 *********************************************************************/
 
 package dataRepresentations;
 
-import static dataRepresentations.RtStruct.DUMMY_FLOAT;
 import org.dcm4che2.data.DicomObject;
 import org.dcm4che2.data.Tag;
 
-public class StructureSetRoi extends DicomEntityRepresentation
+public class DerivationCode extends DicomEntityRepresentation
 {
-	public int                       roiNumber;
-	public int                       correspondingROIContour;
-	public int                       correspondingROIObservation;
-	public String                    referencedFrameOfReferenceUid;
-	public String                    roiName;
-	public String                    roiDescription;
-	public float                     roiVolume = DUMMY_FLOAT;
-	public String                    roiGenerationAlgorithm;
-	public String                    roiGenerationDescription;
-	public String                    derivationCode;
-	public String                    roiXNATID;
-
-	public StructureSetRoi(DicomObject ssrDo)
+	public String codeValue;
+	public String codingSchemeDesignator;
+	public String codingSchemeVersion;
+	public String codeMeaning;
+	public String contextIdentifier;
+	public String contextUid;
+	public String mappingResource;
+	public String contextGroupVersion;
+	public String contextGroupExtensionFlag;
+	public String contextGroupLocalVersion;
+	public String contextGroupExtensionCreatorUid;
+	
+	public DerivationCode(DicomObject dcDo)
 	{
-		String s = das.assignString(ssrDo, Tag.ROINumber, 1);
-		roiNumber = Integer.parseInt(s);
+		codeValue              = das.assignString(dcDo, Tag.CodeValue, 1);
+		codingSchemeDesignator = das.assignString(dcDo, Tag.CodingSchemeDesignator, 1);
+		codingSchemeVersion    = das.assignString(dcDo, Tag.CodingSchemeVersion, "1C");
+		codeMeaning            = das.assignString(dcDo, Tag.CodeMeaning, 1);
+		contextIdentifier      = das.assignString(dcDo, Tag.ContextIdentifier, 3);
+		contextUid             = das.assignString(dcDo, Tag.ContextUid, 3);
 		
-		referencedFrameOfReferenceUid = das.assignString(ssrDo, Tag.ReferencedFrameOfReferenceUID, 1);
-	   roiName                       = das.assignString(ssrDo, Tag.ROIName, 2);
-		roiDescription                = das.assignString(ssrDo, Tag.ROIDescription, 3);
-		roiVolume                     = das.assignString(ssrDo, Tag.ROIVolume,3);
-		roiGenerationAlgorithm        = das.assignString(ssrDo, Tag.ROIGenerationAlgorithm, 2);
-		roiGenerationDescription      = das.assignString(ssrDo, Tag.ROIGenerationDescription, 3);
-		derivationCode                = 
+		if (contextIdentifier != null)
+		   mappingResource     = das.assignString(dcDo, Tag.MappingResource, 1);
+		
+		if (contextIdentifier != null)
+		   contextGroupVersion = das.assignString(dcDo, Tag.MappingResource, 1);
+		
+		codeValue = das.assignString(dcDo, Tag.CodeValue, 1);
+		codeValue = das.assignString(dcDo, Tag.CodeValue, 1);
+		codeValue = das.assignString(dcDo, Tag.CodeValue, 1);
+		codeValue = das.assignString(dcDo, Tag.CodeValue, 1);
+		codeValue = das.assignString(dcDo, Tag.CodeValue, 1);
+		codeValue = das.assignString(dcDo, Tag.CodeValue, 1);
+		
 	}
 }
