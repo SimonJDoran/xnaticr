@@ -82,8 +82,7 @@ public class StructureSet extends DicomEntityRepresentation
 		
 		if (rforSeq == null)
 		{
-			das.errors.add("Optional tag " + Integer.toHexString(rforTag) + " " + ssDo.nameOf(rforTag)
-					          + " is not present in input.");
+			das.warningOptionalTagNotPresent(rforTag);
 		}
 		else
 		{
@@ -103,8 +102,7 @@ public class StructureSet extends DicomEntityRepresentation
 
 		if (ssrSeq == null)
 		{
-			das.errors.add("Required tag " + Integer.toHexString(ssrTag) + " " + ssDo.nameOf(ssrTag)
-					          + " is not present in input.");
+			das.errorRequiredTagNotPresent(ssrTag);
 		}
 		else
 		{
@@ -123,8 +121,7 @@ public class StructureSet extends DicomEntityRepresentation
 		DicomElement pssSeq = ssDo.get(pssTag);
 		if (pssSeq == null)
 		{
-			das.warnings.add("Optional tag " + Integer.toHexString(pssTag) + " PredecessorStructureSetSequence"
-					          + " is not present in input.");
+			das.warningOptionalTagNotPresent(pssTag);
 		}
 		else
 		{

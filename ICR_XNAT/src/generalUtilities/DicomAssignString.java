@@ -6,6 +6,7 @@
 package generalUtilities;
 
 import java.util.ArrayList;
+import org.dcm4che2.data.BasicDicomObject;
 import org.dcm4che2.data.DicomObject;
 
 /**
@@ -18,53 +19,76 @@ public class DicomAssignString
 	public ArrayList<String> warnings = new ArrayList<>();
 
 	
-	public String assignString(DicomObject bdo, int tag, int requirementType)
+	public String assignString(DicomObject dcmObj, int tag, int requirementType)
 	{
-		return assignString(bdo, tag, Integer.toString(requirementType));
+		return assignString(dcmObj, tag, Integer.toString(requirementType));
 	}
 	
-	public String assignString(DicomObject bdo, int tag, String requirementType)
+	public String assignString(DicomObject dcmObj, int tag, String requirementType)
 	{
 		String  tagValue   = null;
-		boolean tagPresent = bdo.contains(tag);
-		if (tagPresent) tagValue = bdo.getString(tag);
+		boolean tagPresent = dcmObj.contains(tag);
+		if (tagPresent) tagValue = dcmObj.getString(tag);
 		
 		switch(requirementType)
 		{
 			case "1":  // Required
-			case "1C": // Conditionally required. This is hard to treat for the general
-				        // case. Treat as if required and handle the conditions in the
+			case "1C": // Conditionally required.
+				        // This is hard to treat for the general case. 
+				        // Treat as if required and handle the conditions in the
 				        // calling code.
 				if ((!tagPresent) || (tagValue == null) || (tagValue.length() == 0))
 				{
-					errors.add("Required tag not found in input: "
-					                   + Integer.toHexString(tag) + bdo.nameOf(tag));
+					errorRequiredTagNotPresent(tag);
 					return null;
 				}
 			
-			case "2":  // Required
+			case "2":  // Required but can have zero length
 			case "2C": // Conditionally required but can have zero length.
 				        // This is hard to treat for the general case. Treat as
 				        // required but can have zero length and handle the
 				        // conditions in the calling code.
 				if (!tagPresent)
 				{
-					errors.add("Required tag not found in input: "
-							          + Integer.toHexString(tag) + bdo.nameOf(tag));
+					errorRequiredTagNotPresent(tag);
 					return null;
 				}
 			
 			case "3":  // Optional
 				if (!tagPresent)
 				{
-					warnings.add("Optional tag not present in input: "
-							         + Integer.toHexString(tag) + bdo.nameOf(tag));
+					warningOptionalTagNotPresent(tag);
 					return null;
 				}
 		}
 		return tagValue;
 	}
+	
+	
+	public void errorRequiredTagNotPresent(int tag)
+	{
+		errors.add("Required tag " + Integer.toHexString(tag) + " not found in input: "
+				  + Integer.toHexString(tag) + " " + (new BasicDicomObject()).nameOf(tag));
+	}
+	
+	
+	public void errorTagContentsInvalid(int tag)
+	{
+		errors.add("Required tag " + Integer.toHexString(tag) + " had invalid contents: "
+				  + Integer.toHexString(tag) + " " + (new BasicDicomObject()).nameOf(tag));
+	}
+	
+	
+	public void warningOptionalTagNotPresent(int tag)
+	{
+		warnings.add("Optional tag " + Integer.toHexString(tag) + " not found in input: "
+			     + Integer.toHexString(tag) + " " + (new BasicDicomObject()).nameOf(tag));
+	}
 
 
-
+	public void warningRetiredTagPresent(int tag)
+	{
+		warnings.add("Retired tag present in input: "
+				  + Integer.toHexString(tag) + " " + (new BasicDicomObject()).nameOf(tag));
+	}
 }

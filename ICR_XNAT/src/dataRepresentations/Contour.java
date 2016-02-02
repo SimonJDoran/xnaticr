@@ -42,28 +42,83 @@
 * Contour Sequence.
 *********************************************************************/
 
-/********************************************************************
-* @author Simon J Doran
-* Java class: Contour.java
-* First created on Jan 27, 2016 at 10:34:36 AM
-*********************************************************************/
-
 package dataRepresentations;
 
 import static dataRepresentations.RTStruct_old.DUMMY_INT;
 import static dataRepresentations.RtStruct.DUMMY_FLOAT;
+import java.util.List;
+import org.dcm4che2.data.BasicDicomObject;
+import org.dcm4che2.data.DicomElement;
+import org.dcm4che2.data.DicomObject;
+import org.dcm4che2.data.Tag;
 
 public class Contour extends DicomEntityRepresentation
 {
-   public class Contour
-   {
-      public int                       contourNumber    = DUMMY_INT;
-      public int[]                     attachedContours = {DUMMY_INT};
-      public ContourImage[]            imageList;
-      public String                    geometricType;
-      public float                     slabThickness = DUMMY_FLOAT;
-      public float[]                   offsetVector  = {DUMMY_FLOAT, DUMMY_FLOAT, DUMMY_FLOAT};
-      public int                       nContourPoints;
-      public float[][]                 contourPoints;
-   }
+   
+	public int                       contourNumber;
+	public int[]                     attachedContours;
+	public List<ContourImage>        contourImageList;
+	public String                    contourGeometricType;
+	public float                     contourSlabThickness;
+	public float[]                   contourOffsetVector;
+	public int                       nContourPoints;
+	public float[][]                 contourData;
+
+
+	public Contour(DicomObject cDo)
+	{
+		int cnTag        = Tag.ContourNumber;
+		contourNumber    = cDo.getInt(cnTag, DUMMY_INT);
+		if (contourNumber == DUMMY_INT) das.warningOptionalTagNotPresent(cnTag);
+
+		
+		int acTag        = Tag.AttachedContours;
+		attachedContours = cDo.getInts(acTag);
+		if (attachedContours == null) das.warningOptionalTagNotPresent(acTag);
+
+		
+		int ciTag          = Tag.ContourImageSequence;
+		DicomElement ciSeq = cDo.get(ciTag);
+
+		if (ciSeq == null)
+		{
+			das.warningOptionalTagNotPresent(ciTag);
+		}
+		else
+		{
+			for (int i=0; i<ciSeq.countItems(); i++)
+			{
+				DicomObject  ciDo = ciSeq.getDicomObject(i);
+				ContourImage ci   = new ContourImage(ciDo);
+				if (ci.das.errors.isEmpty()) contourImageList.add(ci);
+				das.errors.addAll(ci.das.errors);
+				das.warnings.addAll(ci.das.warnings);       
+			}
+		}
+
+		
+		contourGeometricType = das.assignString(cDo, Tag.ContourGeometricType, 1);
+		
+		
+		int cstTag = Tag.ContourSlabThickness;
+		contourSlabThickness = cDo.getFloat(cstTag, DUMMY_FLOAT);
+		if (contourSlabThickness == DUMMY_FLOAT) das.warningOptionalTagNotPresent(cstTag);
+		
+		
+		int covTag = Tag.ContourOffsetVector;
+		contourOffsetVector = cDo.getFloats(covTag);
+		if (contourOffsetVector == null) das.warningOptionalTagNotPresent(covTag);
+		if (contourOffsetVector.length != 3) das.errorTagContentsInvalid(covTag);
+		
+		
+		int ncpTag     = Tag.NumberOfContourPoints;
+		nContourPoints = cDo.getInt(ncpTag, DUMMY_INT);
+		if ((nContourPoints == DUMMY_INT) || (nContourPoints < 0))
+			                              das.warningOptionalTagNotPresent(ncpTag);
+		
+		int     cdTag  = Tag.ContourData;
+		float[] coords = cDo.getFloats(cdTag);
+		int    nCoords = (coords == null) ? -1 : coords.length;
+		if (nCoords != 3*nContourPoints) das.errorTagContentsInvalid(cdTag);
+	}
 }

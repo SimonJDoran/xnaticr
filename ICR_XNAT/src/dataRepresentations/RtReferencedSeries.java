@@ -72,8 +72,7 @@ public class RtReferencedSeries extends DicomEntityRepresentation
 		
 		if (ciSeq == null)
 		{
-			das.errors.add("Required tag " + Integer.toHexString(ciTag) + " " + rrseDo.nameOf(ciTag)
-					          + " is not present in input.");
+			das.errorRequiredTagNotPresent(ciTag);
 			return;
 		}
 		

@@ -45,20 +45,49 @@
 package dataRepresentations;
 
 import static dataRepresentations.RtStruct.DUMMY_INT;
+import java.util.ArrayList;
 import java.util.List;
+import org.dcm4che2.data.BasicDicomObject;
+import org.dcm4che2.data.DicomElement;
 import org.dcm4che2.data.DicomObject;
 import org.dcm4che2.data.Tag;
 
 public class RoiContour extends DicomEntityRepresentation
 {
    public int           referencedRoiNumber;
-   public int[]         roiDisplayColour = {DUMMY_INT, DUMMY_INT, DUMMY_INT};
-   public String        frameOfReferenceUID;
+   public int[]         roiDisplayColour;
    public List<Contour> contourList;
 		
-	public RoiContour(DicomObject rcDo)
+	public RoiContour(BasicDicomObject rcDo)
 	{
 		referencedRoiNumber = rcDo.getInt(Tag.ReferencedROINumber);
-		if 
+		
+		int rdcTag          = Tag.ROIDisplayColor;
+		roiDisplayColour    = rcDo.getInts(rdcTag, new int[3]);
+		
+		if (roiDisplayColour == null)
+		{
+			das.warningOptionalTagNotPresent(rdcTag);
+		}
+		
+		contourList = new ArrayList<>();
+		int cTag          = Tag.ContourSequence;
+		DicomElement cSeq = rcDo.get(cTag);
+		
+		if (cSeq == null)
+		{
+			das.warningOptionalTagNotPresent(cTag);
+			return;
+		}
+		
+		for (int i=0; i<cSeq.countItems(); i++)
+		{
+			DicomObject cDo = cSeq.getDicomObject(i);
+			Contour     c   = new Contour(cDo);
+			if (c.das.errors.isEmpty()) contourList.add(c);
+			das.errors.addAll(c.das.errors);
+			das.warnings.addAll(c.das.warnings);       
+		}
+		
 	}
 }

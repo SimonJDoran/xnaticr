@@ -83,8 +83,7 @@ public class StructureSetRoi extends DicomEntityRepresentation
 		
 		if (dcSeq == null)
 		{
-			das.warnings.add("Optional tag " + dcTag + " " + ssrDo.nameOf(dcTag)
-					          + " is not present in input.");
+			das.warningOptionalTagNotPresent(dcTag);
 			return;
 		}
 		
