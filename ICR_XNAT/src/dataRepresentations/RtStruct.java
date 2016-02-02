@@ -60,6 +60,7 @@ import generalUtilities.DicomAssignString.AssignStringStatus;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.TreeMap;
 import org.apache.log4j.Logger;
 import org.dcm4che2.data.DicomElement;
@@ -78,31 +79,22 @@ public class RtStruct extends XnatUploadRepresentation implements RtStructWriter
 	public String                           version;
    public DicomObject                      bdo;
    public String                           structureSetUID;
-   public String                           structureSetLabel;
-   public String                           structureSetName;
-   public String                           structureSetDate;
-   public String                           structureSetTime;
-   public String                           structureSetDescription;
-   public String                           instanceNumber;
-   public List<RtReferencedStudy>          refStudyList;
-   public List<ReferencedFrameOfReference> referencedFrameOfReferenceList;
-   public List<StructureSetRoi>            structureSetRoiList;
-   public List<RoiContour>                 roiContourList;
-   public List<RtRoiObservation>           roiObsList;   
    public String                           roiSetID;
    public String                           roiSetLabel;
-   public ArrayList<String>                studyUIDs;
-   public ArrayList<String>                seriesUIDs;
-   public ArrayList<String>                SOPInstanceUIDs;
+   public List<String>                     studyUIDs;
+   public List<String>                     seriesUIDs;
+   public List<String>                     SOPInstanceUIDs;
    public String                           studyDate;
    public String                           studyTime;
    public String                           studyDescription;
    public String                           patientName;
 	public String                           XNATDateOfBirth;
    public String                           XNATGender;
-   public LinkedHashMap<String,
+   public Map<String,
 			   AmbiguousSubjectAndExperiment> ambiguousSubjExp;
 	public DicomAssignString                das;
+	public StructureSet                     structureSet;
+	public List<RoiContour>                 roiContourList;
 	
 	
 	/**
@@ -135,20 +127,15 @@ public class RtStruct extends XnatUploadRepresentation implements RtStructWriter
 						 "Can't create an RTStruct object.\n");
 		}
 
-		structureSetUID         = das.assignString(bdo, Tag.SOPInstanceUID, 1);
-		studyDate               = das.assignString(bdo, Tag.StudyDate, 2);
-		studyTime               = das.assignString(bdo, Tag.StudyTime, 2);
-		studyDescription        = das.assignString(bdo, Tag.StudyDescription, 3);
-		patientName             = das.assignString(bdo, Tag.PatientName, 2);	
-		structureSetLabel       = das.assignString(bdo, Tag.StructureSetLabel, 1);
-		structureSetName        = das.assignString(bdo, Tag.StructureSetName, 3);
-		structureSetDescription = das.assignString(bdo, Tag.StructureSetDescription, 3);
-		instanceNumber          = das.assignString(bdo, Tag.InstanceNumber, 3);
-		structureSetDate        = das.assignString(bdo, Tag.StructureSetDate, 2);
-		structureSetTime        = das.assignString(bdo, Tag.StructureSetTime, 2);
+		structureSetUID  = das.assignString(bdo, Tag.SOPInstanceUID, 1);
+		studyDate        = das.assignString(bdo, Tag.StudyDate, 2);
+		studyTime        = das.assignString(bdo, Tag.StudyTime, 2);
+		studyDescription = das.assignString(bdo, Tag.StudyDescription, 3);
+		patientName      = das.assignString(bdo, Tag.PatientName, 2);
 		
-		referencedFrameOfReferenceList = buildReferencedFrameOfReferenceList();
-		structureSetRoiList     = buildStructureSetRoiList();
+		structureSet     = new StructureSet(bdo);
+		
+		 
 		if (!das.errors.isEmpty())
 		{
 			StringBuilder sb = new StringBuilder();
@@ -157,102 +144,6 @@ public class RtStruct extends XnatUploadRepresentation implements RtStructWriter
 			                                       sb.toString());
 		}
    }
-	
-	
-	
-   
-	/** Extract the frame-of-reference-information.
-    * This entails not only the SOPInstanceUID of the frame-of-reference in which the
-    * structure set contours themselves are defined, but also the SOPInstanceUID's
-    * of any related frames of reference, together with their relationship
-    * to the frame-of-reference of this structure set. As an added complication
-    * if the ROIs were drawn on more than one series, then there are multiple
-    * items in this sequence.
-    * @param issues ArrayList to which any problems found will be added
-    */
-   protected List<ReferencedFrameOfReference> buildReferencedFrameOfReferenceList()
-   {
-		List<ReferencedFrameOfReference> rforList = new ArrayList<>();
-		int                              rforTag  = Tag.ReferencedFrameOfReferenceSequence;
-		DicomElement                     rforSeq  = bdo.get(rforTag);
 
-		if (rforSeq == null)
-		{
-			das.warnings.add("Optional tag " + rforTag + " " + bdo.nameOf(rforTag)
-					          + " is not present in input.");
-			return rforList;
-		}
-
-		for (int i=0; i<rforSeq.countItems(); i++)
-		{
-			DicomObject rforDo = rforSeq.getDicomObject(i);
-			ReferencedFrameOfReference rfor = new ReferencedFrameOfReference(rforDo);
-			if (rfor.das.errors.isEmpty()) rforList.add(rfor); 
-			das.errors.addAll(rfor.das.errors);
-			das.warnings.addAll(rfor.das.warnings);          
-		}
-		
-		return rforList;
-   }
-	
-	
-	
-	protected List<StructureSetRoi> buildStrutureSetRoiList()
-   {
-		List<StructureSetRoi> ssrList = new ArrayList<>();
-		int                   ssrTag  = Tag.StructureSetROISequence;
-		DicomElement          ssrSeq  = bdo.get(ssrTag);
-
-		if (ssrSeq == null)
-		{
-			das.errors.add("Required tag " + ssrTag + " " + bdo.nameOf(ssrTag)
-					          + " is not present in input.");
-			return ssrList;
-		}
-
-		for (int i=0; i<ssrSeq.countItems(); i++)
-		{
-			DicomObject ssrDo = ssrSeq.getDicomObject(i);
-			StructureSetRoi ssr = new StructureSetRoi(ssrDo);
-			if (ssr.das.errors.isEmpty()) ssrList.add(ssr); 
-			das.errors.addAll(ssr.das.errors);
-			das.warnings.addAll(ssr.das.warnings);          
-		}
-		
-		return ssrList;
-   }
-	
-	
-	
-	/**
-    * Read the information on any studies referred to and place in object instance
-    * variables. 
-	 * @param issues ArrayList to which any problems found will be added
-    */
-   protected void extractReferencedStudyInfo(ArrayList<String> issues)
-   {
- 
-		DicomElement seqRefStudy  = bdo.get(Tag.ReferencedStudySequence);
-
-		if (seqRefStudy == null)
-		{
-			warnings.add("No information in DICOM file on referenced studies.");
-			return;
-		}
-			
-		int nRefStudy = seqRefStudy.countItems();
-		refStudyList = new List<>();
-
-		for (int i=0; i<nRefStudy; i++)
-		{
-			DicomObject       refStudy = seqRefStudy.getDicomObject(i);
-			RtReferencedStudy rrs      = new RtReferencedStudy();
-
-			rrs.referencedSopInstanceUid = refStudy.getString(Tag.ReferencedSOPInstanceUID);
-			refStudyList[i].SOPClassUID    = refStudy.getString(Tag.ReferencedSOPClassUID);   
-			refStudyList.add(rrs);
-		}
-      
-   }
 
 }

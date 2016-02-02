@@ -86,7 +86,7 @@ public class ReferencedFrameOfReference extends DicomEntityRepresentation
 		DicomElement frrSeq = rforDo.get(frrTag);
 		if (frrSeq != null)
 		{
-			das.warnings.add("Retired tag " + frrTag + " " + rforDo.nameOf(frrTag)
+			das.warnings.add("Retired tag " + Integer.toHexString(frrTag) + " " + rforDo.nameOf(frrTag)
 					          + " is present in input.");
 			
 			for (int i=0; i<frrSeq.countItems(); i++)
@@ -105,7 +105,7 @@ public class ReferencedFrameOfReference extends DicomEntityRepresentation
 		
 		if (rrsSeq == null)
 		{
-			das.warnings.add("Optional tag " + rrsTag + " " + rforDo.nameOf(rrsTag)
+			das.warnings.add("Optional tag " + Integer.toHexString(rrsTag) + " " + rforDo.nameOf(rrsTag)
 					          + " is not present in input.");
 			return;
 		}

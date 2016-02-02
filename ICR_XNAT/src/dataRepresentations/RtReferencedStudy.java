@@ -76,7 +76,7 @@ public class RtReferencedStudy extends DicomEntityRepresentation
 		
 		if (rrseSeq == null)
 		{
-			das.errors.add("Required tag " + rrseTag + " " + rrsDo.nameOf(rrseTag)
+			das.errors.add("Required tag " + Integer.toHexString(rrseTag) + " " + rrsDo.nameOf(rrseTag)
 					          + " is not present in input.");
 			return;
 		}

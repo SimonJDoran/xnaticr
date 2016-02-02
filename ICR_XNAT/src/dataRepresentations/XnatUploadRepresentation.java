@@ -67,4 +67,6 @@ public abstract class XnatUploadRepresentation
    public SortedMap<String, String>    fileSOPMap;
    public SortedMap<String, String>    fileScanMap;
    public XNATProfile                  xnprf;
+	
+	public XnatUploadRepresentation() {}
 }

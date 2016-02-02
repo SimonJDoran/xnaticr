@@ -38,19 +38,27 @@
 * Java class: RoiContour.java
 * First created on Jan 27, 2016 at 10:29:38 AM
 * 
-* Data structure parallelling relating to the DICOM tag (3006,0039)
+* Data structure parallelling the DICOM tag (3006,0039)
 * ROI Contour Sequence.
 *********************************************************************/
 
 package dataRepresentations;
 
-import static dataRepresentations.RTStruct_old.DUMMY_INT;
+import static dataRepresentations.RtStruct.DUMMY_INT;
 import java.util.List;
+import org.dcm4che2.data.DicomObject;
+import org.dcm4che2.data.Tag;
 
 public class RoiContour extends DicomEntityRepresentation
 {
-      public int                       referencedRoiNumber;
-      public int[]                     roiDisplayColour = {DUMMY_INT, DUMMY_INT, DUMMY_INT};
-      public String                    frameOfReferenceUID;
-      public List<Contour>             contourList;
+   public int           referencedRoiNumber;
+   public int[]         roiDisplayColour = {DUMMY_INT, DUMMY_INT, DUMMY_INT};
+   public String        frameOfReferenceUID;
+   public List<Contour> contourList;
+		
+	public RoiContour(DicomObject rcDo)
+	{
+		referencedRoiNumber = rcDo.getInt(Tag.ReferencedROINumber);
+		if 
+	}
 }

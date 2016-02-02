@@ -99,25 +99,25 @@ public class DerivationCode extends DicomEntityRepresentation
 	public String getAsSingleString()
 	{
 		StringBuilder sb = new StringBuilder();
-		sb.append((codeValue == null) ? "" : codeValue);
+		sb.append((codeValue              == null) ? "" : codeValue);
 		sb.append(SEPARATOR);
 		sb.append((codingSchemeDesignator == null) ? "" : codingSchemeDesignator);
 		sb.append(SEPARATOR);
-		sb.append((codingSchemeVersion == null) ? "" : codingSchemeVersion);
+		sb.append((codingSchemeVersion    == null) ? "" : codingSchemeVersion);
 		sb.append(SEPARATOR);
-		sb.append((codeMeaning == null) ? "" : codeMeaning);
+		sb.append((codeMeaning            == null) ? "" : codeMeaning);
 		sb.append(SEPARATOR);
-		sb.append((contextIdentifier == null) ? "" : contextIdentifier);
+		sb.append((contextIdentifier      == null) ? "" : contextIdentifier);
 		sb.append(SEPARATOR);
-		sb.append((contextUid == null) ? "" : contextUid);
+		sb.append((contextUid             == null) ? "" : contextUid);
 		sb.append(SEPARATOR);
-		sb.append((mappingResource == null) ? "" : mappingResource);
+		sb.append((mappingResource        == null) ? "" : mappingResource);
 		sb.append(SEPARATOR);
-		sb.append((contextGroupVersion == null) ? "" : contextGroupVersion);
+		sb.append((contextGroupVersion    == null) ? "" : contextGroupVersion);
 		sb.append(SEPARATOR);
 		sb.append((contextGroupExtensionFlag == null) ? "" : contextGroupExtensionFlag);
 		sb.append(SEPARATOR);
-		sb.append((contextGroupLocalVersion == null) ? "" : contextGroupLocalVersion);
+		sb.append((contextGroupLocalVersion  == null) ? "" : contextGroupLocalVersion);
 		sb.append(SEPARATOR);
 		sb.append((contextGroupExtensionCreatorUid == null) ? "" : contextGroupExtensionCreatorUid);
 		sb.append(SEPARATOR);

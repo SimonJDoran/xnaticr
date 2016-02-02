@@ -44,23 +44,24 @@
 package dataRepresentations;
 
 import static dataRepresentations.RtStruct.DUMMY_FLOAT;
+import java.util.List;
 import org.dcm4che2.data.DicomElement;
 import org.dcm4che2.data.DicomObject;
 import org.dcm4che2.data.Tag;
 
 public class StructureSetRoi extends DicomEntityRepresentation
 {
-	public int                       roiNumber;
-	public int                       correspondingROIContour;
-	public int                       correspondingROIObservation;
-	public String                    referencedFrameOfReferenceUid;
-	public String                    roiName;
-	public String                    roiDescription;
-	public float                     roiVolume = DUMMY_FLOAT;
-	public String                    roiGenerationAlgorithm;
-	public String                    roiGenerationDescription;
-	public String                    derivationCode;
-	public String                    roiXNATID;
+	public int    roiNumber;
+	public int    correspondingROIContour;
+	public int    correspondingROIObservation;
+	public String referencedFrameOfReferenceUid;
+	public String roiName;
+	public String roiDescription;
+	public float  roiVolume = DUMMY_FLOAT;
+	public String roiGenerationAlgorithm;
+	public String roiGenerationDescription;
+	public String derivationCode;
+	public String roiXNATID;
 
 	public StructureSetRoi(DicomObject ssrDo)
 	{
@@ -79,13 +80,17 @@ public class StructureSetRoi extends DicomEntityRepresentation
 		
 		int            dcTag = Tag.DerivationCodeSequence;
 		DicomElement   dcSeq = ssrDo.get(dcTag);
-		DerivationCode dc    = new DerivationCode();
+		
 		if (dcSeq == null)
 		{
 			das.warnings.add("Optional tag " + dcTag + " " + ssrDo.nameOf(dcTag)
 					          + " is not present in input.");
 			return;
 		}
-		derivationCode = 
+		
+		// VM is specified as 1 in the DICOM documentation. 
+		DicomObject dcDo  = dcSeq.getDicomObject(0);
+		DerivationCode dc = new DerivationCode(dcDo);
+		derivationCode    = dc.getAsSingleString();
 	}
 }
