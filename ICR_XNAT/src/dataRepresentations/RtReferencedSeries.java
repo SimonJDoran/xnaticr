@@ -44,7 +44,7 @@
 package dataRepresentations;
 
 import dataRepresentations.ContourImage;
-import generalUtilities.DicomAssignString;
+import generalUtilities.DicomAssignVariable;
 import java.util.ArrayList;
 import java.util.List;
 import org.dcm4che2.data.DicomElement;
@@ -64,7 +64,7 @@ public class RtReferencedSeries extends DicomEntityRepresentation
 	
 	public RtReferencedSeries(DicomObject rrseDo)
 	{
-		seriesInstanceUid = das.assignString(rrseDo, Tag.SeriesInstanceUID, 1);
+		seriesInstanceUid = dav.assignString(rrseDo, Tag.SeriesInstanceUID, 1);
 		contourImageList  = new ArrayList<>();
 		
 		int ciTag          = Tag.ContourImageSequence;
@@ -72,7 +72,7 @@ public class RtReferencedSeries extends DicomEntityRepresentation
 		
 		if (ciSeq == null)
 		{
-			das.errorRequiredTagNotPresent(ciTag);
+			dav.errorRequiredTagNotPresent(ciTag);
 			return;
 		}
 		
@@ -80,9 +80,9 @@ public class RtReferencedSeries extends DicomEntityRepresentation
 		{
 			DicomObject  ciDo = ciSeq.getDicomObject(i);
 			ContourImage ci   = new ContourImage(ciDo);
-			if (ci.das.errors.isEmpty()) contourImageList.add(ci);
-			das.errors.addAll(ci.das.errors);
-			das.warnings.addAll(ci.das.warnings);       
+			if (ci.dav.errors.isEmpty()) contourImageList.add(ci);
+			dav.errors.addAll(ci.dav.errors);
+			dav.warnings.addAll(ci.dav.warnings);       
 		}
 	}
 	

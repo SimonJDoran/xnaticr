@@ -65,25 +65,25 @@ public class StructureSetRoi extends DicomEntityRepresentation
 
 	public StructureSetRoi(DicomObject ssrDo)
 	{
-		String s = das.assignString(ssrDo, Tag.ROINumber, 1);
+		String s = dav.assignString(ssrDo, Tag.ROINumber, 1);
 		roiNumber = Integer.parseInt(s);
 		
-		referencedFrameOfReferenceUid = das.assignString(ssrDo, Tag.ReferencedFrameOfReferenceUID, 1);
-	   roiName                       = das.assignString(ssrDo, Tag.ROIName, 2);
-		roiDescription                = das.assignString(ssrDo, Tag.ROIDescription, 3);
+		referencedFrameOfReferenceUid = dav.assignString(ssrDo, Tag.ReferencedFrameOfReferenceUID, 1);
+	   roiName                       = dav.assignString(ssrDo, Tag.ROIName, 2);
+		roiDescription                = dav.assignString(ssrDo, Tag.ROIDescription, 3);
 		
-		s = das.assignString(ssrDo, Tag.ROIVolume, 3);
+		s = dav.assignString(ssrDo, Tag.ROIVolume, 3);
 		if (s != null) roiVolume = Float.parseFloat(s);
 		
-		roiGenerationAlgorithm        = das.assignString(ssrDo, Tag.ROIGenerationAlgorithm, 2);
-		roiGenerationDescription      = das.assignString(ssrDo, Tag.ROIGenerationDescription, 3);
+		roiGenerationAlgorithm        = dav.assignString(ssrDo, Tag.ROIGenerationAlgorithm, 2);
+		roiGenerationDescription      = dav.assignString(ssrDo, Tag.ROIGenerationDescription, 3);
 		
 		int            dcTag = Tag.DerivationCodeSequence;
 		DicomElement   dcSeq = ssrDo.get(dcTag);
 		
 		if (dcSeq == null)
 		{
-			das.warningOptionalTagNotPresent(dcTag);
+			dav.warningOptionalTagNotPresent(dcTag);
 			return;
 		}
 		

@@ -48,7 +48,7 @@ package dataRepresentations;
 import dataRepresentations.FrameOfReferenceRelationship;
 import java.util.List;
 import dataRepresentations.RtReferencedStudy;
-import generalUtilities.DicomAssignString;
+import generalUtilities.DicomAssignVariable;
 import java.util.ArrayList;
 import org.dcm4che2.data.DicomElement;
 import org.dcm4che2.data.DicomObject;
@@ -77,7 +77,7 @@ public class ReferencedFrameOfReference extends DicomEntityRepresentation
 	
 	public ReferencedFrameOfReference(DicomObject rforDo)
 	{
-		frameOfReferenceUid              = das.assignString(rforDo, Tag.FrameOfReferenceUID, 1);
+		frameOfReferenceUid              = dav.assignString(rforDo, Tag.FrameOfReferenceUID, 1);
 		frameOfReferenceRelationshipList = new ArrayList<>();
 		rtReferencedStudyList            = new ArrayList<>();
 		
@@ -86,15 +86,15 @@ public class ReferencedFrameOfReference extends DicomEntityRepresentation
 		DicomElement frrSeq = rforDo.get(frrTag);
 		if (frrSeq != null)
 		{
-			das.warningRetiredTagPresent(frrTag);
+			dav.warningRetiredTagPresent(frrTag);
 			
 			for (int i=0; i<frrSeq.countItems(); i++)
 			{
 				DicomObject                  frrDo = frrSeq.getDicomObject(i);
 			   FrameOfReferenceRelationship frr   = new FrameOfReferenceRelationship(frrDo);
-				if (frr.das.errors.isEmpty()) frameOfReferenceRelationshipList.add(frr);
-				das.errors.addAll(frr.das.errors);
-				das.warnings.addAll(frr.das.warnings);
+				if (frr.dav.errors.isEmpty()) frameOfReferenceRelationshipList.add(frr);
+				dav.errors.addAll(frr.dav.errors);
+				dav.warnings.addAll(frr.dav.warnings);
 			}
 		}
 		
@@ -104,7 +104,7 @@ public class ReferencedFrameOfReference extends DicomEntityRepresentation
 		
 		if (rrsSeq == null)
 		{
-			das.warningOptionalTagNotPresent(rrsTag);
+			dav.warningOptionalTagNotPresent(rrsTag);
 			return;
 		}
 
@@ -112,9 +112,9 @@ public class ReferencedFrameOfReference extends DicomEntityRepresentation
 		{
 			DicomObject       rrsDo  = rrsSeq.getDicomObject(i);
 			RtReferencedStudy rrs    = new RtReferencedStudy(rrsDo) ;
-			if (rrs.das.errors.isEmpty()) rtReferencedStudyList.add(rrs);
-			das.errors.addAll(rrs.das.errors);
-			das.warnings.addAll(rrs.das.warnings);       
+			if (rrs.dav.errors.isEmpty()) rtReferencedStudyList.add(rrs);
+			dav.errors.addAll(rrs.dav.errors);
+			dav.warnings.addAll(rrs.dav.warnings);       
 		}
 	}
 }

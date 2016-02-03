@@ -45,7 +45,7 @@
 
 package dataRepresentations;
 
-import generalUtilities.DicomAssignString;
+import generalUtilities.DicomAssignVariable;
 import org.dcm4che2.data.DicomObject;
 import org.dcm4che2.data.Tag;
 
@@ -66,9 +66,9 @@ public class FrameOfReferenceRelationship extends DicomEntityRepresentation
 	
 	public FrameOfReferenceRelationship(DicomObject frrDo)
 	{
-		relatedFrameOfReferenceUid            = das.assignString(frrDo, Tag.RelatedFrameOfReferenceUID, 1);
-		frameOfReferenceTransformationMatrix  = das.assignString(frrDo, Tag.FrameOfReferenceTransformationMatrix, 1);
-		frameOfReferenceTransformationComment = das.assignString(frrDo, Tag.FrameOfReferenceTransformationMatrix, 1);
+		relatedFrameOfReferenceUid            = dav.assignString(frrDo, Tag.RelatedFrameOfReferenceUID, 1);
+		frameOfReferenceTransformationMatrix  = dav.assignString(frrDo, Tag.FrameOfReferenceTransformationMatrix, 1);
+		frameOfReferenceTransformationComment = dav.assignString(frrDo, Tag.FrameOfReferenceTransformationMatrix, 1);
 		
 	}	
 }  

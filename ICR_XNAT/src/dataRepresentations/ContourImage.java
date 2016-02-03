@@ -43,7 +43,7 @@
 *********************************************************************/
 package dataRepresentations;
 
-import generalUtilities.DicomAssignString;
+import generalUtilities.DicomAssignVariable;
 import java.util.ArrayList;
 import org.dcm4che2.data.DicomElement;
 import org.dcm4che2.data.DicomObject;
@@ -64,15 +64,15 @@ public class ContourImage extends DicomEntityRepresentation
 	
 	public ContourImage(DicomObject ciDo)
 	{
-		referencedSopInstanceUid = das.assignString(ciDo, Tag.ReferencedSOPInstanceUID, 1);
-		referencedSopClassUid    = das.assignString(ciDo, Tag.ReferencedSOPClassUID,    1);
+		referencedSopInstanceUid = dav.assignString(ciDo, Tag.ReferencedSOPInstanceUID, 1);
+		referencedSopClassUid    = dav.assignString(ciDo, Tag.ReferencedSOPClassUID,    1);
 		
 		// Frame number is a class 1C tag. Ideally, I would check whether the
 		// image is multiframe before reading it, but at this point, I don't have
 		// easy access to the entire DICOM file to check whether it is multiframe.
 		// For the moment, just try to read, but swallow the error if nothing
 		// comes back.
-		DicomAssignString junk = new DicomAssignString();
+		DicomAssignVariable junk = new DicomAssignVariable();
 		referencedFrameNumber = junk.assignString(ciDo, Tag.ReferencedFrameNumber, "1C");
 	}
 }

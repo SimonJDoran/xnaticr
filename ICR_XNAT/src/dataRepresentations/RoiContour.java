@@ -67,7 +67,7 @@ public class RoiContour extends DicomEntityRepresentation
 		
 		if (roiDisplayColour == null)
 		{
-			das.warningOptionalTagNotPresent(rdcTag);
+			dav.warningOptionalTagNotPresent(rdcTag);
 		}
 		
 		contourList = new ArrayList<>();
@@ -76,7 +76,7 @@ public class RoiContour extends DicomEntityRepresentation
 		
 		if (cSeq == null)
 		{
-			das.warningOptionalTagNotPresent(cTag);
+			dav.warningOptionalTagNotPresent(cTag);
 			return;
 		}
 		
@@ -84,9 +84,9 @@ public class RoiContour extends DicomEntityRepresentation
 		{
 			DicomObject cDo = cSeq.getDicomObject(i);
 			Contour     c   = new Contour(cDo);
-			if (c.das.errors.isEmpty()) contourList.add(c);
-			das.errors.addAll(c.das.errors);
-			das.warnings.addAll(c.das.warnings);       
+			if (c.dav.errors.isEmpty()) contourList.add(c);
+			dav.errors.addAll(c.dav.errors);
+			dav.warnings.addAll(c.dav.warnings);       
 		}
 		
 	}

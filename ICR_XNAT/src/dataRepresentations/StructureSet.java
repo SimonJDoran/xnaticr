@@ -67,12 +67,12 @@ public class StructureSet extends DicomEntityRepresentation
 	
 	public StructureSet(DicomObject ssDo)
 	{
-		structureSetLabel       = das.assignString(ssDo, Tag.StructureSetLabel, 1);
-		structureSetName        = das.assignString(ssDo, Tag.StructureSetName, 3);
-		structureSetDescription = das.assignString(ssDo, Tag.StructureSetDescription, 3);
-		instanceNumber          = das.assignString(ssDo, Tag.InstanceNumber, 3);
-		structureSetDate        = das.assignString(ssDo, Tag.StructureSetDate, 2);
-		structureSetTime        = das.assignString(ssDo, Tag.StructureSetTime, 2);
+		structureSetLabel       = dav.assignString(ssDo, Tag.StructureSetLabel, 1);
+		structureSetName        = dav.assignString(ssDo, Tag.StructureSetName, 3);
+		structureSetDescription = dav.assignString(ssDo, Tag.StructureSetDescription, 3);
+		instanceNumber          = dav.assignString(ssDo, Tag.InstanceNumber, 3);
+		structureSetDate        = dav.assignString(ssDo, Tag.StructureSetDate, 2);
+		structureSetTime        = dav.assignString(ssDo, Tag.StructureSetTime, 2);
 		structureSetRoiList     = new ArrayList<>();
 		referencedFrameOfReferenceList = new ArrayList<>();
 		
@@ -82,7 +82,7 @@ public class StructureSet extends DicomEntityRepresentation
 		
 		if (rforSeq == null)
 		{
-			das.warningOptionalTagNotPresent(rforTag);
+			dav.warningOptionalTagNotPresent(rforTag);
 		}
 		else
 		{
@@ -90,9 +90,9 @@ public class StructureSet extends DicomEntityRepresentation
 			{
 				DicomObject                rforDo = rforSeq.getDicomObject(i);
 				ReferencedFrameOfReference rfor   = new ReferencedFrameOfReference(rforDo);
-				if (rfor.das.errors.isEmpty()) referencedFrameOfReferenceList.add(rfor); 
-				das.errors.addAll(rfor.das.errors);
-				das.warnings.addAll(rfor.das.warnings);          
+				if (rfor.dav.errors.isEmpty()) referencedFrameOfReferenceList.add(rfor); 
+				dav.errors.addAll(rfor.dav.errors);
+				dav.warnings.addAll(rfor.dav.warnings);          
 			}
 		}
 		
@@ -102,7 +102,7 @@ public class StructureSet extends DicomEntityRepresentation
 
 		if (ssrSeq == null)
 		{
-			das.errorRequiredTagNotPresent(ssrTag);
+			dav.errorRequiredTagNotPresent(ssrTag);
 		}
 		else
 		{
@@ -110,9 +110,9 @@ public class StructureSet extends DicomEntityRepresentation
 			{
 				DicomObject     ssrDo = ssrSeq.getDicomObject(i);
 				StructureSetRoi ssr   = new StructureSetRoi(ssrDo);
-				if (ssr.das.errors.isEmpty()) structureSetRoiList.add(ssr); 
-				das.errors.addAll(ssr.das.errors);
-				das.warnings.addAll(ssr.das.warnings);          
+				if (ssr.dav.errors.isEmpty()) structureSetRoiList.add(ssr); 
+				dav.errors.addAll(ssr.dav.errors);
+				dav.warnings.addAll(ssr.dav.warnings);          
 			}
 		}
 		
@@ -121,14 +121,14 @@ public class StructureSet extends DicomEntityRepresentation
 		DicomElement pssSeq = ssDo.get(pssTag);
 		if (pssSeq == null)
 		{
-			das.warningOptionalTagNotPresent(pssTag);
+			dav.warningOptionalTagNotPresent(pssTag);
 		}
 		else
 		{
 			int nPss = pssSeq.countItems();
 			if (nPss != 1)
 			{
-				das.warnings.add("Optional tag " + Integer.toHexString(pssTag)
+				dav.warnings.add("Optional tag " + Integer.toHexString(pssTag)
 				               + "has VM=1 specified in the standard, but has "
 				               + nPss + " entries in the input. Only first value "
 				               + "will be returned.");

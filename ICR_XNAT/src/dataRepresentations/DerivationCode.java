@@ -69,29 +69,29 @@ public class DerivationCode extends DicomEntityRepresentation
 	
 	public DerivationCode(DicomObject dcDo)
 	{
-		codeValue              = das.assignString(dcDo, Tag.CodeValue, 1);
-		codingSchemeDesignator = das.assignString(dcDo, Tag.CodingSchemeDesignator, 1);
-		codingSchemeVersion    = das.assignString(dcDo, Tag.CodingSchemeVersion, "1C");
-		codeMeaning            = das.assignString(dcDo, Tag.CodeMeaning, 1);
-		contextIdentifier      = das.assignString(dcDo, Tag.ContextIdentifier, 3);
-		contextUid             = das.assignString(dcDo, Tag.ContextUID, 3);
+		codeValue              = dav.assignString(dcDo, Tag.CodeValue, 1);
+		codingSchemeDesignator = dav.assignString(dcDo, Tag.CodingSchemeDesignator, 1);
+		codingSchemeVersion    = dav.assignString(dcDo, Tag.CodingSchemeVersion, "1C");
+		codeMeaning            = dav.assignString(dcDo, Tag.CodeMeaning, 1);
+		contextIdentifier      = dav.assignString(dcDo, Tag.ContextIdentifier, 3);
+		contextUid             = dav.assignString(dcDo, Tag.ContextUID, 3);
 		
 		if (contextIdentifier != null)
-		   mappingResource     = das.assignString(dcDo, Tag.MappingResource, 1);
+		   mappingResource     = dav.assignString(dcDo, Tag.MappingResource, 1);
 		
 		if (contextIdentifier != null)
-		   contextGroupVersion = das.assignString(dcDo, Tag.MappingResource, 1);
+		   contextGroupVersion = dav.assignString(dcDo, Tag.MappingResource, 1);
 		
 		contextGroupExtensionFlag
-		                       = das.assignString(dcDo, Tag.ContextGroupExtensionFlag, 3);
+		                       = dav.assignString(dcDo, Tag.ContextGroupExtensionFlag, 3);
 		if (contextGroupExtensionFlag != null)
 		{
 			if (contextGroupExtensionFlag.equals("Y"))
 			{
 				contextGroupLocalVersion
-		                       = das.assignString(dcDo, Tag.ContextGroupLocalVersion, "1C");
+		                       = dav.assignString(dcDo, Tag.ContextGroupLocalVersion, "1C");
 				contextGroupExtensionCreatorUid
-					              = das.assignString(dcDo, Tag.ContextGroupExtensionCreatorUID, "1C");
+					              = dav.assignString(dcDo, Tag.ContextGroupExtensionCreatorUID, "1C");
 			}
 		}		
 	}

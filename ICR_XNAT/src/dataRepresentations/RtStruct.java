@@ -55,8 +55,7 @@ package dataRepresentations;
 import static dataRepresentations.RTStruct_old.DUMMY_INT;
 import exceptions.DataFormatException;
 import exceptions.DataRepresentationException;
-import generalUtilities.DicomAssignString;
-import generalUtilities.DicomAssignString.AssignStringStatus;
+import generalUtilities.DicomAssignVariable;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -73,9 +72,6 @@ public class RtStruct extends XnatUploadRepresentation implements RtStructWriter
 {
    static    Logger                        logger = Logger.getLogger(RtStruct.class);
    
-   protected static final int              DUMMY_INT   = -999;
-   protected static final float            DUMMY_FLOAT = -999.9f;
-	
 	public String                           version;
    public DicomObject                      bdo;
    public String                           structureSetUID;
@@ -92,7 +88,7 @@ public class RtStruct extends XnatUploadRepresentation implements RtStructWriter
    public String                           XNATGender;
    public Map<String,
 			   AmbiguousSubjectAndExperiment> ambiguousSubjExp;
-	public DicomAssignString                das;
+	public DicomAssignVariable                das;
 	public StructureSet                     structureSet;
 	public List<RoiContour>                 roiContourList;
 	
@@ -118,7 +114,7 @@ public class RtStruct extends XnatUploadRepresentation implements RtStructWriter
       fileSOPMap       = new TreeMap<>();
       fileScanMap      = new TreeMap<>();
       ambiguousSubjExp = new LinkedHashMap<>();
-		das              = new DicomAssignString();
+		das              = new DicomAssignVariable();
            
 		// Before we start, check that this really is a structure set!
 		if (!bdo.getString(Tag.Modality).equals("RTSTRUCT"))
