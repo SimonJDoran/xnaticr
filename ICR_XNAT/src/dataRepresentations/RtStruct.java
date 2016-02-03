@@ -58,9 +58,11 @@ import exceptions.DataRepresentationException;
 import generalUtilities.DicomAssignVariable;
 import generalUtilities.UIDGenerator;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeMap;
 import org.apache.log4j.Logger;
 import org.dcm4che2.data.DicomElement;
@@ -173,7 +175,43 @@ public class RtStruct extends XnatUploadRepresentation implements RtStructWriter
 		// and rtReferencedStudy variables, we need to look up only the data
 		// used by the subset of ROIs. This is a bit of work.
 		
+		// First get a list of all the ContourImages contained in the subset.
+		// This will be used directly.
+		Set srcCiSet = new HashSet<ContourImage>(); 
+		for (RoiContour rc : src.roiContourList)
+		{
+			if (rois.contains(rc.referencedRoiNumber))
+			{
+				for (Contour c : rc.contourList)
+				{
+					for (ContourImage ci : c.contourImageList) srcCiSet.add(ci);
+				}					
+			}
+		}
 		
+		// Now work backwards from the SOPInstanceUIDs of the individual
+		// ContourImages to get the corresponding series and study UIDs.
+		Set rforSet = new HashSet<ReferencedFrameOfReference>();
+		Set rrsSet  = new HashSet<RtReferencedStudy>();
+		Set rrseSet = new HashSet<RtReferencedSeries>();
+		for (ReferencedFrameOfReference rfor : src.structureSet.referencedFrameOfReferenceList)
+		{
+			for (RtReferencedStudy rrs : rfor.rtReferencedStudyList)
+			{
+				for (RtReferencedSeries rrse : rrs.rtReferencedSeriesList)
+				{
+					for (ContourImage ci : rrse.contourImageList)
+					{
+						if (srcCiSet.contains(ci))
+						{
+							rforSet.add(rfor);
+							rrsSet.add(rrs);
+							rrseSet.add(rrse);
+						}
+					}
+				}
+			}
+		}
 	}
 
 
