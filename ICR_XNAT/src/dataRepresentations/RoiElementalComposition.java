@@ -45,14 +45,24 @@
 
 package dataRepresentations;
 
-public class ElementalComposition extends DicomEntityRepresentation
+import org.dcm4che2.data.DicomObject;
+import org.dcm4che2.data.Tag;
+
+public class RoiElementalComposition extends DicomEntityRepresentation
 {
-	public String atomicNumber;
-	public String atomicMassFraction;
+	public int   atomicNumber;
+	public float atomicMassFraction;
 	
-	public ElementalComposition(String an, String amf)
+	public RoiElementalComposition(int an, float amf)
 	{
 		atomicNumber       = an;
 		atomicMassFraction = amf;
+	}
+	
+	
+	public RoiElementalComposition(DicomObject recDo)
+	{
+		atomicNumber       = dav.assignInt(recDo, Tag.ROIElementalCompositionAtomicNumber, 1);
+		atomicMassFraction = dav.assignInt(recDo, Tag.ROIElementalCompositionAtomicMassFraction, 1);
 	}
 }

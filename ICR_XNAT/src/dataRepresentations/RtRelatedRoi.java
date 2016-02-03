@@ -44,14 +44,24 @@
 
 package dataRepresentations;
 
+import org.dcm4che2.data.DicomObject;
+import org.dcm4che2.data.Tag;
+
 public class RtRelatedRoi extends DicomEntityRepresentation
 {
-	public String referencedRoiNumber;
+	public int    referencedRoiNumber;
 	public String rtRoiRelationship;
 
-	public RtRelatedRoi(String roiNumber, String relationship)
+	public RtRelatedRoi(int roiNumber, String relationship)
 	{
 		referencedRoiNumber = roiNumber;
 		rtRoiRelationship   = relationship;
+	}
+	
+	
+	public RtRelatedRoi(DicomObject rrrDo)
+	{
+		referencedRoiNumber = dav.assignInt(rrrDo,    Tag.ReferencedROINumber, 1);
+		rtRoiRelationship   = dav.assignString(rrrDo, Tag.RTROIRelationship,   3);
 	}
 }

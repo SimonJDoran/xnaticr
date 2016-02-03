@@ -33,41 +33,31 @@
 * OF THE POSSIBILITY OF SUCH DAMAGE.
 *********************************************************************/
 
-/*********************************************************************
+/********************************************************************
 * @author Simon J Doran
-* Java class: RoiPhysicalProperty.java
-* First created on Jan 21, 2016 at 5:18:28 PM
+* Java class: RelatedRtRoiObservation.java
+* First created on Feb 3, 2016 at 3:24:37 PM
 * 
-* Data structure parallelling the icr:roiPhysicalProperty element and
-* used in conjunction with icrRoiPhysicalPropertyMDComplexType.java
+* Data structure parallelling relating to the DICOM tag (3006,00A0)
+* RT ROI Observations Sequence.
 *********************************************************************/
 
 package dataRepresentations;
 
-import dataRepresentations.RoiElementalComposition;
-import java.util.List;
 import org.dcm4che2.data.DicomObject;
 import org.dcm4che2.data.Tag;
 
-public class RoiPhysicalProperty extends DicomEntityRepresentation
+public class RelatedRtRoiObservation extends DicomEntityRepresentation
 {
-	public String                        roiPhysicalProperty; // the property name
-	public String                        roiPhysicalPropertyValue;
-	public List<RoiElementalComposition> roiElementalCompositionList;
+	public int observationNumber;
 	
-	public RoiPhysicalProperty(String name, String value, List<RoiElementalComposition> ecl)
+	public RelatedRtRoiObservation(int n)
 	{
-		roiPhysicalProperty         = name;
-		roiPhysicalPropertyValue    = value;
-		roiElementalCompositionList = ecl;
+		observationNumber = n;
 	}
 	
-	
-	public RoiPhysicalProperty(DicomObject rppDo)
+	public RelatedRtRoiObservation(DicomObject rrroDo)
 	{
-		roiPhysicalProperty         = dav.assignString(rppDo, Tag.ROIPhysicalProperty, 1);
-		roiPhysicalPropertyValue    = dav.assignString(rppDo, Tag.ROIPhysicalPropertyValue, 1);
-		roiElementalCompositionList = dav.assignSequence(RoiElementalComposition.class,
-				                             rppDo, Tag.ROIElementalCompositionSequence, "1C");
+		observationNumber = dav.assignInt(rrroDo, Tag.ObservationNumber, 1);
 	}
 }

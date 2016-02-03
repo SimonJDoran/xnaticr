@@ -44,7 +44,6 @@
 
 package dataRepresentations;
 
-import static dataRepresentations.RtStruct.DUMMY_INT;
 import java.util.ArrayList;
 import java.util.List;
 import org.dcm4che2.data.BasicDicomObject;

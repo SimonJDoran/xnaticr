@@ -44,36 +44,43 @@
 
 package dataRepresentations;
 
-import static dataRepresentations.RtStruct.DUMMY_INT;
-import static dataRepresentations.RtStruct.DUMMY_FLOAT;
 import java.util.List;
 import org.dcm4che2.data.DicomObject;
 import org.dcm4che2.data.Tag;
 
 public class RtRoiObservation extends DicomEntityRepresentation
 {
-   public int                       observationNumber;
-   public int                       referencedRoiNumber;
-	public String                    obsLabel;
-	public String                    obsDescription;
-	public List<RtRelatedRoi>        relatedRoiList;
-	public List<Integer>             relatedRoiObservationsList;
-	public String                    rtRoiInterpretedType;
-	public String                    roiInterpreter;
-	public String                    roiMaterialID;
-	public List<RoiPhysicalProperty> roiPhysicalPropertyList;
+   public int                           observationNumber;
+   public int                           referencedRoiNumber;
+	public String                        roiObservationLabel;
+	public String                        roiObservationDescription;
+	public List<RtRelatedRoi>            rtRelatedRoiList;
+	public List<RelatedRtRoiObservation> relatedRtRoiObservationsList;
+	public String                        rtRoiInterpretedType;
+	public String                        roiInterpreter;
+	public String                        materialId;
+	public List<RoiPhysicalProperty>     roiPhysicalPropertiesList;
 	
 	
 	public RtRoiObservation(DicomObject rroDo)
 	{
-		int onTag           = Tag.ObservationNumber;
-		observationNumber   = rroDo.getInt(onTag, DUMMY_INT);
-		if (observationNumber == DUMMY_INT) dav.errorRequiredTagNotPresent(onTag);
+		observationNumber         = dav.assignInt(rroDo,    Tag.ObservationNumber,   1);
+		referencedRoiNumber       = dav.assignInt(rroDo,    Tag.ReferencedROINumber, 1);
+		roiObservationLabel       = dav.assignString(rroDo, Tag.ROIObservationLabel, 3);
+		roiObservationDescription = dav.assignString(rroDo, Tag.ROIObservationDescription, 3);
+		rtRelatedRoiList          = dav.assignSequence(RtRelatedRoi.class, rroDo, Tag.RTRelatedROISequence, 3);
 		
-		int rrnTag          = Tag.ReferencedROINumber;
-		referencedRoiNumber = rroDo.getInt(rrnTag, DUMMY_INT);
-		if (referencedRoiNumber == DUMMY_INT) dav.errorRequiredTagNotPresent(rrnTag);
+		// Segmented property category code sequence (0062,0003) not implemented.
+		// RT ROI identification code sequence (3006,0086) not implemented.
+		// Additional RT ROI identification code sequence (3006,00B9) not implemented.
+		// Purpose of Reference code sequence (0040,A170) not implemented.
 		
-		
+		relatedRtRoiObservationsList = dav.assignSequence(RelatedRtRoiObservation.class,
+				                               rroDo, Tag.RelatedRTROIObservationsSequence, 3);
+		rtRoiInterpretedType      = dav.assignString(rroDo, Tag.RTROIInterpretedType, 2);
+		roiInterpreter            = dav.assignString(rroDo, Tag.ROIInterpreter, 2);
+		materialId                = dav.assignString(rroDo, Tag.MaterialID, 3);
+		roiPhysicalPropertiesList = dav.assignSequence(RoiPhysicalProperty.class,
+				                               rroDo, Tag.ROIPhysicalPropertiesSequence, 3);		
 	}
 }

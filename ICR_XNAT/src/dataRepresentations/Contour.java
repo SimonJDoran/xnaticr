@@ -44,6 +44,7 @@
 
 package dataRepresentations;
 
+import java.util.ArrayList;
 import java.util.List;
 import org.dcm4che2.data.BasicDicomObject;
 import org.dcm4che2.data.DicomElement;
@@ -60,56 +61,32 @@ public class Contour extends DicomEntityRepresentation
 	public float                     contourSlabThickness;
 	public float[]                   contourOffsetVector;
 	public int                       nContourPoints;
-	public float[][]                 contourData;
+	public List<float[]>             contourData;
 
 
 	public Contour(DicomObject cDo)
 	{
-		contourNumber    = dav.assignInt(cDo,  Tag.ContourNumber,    3);
-		attachedContours = dav.assignInts(cDo, Tag.AttachedContours, 3);
+		contourNumber        = dav.assignInt(cDo,    Tag.ContourNumber,         3);
+		attachedContours     = dav.assignInts(cDo,   Tag.AttachedContours,      3);
+		contourImageList     = dav.assignSequence(ContourImage.class, cDo, contourNumber, 3);
+		contourGeometricType = dav.assignString(cDo, Tag.ContourGeometricType,  1);
+		contourSlabThickness = dav.assignFloat(cDo,  Tag.ContourSlabThickness,  3);
+		contourOffsetVector  = dav.assignFloats(cDo, Tag.ContourOffsetVector,   3);
 		
-		int ciTag          = Tag.ContourImageSequence;
-		DicomElement ciSeq = cDo.get(ciTag);
-
-		if (ciSeq == null)
-		{
-			dav.warningOptionalTagNotPresent(ciTag);
-		}
-		else
-		{
-			for (int i=0; i<ciSeq.countItems(); i++)
-			{
-				DicomObject  ciDo = ciSeq.getDicomObject(i);
-				ContourImage ci   = new ContourImage(ciDo);
-				if (ci.dav.errors.isEmpty()) contourImageList.add(ci);
-				dav.errors.addAll(ci.dav.errors);
-				dav.warnings.addAll(ci.dav.warnings);       
-			}
-		}
-
+		nContourPoints       = dav.assignInt(cDo,    Tag.NumberOfContourPoints, 1);
+		if (nContourPoints < 0) dav.warningOptionalTagNotPresent(Tag.NumberOfContourPoints);
 		
-		contourGeometricType = dav.assignString(cDo, Tag.ContourGeometricType, 1);
-		
-		
-		int cstTag = Tag.ContourSlabThickness;
-		contourSlabThickness = cDo.getFloat(cstTag, DUMMY_FLOAT);
-		if (contourSlabThickness == DUMMY_FLOAT) dav.warningOptionalTagNotPresent(cstTag);
-		
-		
-		int covTag = Tag.ContourOffsetVector;
-		contourOffsetVector = cDo.getFloats(covTag);
-		if (contourOffsetVector == null) dav.warningOptionalTagNotPresent(covTag);
-		if (contourOffsetVector.length != 3) dav.errorTagContentsInvalid(covTag);
-		
-		
-		int ncpTag     = Tag.NumberOfContourPoints;
-		nContourPoints = cDo.getInt(ncpTag, DUMMY_INT);
-		if ((nContourPoints == DUMMY_INT) || (nContourPoints < 0))
-			                              dav.warningOptionalTagNotPresent(ncpTag);
-		
-		int     cdTag  = Tag.ContourData;
-		float[] coords = cDo.getFloats(cdTag);
+		float[] coords       = dav.assignFloats(cDo, Tag.ContourData,           1);
 		int    nCoords = (coords == null) ? -1 : coords.length;
-		if (nCoords != 3*nContourPoints) dav.errorTagContentsInvalid(cdTag);
+		if (nCoords != 3*nContourPoints) dav.errorTagContentsInvalid(Tag.ContourData);
+		contourData = new ArrayList<>();
+		for (int i=0; i<nContourPoints; i++)
+		{
+			float[] a = new float[3];
+			a[0] = coords[i*3];
+			a[1] = coords[i*3 + 1];
+			a[2] = coords[i*3 + 2];
+			contourData.add(a);
+		}
 	}
 }

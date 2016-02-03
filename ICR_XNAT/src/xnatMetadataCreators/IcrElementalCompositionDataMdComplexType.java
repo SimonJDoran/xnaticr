@@ -47,16 +47,16 @@
 
 package xnatMetadataCreators;
 
-import dataRepresentations.ElementalComposition;
+import dataRepresentations.RoiElementalComposition;
 import exceptions.XMLException;
 import java.io.IOException;
 import xmlUtilities.DelayedPrettyPrinterXmlWriter;
 
 public class IcrElementalCompositionDataMdComplexType extends MdComplexType
 {
-	protected ElementalComposition ec;
+	protected RoiElementalComposition ec;
 	
-	public IcrElementalCompositionDataMdComplexType(ElementalComposition ec)
+	public IcrElementalCompositionDataMdComplexType(RoiElementalComposition ec)
 	{
 		this.ec = ec;
 	}
@@ -64,7 +64,7 @@ public class IcrElementalCompositionDataMdComplexType extends MdComplexType
 	public IcrElementalCompositionDataMdComplexType() {}
 	
 	
-	public void setElementalComposition(ElementalComposition ec)
+	public void setElementalComposition(RoiElementalComposition ec)
 	{
 		this.ec = ec;
 	}

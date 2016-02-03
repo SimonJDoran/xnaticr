@@ -48,7 +48,7 @@
 package xnatMetadataCreators;
 
 import dataRepresentations.RoiPhysicalProperty;
-import dataRepresentations.ElementalComposition;
+import dataRepresentations.RoiElementalComposition;
 import exceptions.XMLException;
 import java.io.IOException;
 import xmlUtilities.DelayedPrettyPrinterXmlWriter;
@@ -79,7 +79,7 @@ public class IcrRoiPhysicalPropertyMdComplexType extends MdComplexType
 				.delayedWriteEntityWithText("propertyValue", rpp.propertyValue);
 		
 		dppXML.delayedWriteEntity("elementalCompositionList");
-		      for (ElementalComposition ec : rpp.elementalCompositionList)
+		      for (RoiElementalComposition ec : rpp.elementalCompositionList)
 				{
 					(new IcrElementalCompositionDataMdComplexType(ec)).insertXmlAsElement("elementalComposition", dppXML);
 				}

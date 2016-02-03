@@ -88,9 +88,9 @@ public class DicomAssignVariable
 	}
 	
 	
-	public int[] assignFloats(DicomObject dcmObj, int tag, int requirementType)
+	public float[] assignFloats(DicomObject dcmObj, int tag, int requirementType)
 	{
-		return assignInts(dcmObj, tag, Integer.toString(requirementType));
+		return assignFloats(dcmObj, tag, Integer.toString(requirementType));
 	}
 	
 	

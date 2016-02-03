@@ -43,7 +43,6 @@
 
 package dataRepresentations;
 
-import static dataRepresentations.RtStruct.DUMMY_FLOAT;
 import java.util.List;
 import org.dcm4che2.data.DicomElement;
 import org.dcm4che2.data.DicomObject;
@@ -57,7 +56,7 @@ public class StructureSetRoi extends DicomEntityRepresentation
 	public String referencedFrameOfReferenceUid;
 	public String roiName;
 	public String roiDescription;
-	public float  roiVolume = DUMMY_FLOAT;
+	public float  roiVolume;
 	public String roiGenerationAlgorithm;
 	public String roiGenerationDescription;
 	public String derivationCode;
@@ -72,8 +71,7 @@ public class StructureSetRoi extends DicomEntityRepresentation
 	   roiName                       = dav.assignString(ssrDo, Tag.ROIName, 2);
 		roiDescription                = dav.assignString(ssrDo, Tag.ROIDescription, 3);
 		
-		s = dav.assignString(ssrDo, Tag.ROIVolume, 3);
-		if (s != null) roiVolume = Float.parseFloat(s);
+		roiVolume = dav.assignFloat(ssrDo, Tag.ROIVolume, 3);
 		
 		roiGenerationAlgorithm        = dav.assignString(ssrDo, Tag.ROIGenerationAlgorithm, 2);
 		roiGenerationDescription      = dav.assignString(ssrDo, Tag.ROIGenerationDescription, 3);
