@@ -57,6 +57,8 @@ public class RtReferencedStudy extends DicomEntityRepresentation
 	public String                   referencedSopInstanceUid;
 	public List<RtReferencedSeries> rtReferencedSeriesList;
 	
+	public RtReferencedStudy() {}
+	
 	public RtReferencedStudy(String sopClass, String sopInstance,
 									 List<RtReferencedSeries> seriesList)
 	{

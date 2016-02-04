@@ -56,6 +56,8 @@ public class RtReferencedSeries extends DicomEntityRepresentation
 	public String             seriesInstanceUid;
 	public List<ContourImage> contourImageList;
 	
+	public RtReferencedSeries() {}
+	
 	public RtReferencedSeries(String series, List<ContourImage> ciList)
 	{
 		seriesInstanceUid = series;

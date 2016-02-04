@@ -65,6 +65,8 @@ public class ReferencedFrameOfReference extends DicomEntityRepresentation
 	public List<FrameOfReferenceRelationship> frameOfReferenceRelationshipList;
 	
 	
+	public  ReferencedFrameOfReference(){}
+	
 	public ReferencedFrameOfReference(String uid,
 			                            List<FrameOfReferenceRelationship> forrList,
 												 List<RtReferencedStudy> rrsList)
