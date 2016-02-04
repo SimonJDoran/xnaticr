@@ -174,6 +174,9 @@ public class RtStruct extends XnatUploadRepresentation implements RtStructWriter
 		structureSet.structureSetTime        = src.structureSet.structureSetTime;
 		structureSet.referencedFrameOfReferenceList
 		                                     = buildNewRforListFromSubset(src, rois);
+		structureSet.structureSetRoiList     = buildNewSsrListFromSubset(src, rois);
+		roiContourList                       = buildNewRcListFromSubset(src, rois);
+		rtRoiObservationList                 = buildNewRroListFromSubset(src, rois);
 	}
 	
 		private List<ReferencedFrameOfReference>
@@ -276,5 +279,44 @@ public class RtStruct extends XnatUploadRepresentation implements RtStructWriter
 		return destRforList;
 	}
 
-
+							 
+	private List<StructureSetRoi>
+	                   buildNewSsrListFromSubset(RtStruct src, Set<Integer> rois)
+	{
+		List<StructureSetRoi> destSsrList = new ArrayList<>();
+		for (StructureSetRoi ssr : src.structureSet.structureSetRoiList)
+		{
+			if (rois.contains(ssr.roiNumber)) destSsrList.add(ssr);
+		}
+		
+		return destSsrList;
+		
+	}
+							 
+							 
+	private List<RoiContour>
+	                   buildNewRcListFromSubset(RtStruct src, Set<Integer> rois)
+	{
+		List<RoiContour> destRcList = new ArrayList<>();
+		for (RoiContour rc : src.roiContourList)
+		{
+			if (rois.contains(rc.referencedRoiNumber)) destRcList.add(rc);
+		}
+		
+		return destRcList;
+	}
+							 
+	
+	private List<RtRoiObservation>
+	                   buildNewRroListFromSubset(RtStruct src, Set<Integer> rois)
+	{
+		List<RtRoiObservation> destRroList = new ArrayList<>();
+		for (RtRoiObservation rro : src.rtRoiObservationList)
+		{
+			if (rois.contains(rro.referencedRoiNumber)) destRroList.add(rro);
+		}
+		
+		return destRroList;
+	}
 }
+
