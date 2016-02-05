@@ -36,7 +36,7 @@
 /*********************************************************************
 * @author Simon J Doran
 * Java class: RtStruct.java
-* First created on Jul 12, 2012 at 10:53:42 PM
+* First created on Jan 25, 2016 at 3:53:12 PM
 * 
 * Define a representation of the RT-STRUCT data structure, including
 * methods to read the data in from a DICOM file and create a new
@@ -44,58 +44,37 @@
 * 25.1.16.
 *********************************************************************/
 
-/********************************************************************
-* @author Simon J Doran
-* Java class: RtStruct.java
-* First created on Jan 25, 2016 at 3:53:12 PM
-*********************************************************************/
-
 package dataRepresentations;
 
-import static dataRepresentations.RTStruct_old.DUMMY_INT;
-import exceptions.DataFormatException;
-import exceptions.DataRepresentationException;
-import generalUtilities.DicomAssignVariable;
-import generalUtilities.UIDGenerator;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeMap;
-import org.apache.log4j.Logger;
-import org.dcm4che2.data.DicomElement;
-import org.dcm4che2.data.DicomObject;
-import org.dcm4che2.data.Tag;
-import xnatDAO.XNATProfile;
-import xnatUploader.AmbiguousSubjectAndExperiment;
-
-public class RtStruct extends XnatUploadRepresentation implements RtStructWriter
+public class RtStruct extends DicomEntityRepresentation implements RtStructWriter
 {
-   static    Logger                        logger = Logger.getLogger(RtStruct.class);
-   
-	public String                           version;
-   public DicomObject                      bdo;
-   public String                           structureSetUID;
-   public String                           roiSetID;
-   public String                           roiSetLabel;
-   public List<String>                     studyUIDs;
-   public List<String>                     seriesUIDs;
-   public List<String>                     SOPInstanceUIDs;
-   public String                           studyDate;
-   public String                           studyTime;
-   public String                           studyDescription;
-   public String                           patientName;
-	public String                           XNATDateOfBirth;
-   public String                           XNATGender;
-   public Map<String,
-			   AmbiguousSubjectAndExperiment> ambiguousSubjExp;
-	public DicomAssignVariable                dav;
-	public StructureSet                     structureSet;
-	public List<RoiContour>                 roiContourList;
-	public List<RtRoiObservation>           rtRoiObservationList;
+	/* The aim here is to follow the DICOM model fairly closely.
+	   The modules mandatory for an RT-STRUCT file are in Table A.1-4
+	   of the DICOM standard and are as follows:
+	   Patient
+	   General Study
+	   RT Series
+	   General Equipment
+	   Structure Set*
+	   ROI Contour*
+	   RT ROI Obseervations*
+	   SOP Common
+	  
+	   On the assumption that all of the information that is not in the
+	   specifically ROI-related modules can be found from the referenced
+		images, only the modules marked * are implemented fully with the
+		optional tags. For the others, only required tags are considered
+		here.
+	*/
+	
+	public SopCommon              sopCommon;
+	public Patient                patient;
+	public GeneralStudy           generalStudy;
+	public RtSeries               rtSeries;
+	public GeneralEquipment       generalEquipment;
+	public StructureSet           structureSet;
+	public List<RoiContour>       roiContourList;
+	public List<RtRoiObservation> rtRoiObservationList;
 	
 	
 	/**
@@ -154,6 +133,12 @@ public class RtStruct extends XnatUploadRepresentation implements RtStructWriter
    }
 	
 
+	/**
+	 * Constructor with data from a previously constructed RtStruct object,
+	 * and choosing a subset of the existing regions-of-interest
+	 * @param src a source RtStruct.
+	 * @param rois 
+	 */
 	public RtStruct(RtStruct src, Set<Integer> rois)
 	{
 		version         = src.version;
