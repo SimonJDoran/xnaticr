@@ -43,6 +43,10 @@
 *********************************************************************/
 package dataRepresentations;
 
+import org.dcm4che2.data.DicomObject;
+import org.dcm4che2.data.Tag;
+import org.dcm4che2.data.VR;
+
 
 public class Patient extends DicomEntityRepresentation
 {
@@ -50,4 +54,49 @@ public class Patient extends DicomEntityRepresentation
 	public String patientId;
 	public String patientBirthDate;
 	public String patientSex;
+   public String clinicalTrialSponsorName;
+   public String clinicalTrialProtocolName;
+   public String clinicalTrialProtocolId;
+   public String clinicalTrialSiteId;
+   public String clinicalTrialSubjectId;
+   public String clinicalTrialSubjectReadingId;
+   
+   public Patient() {}
+   
+   public Patient(DicomObject pDo)
+   {
+      patientName               = dav.assignString(pDo, Tag.PatientName, 1);
+      patientId                 = dav.assignString(pDo, Tag.PatientID, 1);
+      patientBirthDate          = dav.assignString(pDo, Tag.PatientBirthDate, 2);
+      patientSex                = dav.assignString(pDo, Tag.PatientSex, 2);
+      clinicalTrialSponsorName  = dav.assignString(pDo, Tag.ClinicalTrialSponsorName, 2);
+      clinicalTrialProtocolName = dav.assignString(pDo, Tag.ClinicalTrialProtocolName, 2);      
+      clinicalTrialProtocolId   = dav.assignString(pDo, Tag.ClinicalTrialProtocolID, 2);
+      clinicalTrialSiteId       = dav.assignString(pDo, Tag.ClinicalTrialSiteID, 2);
+      
+      // N.B. It is an error if the input DICOM file doesn't contain one or the 
+      //      other of the following tags.
+      if (pDo.contains(Tag.ClinicalTrialSubjectID))
+         clinicalTrialSubjectId    = dav.assignString(pDo, Tag.ClinicalTrialSubjectID, "1C");
+      else
+         clinicalTrialSubjectReadingId = dav.assignString(pDo, Tag.ClinicalTrialSubjectReadingID, "1C");   
+   }
+   
+   public void writeToDicom(DicomObject pDo)
+   {
+      pDo.putString(Tag.PatientName,              VR.PN, patientName);
+      pDo.putString(Tag.PatientID,                VR.LO, patientId);
+      pDo.putString(Tag.PatientBirthDate,         VR.DA, patientBirthDate);
+      pDo.putString(Tag.PatientSex,               VR.CS, patientSex);
+      pDo.putString(Tag.ClinicalTrialSponsorName, VR.LO, clinicalTrialSponsorName);
+      pDo.putString(Tag.ClinicalTrialProtocolName,VR.LO, clinicalTrialProtocolName);
+      pDo.putString(Tag.ClinicalTrialProtocolID,  VR.LO, clinicalTrialProtocolId);
+      pDo.putString(Tag.ClinicalTrialSiteID,      VR.LO, clinicalTrialSiteId);
+      
+      if (clinicalTrialSubjectId != null)
+         pDo.putString(Tag.ClinicalTrialSubjectID, VR.LO, clinicalTrialSubjectId);
+      
+      if (clinicalTrialSubjectReadingId != null)
+         pDo.putString(Tag.ClinicalTrialSubjectReadingID,VR.LO, clinicalTrialProtocolName);    
+   }
 }

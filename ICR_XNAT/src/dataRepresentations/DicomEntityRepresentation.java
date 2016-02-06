@@ -54,4 +54,6 @@ public abstract class DicomEntityRepresentation
 	
 	protected DicomEntityRepresentation(){}
 	protected DicomEntityRepresentation(DicomObject src){}
+   
+   protected abstract void writeToDicom(DicomObject dcmObj); 
 }

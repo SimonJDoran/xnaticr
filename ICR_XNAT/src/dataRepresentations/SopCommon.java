@@ -45,6 +45,7 @@ package dataRepresentations;
 
 import org.dcm4che2.data.DicomObject;
 import org.dcm4che2.data.Tag;
+import org.dcm4che2.data.VR;
 
 public class SopCommon extends DicomEntityRepresentation
 {
@@ -55,14 +56,20 @@ public class SopCommon extends DicomEntityRepresentation
 	public String instanceCreationDate;
 	public String instanceCreationTime;
 	
-	public SopCommon(DicomObject sgDo)
+	public SopCommon(DicomObject scDo)
 	{
-		mediaStorageSopClassUid = dav.assignString(sgDo, Tag.MediaStorageSOPClassUID, 1);
-		sopClassUid          = dav.assignString(sgDo, Tag.SOPClassUID, 1);
-		sopInstanceUid       = dav.assignString(sgDo, Tag.SOPInstanceUID, 1);
-		specificCharacterSet = dav.assignString(sgDo, Tag.SpecificCharacterSet, "1C");
-		instanceCreationDate = dav.assignString(sgDo, Tag.InstanceCreationDate, 3);
-		instanceCreationTime = dav.assignString(sgDo, Tag.InstanceCreationTime, 3);		 
+		mediaStorageSopClassUid = dav.assignString(scDo, Tag.MediaStorageSOPClassUID, 1);
+		sopClassUid          = dav.assignString(scDo, Tag.SOPClassUID, 1);
+		sopInstanceUid       = dav.assignString(scDo, Tag.SOPInstanceUID, 1);
+		specificCharacterSet = dav.assignString(scDo, Tag.SpecificCharacterSet, "1C");
+		instanceCreationDate = dav.assignString(scDo, Tag.InstanceCreationDate, 3);
+		instanceCreationTime = dav.assignString(scDo, Tag.InstanceCreationTime, 3);		 
 	}
+   
+   
+   public void writeToDicom(DicomObject scDo)
+   {
+      scDo.putString(Tag.MediaStorageSOPInstanceUID, VR.AE, sopClassUid)
+   }
 }
 
