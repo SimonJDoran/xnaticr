@@ -187,6 +187,9 @@ public class DicomAssignVariable
 	}
 	
 	
+   public void writeListToDicom
+           
+           
 	private void reportStatus(int tag, boolean tagPresent, boolean tagValueOK, String requirementType)
 	{
 		if (tagPresent && !tagValueOK)
