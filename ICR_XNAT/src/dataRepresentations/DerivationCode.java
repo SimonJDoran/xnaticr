@@ -49,8 +49,10 @@
 
 package dataRepresentations;
 
+import org.dcm4che2.data.BasicDicomObject;
 import org.dcm4che2.data.DicomObject;
 import org.dcm4che2.data.Tag;
+import org.dcm4che2.data.VR;
 
 public class DerivationCode extends DicomEntityRepresentation
 {
@@ -59,6 +61,8 @@ public class DerivationCode extends DicomEntityRepresentation
 	public String codingSchemeDesignator;
 	public String codingSchemeVersion;
 	public String codeMeaning;
+   public String longCodeValue;
+   public String urnCodeValue;
 	public String contextIdentifier;
 	public String contextUid;
 	public String mappingResource;
@@ -69,32 +73,59 @@ public class DerivationCode extends DicomEntityRepresentation
 	
 	public DerivationCode(DicomObject dcDo)
 	{
-		codeValue              = dav.assignString(dcDo, Tag.CodeValue, 1);
-		codingSchemeDesignator = dav.assignString(dcDo, Tag.CodingSchemeDesignator, 1);
-		codingSchemeVersion    = dav.assignString(dcDo, Tag.CodingSchemeVersion, "1C");
-		codeMeaning            = dav.assignString(dcDo, Tag.CodeMeaning, 1);
-		contextIdentifier      = dav.assignString(dcDo, Tag.ContextIdentifier, 3);
-		contextUid             = dav.assignString(dcDo, Tag.ContextUID, 3);
+      if (dcDo.contains(Tag.CodeValue))
+         codeValue = readString(dcDo, Tag.CodeValue, "1C");
+      
+      // N.B. Current version of DCM4CHE doesn't seem to support Tag.LongCodeValue
+      //      or Tag.URNCodeValue.
+         
+		if (dcDo.contains(Tag.CodingSchemeVersion))
+      {
+         codingSchemeDesignator = readString(dcDo, Tag.CodingSchemeDesignator, "1C");
+         if (dcDo.contains(Tag.CodingSchemeVersion))
+            codingSchemeVersion = readString(dcDo, Tag.CodingSchemeVersion, "1C");
+      }
+      
+      codeMeaning            = readString(dcDo, Tag.CodeMeaning, 1);
+		contextIdentifier      = readString(dcDo, Tag.ContextIdentifier, 3);
+		contextUid             = readString(dcDo, Tag.ContextUID, 3);
 		
 		if (contextIdentifier != null)
-		   mappingResource     = dav.assignString(dcDo, Tag.MappingResource, 1);
+		   mappingResource     = readString(dcDo, Tag.MappingResource, 1);
 		
 		if (contextIdentifier != null)
-		   contextGroupVersion = dav.assignString(dcDo, Tag.MappingResource, 1);
+		   contextGroupVersion = readString(dcDo, Tag.MappingResource, 1);
 		
 		contextGroupExtensionFlag
-		                       = dav.assignString(dcDo, Tag.ContextGroupExtensionFlag, 3);
+		                       = readString(dcDo, Tag.ContextGroupExtensionFlag, 3);
 		if (contextGroupExtensionFlag != null)
 		{
 			if (contextGroupExtensionFlag.equals("Y"))
 			{
 				contextGroupLocalVersion
-		                       = dav.assignString(dcDo, Tag.ContextGroupLocalVersion, "1C");
+		                       = readString(dcDo, Tag.ContextGroupLocalVersion, "1C");
 				contextGroupExtensionCreatorUid
-					              = dav.assignString(dcDo, Tag.ContextGroupExtensionCreatorUID, "1C");
+					              = readString(dcDo, Tag.ContextGroupExtensionCreatorUID, "1C");
 			}
 		}		
 	}
+   
+   
+   public void writeToDicom(DicomObject dcDo)
+   {
+      putNonNullString(dcDo, Tag.CodeValue,              VR.SH, codeValue);
+      putNonNullString(dcDo, Tag.CodingSchemeDesignator, VR.SH, codingSchemeDesignator);
+      putNonNullString(dcDo, Tag.CodingSchemeVersion,    VR.SH, codingSchemeVersion);       
+      dcDo.putString(Tag.CodeMeaning,                    VR.LO, codeMeaning);
+      putNonNullString(dcDo, Tag.ContextIdentifier,      VR.CS, contextIdentifier);
+      putNonNullString(dcDo, Tag.ContextUID,             VR.UI, contextUid);
+      putNonNullString(dcDo, Tag.MappingResource,        VR.CS, mappingResource);
+      putNonNullString(dcDo, Tag.ContextGroupVersion,    VR.DT, contextGroupVersion);
+      putNonNullString(dcDo, Tag.ContextGroupExtensionFlag, VR.CS, contextGroupExtensionFlag);
+      putNonNullString(dcDo, Tag.ContextGroupLocalVersion,  VR.DT, contextGroupLocalVersion);
+      putNonNullString(dcDo, Tag.ContextGroupExtensionCreatorUID,  VR.UI, contextGroupExtensionCreatorUid);
+      
+   }
 	
 	public String getAsSingleString()
 	{

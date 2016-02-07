@@ -58,32 +58,26 @@ public class SopCommon extends DicomEntityRepresentation
 	
 	public SopCommon(DicomObject scDo)
 	{
-		mediaStorageSopClassUid = dav.assignString(scDo, Tag.MediaStorageSOPClassUID, 1);
-		sopClassUid          = dav.assignString(scDo, Tag.SOPClassUID, 1);
-		sopInstanceUid       = dav.assignString(scDo, Tag.SOPInstanceUID, 1);
+		mediaStorageSopClassUid = readString(scDo, Tag.MediaStorageSOPClassUID, 1);
+		sopClassUid             = readString(scDo, Tag.SOPClassUID, 1);
+		sopInstanceUid          = readString(scDo, Tag.SOPInstanceUID, 1);
       
       if (scDo.contains(Tag.SpecificCharacterSet))
-         specificCharacterSet = dav.assignString(scDo, Tag.SpecificCharacterSet, "1C");
+         specificCharacterSet = readString(scDo, Tag.SpecificCharacterSet, "1C");
 		
-      instanceCreationDate = dav.assignString(scDo, Tag.InstanceCreationDate, 3);
-		instanceCreationTime = dav.assignString(scDo, Tag.InstanceCreationTime, 3);		 
+      instanceCreationDate    = readString(scDo, Tag.InstanceCreationDate, 3);
+		instanceCreationTime    = readString(scDo, Tag.InstanceCreationTime, 3);		 
 	}
    
    
    public void writeToDicom(DicomObject scDo)
    {
-      scDo.putString(Tag.MediaStorageSOPInstanceUID, VR.AE, mediaStorageSopClassUid);
-      scDo.putString(Tag.SOPClassUID,                VR.UI, sopClassUid);
-      scDo.putString(Tag.SOPInstanceUID,             VR.UI, sopInstanceUid);
-      
-      if (specificCharacterSet != null)
-         scDo.putString(Tag.SpecificCharacterSet,    VR.CS, specificCharacterSet);
-      
-      if (instanceCreationDate != null)
-         scDo.putString(Tag.InstanceCreationDate,    VR.DA, instanceCreationDate);
-      
-      if (instanceCreationTime != null)
-         scDo.putString(Tag.InstanceCreationTime,    VR.TM, instanceCreationTime);
+      scDo.putString(Tag.MediaStorageSOPInstanceUID,   VR.AE, mediaStorageSopClassUid);
+      scDo.putString(Tag.SOPClassUID,                  VR.UI, sopClassUid);
+      scDo.putString(Tag.SOPInstanceUID,               VR.UI, sopInstanceUid);
+      putNonNullString(scDo, Tag.SpecificCharacterSet, VR.CS, specificCharacterSet);
+      putNonNullString(scDo, Tag.InstanceCreationDate, VR.DA, instanceCreationDate);
+      putNonNullString(scDo, Tag.InstanceCreationTime, VR.TM, instanceCreationTime);
    }
 }
 

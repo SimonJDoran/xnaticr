@@ -67,19 +67,19 @@ public class Contour extends DicomEntityRepresentation
 
 	public Contour(DicomObject cDo)
 	{
-		contourNumber        = dav.assignInt(cDo,    Tag.ContourNumber,         3);
-		attachedContours     = dav.assignInts(cDo,   Tag.AttachedContours,      3);
-		contourImageList     = dav.assignSequence(ContourImage.class, cDo, contourNumber, 3);
-		contourGeometricType = dav.assignString(cDo, Tag.ContourGeometricType,  1);
-		contourSlabThickness = dav.assignFloat(cDo,  Tag.ContourSlabThickness,  3);
-		contourOffsetVector  = dav.assignFloats(cDo, Tag.ContourOffsetVector,   3);
+		contourNumber        = readInt(cDo,    Tag.ContourNumber,         3);
+		attachedContours     = readInts(cDo,   Tag.AttachedContours,      3);
+		contourImageList     = readSequence(ContourImage.class, cDo, contourNumber, 3);
+		contourGeometricType = readString(cDo, Tag.ContourGeometricType,  1);
+		contourSlabThickness = readFloat(cDo,  Tag.ContourSlabThickness,  3);
+		contourOffsetVector  = readFloats(cDo, Tag.ContourOffsetVector,   3);
 		
-		nContourPoints       = dav.assignInt(cDo,    Tag.NumberOfContourPoints, 1);
-		if (nContourPoints < 0) dav.warningOptionalTagNotPresent(Tag.NumberOfContourPoints);
+		nContourPoints       = readInt(cDo,    Tag.NumberOfContourPoints, 1);
+		if (nContourPoints < 0) warningOptionalTagNotPresent(Tag.NumberOfContourPoints);
 		
-		float[] coords       = dav.assignFloats(cDo, Tag.ContourData,           1);
-		int    nCoords = (coords == null) ? -1 : coords.length;
-		if (nCoords != 3*nContourPoints) dav.errorTagContentsInvalid(Tag.ContourData);
+		float[] coords       = readFloats(cDo, Tag.ContourData,           1);
+		int     nCoords      = (coords == null) ? -1 : coords.length;
+		if (nCoords != 3*nContourPoints) errorTagContentsInvalid(Tag.ContourData);
 		contourData = new ArrayList<>();
 		for (int i=0; i<nContourPoints; i++)
 		{

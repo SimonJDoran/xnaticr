@@ -65,21 +65,21 @@ public class Patient extends DicomEntityRepresentation
    
    public Patient(DicomObject pDo)
    {
-      patientName               = dav.assignString(pDo, Tag.PatientName, 1);
-      patientId                 = dav.assignString(pDo, Tag.PatientID, 1);
-      patientBirthDate          = dav.assignString(pDo, Tag.PatientBirthDate, 2);
-      patientSex                = dav.assignString(pDo, Tag.PatientSex, 2);
-      clinicalTrialSponsorName  = dav.assignString(pDo, Tag.ClinicalTrialSponsorName, 2);
-      clinicalTrialProtocolName = dav.assignString(pDo, Tag.ClinicalTrialProtocolName, 2);      
-      clinicalTrialProtocolId   = dav.assignString(pDo, Tag.ClinicalTrialProtocolID, 2);
-      clinicalTrialSiteId       = dav.assignString(pDo, Tag.ClinicalTrialSiteID, 2);
+      patientName               = readString(pDo, Tag.PatientName, 1);
+      patientId                 = readString(pDo, Tag.PatientID, 1);
+      patientBirthDate          = readString(pDo, Tag.PatientBirthDate, 2);
+      patientSex                = readString(pDo, Tag.PatientSex, 2);
+      clinicalTrialSponsorName  = readString(pDo, Tag.ClinicalTrialSponsorName, 2);
+      clinicalTrialProtocolName = readString(pDo, Tag.ClinicalTrialProtocolName, 2);      
+      clinicalTrialProtocolId   = readString(pDo, Tag.ClinicalTrialProtocolID, 2);
+      clinicalTrialSiteId       = readString(pDo, Tag.ClinicalTrialSiteID, 2);
       
       // N.B. It is an error if the input DICOM file doesn't contain one or the 
       //      other of the following tags.
       if (pDo.contains(Tag.ClinicalTrialSubjectID))
-         clinicalTrialSubjectId    = dav.assignString(pDo, Tag.ClinicalTrialSubjectID, "1C");
+         clinicalTrialSubjectId    = readString(pDo, Tag.ClinicalTrialSubjectID, "1C");
       else
-         clinicalTrialSubjectReadingId = dav.assignString(pDo, Tag.ClinicalTrialSubjectReadingID, "1C");   
+         clinicalTrialSubjectReadingId = readString(pDo, Tag.ClinicalTrialSubjectReadingID, "1C");   
    }
    
    public void writeToDicom(DicomObject pDo)
