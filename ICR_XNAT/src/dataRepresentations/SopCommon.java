@@ -72,12 +72,12 @@ public class SopCommon extends DicomEntityRepresentation
    
    public void writeToDicom(DicomObject scDo)
    {
-      scDo.putString(Tag.MediaStorageSOPInstanceUID,   VR.AE, mediaStorageSopClassUid);
-      scDo.putString(Tag.SOPClassUID,                  VR.UI, sopClassUid);
-      scDo.putString(Tag.SOPInstanceUID,               VR.UI, sopInstanceUid);
-      putNonNullString(scDo, Tag.SpecificCharacterSet, VR.CS, specificCharacterSet);
-      putNonNullString(scDo, Tag.InstanceCreationDate, VR.DA, instanceCreationDate);
-      putNonNullString(scDo, Tag.InstanceCreationTime, VR.TM, instanceCreationTime);
+      writeString(scDo, Tag.MediaStorageSOPInstanceUID, VR.AE, 1, mediaStorageSopClassUid);
+      writeString(scDo, Tag.SOPClassUID,                VR.UI, 1, sopClassUid);
+      writeString(scDo, Tag.SOPInstanceUID,             VR.UI, 1, sopInstanceUid);
+      writeString(scDo, Tag.SpecificCharacterSet,       VR.CS, "1C", specificCharacterSet);
+      writeString(scDo, Tag.InstanceCreationDate,       VR.DA, 3, instanceCreationDate);
+      writeString(scDo, Tag.InstanceCreationTime,       VR.TM, 3, instanceCreationTime);
    }
 }
 

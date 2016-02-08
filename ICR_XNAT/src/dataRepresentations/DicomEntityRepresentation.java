@@ -378,8 +378,6 @@ public abstract class DicomEntityRepresentation
    
    
    
-   
-   
    public void reportWriteStatus(int tag, boolean isNull, String requirementType)
    {
       switch(requirementType)
