@@ -45,34 +45,47 @@ package dataRepresentations;
 
 import generalUtilities.DicomAssignVariable;
 import java.util.ArrayList;
+import java.util.List;
 import org.dcm4che2.data.DicomElement;
 import org.dcm4che2.data.DicomObject;
 import org.dcm4che2.data.Tag;
+import org.dcm4che2.data.VR;
 
 public class ContourImage extends DicomEntityRepresentation
 {
 	public String referencedSopInstanceUid;
 	public String referencedSopClassUid;
-	public String referencedFrameNumber;
+	public int[]  referencedFrameNumber;
+	public int    referencedSegmentNumber;
 	
-	public ContourImage(String sopInstance, String sopClass, String frame)
-	{
-		referencedSopInstanceUid = sopInstance;
-		referencedSopClassUid    = sopClass;
-		referencedFrameNumber    = frame;
-	}
 	
 	public ContourImage(DicomObject ciDo)
 	{
-		referencedSopInstanceUid = dav.assignString(ciDo, Tag.ReferencedSOPInstanceUID, 1);
-		referencedSopClassUid    = dav.assignString(ciDo, Tag.ReferencedSOPClassUID,    1);
+		referencedSopInstanceUid = readString(ciDo, Tag.ReferencedSOPInstanceUID, 1);
+		referencedSopClassUid    = readString(ciDo, Tag.ReferencedSOPClassUID,    1);
 		
-		// Frame number is a class 1C tag. Ideally, I would check whether the
-		// image is multiframe before reading it, but at this point, I don't have
-		// easy access to the entire DICOM file to check whether it is multiframe.
+		// Frame number and segment number areclass 1C tags. Ideally, I would check
+		// whether the images being referred to are multiframe before reading
+		// these, but at this point in the process, I don't have easy access
+		// easy access to the relevant DICOM file to check whether it is multiframe.
 		// For the moment, just try to read, but swallow the error if nothing
 		// comes back.
-		DicomAssignVariable junk = new DicomAssignVariable();
-		referencedFrameNumber = junk.assignString(ciDo, Tag.ReferencedFrameNumber, "1C");
+		ArrayList<String> tempErrors = errors;
+		referencedFrameNumber   = readInts(ciDo, Tag.ReferencedFrameNumber, "1C");
+		referencedSegmentNumber = readInt(ciDo, Tag.ReferencedFrameNumber,  "1C");
+		errors = tempErrors;
+	}
+	
+	
+	public void writeToDicom(DicomObject cdDo)
+	{
+		writeString(cdDo, Tag.ReferencedSOPInstanceUID, VR.UI, 1, referencedSopInstanceUid);
+		writeString(cdDo, Tag.ReferencedSOPClassUID,    VR.UI, 1, referencedSopClassUid);
+		
+		if (referencedFrameNumber != null)
+			writeInts(cdDo, Tag.ReferencedFrameNumber, VR.IS, "1C", referencedFrameNumber);
+		
+		if (referencedSegmentNumber != DUMMY_INT)
+			writeInt(cdDo, Tag.ReferencedSegmentNumber, VR.IS, "1C", referencedSegmentNumber);
 	}
 }

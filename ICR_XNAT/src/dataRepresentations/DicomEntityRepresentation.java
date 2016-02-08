@@ -346,7 +346,7 @@ public abstract class DicomEntityRepresentation
 
    
    public <T extends DicomEntityRepresentation> void
-                           writeSequence(DicomObject dcmObj, int tag, int vr,
+                           writeSequence(DicomObject dcmObj, int tag, VR vr,
                                          int requirementType, List<T> list)
 	{
 		writeSequence(dcmObj, tag, vr, Integer.toString(requirementType), list);
@@ -354,7 +354,7 @@ public abstract class DicomEntityRepresentation
 	
 	
 	public <T extends DicomEntityRepresentation> void
-                           writeSequence(DicomObject dcmObj, int tag, int vr,
+                           writeSequence(DicomObject dcmObj, int tag, VR vr,
                                          String requirementType, List<T> list)
 	{
 		if (list != null)

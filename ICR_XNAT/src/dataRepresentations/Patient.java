@@ -84,19 +84,15 @@ public class Patient extends DicomEntityRepresentation
    
    public void writeToDicom(DicomObject pDo)
    {
-      pDo.putString(Tag.PatientName,              VR.PN, patientName);
-      pDo.putString(Tag.PatientID,                VR.LO, patientId);
-      pDo.putString(Tag.PatientBirthDate,         VR.DA, patientBirthDate);
-      pDo.putString(Tag.PatientSex,               VR.CS, patientSex);
-      pDo.putString(Tag.ClinicalTrialSponsorName, VR.LO, clinicalTrialSponsorName);
-      pDo.putString(Tag.ClinicalTrialProtocolName,VR.LO, clinicalTrialProtocolName);
-      pDo.putString(Tag.ClinicalTrialProtocolID,  VR.LO, clinicalTrialProtocolId);
-      pDo.putString(Tag.ClinicalTrialSiteID,      VR.LO, clinicalTrialSiteId);
-      
-      if (clinicalTrialSubjectId != null)
-         pDo.putString(Tag.ClinicalTrialSubjectID, VR.LO, clinicalTrialSubjectId);
-      
-      if (clinicalTrialSubjectReadingId != null)
-         pDo.putString(Tag.ClinicalTrialSubjectReadingID,VR.LO, clinicalTrialProtocolName);    
+      writeString(pDo, Tag.PatientName,              VR.PN, 1, patientName);
+      writeString(pDo, Tag.PatientID,                VR.LO, 1, patientId);
+      writeString(pDo, Tag.PatientBirthDate,         VR.DA, 2, patientBirthDate);
+      writeString(pDo, Tag.PatientSex,               VR.CS, 2, patientSex);
+      writeString(pDo, Tag.ClinicalTrialSponsorName, VR.LO, 2, clinicalTrialSponsorName);
+      writeString(pDo, Tag.ClinicalTrialProtocolName,VR.LO, 2, clinicalTrialProtocolName);
+      writeString(pDo, Tag.ClinicalTrialProtocolID,  VR.LO, 2, clinicalTrialProtocolId);
+      writeString(pDo, Tag.ClinicalTrialSiteID,      VR.LO, 2, clinicalTrialSiteId);
+      writeString(pDo, Tag.ClinicalTrialSubjectID,   VR.LO, "1C", clinicalTrialSubjectId);
+      writeString(pDo, Tag.ClinicalTrialSubjectReadingID, VR.LO, "1C", clinicalTrialProtocolName);    
    }
 }

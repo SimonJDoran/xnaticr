@@ -69,7 +69,7 @@ public class Contour extends DicomEntityRepresentation
 	{
 		contourNumber        = readInt(cDo,    Tag.ContourNumber,         3);
 		attachedContours     = readInts(cDo,   Tag.AttachedContours,      3);
-		contourImageList     = readSequence(ContourImage.class, cDo, contourNumber, 3);
+		contourImageList     = readSequence(ContourImage.class, cDo, Tag.ContourImageSequence, 3);
 		contourGeometricType = readString(cDo, Tag.ContourGeometricType,  1);
 		contourSlabThickness = readFloat(cDo,  Tag.ContourSlabThickness,  3);
 		contourOffsetVector  = readFloats(cDo, Tag.ContourOffsetVector,   3);
@@ -91,10 +91,25 @@ public class Contour extends DicomEntityRepresentation
 		}
 	}
    
+	@Override
    public void writeToDicom(DicomObject cDo)
    {
-      cDo.putInt(Tag.ContourNumber,          VR.IS, contourNumber);
-      cDo.putInts(Tag.AttachedContours,      VR.IS, attachedContours);
-      cDo.putFloat(Tag.ContourSlabThickness, VR.DS, contourSlabThickness);
+      writeInt(cDo,      Tag.ContourNumber,         VR.IS, 3, contourNumber);
+      writeInts(cDo,     Tag.AttachedContours,      VR.IS, 3, attachedContours);
+		writeSequence(cDo, Tag.ContourImageSequence,  VR.SQ, 3, contourImageList);
+		writeString(cDo,   Tag.ContourGeometricType,  VR.CS, 1, contourGeometricType);
+      writeFloat(cDo,    Tag.ContourSlabThickness,  VR.DS, 3, contourSlabThickness);
+		writeFloats(cDo,   Tag.ContourOffsetVector,   VR.DS, 3, contourOffsetVector);
+		writeInt(cDo,      Tag.NumberOfContourPoints, VR.IS, 1, nContourPoints);
+		
+		float[] coords = new float[3*contourData.size()];
+		for (int i=0; i<contourData.size(); i++)
+		{
+			float[] c       = contourData.get(i);
+			coords[i*3]     = c[0];
+			coords[i*3 + 1] = c[1];
+			coords[i*3 + 2] = c[2];
+		}
+		writeFloats(cDo,   Tag.ContourData, VR.DS, 3, coords);
    }
 }
