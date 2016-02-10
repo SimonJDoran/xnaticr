@@ -48,6 +48,7 @@ import dataRepresentations.RoiElementalComposition;
 import java.util.List;
 import org.dcm4che2.data.DicomObject;
 import org.dcm4che2.data.Tag;
+import org.dcm4che2.data.VR;
 
 public class RoiPhysicalProperty extends DicomEntityRepresentation
 {
@@ -65,9 +66,21 @@ public class RoiPhysicalProperty extends DicomEntityRepresentation
 	
 	public RoiPhysicalProperty(DicomObject rppDo)
 	{
-		roiPhysicalProperty         = dav.assignString(rppDo, Tag.ROIPhysicalProperty, 1);
-		roiPhysicalPropertyValue    = dav.assignString(rppDo, Tag.ROIPhysicalPropertyValue, 1);
-		roiElementalCompositionList = dav.assignSequence(RoiElementalComposition.class,
+		roiPhysicalProperty         = readString(rppDo, Tag.ROIPhysicalProperty, 1);
+		roiPhysicalPropertyValue    = readString(rppDo, Tag.ROIPhysicalPropertyValue, 1);
+		
+		if (roiPhysicalProperty.equals("ELEM_FRACTION"))
+			roiElementalCompositionList = readSequence(RoiElementalComposition.class,
 				                             rppDo, Tag.ROIElementalCompositionSequence, "1C");
+	}
+	
+	
+	public void writeToDicom(DicomObject rppDo)
+	{
+		writeString(rppDo, Tag.ROIPhysicalProperty,      VR.CS, 1, roiPhysicalProperty);
+		writeString(rppDo, Tag.ROIPhysicalPropertyValue, VR.DS, 1, roiPhysicalPropertyValue);
+		
+		if (roiPhysicalProperty.equals("ELEM_FRACTION"))
+			writeSequence(rppDo, Tag.ROIElementalCompositionSequence, VR.SQ, "1C", roiElementalCompositionList);
 	}
 }

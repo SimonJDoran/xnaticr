@@ -91,10 +91,10 @@ public class DerivationCode extends DicomEntityRepresentation
 		contextUid             = readString(dcDo, Tag.ContextUID, 3);
 		
 		if (contextIdentifier != null)
-		   mappingResource     = readString(dcDo, Tag.MappingResource, 1);
-		
-		if (contextIdentifier != null)
-		   contextGroupVersion = readString(dcDo, Tag.MappingResource, 1);
+		{
+		   mappingResource     = readString(dcDo, Tag.MappingResource, "1C");
+		   contextGroupVersion = readString(dcDo, Tag.MappingResource, "1C");
+		}
 		
 		contextGroupExtensionFlag
 		                       = readString(dcDo, Tag.ContextGroupExtensionFlag, 3);
@@ -113,18 +113,40 @@ public class DerivationCode extends DicomEntityRepresentation
    
    public void writeToDicom(DicomObject dcDo)
    {
-      putNonNullString(dcDo, Tag.CodeValue,              VR.SH, codeValue);
-      putNonNullString(dcDo, Tag.CodingSchemeDesignator, VR.SH, codingSchemeDesignator);
-      putNonNullString(dcDo, Tag.CodingSchemeVersion,    VR.SH, codingSchemeVersion);       
-      dcDo.putString(Tag.CodeMeaning,                    VR.LO, codeMeaning);
-      putNonNullString(dcDo, Tag.ContextIdentifier,      VR.CS, contextIdentifier);
-      putNonNullString(dcDo, Tag.ContextUID,             VR.UI, contextUid);
-      putNonNullString(dcDo, Tag.MappingResource,        VR.CS, mappingResource);
-      putNonNullString(dcDo, Tag.ContextGroupVersion,    VR.DT, contextGroupVersion);
-      putNonNullString(dcDo, Tag.ContextGroupExtensionFlag, VR.CS, contextGroupExtensionFlag);
-      putNonNullString(dcDo, Tag.ContextGroupLocalVersion,  VR.DT, contextGroupLocalVersion);
-      putNonNullString(dcDo, Tag.ContextGroupExtensionCreatorUID,  VR.UI, contextGroupExtensionCreatorUid);
+		// Note: the "1C" elements should really be tested appropriately to determine
+		// validity. However, for the moment, we are assuming that these will be
+		// created appropriately by the application that manipulates the object
+		// and calls writeToDicom. writeString does check for null, but will flag
+		// an error condition if we try to write a null.
+		if (codeValue != null)
+			writeString(dcDo, Tag.CodeValue, VR.SH, "1C", codeValue);
+		
+      if (codingSchemeDesignator != null)
+			writeString(dcDo, Tag.CodingSchemeDesignator, VR.SH, "1C",  codingSchemeDesignator);
       
+		if (codingSchemeVersion != null)
+			writeString(dcDo, Tag.CodingSchemeVersion, VR.SH, "1C",  codingSchemeVersion);
+		
+      writeString(dcDo, Tag.CodeMeaning,            VR.LO, 1, codeMeaning);
+      writeString(dcDo, Tag.ContextIdentifier,      VR.CS, 3, contextIdentifier);
+      writeString(dcDo, Tag.ContextUID,             VR.UI, 3, contextUid);
+      
+		if (contextIdentifier != null)
+		{
+			writeString(dcDo, Tag.MappingResource,     VR.CS, "1C", mappingResource);
+			writeString(dcDo, Tag.ContextGroupVersion, VR.DT, "1C", contextGroupVersion);
+		}
+		
+		writeString(dcDo, Tag.ContextGroupExtensionFlag, VR.CS, 3, contextGroupExtensionFlag);
+		
+      if (contextGroupExtensionFlag != null)
+		{
+			if (contextGroupExtensionFlag.equals("Y"))
+			{
+				writeString(dcDo, Tag.ContextGroupLocalVersion,         VR.DT, "1C", contextGroupLocalVersion);
+				writeString(dcDo, Tag.ContextGroupExtensionCreatorUID,  VR.UI, "1C", contextGroupExtensionCreatorUid);
+			}
+		}		      
    }
 	
 	public String getAsSingleString()

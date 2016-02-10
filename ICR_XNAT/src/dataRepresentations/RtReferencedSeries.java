@@ -43,13 +43,10 @@
 *********************************************************************/
 package dataRepresentations;
 
-import dataRepresentations.ContourImage;
-import generalUtilities.DicomAssignVariable;
-import java.util.ArrayList;
 import java.util.List;
-import org.dcm4che2.data.DicomElement;
 import org.dcm4che2.data.DicomObject;
 import org.dcm4che2.data.Tag;
+import org.dcm4che2.data.VR;
 
 public class RtReferencedSeries extends DicomEntityRepresentation
 {
@@ -66,26 +63,15 @@ public class RtReferencedSeries extends DicomEntityRepresentation
 	
 	public RtReferencedSeries(DicomObject rrseDo)
 	{
-		seriesInstanceUid = dav.assignString(rrseDo, Tag.SeriesInstanceUID, 1);
-		contourImageList  = new ArrayList<>();
-		
-		int ciTag          = Tag.ContourImageSequence;
-		DicomElement ciSeq = rrseDo.get(ciTag);
-		
-		if (ciSeq == null)
-		{
-			dav.errorRequiredTagNotPresent(ciTag);
-			return;
-		}
-		
-		for (int i=0; i<ciSeq.countItems(); i++)
-		{
-			DicomObject  ciDo = ciSeq.getDicomObject(i);
-			ContourImage ci   = new ContourImage(ciDo);
-			if (ci.dav.errors.isEmpty()) contourImageList.add(ci);
-			dav.errors.addAll(ci.dav.errors);
-			dav.warnings.addAll(ci.dav.warnings);       
-		}
+		seriesInstanceUid = readString(rrseDo, Tag.SeriesInstanceUID, 1);
+		contourImageList  = readSequence(ContourImage.class, rrseDo, Tag.ContourImageSequence, 1);
 	}
 	
+	
+	@Override
+	public void writeToDicom(DicomObject rrseDo)
+	{
+		writeString(rrseDo,   Tag.SeriesInstanceUID,    VR.UI, 1, seriesInstanceUid);
+		writeSequence(rrseDo, Tag.ContourImageSequence, VR.SQ, 1, contourImageList);
+	}	
 }

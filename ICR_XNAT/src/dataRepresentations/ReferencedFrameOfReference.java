@@ -48,11 +48,11 @@ package dataRepresentations;
 import dataRepresentations.FrameOfReferenceRelationship;
 import java.util.List;
 import dataRepresentations.RtReferencedStudy;
-import generalUtilities.DicomAssignVariable;
 import java.util.ArrayList;
 import org.dcm4che2.data.DicomElement;
 import org.dcm4che2.data.DicomObject;
 import org.dcm4che2.data.Tag;
+import org.dcm4che2.data.VR;
 
 public class ReferencedFrameOfReference extends DicomEntityRepresentation
 {
@@ -79,44 +79,17 @@ public class ReferencedFrameOfReference extends DicomEntityRepresentation
 	
 	public ReferencedFrameOfReference(DicomObject rforDo)
 	{
-		frameOfReferenceUid              = dav.assignString(rforDo, Tag.FrameOfReferenceUID, 1);
-		frameOfReferenceRelationshipList = new ArrayList<>();
-		rtReferencedStudyList            = new ArrayList<>();
-		
-		
-		int frrTag          = Tag.FrameOfReferenceRelationshipSequence;
-		DicomElement frrSeq = rforDo.get(frrTag);
-		if (frrSeq != null)
-		{
-			dav.warningRetiredTagPresent(frrTag);
-			
-			for (int i=0; i<frrSeq.countItems(); i++)
-			{
-				DicomObject                  frrDo = frrSeq.getDicomObject(i);
-			   FrameOfReferenceRelationship frr   = new FrameOfReferenceRelationship(frrDo);
-				if (frr.dav.errors.isEmpty()) frameOfReferenceRelationshipList.add(frr);
-				dav.errors.addAll(frr.dav.errors);
-				dav.warnings.addAll(frr.dav.warnings);
-			}
-		}
-		
-		
-		int rrsTag          = Tag.RTReferencedStudySequence;
-		DicomElement rrsSeq = rforDo.get(rrsTag);
-		
-		if (rrsSeq == null)
-		{
-			dav.warningOptionalTagNotPresent(rrsTag);
-			return;
-		}
-
-		for (int i=0; i<rrsSeq.countItems(); i++)
-		{
-			DicomObject       rrsDo  = rrsSeq.getDicomObject(i);
-			RtReferencedStudy rrs    = new RtReferencedStudy(rrsDo) ;
-			if (rrs.dav.errors.isEmpty()) rtReferencedStudyList.add(rrs);
-			dav.errors.addAll(rrs.dav.errors);
-			dav.warnings.addAll(rrs.dav.warnings);       
-		}
+		frameOfReferenceUid              = readString(rforDo, Tag.FrameOfReferenceUID, 1);
+		frameOfReferenceRelationshipList = readSequence(FrameOfReferenceRelationship.class, rforDo, Tag.FrameOfReferenceRelationshipSequence, 4);
+		rtReferencedStudyList            = readSequence(RtReferencedStudy.class, rforDo, Tag.RTReferencedStudySequence, 3);
+	}
+	
+	
+	@Override
+	public void writeToDicom(DicomObject rforDo)
+	{
+		writeString(rforDo, Tag.FrameOfReferenceUID, VR.UI, 1, frameOfReferenceUid);
+		writeSequence(rforDo, Tag.FrameOfReferenceRelationshipSequence, VR.SQ, 4, frameOfReferenceRelationshipList);
+		writeSequence(rforDo, Tag.RTReferencedStudySequence, VR.SQ, 3, rtReferencedStudyList);
 	}
 }

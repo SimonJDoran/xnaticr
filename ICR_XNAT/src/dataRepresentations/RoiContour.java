@@ -44,12 +44,10 @@
 
 package dataRepresentations;
 
-import java.util.ArrayList;
 import java.util.List;
-import org.dcm4che2.data.BasicDicomObject;
-import org.dcm4che2.data.DicomElement;
 import org.dcm4che2.data.DicomObject;
 import org.dcm4che2.data.Tag;
+import org.dcm4che2.data.VR;
 
 public class RoiContour extends DicomEntityRepresentation
 {
@@ -57,36 +55,19 @@ public class RoiContour extends DicomEntityRepresentation
    public int[]         roiDisplayColour;
    public List<Contour> contourList;
 		
-	public RoiContour(BasicDicomObject rcDo)
+	public RoiContour(DicomObject rcDo)
 	{
-		referencedRoiNumber = rcDo.getInt(Tag.ReferencedROINumber);
-		
-		int rdcTag          = Tag.ROIDisplayColor;
-		roiDisplayColour    = rcDo.getInts(rdcTag, new int[3]);
-		
-		if (roiDisplayColour == null)
-		{
-			dav.warningOptionalTagNotPresent(rdcTag);
-		}
-		
-		contourList = new ArrayList<>();
-		int cTag          = Tag.ContourSequence;
-		DicomElement cSeq = rcDo.get(cTag);
-		
-		if (cSeq == null)
-		{
-			dav.warningOptionalTagNotPresent(cTag);
-			return;
-		}
-		
-		for (int i=0; i<cSeq.countItems(); i++)
-		{
-			DicomObject cDo = cSeq.getDicomObject(i);
-			Contour     c   = new Contour(cDo);
-			if (c.dav.errors.isEmpty()) contourList.add(c);
-			dav.errors.addAll(c.dav.errors);
-			dav.warnings.addAll(c.dav.warnings);       
-		}
-		
+		referencedRoiNumber = readInt(rcDo,  Tag.ReferencedROINumber, 1);
+		roiDisplayColour    = readInts(rcDo, Tag.ROIDisplayColor,     3);
+		contourList         = readSequence(Contour.class, rcDo, Tag.ContourSequence, 3);		
+	}
+	
+	
+	@Override
+	public void writeToDicom(DicomObject rcDo)
+	{
+		writeInt(rcDo,      Tag.ReferencedROINumber, VR.IS, 1, referencedRoiNumber);
+		writeInts(rcDo,     Tag.ROIDisplayColor,     VR.IS, 3, roiDisplayColour);
+		writeSequence(rcDo, Tag.ContourSequence,     VR.SQ, 3, contourList);
 	}
 }

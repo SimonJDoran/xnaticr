@@ -47,6 +47,7 @@ package dataRepresentations;
 
 import org.dcm4che2.data.DicomObject;
 import org.dcm4che2.data.Tag;
+import org.dcm4che2.data.VR;
 
 public class RoiElementalComposition extends DicomEntityRepresentation
 {
@@ -62,7 +63,15 @@ public class RoiElementalComposition extends DicomEntityRepresentation
 	
 	public RoiElementalComposition(DicomObject recDo)
 	{
-		atomicNumber       = dav.assignInt(recDo, Tag.ROIElementalCompositionAtomicNumber, 1);
-		atomicMassFraction = dav.assignInt(recDo, Tag.ROIElementalCompositionAtomicMassFraction, 1);
+		atomicNumber       = readInt(recDo,   Tag.ROIElementalCompositionAtomicNumber,       1);
+		atomicMassFraction = readFloat(recDo, Tag.ROIElementalCompositionAtomicMassFraction, 1);
+	}
+	
+	
+	@Override
+	public void writeToDicom(DicomObject recDo)
+	{
+		writeInt(recDo, Tag.ROIElementalCompositionAtomicNumber,         VR.US, 1, atomicNumber);
+		writeFloat(recDo, Tag.ROIElementalCompositionAtomicMassFraction, VR.FL, 1, atomicMassFraction);
 	}
 }

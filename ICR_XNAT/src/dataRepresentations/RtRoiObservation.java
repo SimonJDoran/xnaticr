@@ -47,6 +47,7 @@ package dataRepresentations;
 import java.util.List;
 import org.dcm4che2.data.DicomObject;
 import org.dcm4che2.data.Tag;
+import org.dcm4che2.data.VR;
 
 public class RtRoiObservation extends DicomEntityRepresentation
 {
@@ -64,23 +65,39 @@ public class RtRoiObservation extends DicomEntityRepresentation
 	
 	public RtRoiObservation(DicomObject rroDo)
 	{
-		observationNumber         = dav.assignInt(rroDo,    Tag.ObservationNumber,   1);
-		referencedRoiNumber       = dav.assignInt(rroDo,    Tag.ReferencedROINumber, 1);
-		roiObservationLabel       = dav.assignString(rroDo, Tag.ROIObservationLabel, 3);
-		roiObservationDescription = dav.assignString(rroDo, Tag.ROIObservationDescription, 3);
-		rtRelatedRoiList          = dav.assignSequence(RtRelatedRoi.class, rroDo, Tag.RTRelatedROISequence, 3);
+		observationNumber         = readInt(rroDo,    Tag.ObservationNumber,   1);
+		referencedRoiNumber       = readInt(rroDo,    Tag.ReferencedROINumber, 1);
+		roiObservationLabel       = readString(rroDo, Tag.ROIObservationLabel, 3);
+		roiObservationDescription = readString(rroDo, Tag.ROIObservationDescription, 3);
+		rtRelatedRoiList          = readSequence(RtRelatedRoi.class, rroDo, Tag.RTRelatedROISequence, 3);
 		
 		// Segmented property category code sequence (0062,0003) not implemented.
 		// RT ROI identification code sequence (3006,0086) not implemented.
 		// Additional RT ROI identification code sequence (3006,00B9) not implemented.
 		// Purpose of Reference code sequence (0040,A170) not implemented.
 		
-		relatedRtRoiObservationsList = dav.assignSequence(RelatedRtRoiObservation.class,
+		relatedRtRoiObservationsList = readSequence(RelatedRtRoiObservation.class,
 				                               rroDo, Tag.RelatedRTROIObservationsSequence, 3);
-		rtRoiInterpretedType      = dav.assignString(rroDo, Tag.RTROIInterpretedType, 2);
-		roiInterpreter            = dav.assignString(rroDo, Tag.ROIInterpreter, 2);
-		materialId                = dav.assignString(rroDo, Tag.MaterialID, 3);
-		roiPhysicalPropertiesList = dav.assignSequence(RoiPhysicalProperty.class,
+		rtRoiInterpretedType      = readString(rroDo, Tag.RTROIInterpretedType, 2);
+		roiInterpreter            = readString(rroDo, Tag.ROIInterpreter, 2);
+		materialId                = readString(rroDo, Tag.MaterialID, 3);
+		roiPhysicalPropertiesList = readSequence(RoiPhysicalProperty.class,
 				                               rroDo, Tag.ROIPhysicalPropertiesSequence, 3);		
+	}
+	
+	
+	@Override
+	public void writeToDicom(DicomObject rroDo)
+	{
+		writeInt(rroDo,      Tag.ObservationNumber,         VR.IS, 1, observationNumber);
+		writeInt(rroDo,      Tag.ReferencedROINumber,       VR.IS, 1, referencedRoiNumber);
+		writeString(rroDo,   Tag.ROIObservationLabel,       VR.SH, 3, roiObservationLabel);
+		writeString(rroDo,   Tag.ROIObservationDescription, VR.ST, 3, roiObservationDescription);
+		writeSequence(rroDo, Tag.RTRelatedROISequence,      VR.SQ, 3, rtRelatedRoiList);
+		writeSequence(rroDo, Tag.RelatedRTROIObservationsSequence, VR.SQ, 3, relatedRtRoiObservationsList);
+		writeString(rroDo,   Tag.RTROIInterpretedType,      VR.CS, 2, rtRoiInterpretedType);
+		writeString(rroDo,   Tag.ROIInterpreter,            VR.PN, 2, roiInterpreter);
+		writeString(rroDo,   Tag.MaterialID,                VR.SH, 3, materialId);
+		writeSequence(rroDo, Tag.ROIPhysicalPropertiesSequence,    VR.SQ, 3, roiPhysicalPropertiesList);
 	}
 }
