@@ -47,11 +47,10 @@
 
 package dataRepresentations;
 
-import java.util.ArrayList;
 import java.util.List;
-import org.dcm4che2.data.DicomElement;
 import org.dcm4che2.data.DicomObject;
 import org.dcm4che2.data.Tag;
+import org.dcm4che2.data.VR;
 
 public class StructureSet extends DicomEntityRepresentation
 {
@@ -63,81 +62,47 @@ public class StructureSet extends DicomEntityRepresentation
    public String                           structureSetTime;
    public List<ReferencedFrameOfReference> referencedFrameOfReferenceList;
    public List<StructureSetRoi>            structureSetRoiList;
-   public StructureSet                     predecessorStructureSet;
+   public List<StructureSet>               predecessorStructureSetList;
 	
 	public StructureSet(DicomObject ssDo)
 	{
-		structureSetLabel       = dav.assignString(ssDo, Tag.StructureSetLabel, 1);
-		structureSetName        = dav.assignString(ssDo, Tag.StructureSetName, 3);
-		structureSetDescription = dav.assignString(ssDo, Tag.StructureSetDescription, 3);
-		instanceNumber          = dav.assignString(ssDo, Tag.InstanceNumber, 3);
-		structureSetDate        = dav.assignString(ssDo, Tag.StructureSetDate, 2);
-		structureSetTime        = dav.assignString(ssDo, Tag.StructureSetTime, 2);
-		structureSetRoiList     = new ArrayList<>();
-		referencedFrameOfReferenceList = new ArrayList<>();
+		structureSetLabel       = readString(ssDo, Tag.StructureSetLabel, 1);
+		structureSetName        = readString(ssDo, Tag.StructureSetName, 3);
+		structureSetDescription = readString(ssDo, Tag.StructureSetDescription, 3);
+		instanceNumber          = readString(ssDo, Tag.InstanceNumber, 3);
+		structureSetDate        = readString(ssDo, Tag.StructureSetDate, 2);
+		structureSetTime        = readString(ssDo, Tag.StructureSetTime, 2);
 		
+		referencedFrameOfReferenceList = readSequence(ReferencedFrameOfReference.class, 
+				                             ssDo, Tag.ReferencedFrameOfReferenceSequence, 3);
 		
-		int          rforTag    = Tag.ReferencedFrameOfReferenceSequence;
-		DicomElement rforSeq    = ssDo.get(rforTag);
-		
-		if (rforSeq == null)
-		{
-			dav.warningOptionalTagNotPresent(rforTag);
-		}
-		else
-		{
-			for (int i=0; i<rforSeq.countItems(); i++)
-			{
-				DicomObject                rforDo = rforSeq.getDicomObject(i);
-				ReferencedFrameOfReference rfor   = new ReferencedFrameOfReference(rforDo);
-				if (rfor.dav.errors.isEmpty()) referencedFrameOfReferenceList.add(rfor); 
-				dav.errors.addAll(rfor.dav.errors);
-				dav.warnings.addAll(rfor.dav.warnings);          
-			}
-		}
-		
-		
-		int           ssrTag = Tag.StructureSetROISequence;
-		DicomElement  ssrSeq = ssDo.get(ssrTag);
-
-		if (ssrSeq == null)
-		{
-			dav.errorRequiredTagNotPresent(ssrTag);
-		}
-		else
-		{
-			for (int i=0; i<ssrSeq.countItems(); i++)
-			{
-				DicomObject     ssrDo = ssrSeq.getDicomObject(i);
-				StructureSetRoi ssr   = new StructureSetRoi(ssrDo);
-				if (ssr.dav.errors.isEmpty()) structureSetRoiList.add(ssr); 
-				dav.errors.addAll(ssr.dav.errors);
-				dav.warnings.addAll(ssr.dav.warnings);          
-			}
-		}
+		structureSetRoiList     = readSequence(StructureSetRoi.class, ssDo,
+				                                   Tag.StructureSetROISequence, 1);
 		
 		// For some reason Tag.PredecessorStructureSetSequence is not defined in dcm4che 2.0.29.
-		int          pssTag = Integer.valueOf("30060018", 16);
-		DicomElement pssSeq = ssDo.get(pssTag);
-		if (pssSeq == null)
-		{
-			dav.warningOptionalTagNotPresent(pssTag);
-		}
-		else
-		{
-			int nPss = pssSeq.countItems();
-			if (nPss != 1)
-			{
-				dav.warnings.add("Optional tag " + Integer.toHexString(pssTag)
-				               + "has VM=1 specified in the standard, but has "
-				               + nPss + " entries in the input. Only first value "
-				               + "will be returned.");
-				if (nPss > 0)
-				{
-					DicomObject  pssDo       = pssSeq.getDicomObject(0);
-					predecessorStructureSet = new StructureSet(pssDo);
-				}
-			}
-		}
+		// Note also that there is only ever one value of the predecessor structure
+		// set, but formally it is obtained from a sequence, which is represented
+		// by a list here.
+		int pssTag = Integer.valueOf("30060018", 16);
+		predecessorStructureSetList = readSequence(StructureSet.class, ssDo, pssTag, 3);
+	}
+
+
+	@Override
+	public void writeToDicom(DicomObject ssDo)
+	{
+		writeString(ssDo,   Tag.StructureSetLabel,        VR.SH, 1, structureSetLabel);
+		writeString(ssDo,   Tag.StructureSetName,         VR.LO, 1, structureSetName);
+		writeString(ssDo,   Tag.StructureSetDescription,  VR.ST, 3, structureSetName);
+		writeString(ssDo,   Tag.InstanceNumber,           VR.IS, 3, instanceNumber);
+		writeString(ssDo,   Tag.StructureSetDate,         VR.DA, 2, structureSetDate);
+		writeString(ssDo,   Tag.StructureSetTime,         VR.TM, 2, structureSetTime);
+		writeSequence(ssDo, Tag.ReferencedFrameOfReferenceSequence, VR.SQ, 3,
+				                                    referencedFrameOfReferenceList);
+		
+		writeSequence(ssDo, Tag.StructureSetROISequence,  VR.SQ, 1, structureSetRoiList);
+		
+		int pssTag = Integer.valueOf("30060018", 16);
+		writeSequence(ssDo, pssTag,                       VR.SQ, 3, predecessorStructureSetList);
 	}
 }

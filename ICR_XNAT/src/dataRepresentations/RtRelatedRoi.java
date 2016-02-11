@@ -46,6 +46,7 @@ package dataRepresentations;
 
 import org.dcm4che2.data.DicomObject;
 import org.dcm4che2.data.Tag;
+import org.dcm4che2.data.VR;
 
 public class RtRelatedRoi extends DicomEntityRepresentation
 {
@@ -61,7 +62,15 @@ public class RtRelatedRoi extends DicomEntityRepresentation
 	
 	public RtRelatedRoi(DicomObject rrrDo)
 	{
-		referencedRoiNumber = dav.assignInt(rrrDo,    Tag.ReferencedROINumber, 1);
-		rtRoiRelationship   = dav.assignString(rrrDo, Tag.RTROIRelationship,   3);
+		referencedRoiNumber = readInt(rrrDo,    Tag.ReferencedROINumber, 1);
+		rtRoiRelationship   = readString(rrrDo, Tag.RTROIRelationship,   3);
+	}
+	
+	
+	@Override
+	public void writeToDicom(DicomObject rrrDo)
+	{
+		writeInt(rrrDo,    Tag.ReferencedROINumber, VR.IS, 1, referencedRoiNumber);
+		writeString(rrrDo, Tag.RTROIRelationship,   VR.CS, 1, rtRoiRelationship);
 	}
 }

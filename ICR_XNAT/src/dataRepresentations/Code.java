@@ -38,7 +38,10 @@
 * Java class: DerivationCode.java
 * First created on Feb 1, 2016 at 5:00:03 PM
 * 
-* Define a representation of the Derivation Code DICOM sequence
+* Define a representation of the DICOM Code Sequence.
+* Code Sequence is a ubiquitous type of sequence, defined as a macro
+* in the Part 3 of the DICOM reference. Notice that the equivalent
+* code sequence (0008,0121) allows part of the object to be nested.
 *********************************************************************/
 
 /********************************************************************
@@ -49,20 +52,25 @@
 
 package dataRepresentations;
 
+import java.util.List;
 import org.dcm4che2.data.BasicDicomObject;
 import org.dcm4che2.data.DicomObject;
 import org.dcm4che2.data.Tag;
 import org.dcm4che2.data.VR;
 
-public class DerivationCode extends DicomEntityRepresentation
+public class Code extends DicomEntityRepresentation
 {
-	public static final String SEPARATOR = "_!DC!_"; 
+	public  static final String SEPARATOR        = "_!DC!_";
+	private static final int    TagLongCodeValue = 0x0008_0119;
+	private static final int    TagUrnCodeValue  = 0x0008_0120;
+	
 	public String codeValue;
 	public String codingSchemeDesignator;
 	public String codingSchemeVersion;
 	public String codeMeaning;
    public String longCodeValue;
    public String urnCodeValue;
+	public List<Code> equivalentCodeList;
 	public String contextIdentifier;
 	public String contextUid;
 	public String mappingResource;
@@ -71,41 +79,47 @@ public class DerivationCode extends DicomEntityRepresentation
 	public String contextGroupLocalVersion;
 	public String contextGroupExtensionCreatorUid;
 	
-	public DerivationCode(DicomObject dcDo)
+	public Code(DicomObject cDo)
 	{
-      if (dcDo.contains(Tag.CodeValue))
-         codeValue = readString(dcDo, Tag.CodeValue, "1C");
+		
+		// Notice that there are a lot of tags that have a requirement of "1C".
+		// Testing that the conditions are met for inclusion on read is somewhat
+		// tricky, so simply assume that if the tag is present, then it should be
+		// read.
+      if (cDo.contains(Tag.CodeValue)) codeValue = readString(cDo, Tag.CodeValue, "1C");
       
       // N.B. Current version of DCM4CHE doesn't seem to support Tag.LongCodeValue
-      //      or Tag.URNCodeValue.
+      //      or Tag.URNCodeValue.	
+		if (cDo.contains(TagLongCodeValue)) longCodeValue = readString(cDo, TagLongCodeValue, "1C");
+		if (cDo.contains(TagLongCodeValue)) urnCodeValue  = readString(cDo, TagUrnCodeValue, "1C");
          
-		if (dcDo.contains(Tag.CodingSchemeVersion))
+		if (cDo.contains(Tag.CodingSchemeVersion))
       {
-         codingSchemeDesignator = readString(dcDo, Tag.CodingSchemeDesignator, "1C");
-         if (dcDo.contains(Tag.CodingSchemeVersion))
-            codingSchemeVersion = readString(dcDo, Tag.CodingSchemeVersion, "1C");
+         codingSchemeDesignator = readString(cDo, Tag.CodingSchemeDesignator, "1C");
+         if (cDo.contains(Tag.CodingSchemeVersion))
+            codingSchemeVersion = readString(cDo, Tag.CodingSchemeVersion, "1C");
       }
       
-      codeMeaning            = readString(dcDo, Tag.CodeMeaning, 1);
-		contextIdentifier      = readString(dcDo, Tag.ContextIdentifier, 3);
-		contextUid             = readString(dcDo, Tag.ContextUID, 3);
+      codeMeaning            = readString(cDo, Tag.CodeMeaning, 1);
+		contextIdentifier      = readString(cDo, Tag.ContextIdentifier, 3);
+		contextUid             = readString(cDo, Tag.ContextUID, 3);
 		
 		if (contextIdentifier != null)
 		{
-		   mappingResource     = readString(dcDo, Tag.MappingResource, "1C");
-		   contextGroupVersion = readString(dcDo, Tag.MappingResource, "1C");
+		   mappingResource     = readString(cDo, Tag.MappingResource, "1C");
+		   contextGroupVersion = readString(cDo, Tag.MappingResource, "1C");
 		}
 		
 		contextGroupExtensionFlag
-		                       = readString(dcDo, Tag.ContextGroupExtensionFlag, 3);
+		                       = readString(cDo, Tag.ContextGroupExtensionFlag, 3);
 		if (contextGroupExtensionFlag != null)
 		{
 			if (contextGroupExtensionFlag.equals("Y"))
 			{
 				contextGroupLocalVersion
-		                       = readString(dcDo, Tag.ContextGroupLocalVersion, "1C");
+		                       = readString(cDo, Tag.ContextGroupLocalVersion, "1C");
 				contextGroupExtensionCreatorUid
-					              = readString(dcDo, Tag.ContextGroupExtensionCreatorUID, "1C");
+					              = readString(cDo, Tag.ContextGroupExtensionCreatorUID, "1C");
 			}
 		}		
 	}
@@ -120,6 +134,12 @@ public class DerivationCode extends DicomEntityRepresentation
 		// an error condition if we try to write a null.
 		if (codeValue != null)
 			writeString(dcDo, Tag.CodeValue, VR.SH, "1C", codeValue);
+		
+		if (longCodeValue != null)
+			writeString(dcDo, TagLongCodeValue, VR.SH, "1C", codeValue);
+		
+		if (urnCodeValue != null)
+			writeString(dcDo, TagUrnCodeValue, VR.SH, "1C", urnCodeValue);
 		
       if (codingSchemeDesignator != null)
 			writeString(dcDo, Tag.CodingSchemeDesignator, VR.SH, "1C",  codingSchemeDesignator);
@@ -153,6 +173,10 @@ public class DerivationCode extends DicomEntityRepresentation
 	{
 		StringBuilder sb = new StringBuilder();
 		sb.append((codeValue              == null) ? "" : codeValue);
+		sb.append(SEPARATOR);
+		sb.append((longCodeValue          == null) ? "" : longCodeValue);
+		sb.append(SEPARATOR);
+		sb.append((urnCodeValue           == null) ? "" : urnCodeValue);
 		sb.append(SEPARATOR);
 		sb.append((codingSchemeDesignator == null) ? "" : codingSchemeDesignator);
 		sb.append(SEPARATOR);

@@ -47,47 +47,40 @@ import java.util.List;
 import org.dcm4che2.data.DicomElement;
 import org.dcm4che2.data.DicomObject;
 import org.dcm4che2.data.Tag;
+import org.dcm4che2.data.VR;
 
 public class StructureSetRoi extends DicomEntityRepresentation
 {
-	public int    roiNumber;
-	public int    correspondingROIContour;
-	public int    correspondingROIObservation;
-	public String referencedFrameOfReferenceUid;
-	public String roiName;
-	public String roiDescription;
-	public float  roiVolume;
-	public String roiGenerationAlgorithm;
-	public String roiGenerationDescription;
-	public String derivationCode;
-	public String roiXNATID;
+	public int         roiNumber;
+	public int         correspondingROIContour;
+	public int         correspondingROIObservation;
+	public String      referencedFrameOfReferenceUid;
+	public String      roiName;
+	public String      roiDescription;
+	public float       roiVolume;
+	public String      roiGenerationAlgorithm;
+	public String      roiGenerationDescription;
+	public List<Code>  derivationCodeList;
 
 	public StructureSetRoi(DicomObject ssrDo)
 	{
-		String s = dav.assignString(ssrDo, Tag.ROINumber, 1);
-		roiNumber = Integer.parseInt(s);
+		roiNumber                     = readInt(ssrDo,    Tag.ROINumber, 1);		
+		referencedFrameOfReferenceUid = readString(ssrDo, Tag.ReferencedFrameOfReferenceUID, 1);
+	   roiName                       = readString(ssrDo, Tag.ROIName, 2);
+		roiDescription                = readString(ssrDo, Tag.ROIDescription, 3);
+		roiVolume                     = readFloat(ssrDo,  Tag.ROIVolume, 3);
+		roiGenerationAlgorithm        = readString(ssrDo, Tag.ROIGenerationAlgorithm, 2);
+		roiGenerationDescription      = readString(ssrDo, Tag.ROIGenerationDescription, 3);
 		
-		referencedFrameOfReferenceUid = dav.assignString(ssrDo, Tag.ReferencedFrameOfReferenceUID, 1);
-	   roiName                       = dav.assignString(ssrDo, Tag.ROIName, 2);
-		roiDescription                = dav.assignString(ssrDo, Tag.ROIDescription, 3);
+		derivationCodeList = readSequence(Code.class, ssrDo, Tag.DerivationCodeSequence, 1);
+	}
+	
+	
+	public void writeToDicom(DicomObject ssrDo)
+	{
+		writeInt(ssrDo,    Tag.ROINumber, VR.IS, 1, roiNumber);
+		writeString(ssrDo, Tag.ReferencedFrameOfReferenceUID, VR.UI, 1, referencedFrameOfReferenceUid);
+      writeString(ssrDo, Tag.ROIName,   VR.LO, 2, roiName);
 		
-		roiVolume = dav.assignFloat(ssrDo, Tag.ROIVolume, 3);
-		
-		roiGenerationAlgorithm        = dav.assignString(ssrDo, Tag.ROIGenerationAlgorithm, 2);
-		roiGenerationDescription      = dav.assignString(ssrDo, Tag.ROIGenerationDescription, 3);
-		
-		int            dcTag = Tag.DerivationCodeSequence;
-		DicomElement   dcSeq = ssrDo.get(dcTag);
-		
-		if (dcSeq == null)
-		{
-			dav.warningOptionalTagNotPresent(dcTag);
-			return;
-		}
-		
-		// VM is specified as 1 in the DICOM documentation. 
-		DicomObject dcDo  = dcSeq.getDicomObject(0);
-		DerivationCode dc = new DerivationCode(dcDo);
-		derivationCode    = dc.getAsSingleString();
 	}
 }

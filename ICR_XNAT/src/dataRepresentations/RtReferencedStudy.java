@@ -46,10 +46,10 @@ package dataRepresentations;
 
 import java.util.List;
 import org.dcm4che2.data.DicomObject;
-import generalUtilities.DicomAssignVariable;
 import java.util.ArrayList;
 import org.dcm4che2.data.DicomElement;
 import org.dcm4che2.data.Tag;
+import org.dcm4che2.data.VR;
 
 public class RtReferencedStudy extends DicomEntityRepresentation
 {
@@ -70,26 +70,17 @@ public class RtReferencedStudy extends DicomEntityRepresentation
 	
 	public RtReferencedStudy(DicomObject rrsDo)
 	{
-		referencedSopClassUid    = dav.assignString(rrsDo, Tag.ReferencedSOPClassUID,    1);
-		referencedSopInstanceUid = dav.assignString(rrsDo, Tag.ReferencedSOPInstanceUID, 1);
-	   rtReferencedSeriesList   = new ArrayList<>();
-		int rrseTag              = Tag.RTReferencedSeriesSequence;
-		DicomElement rrseSeq     = rrsDo.get(rrseTag);
-		
-		if (rrseSeq == null)
-		{
-			dav.errorRequiredTagNotPresent(rrseTag);
-			return;
-		}
-		
-		for (int i=0; i<rrseSeq.countItems(); i++)
-		{
-			DicomObject        rrseDo = rrseSeq.getDicomObject(i);
-			RtReferencedSeries rrse   = new RtReferencedSeries(rrseDo);
-			if (rrse.dav.errors.isEmpty()) rtReferencedSeriesList.add(rrse);
-			dav.errors.addAll(rrse.dav.errors);
-			dav.warnings.addAll(rrse.dav.warnings);       
-		}
+		referencedSopClassUid    = readString(rrsDo, Tag.ReferencedSOPClassUID,    1);
+		referencedSopInstanceUid = readString(rrsDo, Tag.ReferencedSOPInstanceUID, 1);
+	   rtReferencedSeriesList   = readSequence(RtReferencedSeries.class, rrsDo, Tag.RTReferencedSeriesSequence, 1);
 	}
-
+	
+	
+	@Override
+	public void writeToDicom(DicomObject rrsDo)
+	{
+		writeString(rrsDo,   Tag.ReferencedSOPClassUID,       VR.UI, 1, referencedSopClassUid);
+		writeString(rrsDo,   Tag.ReferencedSOPInstanceUID,    VR.UI, 1, referencedSopInstanceUid);
+		writeSequence(rrsDo, Tag.RTReferencedSeriesSequence, VR.SQ, 1, rtReferencedSeriesList);		
+	}
 }
