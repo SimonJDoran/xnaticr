@@ -474,19 +474,20 @@ public abstract class DicomEntityRepresentation
 	}
 	
 	
-	public <T extends DicomEntityRepresentation> DicomEntityRepresentation deepCopy(T src)
+	public <T extends DicomEntityRepresentation> T deepCopy()
 	{
 		// Create the empty object.
-		Class cls = src.getClass();
-		DicomEntityRepresentation dest;
+		Class cls = this.getClass();
+		T dest;
 		try
 		{
-			dest = cls.newInstance();
+			dest = (T) cls.newInstance();
 		}
 		catch (InstantiationException exIE)
 		{
 			errors.add("Unable to instantiate object of type " + cls.getName()
-							+ ". Suspected error in input DICOM.");								  
+							+ ". Suspected error in input DICOM.");
+			return null;
 		}
 		catch (IllegalAccessException exIA)
 		{
@@ -495,10 +496,83 @@ public abstract class DicomEntityRepresentation
 		
 		// Now fill all the fields of the object.
 		Field[] fields = cls.getDeclaredFields();
-		
+		for (Field fld : fields)
+		{
+			Object a;
+			try
+			{
+				a = fld.get(this);
+			}
+			catch (IllegalAccessException exIA)
+			{
+				throw new RuntimeException("Programming issue: " + exIA.getMessage());
+			}
+			
+			// For all objects that are subtypes of DicomEntityRepresentation
+			// (i.e., the only ones that can call this method) the only types
+			// of field present are:
+			// * primitive types or String, which can be cloned;
+			// * other DicomEntityRepresentations, which are copied by a
+			//   call to their own deepCopy method;
+			// * Lists of DicomEntityRepresentations.
+			if (a != null)
+			{
+				if (a instanceof DicomEntityRepresentation)
+				{
+					DicomEntityRepresentation b = (DicomEntityRepresentation) a;
+
+					try
+					{
+						fld.set(dest, b.deepCopy());
+					}
+					catch (IllegalAccessException exIA)
+					{
+						throw new RuntimeException("Programming issue: " + exIA.getMessage());
+					}
+				}
+
+				else if (a instanceof List)
+				{
+					List<DicomEntityRepresentation> b = (List) a;
+					try
+					{
+						fld.set(dest, deepCopyList(b));
+					}
+					catch (IllegalAccessException exIA)
+					{
+						throw new RuntimeException("Programming issue: " + exIA.getMessage());
+					}
+				}
+				
+				else
+				{
+					try
+					{
+						fld.set(dest, a);
+					}
+					catch (IllegalAccessException exIA)
+					{
+						throw new RuntimeException("Programming issue: " + exIA.getMessage());
+					}
+				}
+				
+			}
+		}
 		
 		return dest;
 	}
-   
+	
+	
+	public <T extends DicomEntityRepresentation> List<T> deepCopyList(List<T> srcList)
+	{
+		List<T> destList = new ArrayList<>();
+		for (T srcD : srcList)
+		{
+			T destD = (T) srcD.deepCopy();
+			destList.add(destD);
+		}
+		
+		return destList;
+	}
 }
 
