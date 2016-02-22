@@ -55,9 +55,9 @@ package xnatUploader;
  */
 import dataRepresentations.RTStructureSetUploader;
 import com.generationjava.io.xml.SimpleXmlWriter;
-import dataRepresentations.AIMOutput;
+import dataRepresentations.xnatUpload.AIMOutput;
 import dataRepresentations.ContourRenderer;
-import dataRepresentations.MRIWOutput;
+import dataRepresentations.xnatUpload.MRIWOutput;
 import dataRepresentations.RTStruct_old;
 import etherj.XmlException;
 import etherj.aim.ImageAnnotationCollection;

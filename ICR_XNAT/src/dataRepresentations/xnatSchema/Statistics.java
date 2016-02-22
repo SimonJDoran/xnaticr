@@ -33,74 +33,46 @@
 * OF THE POSSIBILITY OF SUCH DAMAGE.
 *********************************************************************/
 
-/********************************************************************
+/*********************************************************************
 * @author Simon J Doran
-* Java class: XnatInvestigatorDataMDComplexType.java
-* First created on Jan 19, 2016 at 8:26:00 PM
-
-* Creation of metadata XML for xnat:investigatorData
+* Java class: XnatStatistics.java
+* First created on Jan 20, 2016 at 4:20:18 PM
 * 
-* Eventually, the plan for this whole package is to replace the
-* explicit writing of the XML files with a higher level interface,
-* e.g., JAXB. However, this is for a later refactoring.
+* Data structure parallelling the xnat:statisticsData element and
+* used in conjunction with XnatStatisticsDataMDComplexType.java
 *********************************************************************/
 
-package xnatMetadataCreators;
+package dataRepresentations.xnatSchema;
 
-import dataRepresentations.xnatSchema.InvestigatorList;
-import exceptions.XMLException;
-import java.io.IOException;
-import xmlUtilities.DelayedPrettyPrinterXmlWriter;
+import dataRepresentations.xnatSchema.XnatSchemaElementRepresentation;
+import dataRepresentations.xnatSchema.AdditionalField;
+import java.util.List;
 
-public class XnatInvestigatorDataMdComplexType extends MdComplexType
+public class Statistics extends XnatSchemaElementRepresentation
 {
-	protected InvestigatorList.Investigator investigator;
-	protected String id;
+	public Double  mean;
+	public Double  snr;
+	public Double  min;
+	public Double  max;
+	public Double  stdev;
+	public Integer nVoxels;
+	public List<AdditionalField> additionalStatisticsList;
+	public List<AdditionalField> addFieldList;
 	
-	public void setInvestigator(InvestigatorList.Investigator inv)
+	public Statistics() {}
+	
+	public Statistics( Double mean, Double snr, Double min, Double max,
+					           Double stdev, Integer nVoxels,
+								  List<AdditionalField> addStatList,
+								  List<AdditionalField> addFieldList)
 	{
-		this.investigator = inv;
-	}
-
-	
-	@Override
-	public void insertXml(DelayedPrettyPrinterXmlWriter dppXML)
-			      throws IOException, XMLException
-	{		
-		dppXML.delayedWriteAttribute("ID", id);
-		
-		dppXML.delayedWriteEntity("title")
-					.writeText(investigator.title)
-				.delayedEndEntity()
-
-				.delayedWriteEntity("firstname")
-					.writeText(investigator.firstName)
-				.delayedEndEntity()
-
-				.delayedWriteEntity("lastname")
-					.writeText(investigator.lastName)
-				.delayedEndEntity()
-
-				.delayedWriteEntity("institution")
-					.writeText(investigator.institution)
-				.delayedEndEntity()
-
-				.delayedWriteEntity("department")
-					.writeText(investigator.department)
-				.delayedEndEntity()
-
-				.delayedWriteEntity("email")
-					.writeText(investigator.email)
-				.delayedEndEntity()
-
-				.delayedWriteEntity("phone")
-					.writeText(investigator.phoneNumber)
-				.delayedEndEntity();	
-	}
-	
-	
-	public void setId(String id)
-	{
-		this.id = id;
+		this.mean                     = mean;
+		this.snr                      = snr;
+		this.min                      = min;
+		this.max                      = max;
+		this.stdev                    = stdev;
+		this.nVoxels                  = nVoxels;
+		this.additionalStatisticsList = addStatList;
+		this.addFieldList             = addFieldList;
 	}
 }

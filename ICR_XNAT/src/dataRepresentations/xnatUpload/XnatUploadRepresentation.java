@@ -1,5 +1,5 @@
 /********************************************************************
-* Copyright (c) 2016, Institute of Cancer Research
+* Copyright (c) 2012, Institute of Cancer Research
 * All rights reserved.
 * 
 * Redistribution and use in source and binary forms, with or without
@@ -33,51 +33,40 @@
 * OF THE POSSIBILITY OF SUCH DAMAGE.
 *********************************************************************/
 
-/********************************************************************
+/*********************************************************************
 * @author Simon J Doran
-* Java class: IcrRtRelatedRoiMDComplexType.java
-* First created on Jan 21, 2016 at 4:54:04 PM
+* Java class: DataRepresentation.java
+* First created on Sep 6, 2012 at 11:22:28 PM
 * 
-* Creation of metadata XML for icr:rtRelatedRoi
-* 
-* Eventually, the plan for this whole package is to replace the
-* explicit writing of the XML files with a higher level interface,
-* e.g., JAXB. However, this is for a later refactoring.
+* Provide the common features that will be used by all classes that
+* represent data objects to be uploaded to XNAT.
 *********************************************************************/
 
-package xnatMetadataCreators;
+package dataRepresentations.xnatUpload;
 
-import dataRepresentations.dicom.RtRelatedRoi;
-import exceptions.XMLException;
-import java.io.IOException;
-import xmlUtilities.DelayedPrettyPrinterXmlWriter;
+import java.util.ArrayList;
+import java.util.SortedMap;
+import xnatDAO.XNATProfile;
 
-public class IcrRtRelatedRoiMdComplexType extends MdComplexType
+public abstract class XnatUploadRepresentation
 {
-	protected RtRelatedRoi rrr;
+   // Question: Does it make sense to place XNAT-specific information in an
+   // object that is describing a concept external to XNAT?
+   //
+   // Answer: In many cases, we want to be able to render the object, using
+   // base images that are stored in the XNAT database (e.g., overlaying them
+   // with a region of interest. So we have to be able to extract 
+   // these base images from the database.
+
+   public String                       XNATProjectID;
+   public String                       XNATExperimentID;
+   public String                       XNATRefExperimentID;
+   public String                       XNATSubjectID;
+   public String                       XNATSubjectLabel;
+   public ArrayList<String>            XNATScanID;
+   public SortedMap<String, String>    fileSOPMap;
+   public SortedMap<String, String>    fileScanMap;
+   public XNATProfile                  xnprf;
 	
-	public IcrRtRelatedRoiMdComplexType(RtRelatedRoi rrr)
-	{
-		this.rrr = rrr;
-	}
-	
-	
-	public IcrRtRelatedRoiMdComplexType()
-	{
-		rrr = new RtRelatedRoi();
-	}	
-	
-	
-	public void setAdditionalField(RtRelatedRoi rrr)
-	{
-		this.rrr = rrr;
-	}
-	
-	@Override
-	public void insertXml(DelayedPrettyPrinterXmlWriter dppXML)
-			      throws IOException, XMLException
-	{		
-		dppXML.delayedWriteEntityWithText("referencedRoiNumber", rrr.referencedRoiNumber)
-				.delayedWriteEntityWithText("rtRoiRelationship",   rrr.rtRoiRelationship);
-	}
+	public XnatUploadRepresentation() {}
 }

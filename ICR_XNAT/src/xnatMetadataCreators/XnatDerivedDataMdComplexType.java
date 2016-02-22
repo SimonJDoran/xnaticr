@@ -49,7 +49,7 @@
 
 package xnatMetadataCreators;
 
-import dataRepresentations.Provenance;
+import dataRepresentations.xnatSchema.Provenance;
 import exceptions.XMLException;
 import java.io.IOException;
 import xmlUtilities.DelayedPrettyPrinterXmlWriter;

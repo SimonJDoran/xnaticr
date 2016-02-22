@@ -33,51 +33,47 @@
 * OF THE POSSIBILITY OF SUCH DAMAGE.
 *********************************************************************/
 
-/********************************************************************
+/*********************************************************************
 * @author Simon J Doran
-* Java class: IcrRtRelatedRoiMDComplexType.java
-* First created on Jan 21, 2016 at 4:54:04 PM
+* Java class: Scan.java
+* First created on Jan 20, 2016 at 2:37:31 PM
 * 
-* Creation of metadata XML for icr:rtRelatedRoi
-* 
-* Eventually, the plan for this whole package is to replace the
-* explicit writing of the XML files with a higher level interface,
-* e.g., JAXB. However, this is for a later refactoring.
+* Data structure parallelling the scan element of
+* xnat:qcAssessmentData
 *********************************************************************/
 
-package xnatMetadataCreators;
 
-import dataRepresentations.dicom.RtRelatedRoi;
-import exceptions.XMLException;
-import java.io.IOException;
-import xmlUtilities.DelayedPrettyPrinterXmlWriter;
+package dataRepresentations.xnatSchema;
 
-public class IcrRtRelatedRoiMdComplexType extends MdComplexType
+import java.util.ArrayList;
+import java.util.List;
+import xnatMetadataCreators.MdComplexType;
+
+public class Scan extends XnatSchemaElementRepresentation
 {
-	protected RtRelatedRoi rrr;
-	
-	public IcrRtRelatedRoiMdComplexType(RtRelatedRoi rrr)
+	public class Slice
 	{
-		this.rrr = rrr;
+		String        number;
+		MdComplexType sliceStatistics;
+	}
+	
+	public String        id;
+	public List<Slice>   sliceList;
+	public MdComplexType scanStatistics;
+	
+	public Scan()
+	{
+		sliceList = new ArrayList<>();
+	}
+	
+	public void setId(String id)
+	{
+		this.id = id;
 	}
 	
 	
-	public IcrRtRelatedRoiMdComplexType()
+	public void setScanStatistics(MdComplexType mdct)
 	{
-		rrr = new RtRelatedRoi();
-	}	
-	
-	
-	public void setAdditionalField(RtRelatedRoi rrr)
-	{
-		this.rrr = rrr;
-	}
-	
-	@Override
-	public void insertXml(DelayedPrettyPrinterXmlWriter dppXML)
-			      throws IOException, XMLException
-	{		
-		dppXML.delayedWriteEntityWithText("referencedRoiNumber", rrr.referencedRoiNumber)
-				.delayedWriteEntityWithText("rtRoiRelationship",   rrr.rtRoiRelationship);
+		scanStatistics = mdct;
 	}
 }

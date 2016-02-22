@@ -47,7 +47,7 @@
 
 package xnatMetadataCreators;
 
-import dataRepresentations.AdditionalField;
+import dataRepresentations.xnatSchema.AdditionalField;
 import exceptions.XMLException;
 import java.io.IOException;
 import xmlUtilities.DelayedPrettyPrinterXmlWriter;

@@ -35,49 +35,48 @@
 
 /********************************************************************
 * @author Simon J Doran
-* Java class: IcrRtRelatedRoiMDComplexType.java
-* First created on Jan 21, 2016 at 4:54:04 PM
+* Java class: RtReferencedSeries.java
+* First created on Jan 21, 2016 at 00:16:00 AM
 * 
-* Creation of metadata XML for icr:rtRelatedRoi
-* 
-* Eventually, the plan for this whole package is to replace the
-* explicit writing of the XML files with a higher level interface,
-* e.g., JAXB. However, this is for a later refactoring.
+* Data structure parallelling the icr:frameOfReferenceRelationshipData
+* element and used in conjunction with
+* IcrFrameOfReferenceRelationshipDataMDComplexType.
 *********************************************************************/
 
-package xnatMetadataCreators;
+package dataRepresentations.dicom;
 
-import dataRepresentations.dicom.RtRelatedRoi;
-import exceptions.XMLException;
-import java.io.IOException;
-import xmlUtilities.DelayedPrettyPrinterXmlWriter;
+import dataRepresentations.dicom.DicomEntityRepresentation;
+import org.dcm4che2.data.DicomObject;
+import org.dcm4che2.data.Tag;
+import org.dcm4che2.data.VR;
 
-public class IcrRtRelatedRoiMdComplexType extends MdComplexType
+public class FrameOfReferenceRelationship extends DicomEntityRepresentation
 {
-	protected RtRelatedRoi rrr;
+	public String relatedFrameOfReferenceUid;
+	public String frameOfReferenceTransformationMatrix;
+	public String frameOfReferenceTransformationComment;
 	
-	public IcrRtRelatedRoiMdComplexType(RtRelatedRoi rrr)
+	
+	public FrameOfReferenceRelationship(String uid, String matrix, String comment)
 	{
-		this.rrr = rrr;
+		relatedFrameOfReferenceUid            = uid;
+		frameOfReferenceTransformationMatrix  = matrix;
+		frameOfReferenceTransformationComment = comment;
 	}
 	
 	
-	public IcrRtRelatedRoiMdComplexType()
+	public FrameOfReferenceRelationship(DicomObject frrDo)
 	{
-		rrr = new RtRelatedRoi();
-	}	
-	
-	
-	public void setAdditionalField(RtRelatedRoi rrr)
-	{
-		this.rrr = rrr;
+		relatedFrameOfReferenceUid            = readString(frrDo, Tag.RelatedFrameOfReferenceUID, 1);
+		frameOfReferenceTransformationMatrix  = readString(frrDo, Tag.FrameOfReferenceTransformationMatrix,  1);
+		frameOfReferenceTransformationComment = readString(frrDo, Tag.FrameOfReferenceTransformationComment, 3);		
 	}
 	
-	@Override
-	public void insertXml(DelayedPrettyPrinterXmlWriter dppXML)
-			      throws IOException, XMLException
-	{		
-		dppXML.delayedWriteEntityWithText("referencedRoiNumber", rrr.referencedRoiNumber)
-				.delayedWriteEntityWithText("rtRoiRelationship",   rrr.rtRoiRelationship);
+	
+	public void writeToDicom(DicomObject frrDo)
+	{
+		writeString(frrDo, Tag.RelatedFrameOfReferenceUID,            VR.UI, 1, relatedFrameOfReferenceUid);
+		writeString(frrDo, Tag.FrameOfReferenceTransformationMatrix,  VR.DS, 1, frameOfReferenceTransformationMatrix);
+		writeString(frrDo, Tag.FrameOfReferenceTransformationComment, VR.LO, 3, frameOfReferenceTransformationComment);
 	}
-}
+}  

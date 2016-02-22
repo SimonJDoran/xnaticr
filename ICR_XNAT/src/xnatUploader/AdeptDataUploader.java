@@ -45,7 +45,7 @@
 package xnatUploader;
 
 import com.generationjava.io.xml.SimpleXmlWriter;
-import dataRepresentations.ADEPTOutput;
+import dataRepresentations.xnatUpload.ADEPTOutput;
 import dataRepresentations.ContourRenderer;
 import java.awt.image.BufferedImage;
 import java.io.File;

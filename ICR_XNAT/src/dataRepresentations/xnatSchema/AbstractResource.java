@@ -35,49 +35,59 @@
 
 /********************************************************************
 * @author Simon J Doran
-* Java class: IcrRtRelatedRoiMDComplexType.java
-* First created on Jan 21, 2016 at 4:54:04 PM
+* Java class: AbstractResource.java
+* First created on Jan 20, 2016 at 10:24:37 AM
 * 
-* Creation of metadata XML for icr:rtRelatedRoi
+* Representation an XNAT AbstractResource
 * 
-* Eventually, the plan for this whole package is to replace the
-* explicit writing of the XML files with a higher level interface,
-* e.g., JAXB. However, this is for a later refactoring.
 *********************************************************************/
 
-package xnatMetadataCreators;
 
-import dataRepresentations.dicom.RtRelatedRoi;
-import exceptions.XMLException;
-import java.io.IOException;
-import xmlUtilities.DelayedPrettyPrinterXmlWriter;
+package dataRepresentations.xnatSchema;
 
-public class IcrRtRelatedRoiMdComplexType extends MdComplexType
+import java.util.List;
+
+public class AbstractResource extends XnatSchemaElementRepresentation
 {
-	protected RtRelatedRoi rrr;
-	
-	public IcrRtRelatedRoiMdComplexType(RtRelatedRoi rrr)
+	public final class Tag
 	{
-		this.rrr = rrr;
+		public String name;
+		public String value;
+		
+	   public Tag(String name, String value)
+		{
+			this.name = name;
+			this.value = value;
+		}
+		
+		public void setName(String s)
+		{
+			name = s;
+		}
+		
+		public void setValue(String s)
+		{
+			value = s;
+		}
 	}
 	
-	
-	public IcrRtRelatedRoiMdComplexType()
+	public String    label;
+	public Integer   fileCount;
+	public Long      fileSize;
+	public String    note;
+	public List<Tag> tags;
+
+	// Give users the option to use either a single-line constructor (with
+	// possible nulls). Given that there is no "implementation" as such -
+	// these are just variables - there seems no reason to invoke setter
+	// methods and I will just expose the variables publicly.
+	public AbstractResource(String label, Integer fileCount, Long fileSize,
+			                  String note, List<Tag> tags)
 	{
-		rrr = new RtRelatedRoi();
+		this.label     = label;
+		this.fileCount = fileCount;
+		this.fileSize  = fileSize;
+		this.note      = note;
+		this.tags      = tags;
 	}	
-	
-	
-	public void setAdditionalField(RtRelatedRoi rrr)
-	{
-		this.rrr = rrr;
-	}
-	
-	@Override
-	public void insertXml(DelayedPrettyPrinterXmlWriter dppXML)
-			      throws IOException, XMLException
-	{		
-		dppXML.delayedWriteEntityWithText("referencedRoiNumber", rrr.referencedRoiNumber)
-				.delayedWriteEntityWithText("rtRoiRelationship",   rrr.rtRoiRelationship);
-	}
 }

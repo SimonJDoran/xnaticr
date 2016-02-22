@@ -49,11 +49,11 @@
 
 package xnatMetadataCreators;
 
-import dataRepresentations.AbstractResource;
+import dataRepresentations.xnatSchema.AbstractResource;
 import exceptions.XMLException;
 import java.io.IOException;
 import xmlUtilities.DelayedPrettyPrinterXmlWriter;
-import dataRepresentations.AbstractResource.Tag;
+import dataRepresentations.xnatSchema.AbstractResource.Tag;
 
 public class XnatAbstractResourceMdComplexType extends MdComplexType
 {

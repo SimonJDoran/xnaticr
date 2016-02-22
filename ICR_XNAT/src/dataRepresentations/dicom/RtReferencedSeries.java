@@ -35,73 +35,45 @@
 
 /********************************************************************
 * @author Simon J Doran
-* Java class: XnatStatisticsDataMDComplexType.java
-* First created on Jan 21, 2016 at 23:59:00 PM
+* Java class: RtReferencedSeries.java
+* First created on Jan 21, 2016 at 00:16:00 AM
 * 
-* Creation of metadata XML for xnat:statisticsData
-* 
-* Eventually, the plan for this whole package is to replace the
-* explicit writing of the XML files with a higher level interface,
-* e.g., JAXB. However, this is for a later refactoring. In addition
-* note that, at present, only a subset of xnat:experimentData is
-* implemented.
+* Data structure parallelling the icr:rtReferencedSeriesData element
+* and used in conjunction with IcrRtReferencedSeriesDataMDComplexType.
 *********************************************************************/
+package dataRepresentations.dicom;
 
-package xnatMetadataCreators;
+import dataRepresentations.dicom.ContourImage;
+import dataRepresentations.dicom.DicomEntityRepresentation;
+import java.util.List;
+import org.dcm4che2.data.DicomObject;
+import org.dcm4che2.data.Tag;
+import org.dcm4che2.data.VR;
 
-import dataRepresentations.xnatSchema.Statistics;
-import dataRepresentations.xnatSchema.AdditionalField;
-import exceptions.XMLException;
-import java.io.IOException;
-import xmlUtilities.DelayedPrettyPrinterXmlWriter;
-
-public class XnatStatisticsDataMdComplexType extends MdComplexType
+public class RtReferencedSeries extends DicomEntityRepresentation
 {
-	protected Statistics xns;
+	public String             seriesInstanceUid;
+	public List<ContourImage> contourImageList;
 	
-	public XnatStatisticsDataMdComplexType(Statistics xns)
+	public RtReferencedSeries() {}
+	
+	public RtReferencedSeries(String series, List<ContourImage> ciList)
 	{
-		this.xns = xns;
+		seriesInstanceUid = series;
+		contourImageList  = ciList;
 	}
 	
-	
-	public XnatStatisticsDataMdComplexType() {}
+	public RtReferencedSeries(DicomObject rrseDo)
+	{
+		seriesInstanceUid = readString(rrseDo, Tag.SeriesInstanceUID, 1);
+		contourImageList  = readSequence(ContourImage.class, rrseDo, Tag.ContourImageSequence, 1);
+	}
 	
 	
 	@Override
-	public void insertXml(DelayedPrettyPrinterXmlWriter dppXML)
-			 throws IOException, XMLException
+	public void writeToDicom(DicomObject rrseDo)
 	{
-		dppXML.delayedWriteEntityWithText("mean",          xns.mean)
-			   .delayedWriteEntityWithText("snr",           xns.snr)
-			   .delayedWriteEntityWithText("min",           xns.min)
-			   .delayedWriteEntityWithText("max",           xns.max)
-			   .delayedWriteEntityWithText("stdev",         xns.stdev)
-			   .delayedWriteEntityWithText("no_of_voxels",  xns.nVoxels);
-		
-		for (AdditionalField stat : xns.additionalStatisticsList)
-		{
-			dppXML.delayedWriteEntity("additionalStatistics")
-				      .delayedWriteAttribute("name", stat.name)
-				      .delayedWriteText(stat.value)
-				   .delayedEndEntity();
-		}
-		
-		for (AdditionalField af : xns.addFieldList)
-		{
-			dppXML.delayedWriteEntity("addField")
-				      .delayedWriteAttribute("name", af.name)
-				      .delayedWriteText(af.value)
-				   .delayedEndEntity();
-		}
-	}
-
-
-	public void setXnatStatistics(Statistics xns)
-	{
-		this.xns = xns;
-	}
-	
-	
-	
+		writeString(rrseDo,   Tag.SeriesInstanceUID,    VR.UI, 1, seriesInstanceUid);
+		writeSequence(rrseDo, Tag.ContourImageSequence, VR.SQ, 1, contourImageList);
+	}	
 }

@@ -44,7 +44,7 @@
 
 package xnatUploader;
 
-import dataRepresentations.InvestigatorList;
+import dataRepresentations.xnatSchema.InvestigatorList;
 import com.generationjava.io.xml.SimpleXmlWriter;
 import exceptions.XMLException;
 import java.io.*;

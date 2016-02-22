@@ -35,73 +35,55 @@
 
 /********************************************************************
 * @author Simon J Doran
-* Java class: XnatStatisticsDataMDComplexType.java
-* First created on Jan 21, 2016 at 23:59:00 PM
+* Java class: ContourImage.java
+* First created on Jan 20, 2016 at 11:40:00 PM
 * 
-* Creation of metadata XML for xnat:statisticsData
-* 
-* Eventually, the plan for this whole package is to replace the
-* explicit writing of the XML files with a higher level interface,
-* e.g., JAXB. However, this is for a later refactoring. In addition
-* note that, at present, only a subset of xnat:experimentData is
-* implemented.
+* Data structure parallelling the icr:contourImageData element and
+* used in conjunction with IcrContourImageDataMDComplexType.
 *********************************************************************/
+package dataRepresentations.dicom;
 
-package xnatMetadataCreators;
+import dataRepresentations.dicom.DicomEntityRepresentation;
+import java.util.ArrayList;
+import org.dcm4che2.data.DicomObject;
+import org.dcm4che2.data.Tag;
+import org.dcm4che2.data.VR;
 
-import dataRepresentations.xnatSchema.Statistics;
-import dataRepresentations.xnatSchema.AdditionalField;
-import exceptions.XMLException;
-import java.io.IOException;
-import xmlUtilities.DelayedPrettyPrinterXmlWriter;
-
-public class XnatStatisticsDataMdComplexType extends MdComplexType
+public class ContourImage extends DicomEntityRepresentation
 {
-	protected Statistics xns;
+	public String referencedSopInstanceUid;
+	public String referencedSopClassUid;
+	public int[]  referencedFrameNumber;
+	public int    referencedSegmentNumber;
 	
-	public XnatStatisticsDataMdComplexType(Statistics xns)
+	
+	public ContourImage(DicomObject ciDo)
 	{
-		this.xns = xns;
-	}
-	
-	
-	public XnatStatisticsDataMdComplexType() {}
-	
-	
-	@Override
-	public void insertXml(DelayedPrettyPrinterXmlWriter dppXML)
-			 throws IOException, XMLException
-	{
-		dppXML.delayedWriteEntityWithText("mean",          xns.mean)
-			   .delayedWriteEntityWithText("snr",           xns.snr)
-			   .delayedWriteEntityWithText("min",           xns.min)
-			   .delayedWriteEntityWithText("max",           xns.max)
-			   .delayedWriteEntityWithText("stdev",         xns.stdev)
-			   .delayedWriteEntityWithText("no_of_voxels",  xns.nVoxels);
+		referencedSopInstanceUid = readString(ciDo, Tag.ReferencedSOPInstanceUID, 1);
+		referencedSopClassUid    = readString(ciDo, Tag.ReferencedSOPClassUID,    1);
 		
-		for (AdditionalField stat : xns.additionalStatisticsList)
-		{
-			dppXML.delayedWriteEntity("additionalStatistics")
-				      .delayedWriteAttribute("name", stat.name)
-				      .delayedWriteText(stat.value)
-				   .delayedEndEntity();
-		}
-		
-		for (AdditionalField af : xns.addFieldList)
-		{
-			dppXML.delayedWriteEntity("addField")
-				      .delayedWriteAttribute("name", af.name)
-				      .delayedWriteText(af.value)
-				   .delayedEndEntity();
-		}
+		// Frame number and segment number areclass 1C tags. Ideally, I would check
+		// whether the images being referred to are multiframe before reading
+		// these, but at this point in the process, I don't have easy access
+		// easy access to the relevant DICOM file to check whether it is multiframe.
+		// For the moment, just try to read, but swallow the error if nothing
+		// comes back.
+		ArrayList<String> tempErrors = errors;
+		referencedFrameNumber   = readInts(ciDo, Tag.ReferencedFrameNumber, "1C");
+		referencedSegmentNumber = readInt(ciDo, Tag.ReferencedFrameNumber,  "1C");
+		errors = tempErrors;
 	}
-
-
-	public void setXnatStatistics(Statistics xns)
+	
+	
+	public void writeToDicom(DicomObject cdDo)
 	{
-		this.xns = xns;
+		writeString(cdDo, Tag.ReferencedSOPInstanceUID, VR.UI, 1, referencedSopInstanceUid);
+		writeString(cdDo, Tag.ReferencedSOPClassUID,    VR.UI, 1, referencedSopClassUid);
+		
+		if (referencedFrameNumber != null)
+			writeInts(cdDo, Tag.ReferencedFrameNumber, VR.IS, "1C", referencedFrameNumber);
+		
+		if (referencedSegmentNumber != DUMMY_INT)
+			writeInt(cdDo, Tag.ReferencedSegmentNumber, VR.IS, "1C", referencedSegmentNumber);
 	}
-	
-	
-	
 }

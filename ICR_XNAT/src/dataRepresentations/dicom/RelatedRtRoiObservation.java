@@ -35,49 +35,38 @@
 
 /********************************************************************
 * @author Simon J Doran
-* Java class: IcrRtRelatedRoiMDComplexType.java
-* First created on Jan 21, 2016 at 4:54:04 PM
+* Java class: RelatedRtRoiObservation.java
+* First created on Feb 3, 2016 at 3:24:37 PM
 * 
-* Creation of metadata XML for icr:rtRelatedRoi
-* 
-* Eventually, the plan for this whole package is to replace the
-* explicit writing of the XML files with a higher level interface,
-* e.g., JAXB. However, this is for a later refactoring.
+* Data structure parallelling relating to the DICOM tag (3006,00A0)
+* RT ROI Observations Sequence.
 *********************************************************************/
 
-package xnatMetadataCreators;
+package dataRepresentations.dicom;
 
-import dataRepresentations.dicom.RtRelatedRoi;
-import exceptions.XMLException;
-import java.io.IOException;
-import xmlUtilities.DelayedPrettyPrinterXmlWriter;
+import dataRepresentations.dicom.DicomEntityRepresentation;
+import org.dcm4che2.data.DicomObject;
+import org.dcm4che2.data.Tag;
+import org.dcm4che2.data.VR;
 
-public class IcrRtRelatedRoiMdComplexType extends MdComplexType
+public class RelatedRtRoiObservation extends DicomEntityRepresentation
 {
-	protected RtRelatedRoi rrr;
+	public int observationNumber;
 	
-	public IcrRtRelatedRoiMdComplexType(RtRelatedRoi rrr)
+	public RelatedRtRoiObservation(int n)
 	{
-		this.rrr = rrr;
+		observationNumber = n;
 	}
 	
-	
-	public IcrRtRelatedRoiMdComplexType()
+	public RelatedRtRoiObservation(DicomObject rrroDo)
 	{
-		rrr = new RtRelatedRoi();
-	}	
-	
-	
-	public void setAdditionalField(RtRelatedRoi rrr)
-	{
-		this.rrr = rrr;
+		observationNumber = readInt(rrroDo, Tag.ObservationNumber, 1);
 	}
+	
 	
 	@Override
-	public void insertXml(DelayedPrettyPrinterXmlWriter dppXML)
-			      throws IOException, XMLException
-	{		
-		dppXML.delayedWriteEntityWithText("referencedRoiNumber", rrr.referencedRoiNumber)
-				.delayedWriteEntityWithText("rtRoiRelationship",   rrr.rtRoiRelationship);
+	public void writeToDicom(DicomObject rrroDo)
+	{
+		writeInt(rrroDo, Tag.ObservationNumber, VR.IS, 1, observationNumber);
 	}
 }

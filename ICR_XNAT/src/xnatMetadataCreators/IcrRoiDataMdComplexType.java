@@ -49,8 +49,8 @@
 
 package xnatMetadataCreators;
 
-import dataRepresentations.RtRelatedRoi;
-import dataRepresentations.RoiPhysicalProperty;
+import dataRepresentations.dicom.RtRelatedRoi;
+import dataRepresentations.dicom.RoiPhysicalProperty;
 import exceptions.XMLException;
 import java.io.IOException;
 import java.util.List;

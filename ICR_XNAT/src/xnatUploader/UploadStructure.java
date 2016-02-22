@@ -48,7 +48,7 @@
 
 package xnatUploader;
 
-import dataRepresentations.InvestigatorList;
+import dataRepresentations.xnatSchema.InvestigatorList;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Vector;

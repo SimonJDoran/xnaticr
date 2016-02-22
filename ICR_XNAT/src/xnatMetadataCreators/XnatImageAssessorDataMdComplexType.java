@@ -49,13 +49,13 @@
 
 package xnatMetadataCreators;
 
-import dataRepresentations.AdditionalField;
-import dataRepresentations.AbstractResource;
+import dataRepresentations.xnatSchema.AdditionalField;
+import dataRepresentations.xnatSchema.AbstractResource;
 import exceptions.XMLException;
 import java.io.IOException;
 import java.util.List;
 import xmlUtilities.DelayedPrettyPrinterXmlWriter;
-import dataRepresentations.AbstractResource.Tag;
+import dataRepresentations.xnatSchema.AbstractResource.Tag;
 
 public class XnatImageAssessorDataMdComplexType extends XnatDerivedDataMdComplexType
 {

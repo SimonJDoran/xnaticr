@@ -33,51 +33,37 @@
 * OF THE POSSIBILITY OF SUCH DAMAGE.
 *********************************************************************/
 
-/********************************************************************
+/*********************************************************************
 * @author Simon J Doran
-* Java class: IcrRtRelatedRoiMDComplexType.java
-* First created on Jan 21, 2016 at 4:54:04 PM
+* Java class: RoiDisplay.java
+* First created on Jan 20, 2016 at 4:20:18 PM
 * 
-* Creation of metadata XML for icr:rtRelatedRoi
-* 
-* Eventually, the plan for this whole package is to replace the
-* explicit writing of the XML files with a higher level interface,
-* e.g., JAXB. However, this is for a later refactoring.
+* Data structure parallelling the icr:roiDisplay element and used in
+* conjunction with icrRoiDisplayDataMDComplexType.java
 *********************************************************************/
 
-package xnatMetadataCreators;
+package dataRepresentations.xnatSchema;
 
-import dataRepresentations.dicom.RtRelatedRoi;
-import exceptions.XMLException;
-import java.io.IOException;
-import xmlUtilities.DelayedPrettyPrinterXmlWriter;
-
-public class IcrRtRelatedRoiMdComplexType extends MdComplexType
+public class RoiDisplay extends XnatSchemaElementRepresentation
 {
-	protected RtRelatedRoi rrr;
+	public String roiId;
+	public String lineType;
+	public String lineColour;
+	public String shadingType;
+	public String shadingColour;
+	public String shadingTransparency;
 	
-	public IcrRtRelatedRoiMdComplexType(RtRelatedRoi rrr)
+	public RoiDisplay(){}
+	
+	public RoiDisplay(String roiId, String lineType, String lineColour,
+			            String shadingType, String shadingColour,
+							String shadingTransparency)
 	{
-		this.rrr = rrr;
-	}
-	
-	
-	public IcrRtRelatedRoiMdComplexType()
-	{
-		rrr = new RtRelatedRoi();
-	}	
-	
-	
-	public void setAdditionalField(RtRelatedRoi rrr)
-	{
-		this.rrr = rrr;
-	}
-	
-	@Override
-	public void insertXml(DelayedPrettyPrinterXmlWriter dppXML)
-			      throws IOException, XMLException
-	{		
-		dppXML.delayedWriteEntityWithText("referencedRoiNumber", rrr.referencedRoiNumber)
-				.delayedWriteEntityWithText("rtRoiRelationship",   rrr.rtRoiRelationship);
-	}
+		this.roiId               = roiId;
+		this.lineType            = lineType;
+		this.lineColour          = lineColour;
+		this.shadingType         = shadingType;
+		this.shadingColour       = shadingColour;
+		this.shadingTransparency = shadingTransparency;
+	}			  
 }

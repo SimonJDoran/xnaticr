@@ -55,7 +55,7 @@ package xnatUploader;
  */
 import dataRepresentations.RTStructureSetUploader;
 import dataRepresentations.ContourRenderer;
-import dataRepresentations.MRIWOutput;
+import dataRepresentations.xnatUpload.MRIWOutput;
 import exceptions.DataFormatException;
 import exceptions.XMLException;
 import exceptions.XNATException;

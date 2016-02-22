@@ -35,49 +35,44 @@
 
 /********************************************************************
 * @author Simon J Doran
-* Java class: IcrRtRelatedRoiMDComplexType.java
-* First created on Jan 21, 2016 at 4:54:04 PM
+* Java class: ElementalComposition.java
+* First created on Jan 21, 2016 at 5:04:18 PM
 * 
-* Creation of metadata XML for icr:rtRelatedRoi
-* 
-* Eventually, the plan for this whole package is to replace the
-* explicit writing of the XML files with a higher level interface,
-* e.g., JAXB. However, this is for a later refactoring.
+* Data structure parallelling the icr:elementalCompositionData
+* element and used in conjunction with
+* IcrElementalCompositionDataMDComplexType.
 *********************************************************************/
 
-package xnatMetadataCreators;
+package dataRepresentations.dicom;
 
-import dataRepresentations.dicom.RtRelatedRoi;
-import exceptions.XMLException;
-import java.io.IOException;
-import xmlUtilities.DelayedPrettyPrinterXmlWriter;
+import dataRepresentations.dicom.DicomEntityRepresentation;
+import org.dcm4che2.data.DicomObject;
+import org.dcm4che2.data.Tag;
+import org.dcm4che2.data.VR;
 
-public class IcrRtRelatedRoiMdComplexType extends MdComplexType
+public class RoiElementalComposition extends DicomEntityRepresentation
 {
-	protected RtRelatedRoi rrr;
+	public int   atomicNumber;
+	public float atomicMassFraction;
 	
-	public IcrRtRelatedRoiMdComplexType(RtRelatedRoi rrr)
+	public RoiElementalComposition(int an, float amf)
 	{
-		this.rrr = rrr;
+		atomicNumber       = an;
+		atomicMassFraction = amf;
 	}
 	
 	
-	public IcrRtRelatedRoiMdComplexType()
+	public RoiElementalComposition(DicomObject recDo)
 	{
-		rrr = new RtRelatedRoi();
-	}	
-	
-	
-	public void setAdditionalField(RtRelatedRoi rrr)
-	{
-		this.rrr = rrr;
+		atomicNumber       = readInt(recDo,   Tag.ROIElementalCompositionAtomicNumber,       1);
+		atomicMassFraction = readFloat(recDo, Tag.ROIElementalCompositionAtomicMassFraction, 1);
 	}
+	
 	
 	@Override
-	public void insertXml(DelayedPrettyPrinterXmlWriter dppXML)
-			      throws IOException, XMLException
-	{		
-		dppXML.delayedWriteEntityWithText("referencedRoiNumber", rrr.referencedRoiNumber)
-				.delayedWriteEntityWithText("rtRoiRelationship",   rrr.rtRoiRelationship);
+	public void writeToDicom(DicomObject recDo)
+	{
+		writeInt(recDo, Tag.ROIElementalCompositionAtomicNumber,         VR.US, 1, atomicNumber);
+		writeFloat(recDo, Tag.ROIElementalCompositionAtomicMassFraction, VR.FL, 1, atomicMassFraction);
 	}
 }

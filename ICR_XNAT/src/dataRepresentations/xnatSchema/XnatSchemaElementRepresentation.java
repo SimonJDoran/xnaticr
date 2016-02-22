@@ -33,74 +33,18 @@
 * OF THE POSSIBILITY OF SUCH DAMAGE.
 *********************************************************************/
 
-/********************************************************************
+/*********************************************************************
 * @author Simon J Doran
-* Java class: XnatInvestigatorDataMDComplexType.java
-* First created on Jan 19, 2016 at 8:26:00 PM
-
-* Creation of metadata XML for xnat:investigatorData
+* Java class: XnatSchemaElementRepresentation.java
+* First created on Jan 29, 2016 at 12:08:00 PM
 * 
-* Eventually, the plan for this whole package is to replace the
-* explicit writing of the XML files with a higher level interface,
-* e.g., JAXB. However, this is for a later refactoring.
+* Provide the common features that will be used by all classes that
+* represent XNAT schema objects. In fact, at present, there is no
+* additional code needed, but this class simply marks out formally
+* what the purpose is of the inheriting concrete classes.
 *********************************************************************/
+package dataRepresentations.xnatSchema;
 
-package xnatMetadataCreators;
-
-import dataRepresentations.xnatSchema.InvestigatorList;
-import exceptions.XMLException;
-import java.io.IOException;
-import xmlUtilities.DelayedPrettyPrinterXmlWriter;
-
-public class XnatInvestigatorDataMdComplexType extends MdComplexType
-{
-	protected InvestigatorList.Investigator investigator;
-	protected String id;
-	
-	public void setInvestigator(InvestigatorList.Investigator inv)
-	{
-		this.investigator = inv;
-	}
-
-	
-	@Override
-	public void insertXml(DelayedPrettyPrinterXmlWriter dppXML)
-			      throws IOException, XMLException
-	{		
-		dppXML.delayedWriteAttribute("ID", id);
-		
-		dppXML.delayedWriteEntity("title")
-					.writeText(investigator.title)
-				.delayedEndEntity()
-
-				.delayedWriteEntity("firstname")
-					.writeText(investigator.firstName)
-				.delayedEndEntity()
-
-				.delayedWriteEntity("lastname")
-					.writeText(investigator.lastName)
-				.delayedEndEntity()
-
-				.delayedWriteEntity("institution")
-					.writeText(investigator.institution)
-				.delayedEndEntity()
-
-				.delayedWriteEntity("department")
-					.writeText(investigator.department)
-				.delayedEndEntity()
-
-				.delayedWriteEntity("email")
-					.writeText(investigator.email)
-				.delayedEndEntity()
-
-				.delayedWriteEntity("phone")
-					.writeText(investigator.phoneNumber)
-				.delayedEndEntity();	
-	}
-	
-	
-	public void setId(String id)
-	{
-		this.id = id;
-	}
+public abstract class XnatSchemaElementRepresentation
+{	
 }

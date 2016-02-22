@@ -44,7 +44,7 @@
 
 package xnatUploader;
 
-import dataRepresentations.InvestigatorList;
+import dataRepresentations.xnatSchema.InvestigatorList;
 import exceptions.XNATException;
 import generalUtilities.UIDGenerator;
 import generalUtilities.Vector2D;
@@ -72,7 +72,7 @@ import xnatDAO.XNATProfile;
 import xnatRestToolkit.XNATNamespaceContext;
 import xnatRestToolkit.XNATRESTToolkit;
 import xnatRestToolkit.XNATServerConnection;
-import dataRepresentations.InvestigatorList.Investigator;
+import dataRepresentations.xnatSchema.InvestigatorList.Investigator;
 
 
 public abstract class DataUploader

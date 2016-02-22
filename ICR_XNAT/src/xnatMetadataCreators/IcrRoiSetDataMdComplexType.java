@@ -50,8 +50,8 @@
 
 package xnatMetadataCreators;
 
-import dataRepresentations.RoiDisplay;
-import dataRepresentations.ReferencedFrameOfReference;
+import dataRepresentations.xnatSchema.RoiDisplay;
+import dataRepresentations.dicom.ReferencedFrameOfReference;
 import exceptions.XMLException;
 import java.io.IOException;
 import java.util.ArrayList;

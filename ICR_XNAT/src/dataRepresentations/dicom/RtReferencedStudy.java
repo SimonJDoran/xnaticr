@@ -35,73 +35,54 @@
 
 /********************************************************************
 * @author Simon J Doran
-* Java class: XnatStatisticsDataMDComplexType.java
-* First created on Jan 21, 2016 at 23:59:00 PM
+* Java class: RtReferencedStudy.java
+* First created on Jan 21, 2016 at 00:31:00 AM
 * 
-* Creation of metadata XML for xnat:statisticsData
-* 
-* Eventually, the plan for this whole package is to replace the
-* explicit writing of the XML files with a higher level interface,
-* e.g., JAXB. However, this is for a later refactoring. In addition
-* note that, at present, only a subset of xnat:experimentData is
-* implemented.
+* Data structure parallelling the icr:rtReferencedStudyData element
+* and used in conjunction with IcrRtReferencedStudyDataMDComplexType.
 *********************************************************************/
 
-package xnatMetadataCreators;
+package dataRepresentations.dicom;
 
-import dataRepresentations.xnatSchema.Statistics;
-import dataRepresentations.xnatSchema.AdditionalField;
-import exceptions.XMLException;
-import java.io.IOException;
-import xmlUtilities.DelayedPrettyPrinterXmlWriter;
+import dataRepresentations.dicom.RtReferencedSeries;
+import dataRepresentations.dicom.DicomEntityRepresentation;
+import java.util.List;
+import org.dcm4che2.data.DicomObject;
+import java.util.ArrayList;
+import org.dcm4che2.data.DicomElement;
+import org.dcm4che2.data.Tag;
+import org.dcm4che2.data.VR;
 
-public class XnatStatisticsDataMdComplexType extends MdComplexType
+public class RtReferencedStudy extends DicomEntityRepresentation
 {
-	protected Statistics xns;
+	public String                   referencedSopClassUid;
+	public String                   referencedSopInstanceUid;
+	public List<RtReferencedSeries> rtReferencedSeriesList;
 	
-	public XnatStatisticsDataMdComplexType(Statistics xns)
+	public RtReferencedStudy() {}
+	
+	public RtReferencedStudy(String sopClass, String sopInstance,
+									 List<RtReferencedSeries> seriesList)
 	{
-		this.xns = xns;
+		referencedSopClassUid    = sopClass;
+		referencedSopInstanceUid = sopInstance; 
+		rtReferencedSeriesList   = seriesList;
 	}
 	
 	
-	public XnatStatisticsDataMdComplexType() {}
+	public RtReferencedStudy(DicomObject rrsDo)
+	{
+		referencedSopClassUid    = readString(rrsDo, Tag.ReferencedSOPClassUID,    1);
+		referencedSopInstanceUid = readString(rrsDo, Tag.ReferencedSOPInstanceUID, 1);
+	   rtReferencedSeriesList   = readSequence(RtReferencedSeries.class, rrsDo, Tag.RTReferencedSeriesSequence, 1);
+	}
 	
 	
 	@Override
-	public void insertXml(DelayedPrettyPrinterXmlWriter dppXML)
-			 throws IOException, XMLException
+	public void writeToDicom(DicomObject rrsDo)
 	{
-		dppXML.delayedWriteEntityWithText("mean",          xns.mean)
-			   .delayedWriteEntityWithText("snr",           xns.snr)
-			   .delayedWriteEntityWithText("min",           xns.min)
-			   .delayedWriteEntityWithText("max",           xns.max)
-			   .delayedWriteEntityWithText("stdev",         xns.stdev)
-			   .delayedWriteEntityWithText("no_of_voxels",  xns.nVoxels);
-		
-		for (AdditionalField stat : xns.additionalStatisticsList)
-		{
-			dppXML.delayedWriteEntity("additionalStatistics")
-				      .delayedWriteAttribute("name", stat.name)
-				      .delayedWriteText(stat.value)
-				   .delayedEndEntity();
-		}
-		
-		for (AdditionalField af : xns.addFieldList)
-		{
-			dppXML.delayedWriteEntity("addField")
-				      .delayedWriteAttribute("name", af.name)
-				      .delayedWriteText(af.value)
-				   .delayedEndEntity();
-		}
+		writeString(rrsDo,   Tag.ReferencedSOPClassUID,       VR.UI, 1, referencedSopClassUid);
+		writeString(rrsDo,   Tag.ReferencedSOPInstanceUID,    VR.UI, 1, referencedSopInstanceUid);
+		writeSequence(rrsDo, Tag.RTReferencedSeriesSequence, VR.SQ, 1, rtReferencedSeriesList);		
 	}
-
-
-	public void setXnatStatistics(Statistics xns)
-	{
-		this.xns = xns;
-	}
-	
-	
-	
 }

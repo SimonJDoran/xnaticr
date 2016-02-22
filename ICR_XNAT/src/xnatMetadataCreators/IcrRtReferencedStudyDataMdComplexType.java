@@ -47,8 +47,8 @@
 
 package xnatMetadataCreators;
 
-import dataRepresentations.RtReferencedSeries;
-import dataRepresentations.RtReferencedStudy;
+import dataRepresentations.dicom.RtReferencedSeries;
+import dataRepresentations.dicom.RtReferencedStudy;
 import exceptions.XMLException;
 import java.io.IOException;
 import java.util.List;

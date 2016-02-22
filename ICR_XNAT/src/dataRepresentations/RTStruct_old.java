@@ -45,6 +45,8 @@
 
 package dataRepresentations;
 
+import dataRepresentations.xnatUpload.XnatUploadRepresentation;
+import dataRepresentations.dicom.Contour;
 import exceptions.XNATException;
 import generalUtilities.Vector2D;
 import generalUtilities.UIDGenerator;

@@ -46,6 +46,10 @@
 
 package dataRepresentations;
 
+import dataRepresentations.xnatUpload.MRIWOutput;
+import dataRepresentations.xnatUpload.AIMOutput;
+import dataRepresentations.xnatUpload.ADEPTOutput;
+import dataRepresentations.xnatUpload.XnatUploadRepresentation;
 import exceptions.ImageUtilitiesException;
 import imageUtilities.ImageUtilities;
 import java.awt.Color;

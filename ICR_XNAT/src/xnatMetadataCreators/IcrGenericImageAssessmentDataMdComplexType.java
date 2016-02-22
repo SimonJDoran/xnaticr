@@ -52,12 +52,12 @@
 
 package xnatMetadataCreators;
 
-import dataRepresentations.Scan;
+import dataRepresentations.xnatSchema.Scan;
 import exceptions.XMLException;
 import java.io.IOException;
 import java.util.List;
 import xmlUtilities.DelayedPrettyPrinterXmlWriter;
-import dataRepresentations.Scan.Slice;
+import dataRepresentations.xnatSchema.Scan.Slice;
 
 public class IcrGenericImageAssessmentDataMdComplexType extends XnatImageAssessorDataMdComplexType
 {

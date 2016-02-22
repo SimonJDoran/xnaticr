@@ -49,8 +49,8 @@
 
 package xnatMetadataCreators;
 
-import dataRepresentations.Statistics;
-import dataRepresentations.AbstractResource;
+import dataRepresentations.xnatSchema.Statistics;
+import dataRepresentations.xnatSchema.AbstractResource;
 import exceptions.XMLException;
 import java.io.IOException;
 import xmlUtilities.DelayedPrettyPrinterXmlWriter;

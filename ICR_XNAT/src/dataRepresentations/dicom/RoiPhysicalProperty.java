@@ -33,51 +33,55 @@
 * OF THE POSSIBILITY OF SUCH DAMAGE.
 *********************************************************************/
 
-/********************************************************************
+/*********************************************************************
 * @author Simon J Doran
-* Java class: IcrRtRelatedRoiMDComplexType.java
-* First created on Jan 21, 2016 at 4:54:04 PM
+* Java class: RoiPhysicalProperty.java
+* First created on Jan 21, 2016 at 5:18:28 PM
 * 
-* Creation of metadata XML for icr:rtRelatedRoi
-* 
-* Eventually, the plan for this whole package is to replace the
-* explicit writing of the XML files with a higher level interface,
-* e.g., JAXB. However, this is for a later refactoring.
+* Data structure parallelling the icr:roiPhysicalProperty element and
+* used in conjunction with icrRoiPhysicalPropertyMDComplexType.java
 *********************************************************************/
 
-package xnatMetadataCreators;
+package dataRepresentations.dicom;
 
-import dataRepresentations.dicom.RtRelatedRoi;
-import exceptions.XMLException;
-import java.io.IOException;
-import xmlUtilities.DelayedPrettyPrinterXmlWriter;
+import dataRepresentations.dicom.DicomEntityRepresentation;
+import dataRepresentations.dicom.RoiElementalComposition;
+import java.util.List;
+import org.dcm4che2.data.DicomObject;
+import org.dcm4che2.data.Tag;
+import org.dcm4che2.data.VR;
 
-public class IcrRtRelatedRoiMdComplexType extends MdComplexType
+public class RoiPhysicalProperty extends DicomEntityRepresentation
 {
-	protected RtRelatedRoi rrr;
+	public String                        roiPhysicalProperty; // the property name
+	public String                        roiPhysicalPropertyValue;
+	public List<RoiElementalComposition> roiElementalCompositionList;
 	
-	public IcrRtRelatedRoiMdComplexType(RtRelatedRoi rrr)
+	public RoiPhysicalProperty(String name, String value, List<RoiElementalComposition> ecl)
 	{
-		this.rrr = rrr;
+		roiPhysicalProperty         = name;
+		roiPhysicalPropertyValue    = value;
+		roiElementalCompositionList = ecl;
 	}
 	
 	
-	public IcrRtRelatedRoiMdComplexType()
+	public RoiPhysicalProperty(DicomObject rppDo)
 	{
-		rrr = new RtRelatedRoi();
-	}	
-	
-	
-	public void setAdditionalField(RtRelatedRoi rrr)
-	{
-		this.rrr = rrr;
+		roiPhysicalProperty         = readString(rppDo, Tag.ROIPhysicalProperty, 1);
+		roiPhysicalPropertyValue    = readString(rppDo, Tag.ROIPhysicalPropertyValue, 1);
+		
+		if (roiPhysicalProperty.equals("ELEM_FRACTION"))
+			roiElementalCompositionList = readSequence(RoiElementalComposition.class,
+				                             rppDo, Tag.ROIElementalCompositionSequence, "1C");
 	}
 	
-	@Override
-	public void insertXml(DelayedPrettyPrinterXmlWriter dppXML)
-			      throws IOException, XMLException
-	{		
-		dppXML.delayedWriteEntityWithText("referencedRoiNumber", rrr.referencedRoiNumber)
-				.delayedWriteEntityWithText("rtRoiRelationship",   rrr.rtRoiRelationship);
+	
+	public void writeToDicom(DicomObject rppDo)
+	{
+		writeString(rppDo, Tag.ROIPhysicalProperty,      VR.CS, 1, roiPhysicalProperty);
+		writeString(rppDo, Tag.ROIPhysicalPropertyValue, VR.DS, 1, roiPhysicalPropertyValue);
+		
+		if (roiPhysicalProperty.equals("ELEM_FRACTION"))
+			writeSequence(rppDo, Tag.ROIElementalCompositionSequence, VR.SQ, "1C", roiElementalCompositionList);
 	}
 }
