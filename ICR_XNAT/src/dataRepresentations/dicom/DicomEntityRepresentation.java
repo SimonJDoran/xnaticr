@@ -45,9 +45,12 @@
 package dataRepresentations.dicom;
 
 import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.dcm4che2.data.BasicDicomObject;
 import org.dcm4che2.data.DicomElement;
 import org.dcm4che2.data.DicomObject;
@@ -153,6 +156,25 @@ public abstract class DicomEntityRepresentation
 		boolean tagPresent = dcmObj.contains(tag);
 		if (tagPresent)       tagValue   = dcmObj.getString(tag);
 		if (tagValue != null) tagValueOK = (tagValue.length() != 0);
+		
+		reportReadStatus(tag, tagPresent, tagValueOK, requirementType);
+		return tagValue;
+	}
+	
+	
+	public String[] readStrings(DicomObject dcmObj, int tag, int requirementType)
+	{
+		return readStrings(dcmObj, tag, Integer.toString(requirementType));
+	}
+	
+	
+	public String[] readStrings(DicomObject dcmObj, int tag, String requirementType)
+	{
+		String[]  tagValue   = null;
+		boolean   tagValueOK = false;
+		boolean   tagPresent = dcmObj.contains(tag);
+		if (tagPresent)       tagValue   = dcmObj.getStrings(tag);
+		if (tagValue != null) tagValueOK = (tagValue.length != 0);
 		
 		reportReadStatus(tag, tagPresent, tagValueOK, requirementType);
 		return tagValue;
@@ -328,7 +350,7 @@ public abstract class DicomEntityRepresentation
    
    
    
-    public void writeString(DicomObject dcmObj, int tag, VR vr,
+   public void writeString(DicomObject dcmObj, int tag, VR vr,
                           int requirementType, String value)
    {
       writeString(dcmObj, tag, vr, Integer.toString(requirementType), value);
@@ -343,6 +365,20 @@ public abstract class DicomEntityRepresentation
    }
    
 
+	public void writeStrings(DicomObject dcmObj, int tag, VR vr,
+                          int requirementType, String[] value)
+   {
+      writeStrings(dcmObj, tag, vr, Integer.toString(requirementType), value);
+   }
+   
+   
+   public void writeStrings(DicomObject dcmObj, int tag, VR vr,
+                        String requirementType, String[] value)
+   {
+      if (value != null) dcmObj.putStrings(tag, vr, value);
+      reportWriteStatus(tag, (value == null), requirementType);
+   }
+	
    
    public <T extends DicomEntityRepresentation> void
                            writeSequence(DicomObject dcmObj, int tag, VR vr,
@@ -435,6 +471,33 @@ public abstract class DicomEntityRepresentation
 	{
 		warnings.add("Retired tag present in input: "
 				  + Integer.toHexString(tag) + " " + (new BasicDicomObject()).nameOf(tag));
+	}
+	
+	
+	public <T extends DicomEntityRepresentation> DicomEntityRepresentation deepCopy(T src)
+	{
+		// Create the empty object.
+		Class cls = src.getClass();
+		DicomEntityRepresentation dest;
+		try
+		{
+			dest = cls.newInstance();
+		}
+		catch (InstantiationException exIE)
+		{
+			errors.add("Unable to instantiate object of type " + cls.getName()
+							+ ". Suspected error in input DICOM.");								  
+		}
+		catch (IllegalAccessException exIA)
+		{
+			throw new RuntimeException("Programming issue: " + exIA.getMessage());
+		}
+		
+		// Now fill all the fields of the object.
+		Field[] fields = cls.getDeclaredFields();
+		
+		
+		return dest;
 	}
    
 }

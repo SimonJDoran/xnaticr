@@ -57,6 +57,10 @@ public class SopCommon extends DicomEntityRepresentation
 	public String instanceCreationDate;
 	public String instanceCreationTime;
 	
+	
+	public SopCommon() {}
+	
+	
 	public SopCommon(DicomObject scDo)
 	{
 		mediaStorageSopClassUid = readString(scDo, Tag.MediaStorageSOPClassUID, 1);

@@ -59,12 +59,25 @@ import dataRepresentations.dicom.Patient;
 import dataRepresentations.dicom.ContourImage;
 import dataRepresentations.dicom.Contour;
 import dataRepresentations.dicom.DicomEntityRepresentation;
+import dataRepresentations.dicom.GeneralEquipment;
+import dataRepresentations.dicom.GeneralStudy;
+import dataRepresentations.dicom.RtSeries;
+import exceptions.DataFormatException;
+import exceptions.DataRepresentationException;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeMap;
+import org.dcm4che2.data.DicomObject;
+import org.dcm4che2.data.Tag;
+import xnatDAO.XNATProfile;
 
-public class RtStruct extends DicomEntityRepresentation implements RtStructWriter
+public class RtStruct extends DicomEntityRepresentation
 {
 	/* The aim here is to follow the DICOM model fairly closely.
-	   The modules mandatory for an RT-STRUCT file are in Table A.1-4
+	   The IOD modules mandatory for an RT-STRUCT file are in Table A.1-4
 	   of the DICOM standard and are as follows:
 	   Patient
 	   General Study
@@ -76,10 +89,14 @@ public class RtStruct extends DicomEntityRepresentation implements RtStructWrite
 	   SOP Common
 	  
 	   On the assumption that all of the information that is not in the
-	   specifically ROI-related modules can be found from the referenced
+	   specifically ROI-related IOD modules can be found from the referenced
 		images, only the modules marked * are implemented fully with the
-		optional tags. For the others, only required tags are considered
-		here.
+		optional tags. For the others, only required tags and a subset of
+	   the optional tags are considered here.
+	
+		There are other IOD modules that are not mandatory for a valid structure
+	   set. These are not implemented here to avoid the code becoming too large
+	   and unwieldy.
 	*/
 	
 	public SopCommon              sopCommon;
@@ -90,61 +107,38 @@ public class RtStruct extends DicomEntityRepresentation implements RtStructWrite
 	public StructureSet           structureSet;
 	public List<RoiContour>       roiContourList;
 	public List<RtRoiObservation> rtRoiObservationList;
+
+	
 	
 	
 	/**
     * Constructor with data from an RT-STRUCT DICOM.
-    * @param bdo a DCM4CHE Basic DICOM object that has already been initialised,
+    * @param rtsDo a DCM4CHE DICOM object that has already been initialised,
     * typically from an RT-STRUCT file, although it could have been created dynamically.
-    * @param xnprf an XNAT profile, already connected to an XNAT database, which
-    * we can use to query the databases for image dependencies. 
 	 * @throws exceptions.DataFormatException 
 	 * @throws DataRepresentationException 
     */
-	public RtStruct(DicomObject bdo, XNATProfile xnprf)
+	public RtStruct(DicomObject rtsDo)
           throws DataFormatException, DataRepresentationException
-   {
-      this.bdo         = bdo;
-      this.xnprf       = xnprf;
-		
-		studyUIDs        = new ArrayList<>();
-      seriesUIDs       = new ArrayList<>();
-      SOPInstanceUIDs  = new ArrayList<>();
-      fileSOPMap       = new TreeMap<>();
-      fileScanMap      = new TreeMap<>();
-      ambiguousSubjExp = new LinkedHashMap<>();
-		dav              = new DicomAssignVariable();
-           
+   {         
 		// Before we start, check that this really is a structure set!
-		if (!bdo.getString(Tag.Modality).equals("RTSTRUCT"))
+		if (!rtsDo.getString(Tag.Modality).equals("RTSTRUCT"))
 		{
 			throw new DataFormatException(DataFormatException.RTSTRUCT, 
 						 "Can't create an RTStruct object.\n");
 		}
 
-		structureSetUID  = dav.assignString(bdo, Tag.SOPInstanceUID, 1);
-		studyDate        = dav.assignString(bdo, Tag.StudyDate, 2);
-		studyTime        = dav.assignString(bdo, Tag.StudyTime, 2);
-		studyDescription = dav.assignString(bdo, Tag.StudyDescription, 3);
-		patientName      = dav.assignString(bdo, Tag.PatientName, 2);
+		sopCommon        = new SopCommon(rtsDo);
+		patient          = new Patient(rtsDo);
+		generalStudy     = new GeneralStudy(rtsDo);
+		rtSeries         = new RtSeries(rtsDo);
+		generalEquipment = new GeneralEquipment(rtsDo);
+		structureSet     = new StructureSet(rtsDo);
 		
-		structureSet     = new StructureSet(bdo);
-		
-		roiContourList   = dav.assignSequence(RoiContour.class, bdo,
-				                                 Tag.ROIContourSequence, 1);
-		
-		rtRoiObservationList = dav.assignSequence(RtRoiObservation.class, bdo,
-				                                 Tag.RTROIObservationsSequence, 1);
-		
-		 		
-		 
-		if (!dav.errors.isEmpty())
-		{
-			StringBuilder sb = new StringBuilder();
-			for (String er : dav.errors) sb.append(er).append("\n");
-			throw new DataRepresentationException(DataRepresentationException.RTSTRUCT,
-			                                       sb.toString());
-		}
+		roiContourList       = readSequence(RoiContour.class, rtsDo,
+				                                         Tag.ROIContourSequence, 1);
+		rtRoiObservationList = readSequence(RtRoiObservation.class, rtsDo,
+				                                  Tag.RTROIObservationsSequence, 1);
    }
 	
 
@@ -156,8 +150,8 @@ public class RtStruct extends DicomEntityRepresentation implements RtStructWrite
 	 */
 	public RtStruct(RtStruct src, Set<Integer> rois)
 	{
-		version         = src.version;
-		bdo             = src.bdo;
+		sopCommon = new SopCommon();
+		
 		structureSetUID = UIDGenerator.createNewDicomUID(UIDGenerator.XNAT_DAO,
 		                                                 UIDGenerator.RT_STRUCT,
 							  											 UIDGenerator.SOPInstanceUID);

@@ -228,7 +228,22 @@ public final class RTStruct_old extends XnatUploadRepresentation implements RtSt
    public String                       studyTime;
    public String                       studyDescription;
    public String                       patientName;
-   
+   //	public List<String>           studyUidList;
+//	public List<String>           seriesUidList;
+//	public List<String>           sopInstanceUidList;
+//	public Map<String, String>    fileSopMap;
+//	public Map<String, String>    fileScanMap;
+//	public Map<String, String>    ambiguousSubjExp;
+	
+	//      this.rtsDo         = rtsDo;
+//      this.xnprf       = xnprf;
+//		
+//		studyUidList       = new ArrayList<>();
+//      seriesUidList      = new ArrayList<>();
+//      sopInstanceUidList = new ArrayList<>();
+//      fileSopMap       = new TreeMap<>();
+//      fileScanMap      = new TreeMap<>();
+//      ambiguousSubjExp = new LinkedHashMap<>();
    
    // Question: Does it make sense to place XNAT-specific information in an
    // object that is describing a DICOM concept?
