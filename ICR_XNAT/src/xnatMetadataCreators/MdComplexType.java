@@ -52,17 +52,20 @@ package xnatMetadataCreators;
 
 import com.generationjava.io.xml.SimpleXmlWriter;
 import exceptions.XMLException;
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
+import org.w3c.dom.Document;
 import xmlUtilities.DelayedPrettyPrinterXmlWriter;
+import xmlUtilities.XMLUtilities;
 
 public abstract class MdComplexType
 {
 	protected DelayedPrettyPrinterXmlWriter dppXML;
 
 
-	public DelayedPrettyPrinterXmlWriter createXmlAsRootElement()
+	public Document createXmlAsRootElement()
 		         throws IOException, XMLException
 	{
 		if (getRootElementName().equals("None"))
@@ -70,10 +73,11 @@ public abstract class MdComplexType
 			throw new XMLException(XMLException.ROOT_ELEMENT);
 		}
 		
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		
 		dppXML = new DelayedPrettyPrinterXmlWriter(
                    new SimpleXmlWriter(
-                       new OutputStreamWriter(
-		                     new ByteArrayOutputStream())));
+                       new OutputStreamWriter(baos)));
 		
 		dppXML.setIndent("   ")
 				.writeXmlVersion()
@@ -88,7 +92,10 @@ public abstract class MdComplexType
 		dppXML.endEntity();
 		dppXML.close();
 		
-		return dppXML;
+		Document metaDoc = null;
+      ByteArrayInputStream bis = new ByteArrayInputStream(baos.toByteArray());     
+      
+		return XMLUtilities.getDOMDocument(bis);
 	}
 	
 	

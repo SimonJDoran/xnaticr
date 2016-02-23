@@ -44,20 +44,202 @@
 
 package xnatUploader;
 
+import dataRepresentations.ROI_old;
 import exceptions.DataFormatException;
+import exceptions.XMLException;
+import exceptions.XNATException;
+import generalUtilities.UIDGenerator;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.Set;
 import org.w3c.dom.Document;
+import xmlUtilities.DelayedPrettyPrinterXmlWriter;
 import xnatMetadataCreators.IcrRoiSetDataMdComplexType;
 
 public class RtStructDataUploader extends DataUploader
 {
-	public Document createMetadataXML() throws DataFormatException
-	{
-		IcrRoiSetDataMdComplexType roiSet = new IcrRoiSetDataMdComplexType();
+	@Override
+   public void clearFields(MetadataPanel mdsp)
+   {
+      mdsp.populateJTextField("Label",                            "", true);
+      mdsp.populateJTextField("Note",                             "", true);
+   }
+	
+	
+	/**
+    * Uploading data to XNAT is a two-stage process. First the data file
+    * is placed in the repository, then the metadata are placed in the SQL
+    * tables of the PostgreSQL database. This method attempts the repository
+    * upload.
+    * 
+    * Note that we have to override the method in the parent class DataUploader.
+    * Loading an RT-STRUCT file is special because not only do we create a
+    * set-of-ROIs element in the database (icr:roiSetData), but we also create
+    * all the individual ROIs as separate icr:roiData objects.
+    * @throws Exception
+    */
+   @Override
+   public void uploadMetadata() throws Exception
+   {
+      errorOccurred = false;
+      
+      // The icr:roiSetData and icr:roiData XML files are mutually dependent
+      // inasmuch as the ROI_old Set needs to know the IDs of the contained ROIs,
+      // whereas each ROI_old needs to know the ID's of all the ROI_old Sets that contain
+      // it. In this case, it makes sense to pre-calculate the IDs for all the
+      // ROI_old's to be uploaded.
+      // N.B. The only reason for instantiating the following uploader is to
+      // access the method ru.getRootElement() below.
+      ROI_old ru = new ROI_old(xnprf);     
+      for (int i=0; i<rts.roiList.length; i++)
+      {
+         rts.roiList[i].roiXNATID = ru.getRootElement()
+                                    + '_' + UIDGenerator.createShortUnique();
+      }
+      
+      
+      // -------------------------------------------
+      // Step 1: Upload the icr:roiSetData metadata.
+      // -------------------------------------------
+      
+      if (XNATAccessionID == null)
+         XNATAccessionID = getRootElement() + '_' + UIDGenerator.createShortUnique();
+      
+      String labelPrefix = getStringField("Label");
+      
+      Document metaDoc = createMetadataXML();
+      if (errorOccurred) throw new XNATException(XNATException.FILE_UPLOAD,
+                          "There was a problem in creating the metadata to "
+                          + "metadata to describe the uploaded DICOM-RT "
+                          + "structure set file.\n"
+                          + getErrorMessage());
+            
+      try
+      {
+         RESTCommand = getMetadataUploadCommand();
+         
+         InputStream is = xnprf.doRESTPut(RESTCommand, metaDoc);
+         int         n  = is.available();
+         byte[]      b  = new byte[n];
+         is.read(b, 0, n);
+         String XNATUploadMessage = new String(b);
+         
+         if ((xnrt.XNATRespondsWithError(XNATUploadMessage)) ||
+             (!XNATUploadMessage.equals(XNATAccessionID)))
+         {
+            errorOccurred = true;
+            errorMessage  = XNATUploadMessage;
+            throw new XNATException(XNATException.FILE_UPLOAD,
+                          "XNAT generated the message:\n" + XNATUploadMessage);
+         }
+         
+         
+         rts.roiSetID    = XNATAccessionID;
+         rts.roiSetLabel = getStringField("Label"); // TODO: This won't work for batch mode. 
+      }
+      catch (Exception ex)
+      {
+         // Here we cater both for reporting the error by throwing an exception
+         // and by setting the error variables. When performing the upload via
+         // a SwingWorker, it is not easy to retrieve an Exception.
+         errorOccurred = true;
+         errorMessage = ex.getMessage();
+         throw new XNATException(XNATException.FILE_UPLOAD, ex.getMessage());
+      }
+     
+      
+      // ----------------------------------------------------------
+      // Step 2: Upload the icr:roiData metadata and data files for
+      //         each ROI_old referred to by the structure set.
+      // ----------------------------------------------------------    
+      
+		if (errorOccurred)
+		{
+			throw new XNATException(XNATException.FILE_UPLOAD, errorMessage);
+		}
 		
-		dppXML = roiSet.createWriter();
-		roiSet.createXmlAsRootElement(dppXML);
-		dppXML.close();
-		dppXML
+      for (int i=0; i<rts.roiList.length; i++)
+      {
+         ru = new ROI_old(rts, i, labelPrefix, uploadStructure);
+         try
+         {
+            ru.XNATAccessionID = rts.roiList[i].roiXNATID;
+            ru.associatedRoiSetIDs = new ArrayList<String>();
+            ru.associatedRoiSetIDs.add(XNATAccessionID);
+            ru.uploadMetadata();
+            ru.uploadFilesToRepository();
+         }
+         catch (Exception ex)
+         {
+            errorOccurred = true;
+            errorMessage = "Problem uploading ROI data to XNAT.\n"
+                           + ex.getMessage();
+            throw new XNATException(XNATException.FILE_UPLOAD, ex.getMessage());
+         }
+      }
+         
+   }
+	
+	
+	/**
+	 * Get the list of files containing the input data used in the creation of this
+	 * XNAT assessor. 
+	 * @return ArrayList of String file names
+	 */
+	@Override
+   protected ArrayList<String> getInputCatEntries()
+	{
+		ArrayList<String>	fileURIs	= new ArrayList<>();
+		Set<String>			ks			= rts.fileSOPMap.keySet();
+      for (String s : ks) fileURIs.add(rts.fileSOPMap.get(s));
+		
+		return fileURIs;
+	}
+	
+	
+	
+	@Override
+	public void createPrimaryResourceFile()
+	{
+		primaryFile					= new XNATResourceFile();
+		primaryFile.content		= "EXTERNAL";
+		primaryFile.description	= "DICOM RT-STRUCT file created in an external application";
+		primaryFile.format		= "DICOM";
+		primaryFile.file			= uploadFile;
+		primaryFile.name			= "RT-STRUCT";
+		primaryFile.inOut			= "out";
+	}
+   
+   
+   
+   /**
+    * Create additional thumbnail files for upload with the DICOM-RT structure set.
+    */
+   @Override
+   public void createAuxiliaryResourceFiles()
+   {
+      // In the first instance, the only auxiliary file needed is the
+		// input catalogue, since the referenced ROI_old objects already contain
+		// the required thumbnails.
+      // TODO: Consider whether some composite visualisation is needed to
+      // summarise all the ROI_old's making up the ROISet object.
+		createInputCatalogueFile("DICOM", "RAW", "referenced contour image");
+   }
+	
+	@Override
+	public Document createMetadataXML()
+	{
+		IcrRoiSetDataMdComplexType roiSet  = new IcrRoiSetDataMdComplexType();
+		
+		Document metadoc = null;
+		try
+		{
+			metadoc = roiSet.createXmlAsRootElement();
+		}
+		catch (IOException | XMLException ex){}
+		
+		return metadoc;
 		
 	}
 	
@@ -121,4 +303,16 @@ public class RtStructDataUploader extends DataUploader
    {
       return "icr:roiSetData";
    }
+	
+	
+	@Override
+   public String getUploadRootCommand(String uploadItem)
+   {
+		return "/data/archive/projects/" + XNATProject
+             + "/subjects/"            + XNATSubjectID
+             + "/experiments/"         + XNATExperimentID
+             + "/assessors/"           + uploadItem;
+   }
+
+
 }

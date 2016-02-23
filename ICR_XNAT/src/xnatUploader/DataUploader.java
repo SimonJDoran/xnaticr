@@ -73,6 +73,8 @@ import xnatRestToolkit.XNATNamespaceContext;
 import xnatRestToolkit.XNATRESTToolkit;
 import xnatRestToolkit.XNATServerConnection;
 import dataRepresentations.xnatSchema.InvestigatorList.Investigator;
+import exceptions.XMLException;
+import java.io.ByteArrayInputStream;
 
 
 public abstract class DataUploader
@@ -118,8 +120,6 @@ public abstract class DataUploader
    protected boolean                       isPrepared;
    protected boolean                       errorOccurred;
    protected String                        errorMessage;
-   protected ByteArrayOutputStream         baos;
-   protected DelayedPrettyPrinterXmlWriter dppXML;
    protected File                          mostRecentSuccessfulPrep;
    protected String                        batchLabelPrefix;
    protected String                        batchNote;
@@ -882,5 +882,5 @@ public abstract class DataUploader
    {
       return uploadFile;
    }
-   
+	   
 }
