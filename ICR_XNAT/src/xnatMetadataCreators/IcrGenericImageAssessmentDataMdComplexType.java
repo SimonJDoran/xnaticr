@@ -91,8 +91,7 @@ public class IcrGenericImageAssessmentDataMdComplexType extends XnatImageAssesso
 	
 	
 	@Override
-	public void insertXml(DelayedPrettyPrinterXmlWriter dppXML)
-			      throws IOException, XMLException
+	public void insertXml() throws IOException, XMLException
 	{
 		dppXML.delayedWriteAttribute("type", type)
 				.delayedWriteEntityWithText("xnatSubjID",    xnatSubjId)
@@ -111,14 +110,16 @@ public class IcrGenericImageAssessmentDataMdComplexType extends XnatImageAssesso
 										   .delayedWriteAttribute("number", slice.number);
 										   if (slice.sliceStatistics != null)
 											{
-												slice.sliceStatistics.insertXmlAsElement("sliceStatistics", dppXML);
+												slice.sliceStatistics.dppXML = dppXML;
+												slice.sliceStatistics.insertXmlAsElement("sliceStatistics");
 											}
 								dppXML.delayedEndEntity();
 							}
 							
 					if (scan.scanStatistics != null)
 					{
-						scan.scanStatistics.insertXmlAsElement("scanStatistics", dppXML);
+						scan.scanStatistics.dppXML = dppXML;
+						scan.scanStatistics.insertXmlAsElement("scanStatistics");
 					}
 					
 					dppXML.delayedEndEntity();

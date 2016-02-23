@@ -56,9 +56,11 @@ public class IcrElementalCompositionDataMdComplexType extends MdComplexType
 {
 	protected RoiElementalComposition ec;
 	
-	public IcrElementalCompositionDataMdComplexType(RoiElementalComposition ec)
+	public IcrElementalCompositionDataMdComplexType(RoiElementalComposition ec,
+			                                          DelayedPrettyPrinterXmlWriter dppXML)
 	{
-		this.ec = ec;
+		this.ec     = ec;
+		this.dppXML = dppXML;
 	}
 	
 	public IcrElementalCompositionDataMdComplexType() {}
@@ -71,8 +73,7 @@ public class IcrElementalCompositionDataMdComplexType extends MdComplexType
 	
 	
 	@Override
-	public void insertXml(DelayedPrettyPrinterXmlWriter dppXML)
-			      throws IOException, XMLException
+	public void insertXml() throws IOException, XMLException
 	{		
 		dppXML.delayedWriteEntityWithText("atomicNumber",       ec.atomicNumber)
 				.delayedWriteEntityWithText("atomicMassFraction", ec.atomicMassFraction)

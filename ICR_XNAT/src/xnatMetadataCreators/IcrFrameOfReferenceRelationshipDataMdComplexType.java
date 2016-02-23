@@ -56,9 +56,11 @@ public class IcrFrameOfReferenceRelationshipDataMdComplexType extends MdComplexT
 {
 	protected FrameOfReferenceRelationship forr;
 	
-	public IcrFrameOfReferenceRelationshipDataMdComplexType(FrameOfReferenceRelationship forr)
+	public IcrFrameOfReferenceRelationshipDataMdComplexType(FrameOfReferenceRelationship  forr,
+			                                                  DelayedPrettyPrinterXmlWriter dppXML)
 	{
-		this.forr = forr;
+		this.forr   = forr;
+		this.dppXML = dppXML;
 	}
 	
 	public IcrFrameOfReferenceRelationshipDataMdComplexType() {}
@@ -71,8 +73,7 @@ public class IcrFrameOfReferenceRelationshipDataMdComplexType extends MdComplexT
 	
 	
 	@Override
-	public void insertXml(DelayedPrettyPrinterXmlWriter dppXML)
-			      throws IOException, XMLException
+	public void insertXml() throws IOException, XMLException
 	{		
 		dppXML.delayedWriteEntityWithText("relatedFrameOfReferenceUID",            forr.relatedFrameOfReferenceUid)
 				.delayedWriteEntityWithText("frameOfReferenceTransformationMatrix",  forr.frameOfReferenceTransformationMatrix)

@@ -57,9 +57,11 @@ public class IcrContourImageDataMdComplexType extends MdComplexType
 {
 	protected ContourImage ci;
 	
-	public IcrContourImageDataMdComplexType(ContourImage ci)
+	public IcrContourImageDataMdComplexType(ContourImage ci,
+			                                  DelayedPrettyPrinterXmlWriter dppXML)
 	{
-		this.ci = ci;
+		this.ci     = ci;
+		this.dppXML = dppXML;
 	}
 	
 	public IcrContourImageDataMdComplexType() {}
@@ -72,7 +74,7 @@ public class IcrContourImageDataMdComplexType extends MdComplexType
 	
 	
 	@Override
-	public void insertXml(DelayedPrettyPrinterXmlWriter dppXML)
+	public void insertXml()
 			 throws IOException, XMLException
 	{
 		dppXML.delayedWriteEntityWithText("referencedSOPInstanceUID", ci.referencedSopInstanceUid)

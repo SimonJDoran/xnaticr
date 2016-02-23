@@ -59,22 +59,22 @@ import xmlUtilities.DelayedPrettyPrinterXmlWriter;
 
 public abstract class MdComplexType
 {
-	public DelayedPrettyPrinterXmlWriter createWriter()
-	{
-      return new DelayedPrettyPrinterXmlWriter(
-                 new SimpleXmlWriter(
-                     new OutputStreamWriter(
-							    new ByteArrayOutputStream())));
-	}
-	
-	
-	public void createXmlAsRootElement(DelayedPrettyPrinterXmlWriter dppXML)
+	protected DelayedPrettyPrinterXmlWriter dppXML;
+
+
+	public DelayedPrettyPrinterXmlWriter createXmlAsRootElement()
 		         throws IOException, XMLException
 	{
 		if (getRootElementName().equals("None"))
 		{
 			throw new XMLException(XMLException.ROOT_ELEMENT);
 		}
+		
+		dppXML = new DelayedPrettyPrinterXmlWriter(
+                   new SimpleXmlWriter(
+                       new OutputStreamWriter(
+		                     new ByteArrayOutputStream())));
+		
 		dppXML.setIndent("   ")
 				.writeXmlVersion()
 				.writeEntity(getRootElementName())
@@ -83,24 +83,24 @@ public abstract class MdComplexType
 				.writeAttribute("xmlns:prov", "http://www.nbirn.net/prov")
 				.writeAttribute("xmlns:icr",  "http://www.icr.ac.uk/icr");
 		
-		      insertXml(dppXML);
+		      insertXml();
 		
 		dppXML.endEntity();
+		dppXML.close();
+		
+		return dppXML;
 	}
 	
 	
-	public void insertXmlAsElement(String elementName,
-                                  DelayedPrettyPrinterXmlWriter dppXML)
-		         throws IOException, XMLException
+	public void insertXmlAsElement(String elementName) throws IOException, XMLException
 	{
 		dppXML.delayedWriteEntity(elementName);
-		      insertXml(dppXML);
+		      insertXml();
 		dppXML.delayedEndEntity();
 	}
 	
 	
-	abstract void insertXml(DelayedPrettyPrinterXmlWriter dppXML)
-			        throws IOException, XMLException;
+	abstract void insertXml() throws IOException, XMLException;
 	
 	
 	

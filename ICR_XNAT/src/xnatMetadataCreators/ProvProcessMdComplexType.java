@@ -72,8 +72,7 @@ public class ProvProcessMdComplexType extends MdComplexType
 	}
 	
 	@Override
-	public void insertXml(DelayedPrettyPrinterXmlWriter dppXML)
-			 throws IOException, XMLException
+	public void insertXml() throws IOException, XMLException
 	{		
 		for (Provenance.ProvenanceEntry pe: prov.entries)
 		{

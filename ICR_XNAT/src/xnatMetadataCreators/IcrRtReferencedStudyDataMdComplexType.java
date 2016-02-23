@@ -58,9 +58,11 @@ public class IcrRtReferencedStudyDataMdComplexType extends MdComplexType
 {
 	protected RtReferencedStudy rrs;
 	
-	public IcrRtReferencedStudyDataMdComplexType(RtReferencedStudy rrs)
+	public IcrRtReferencedStudyDataMdComplexType(RtReferencedStudy rrs,
+			                                       DelayedPrettyPrinterXmlWriter dppXML)
 	{
-		this.rrs = rrs;
+		this.rrs    = rrs;
+		this.dppXML = dppXML;
 	}
 	
 	
@@ -73,15 +75,14 @@ public class IcrRtReferencedStudyDataMdComplexType extends MdComplexType
 	}
 	
 	@Override
-	public void insertXml(DelayedPrettyPrinterXmlWriter dppXML)
-			      throws IOException, XMLException
+	public void insertXml() throws IOException, XMLException
 	{		
 		dppXML.delayedWriteEntityWithText("referencedSOPInstanceUID", rrs.referencedSopInstanceUid);
 		
 		dppXML.delayedWriteEntity("rtReferencedSeriess");
 		      for (RtReferencedSeries series : rrs.rtReferencedSeriesList)
 				{
-					(new IcrRtReferencedSeriesDataMdComplexType(series)).insertXmlAsElement("rtReferencedSeries", dppXML);
+					(new IcrRtReferencedSeriesDataMdComplexType(series, dppXML)).insertXmlAsElement("rtReferencedSeries");
 				}
 		dppXML.endEntity();
 	}

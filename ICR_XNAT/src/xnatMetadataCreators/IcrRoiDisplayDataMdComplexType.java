@@ -59,9 +59,11 @@ public class IcrRoiDisplayDataMdComplexType extends MdComplexType
 {
 	protected RoiDisplay rd;
 	
-	public IcrRoiDisplayDataMdComplexType(RoiDisplay rd)
+	public IcrRoiDisplayDataMdComplexType(RoiDisplay rd,
+			                                DelayedPrettyPrinterXmlWriter dppXML)
 	{
-		this.rd = rd;
+		this.rd     = rd;
+		this.dppXML = dppXML;
 	}
 	
 	public IcrRoiDisplayDataMdComplexType() {}
@@ -74,8 +76,7 @@ public class IcrRoiDisplayDataMdComplexType extends MdComplexType
 	
 	
 	@Override
-	public void insertXml(DelayedPrettyPrinterXmlWriter dppXML)
-			      throws IOException, XMLException
+	public void insertXml() throws IOException, XMLException
 	{
 		dppXML.delayedWriteEntityWithText("roiID",               rd.roiId)
 		      .delayedWriteEntityWithText("lineType",            rd.lineType)

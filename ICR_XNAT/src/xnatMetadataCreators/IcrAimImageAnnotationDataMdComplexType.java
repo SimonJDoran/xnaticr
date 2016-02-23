@@ -67,10 +67,9 @@ public class IcrAimImageAnnotationDataMdComplexType extends IcrGenericImageAsses
 	protected List<String> aimEntitySubclassIdList;
 	
 	@Override
-	public void insertXml(DelayedPrettyPrinterXmlWriter dppXML)
-			      throws IOException, XMLException
+	public void insertXml() throws IOException, XMLException
 	{
-		super.insertXml(dppXML);
+		super.insertXml();
 		
 		dppXML.delayedWriteEntityWithText("comment",     comment)
 				.delayedWriteEntityWithText("description", description)

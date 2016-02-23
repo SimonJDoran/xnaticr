@@ -57,6 +57,12 @@ public class XnatInvestigatorDataMdComplexType extends MdComplexType
 	protected InvestigatorList.Investigator investigator;
 	protected String id;
 	
+	public XnatInvestigatorDataMdComplexType(DelayedPrettyPrinterXmlWriter dppXML)
+	{
+		this.dppXML = dppXML;
+	}
+	
+	
 	public void setInvestigator(InvestigatorList.Investigator inv)
 	{
 		this.investigator = inv;
@@ -64,7 +70,7 @@ public class XnatInvestigatorDataMdComplexType extends MdComplexType
 
 	
 	@Override
-	public void insertXml(DelayedPrettyPrinterXmlWriter dppXML)
+	public void insertXml()
 			      throws IOException, XMLException
 	{		
 		dppXML.delayedWriteAttribute("ID", id);

@@ -73,7 +73,7 @@ public class XnatExperimentDataMdComplexType extends MdComplexType
 	
 	
 	@Override
-	public void insertXml(DelayedPrettyPrinterXmlWriter dppXML)
+	public void insertXml()
 			      throws IOException, XMLException
 	{
 		dppXML.delayedWriteAttribute("id",       id)
@@ -95,9 +95,9 @@ public class XnatExperimentDataMdComplexType extends MdComplexType
 					.delayedWriteText(note)
 				.delayedEndEntity();
 		
-				XnatInvestigatorDataMdComplexType xid = new XnatInvestigatorDataMdComplexType();
+				XnatInvestigatorDataMdComplexType xid = new XnatInvestigatorDataMdComplexType(dppXML);
 				xid.setInvestigator(investigator);
-				xid.insertXmlAsElement("investigator", dppXML);
+				xid.insertXmlAsElement("investigator");
 	}
 	
 	

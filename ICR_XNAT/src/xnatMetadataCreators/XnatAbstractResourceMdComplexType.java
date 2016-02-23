@@ -63,14 +63,15 @@ public class XnatAbstractResourceMdComplexType extends MdComplexType
 	// Give the user two options for constructing the object.
 	public XnatAbstractResourceMdComplexType() {}
 	
-	public XnatAbstractResourceMdComplexType(AbstractResource ar)
+	public XnatAbstractResourceMdComplexType(AbstractResource ar,
+			                                   DelayedPrettyPrinterXmlWriter dppXML)
 	{
-		this.ar = ar;
+		this.ar     = ar;
+		this.dppXML = dppXML;
 	}
 	
 	@Override
-	public void insertXml(DelayedPrettyPrinterXmlWriter dppXML)
-			      throws IOException, XMLException
+	public void insertXml() throws IOException, XMLException
 	{
 		dppXML.delayedWriteAttribute("label",      ar.label)
 				.delayedWriteAttribute("file_count", ar.fileCount)

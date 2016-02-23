@@ -59,12 +59,11 @@ public class XnatDerivedDataMdComplexType extends XnatExperimentDataMdComplexTyp
 	Provenance prov;
 	
 	@Override
-	public void insertXml(DelayedPrettyPrinterXmlWriter dppXML)
-			 throws IOException, XMLException
+	public void insertXml() throws IOException, XMLException
 	{
-		super.insertXml(dppXML);
+		super.insertXml();
 	
 		ProvProcessMdComplexType ppct = new ProvProcessMdComplexType(prov);
-		ppct.insertXmlAsElement("provenance", dppXML);	
+		ppct.insertXmlAsElement("provenance");	
 	}
 }

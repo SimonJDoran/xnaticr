@@ -58,9 +58,11 @@ public class IcrReferencedFrameOfReferenceDataMdComplexType extends MdComplexTyp
 {
 	protected ReferencedFrameOfReference rfor;
 	
-	public IcrReferencedFrameOfReferenceDataMdComplexType(ReferencedFrameOfReference rfor)
+	public IcrReferencedFrameOfReferenceDataMdComplexType(ReferencedFrameOfReference    rfor,
+			                                                DelayedPrettyPrinterXmlWriter dppXML)
 	{
-		this.rfor = rfor;
+		this.rfor   = rfor;
+		this.dppXML = dppXML;
 	}
 	
 	public IcrReferencedFrameOfReferenceDataMdComplexType() {}
@@ -73,22 +75,21 @@ public class IcrReferencedFrameOfReferenceDataMdComplexType extends MdComplexTyp
 	
 	
 	@Override
-	public void insertXml(DelayedPrettyPrinterXmlWriter dppXML)
-			      throws IOException, XMLException
+	public void insertXml() throws IOException, XMLException
 	{		
 		dppXML.delayedWriteEntityWithText("frameOfReferenceUID", rfor.frameOfReferenceUid);
 		
 		dppXML.delayedWriteEntity("frameOfReferenceRelationships");
 		      for (FrameOfReferenceRelationship forr : rfor.frameOfReferenceRelationshipList)
 				{
-					(new IcrFrameOfReferenceRelationshipDataMdComplexType(forr)).insertXmlAsElement("frameOfReferenceRelationship", dppXML);
+					(new IcrFrameOfReferenceRelationshipDataMdComplexType(forr, dppXML)).insertXmlAsElement("frameOfReferenceRelationship");
 				}
 		dppXML.delayedEndEntity();
 		
 		dppXML.delayedWriteEntity("rtReferencedStudies");
 		      for (RtReferencedStudy rrs : rfor.rtReferencedStudyList)
 				{
-					(new IcrRtReferencedStudyDataMdComplexType(rrs)).insertXmlAsElement("rtReferencedStudy", dppXML);
+					(new IcrRtReferencedStudyDataMdComplexType(rrs, dppXML)).insertXmlAsElement("rtReferencedStudy");
 				}
 		dppXML.delayedEndEntity();
 	}

@@ -58,9 +58,11 @@ public class IcrRtRelatedRoiMdComplexType extends MdComplexType
 	
 	
 	
-	public IcrRtRelatedRoiMdComplexType(RtRelatedRoi rrr)
+	public IcrRtRelatedRoiMdComplexType(RtRelatedRoi rrr,
+			                              DelayedPrettyPrinterXmlWriter dppXML)
 	{
-		this.rrr = rrr;
+		this.rrr    = rrr;
+		this.dppXML = dppXML;
 	}
 	
 	
@@ -73,8 +75,7 @@ public class IcrRtRelatedRoiMdComplexType extends MdComplexType
 	}
 	
 	@Override
-	public void insertXml(DelayedPrettyPrinterXmlWriter dppXML)
-			      throws IOException, XMLException
+	public void insertXml() throws IOException, XMLException
 	{		
 		dppXML.delayedWriteEntityWithText("referencedRoiNumber", rrr.referencedRoiNumber)
 				.delayedWriteEntityWithText("rtRoiRelationship",   rrr.rtRoiRelationship);

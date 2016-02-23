@@ -88,10 +88,10 @@ public class IcrRoiDataMdComplexType extends IcrGenericImageAssessmentDataMdComp
 	
 			  
 	@Override
-	public void insertXml(DelayedPrettyPrinterXmlWriter dppXML)
+	public void insertXml()
 			 throws IOException, XMLException
 	{
-		super.insertXml(dppXML);
+		super.insertXml();
 		
 		dppXML.delayedWriteEntity("associatedRoiSetIDs");
 		for (String s : associatedRoiSetIdList)
@@ -126,7 +126,7 @@ public class IcrRoiDataMdComplexType extends IcrGenericImageAssessmentDataMdComp
 		dppXML.delayedWriteEntity("rtRelatedRois");
 		      for (RtRelatedRoi rrr : rrrList)
 				{
-			(new IcrRtRelatedRoiMdComplexType(rrr)).insertXmlAsElement("rtRelatedRoi", dppXML);
+			(new IcrRtRelatedRoiMdComplexType(rrr, dppXML)).insertXmlAsElement("rtRelatedRoi");
 				}
 		dppXML.delayedEndEntity();
 		
@@ -137,7 +137,7 @@ public class IcrRoiDataMdComplexType extends IcrGenericImageAssessmentDataMdComp
 		dppXML.delayedWriteEntity("roiPhysicalProperties");
 		      for (RoiPhysicalProperty rpp : rppList)
 				{
-					(new IcrRoiPhysicalPropertyMdComplexType(rpp)).insertXmlAsElement("roiPhysicalProperty", dppXML);
+					(new IcrRoiPhysicalPropertyMdComplexType(rpp, dppXML)).insertXmlAsElement("roiPhysicalProperty");
 				}
 		dppXML.delayedEndEntity();
 		

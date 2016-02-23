@@ -65,15 +65,14 @@ public class XnatImageAssessorDataMdComplexType extends XnatDerivedDataMdComplex
 	protected List<AdditionalField>  paramList; 	
 	
 	@Override
-	public void insertXml(DelayedPrettyPrinterXmlWriter dppXML)
-			      throws IOException, XMLException
+	public void insertXml() throws IOException, XMLException
 	{
-		super.insertXml(dppXML);
+		super.insertXml();
 		
 		dppXML.delayedWriteEntity("in");
 		for (AbstractResource ar : inList)
 		{
-			(new XnatAbstractResourceMdComplexType(ar)).insertXmlAsElement("file", dppXML);
+			(new XnatAbstractResourceMdComplexType(ar, dppXML)).insertXmlAsElement("file");
 		}
 		dppXML.delayedEndEntity();
 	
@@ -81,7 +80,7 @@ public class XnatImageAssessorDataMdComplexType extends XnatDerivedDataMdComplex
 		dppXML.delayedWriteEntity("out");
 		for (AbstractResource ar : outList)
 		{
-			(new XnatAbstractResourceMdComplexType(ar)).insertXmlAsElement("file", dppXML);
+			(new XnatAbstractResourceMdComplexType(ar, dppXML)).insertXmlAsElement("file");
 		}
 		dppXML.delayedEndEntity();
 		
@@ -92,7 +91,7 @@ public class XnatImageAssessorDataMdComplexType extends XnatDerivedDataMdComplex
 		dppXML.delayedWriteEntity("parameters");
 		for (AdditionalField af : paramList)
 		{
-			(new XnatAddFieldMdComplexType(af)).insertXmlAsElement("addParam", dppXML);
+			(new XnatAddFieldMdComplexType(af, dppXML)).insertXmlAsElement("addParam");
 		}
 		dppXML.delayedEndEntity();
 	}

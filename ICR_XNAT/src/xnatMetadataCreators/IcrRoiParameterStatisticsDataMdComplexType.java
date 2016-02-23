@@ -66,17 +66,16 @@ public class IcrRoiParameterStatisticsDataMdComplexType extends MdComplexType
 	protected String           parameterMapId;
 	
 	@Override
-	public void insertXml(DelayedPrettyPrinterXmlWriter dppXML)
-			 throws IOException, XMLException
+	public void insertXml() throws IOException, XMLException
 	{
 		dppXML.delayedWriteAttribute("ID",    Id)
 			   .delayedWriteAttribute("label", label)
 			   .delayedWriteEntityWithText("associatedRoiID", associatedRoiId)
 			   .delayedWriteEntityWithText("parameterName",   parameterName);
 		
-		(new XnatStatisticsDataMdComplexType(roiParameterStats)).insertXmlAsElement("roiParameterStats", dppXML);
+		(new XnatStatisticsDataMdComplexType(roiParameterStats, dppXML)).insertXmlAsElement("roiParameterStats");
 		
-		(new XnatAbstractResourceMdComplexType(roiParameterHistoFile)).insertXmlAsElement("roiParameterHistoFile", dppXML);
+		(new XnatAbstractResourceMdComplexType(roiParameterHistoFile, dppXML)).insertXmlAsElement("roiParameterHistoFile");
 		
 		dppXML.delayedWriteEntityWithText("parameterMapID", parameterMapId);
 			

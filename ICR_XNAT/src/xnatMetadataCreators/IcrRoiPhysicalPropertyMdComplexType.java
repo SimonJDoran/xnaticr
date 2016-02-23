@@ -57,9 +57,11 @@ public class IcrRoiPhysicalPropertyMdComplexType extends MdComplexType
 {
 	protected RoiPhysicalProperty rpp;
 	
-	public IcrRoiPhysicalPropertyMdComplexType(RoiPhysicalProperty rpp)
+	public IcrRoiPhysicalPropertyMdComplexType(RoiPhysicalProperty rpp,
+			                                     DelayedPrettyPrinterXmlWriter dppXML)
 	{
-		this.rpp = rpp;
+		this.rpp    = rpp;
+		this.dppXML = dppXML;
 	}
 	
 	public IcrRoiPhysicalPropertyMdComplexType() {}
@@ -72,8 +74,7 @@ public class IcrRoiPhysicalPropertyMdComplexType extends MdComplexType
 	
 	
 	@Override
-	public void insertXml(DelayedPrettyPrinterXmlWriter dppXML)
-			      throws IOException, XMLException
+	public void insertXml() throws IOException, XMLException
 	{		
 		dppXML.delayedWriteEntityWithText("propertyName",  rpp.roiPhysicalProperty)
 				.delayedWriteEntityWithText("propertyValue", rpp.roiPhysicalPropertyValue);
@@ -81,7 +82,7 @@ public class IcrRoiPhysicalPropertyMdComplexType extends MdComplexType
 		dppXML.delayedWriteEntity("elementalCompositionList");
 		      for (RoiElementalComposition ec : rpp.roiElementalCompositionList)
 				{
-					(new IcrElementalCompositionDataMdComplexType(ec)).insertXmlAsElement("elementalComposition", dppXML);
+					(new IcrElementalCompositionDataMdComplexType(ec, dppXML)).insertXmlAsElement("elementalComposition");
 				}
 		dppXML.delayedEndEntity();		  
 	}

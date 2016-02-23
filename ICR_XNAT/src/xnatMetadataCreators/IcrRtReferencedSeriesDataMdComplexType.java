@@ -57,9 +57,11 @@ public class IcrRtReferencedSeriesDataMdComplexType extends MdComplexType
 {
 	protected RtReferencedSeries rrs;
 	
-	public IcrRtReferencedSeriesDataMdComplexType(RtReferencedSeries rrs)
+	public IcrRtReferencedSeriesDataMdComplexType(RtReferencedSeries rrs,
+			                                        DelayedPrettyPrinterXmlWriter dppXML)
 	{
-		this.rrs = rrs;
+		this.rrs    = rrs;
+		this.dppXML = dppXML;
 	}
 	
 	public IcrRtReferencedSeriesDataMdComplexType() {}
@@ -72,15 +74,14 @@ public class IcrRtReferencedSeriesDataMdComplexType extends MdComplexType
 	
 	
 	@Override
-	public void insertXml(DelayedPrettyPrinterXmlWriter dppXML)
-			      throws IOException, XMLException
+	public void insertXml() throws IOException, XMLException
 	{		
 		dppXML.delayedWriteEntityWithText("seriesInstanceUID", rrs.seriesInstanceUid)
 				.delayedWriteEntity("ContourImages");
 		
 		      for (ContourImage ci : rrs.contourImageList)
 				{
-					(new IcrContourImageDataMdComplexType(ci)).insertXmlAsElement("ContourImage", dppXML);
+					(new IcrContourImageDataMdComplexType(ci, dppXML)).insertXmlAsElement("ContourImage");
 				}
 	}
 }

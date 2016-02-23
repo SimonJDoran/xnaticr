@@ -76,10 +76,9 @@ public class IcrRoiSetDataMdComplexType extends IcrGenericImageAssessmentDataMdC
 	protected List<ReferencedFrameOfReference> rforList;
 			  
 	@Override
-	public void insertXml(DelayedPrettyPrinterXmlWriter dppXML)
-			 throws IOException, XMLException
+	public void insertXml() throws IOException, XMLException
 	{
-		super.insertXml(dppXML);
+		super.insertXml();
 		
 		dppXML.delayedWriteEntity("originatingRoiSetSource")
 				   .delayedWriteAttribute("originalUID",                   originalUid)
@@ -93,7 +92,7 @@ public class IcrRoiSetDataMdComplexType extends IcrGenericImageAssessmentDataMdC
 		dppXML.delayedWriteEntity("roiDisplays");
 		         for (RoiDisplay rd : roiDisplayList)
 					{
-						(new IcrRoiDisplayDataMdComplexType(rd)).insertXmlAsElement("roiDisplay", dppXML);
+						(new IcrRoiDisplayDataMdComplexType(rd, dppXML)).insertXmlAsElement("roiDisplay");
 					}
 	   dppXML.delayedEndEntity();
 			
@@ -107,7 +106,7 @@ public class IcrRoiSetDataMdComplexType extends IcrGenericImageAssessmentDataMdC
 		dppXML.delayedWriteEntity("referencedFramesOfReference");
 		      for (ReferencedFrameOfReference rfor : rforList)
 				{
-					(new IcrReferencedFrameOfReferenceDataMdComplexType(rfor)).insertXmlAsElement("referencedFrameOfReference", dppXML);
+					(new IcrReferencedFrameOfReferenceDataMdComplexType(rfor, dppXML)).insertXmlAsElement("referencedFrameOfReference");
 				}		  
 	}
 	

@@ -56,9 +56,11 @@ public class XnatAddFieldMdComplexType extends MdComplexType
 {
 	protected AdditionalField af;
 	
-	public XnatAddFieldMdComplexType(AdditionalField af)
+	public XnatAddFieldMdComplexType(AdditionalField af,
+			                           DelayedPrettyPrinterXmlWriter dppXML)
 	{
-		this.af = af;
+		this.af     = af;
+		this.dppXML = dppXML;
 	}
 	
 	public XnatAddFieldMdComplexType()
@@ -72,8 +74,7 @@ public class XnatAddFieldMdComplexType extends MdComplexType
 	}
 	
 	@Override
-	public void insertXml(DelayedPrettyPrinterXmlWriter dppXML)
-			      throws IOException, XMLException
+	public void insertXml() throws IOException, XMLException
 	{		
 		dppXML.delayedWriteAttribute("name", af.name)
 				.delayedWriteText(af.value);

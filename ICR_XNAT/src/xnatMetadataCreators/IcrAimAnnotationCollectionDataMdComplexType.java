@@ -64,10 +64,9 @@ public class IcrAimAnnotationCollectionDataMdComplexType extends IcrGenericImage
 	protected String associatedRoiSetId;
 	
 	@Override
-	public void insertXml(DelayedPrettyPrinterXmlWriter dppXML)
-			      throws IOException, XMLException
+	public void insertXml() throws IOException, XMLException
 	{
-		super.insertXml(dppXML);
+		super.insertXml();
 		
 		dppXML.delayedWriteEntityWithText("aimVersion",          aimVersion)
 				.delayedWriteEntityWithText("numImageAnnotations", numImageAnnotations)

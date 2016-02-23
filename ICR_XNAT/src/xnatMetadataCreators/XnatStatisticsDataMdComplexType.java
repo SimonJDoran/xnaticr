@@ -59,9 +59,11 @@ public class XnatStatisticsDataMdComplexType extends MdComplexType
 {
 	protected Statistics xns;
 	
-	public XnatStatisticsDataMdComplexType(Statistics xns)
+	public XnatStatisticsDataMdComplexType(Statistics xns,
+			                                 DelayedPrettyPrinterXmlWriter dppXML)
 	{
-		this.xns = xns;
+		this.xns    = xns;
+		this.dppXML = dppXML;
 	}
 	
 	
@@ -69,8 +71,7 @@ public class XnatStatisticsDataMdComplexType extends MdComplexType
 	
 	
 	@Override
-	public void insertXml(DelayedPrettyPrinterXmlWriter dppXML)
-			 throws IOException, XMLException
+	public void insertXml() throws IOException, XMLException
 	{
 		dppXML.delayedWriteEntityWithText("mean",          xns.mean)
 			   .delayedWriteEntityWithText("snr",           xns.snr)
