@@ -294,6 +294,7 @@ public class DicomRemapAndSend
 		int   count;
 
       final String locAETitle  = "XNATDAO";
+		final String destAETitle = "junk";
       final String destHost    = xnprf.getServerURL().getHost();
       final int    destPort    = xnprf.getServerURL().getPort();
       

@@ -190,10 +190,10 @@ public class UploadStructure
                                    String[] emails,
                                    String[] phoneNumbers)
    {
-      InvestigatorList inv = new InvestigatorList(titles, firstNames, lastNames,
-                                             institutions, departments, emails,
-                                             phoneNumbers);
-      fieldMap.put("InvestigatorList", inv);
+//      InvestigatorList inv = new InvestigatorList(titles, firstNames, lastNames,
+//                                             institutions, departments, emails,
+//                                             phoneNumbers);
+//      fieldMap.put("InvestigatorList", inv);
    }
    
    

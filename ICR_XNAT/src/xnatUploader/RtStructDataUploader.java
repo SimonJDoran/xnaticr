@@ -55,17 +55,56 @@ import java.util.ArrayList;
 import java.util.Set;
 import org.w3c.dom.Document;
 import xmlUtilities.DelayedPrettyPrinterXmlWriter;
+import xnatDAO.XNATProfile;
 import xnatMetadataCreators.IcrRoiSetDataMdComplexType;
 
 public class RtStructDataUploader extends DataUploader
 {
+	public RtStructDataUploader(XNATProfile xnprf)
+	{
+		super(xnprf);
+	}
+	
 	@Override
    public void clearFields(MetadataPanel mdsp)
    {
-      mdsp.populateJTextField("Label",                            "", true);
-      mdsp.populateJTextField("Note",                             "", true);
+      mdsp.populateJTextField("Label", "", true);
+      mdsp.populateJTextField("Note",  "", true);
    }
 	
+
+   @Override
+   public boolean parseFile()
+   { 
+		return false;
+	}
+	
+	/**
+    * Update the parsing of the file to take into account the most
+    * recent selection of either subject or experiment labels from the
+    * JCombo boxes in the user interface.
+    */
+   @Override
+   public void updateParseFile()
+   {
+//      rts.XNATExperimentID = XNATExperimentID;
+//      rts.XNATSubjectID    = XNATSubjectID;
+//      
+//		ArrayList<String> issues = new ArrayList<>();
+//		rts.checkForScansInDatabase(issues);
+//		
+//		// This error should not happen, since both XNATExperimentID and
+//		// XNATSubjectID should have been the result of a previous scan of
+//		// database for appropriately matching files.
+//      if (!issues.isEmpty())
+//		{
+//			StringBuilder sb = new StringBuilder();
+//			for (String issue : issues) sb.append(issue).append("\n");
+//			
+//         throw new RuntimeException("Error in updateParseFile: " + sb.toString() );
+//      }
+   }
+           
 	
 	/**
     * Uploading data to XNAT is a two-stage process. First the data file
@@ -83,102 +122,6 @@ public class RtStructDataUploader extends DataUploader
    public void uploadMetadata() throws Exception
    {
       errorOccurred = false;
-      
-      // The icr:roiSetData and icr:roiData XML files are mutually dependent
-      // inasmuch as the ROI_old Set needs to know the IDs of the contained ROIs,
-      // whereas each ROI_old needs to know the ID's of all the ROI_old Sets that contain
-      // it. In this case, it makes sense to pre-calculate the IDs for all the
-      // ROI_old's to be uploaded.
-      // N.B. The only reason for instantiating the following uploader is to
-      // access the method ru.getRootElement() below.
-      ROI_old ru = new ROI_old(xnprf);     
-      for (int i=0; i<rts.roiList.length; i++)
-      {
-         rts.roiList[i].roiXNATID = ru.getRootElement()
-                                    + '_' + UIDGenerator.createShortUnique();
-      }
-      
-      
-      // -------------------------------------------
-      // Step 1: Upload the icr:roiSetData metadata.
-      // -------------------------------------------
-      
-      if (XNATAccessionID == null)
-         XNATAccessionID = getRootElement() + '_' + UIDGenerator.createShortUnique();
-      
-      String labelPrefix = getStringField("Label");
-      
-      Document metaDoc = createMetadataXML();
-      if (errorOccurred) throw new XNATException(XNATException.FILE_UPLOAD,
-                          "There was a problem in creating the metadata to "
-                          + "metadata to describe the uploaded DICOM-RT "
-                          + "structure set file.\n"
-                          + getErrorMessage());
-            
-      try
-      {
-         RESTCommand = getMetadataUploadCommand();
-         
-         InputStream is = xnprf.doRESTPut(RESTCommand, metaDoc);
-         int         n  = is.available();
-         byte[]      b  = new byte[n];
-         is.read(b, 0, n);
-         String XNATUploadMessage = new String(b);
-         
-         if ((xnrt.XNATRespondsWithError(XNATUploadMessage)) ||
-             (!XNATUploadMessage.equals(XNATAccessionID)))
-         {
-            errorOccurred = true;
-            errorMessage  = XNATUploadMessage;
-            throw new XNATException(XNATException.FILE_UPLOAD,
-                          "XNAT generated the message:\n" + XNATUploadMessage);
-         }
-         
-         
-         rts.roiSetID    = XNATAccessionID;
-         rts.roiSetLabel = getStringField("Label"); // TODO: This won't work for batch mode. 
-      }
-      catch (Exception ex)
-      {
-         // Here we cater both for reporting the error by throwing an exception
-         // and by setting the error variables. When performing the upload via
-         // a SwingWorker, it is not easy to retrieve an Exception.
-         errorOccurred = true;
-         errorMessage = ex.getMessage();
-         throw new XNATException(XNATException.FILE_UPLOAD, ex.getMessage());
-      }
-     
-      
-      // ----------------------------------------------------------
-      // Step 2: Upload the icr:roiData metadata and data files for
-      //         each ROI_old referred to by the structure set.
-      // ----------------------------------------------------------    
-      
-		if (errorOccurred)
-		{
-			throw new XNATException(XNATException.FILE_UPLOAD, errorMessage);
-		}
-		
-      for (int i=0; i<rts.roiList.length; i++)
-      {
-         ru = new ROI_old(rts, i, labelPrefix, uploadStructure);
-         try
-         {
-            ru.XNATAccessionID = rts.roiList[i].roiXNATID;
-            ru.associatedRoiSetIDs = new ArrayList<String>();
-            ru.associatedRoiSetIDs.add(XNATAccessionID);
-            ru.uploadMetadata();
-            ru.uploadFilesToRepository();
-         }
-         catch (Exception ex)
-         {
-            errorOccurred = true;
-            errorMessage = "Problem uploading ROI data to XNAT.\n"
-                           + ex.getMessage();
-            throw new XNATException(XNATException.FILE_UPLOAD, ex.getMessage());
-         }
-      }
-         
    }
 	
 	
@@ -187,12 +130,11 @@ public class RtStructDataUploader extends DataUploader
 	 * XNAT assessor. 
 	 * @return ArrayList of String file names
 	 */
-	@Override
    protected ArrayList<String> getInputCatEntries()
 	{
 		ArrayList<String>	fileURIs	= new ArrayList<>();
-		Set<String>			ks			= rts.fileSOPMap.keySet();
-      for (String s : ks) fileURIs.add(rts.fileSOPMap.get(s));
+//		Set<String>			ks			= rts.fileSOPMap.keySet();
+//      for (String s : ks) fileURIs.add(rts.fileSOPMap.get(s));
 		
 		return fileURIs;
 	}
@@ -224,7 +166,7 @@ public class RtStructDataUploader extends DataUploader
 		// the required thumbnails.
       // TODO: Consider whether some composite visualisation is needed to
       // summarise all the ROI_old's making up the ROISet object.
-		createInputCatalogueFile("DICOM", "RAW", "referenced contour image");
+	//	createInputCatalogueFile("DICOM", "RAW", "referenced contour image");
    }
 	
 	@Override

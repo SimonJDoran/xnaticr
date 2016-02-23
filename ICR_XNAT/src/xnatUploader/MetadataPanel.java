@@ -69,6 +69,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import org.apache.log4j.Logger;
 import configurationLists.DAOSearchableElementsList;
+import java.util.List;
 import xnatDAO.DAOConstants;
 
 
@@ -379,7 +380,7 @@ public class MetadataPanel extends JPanel
     * field editable status to false.
     * @param values String array of values to be assigned as items in the JComboBox
     */
-   public void populateJComboBox(String fieldAlias, ArrayList<String> values)
+   public void populateJComboBox(String fieldAlias, List<String> values)
    {
       Component comp = fieldMap.get(fieldAlias);
       
@@ -521,7 +522,7 @@ public class MetadataPanel extends JPanel
             // Ignore the first of these.
             if (evt.getStateChange() == ItemEvent.DESELECTED) return;
             int ind = jcb.getSelectedIndex();
-            du.getXNATInvestigators().setInvestigatorNumber(ind);
+          //  du.getXNATInvestigators().setInvestigatorNumber(ind);
          }
       });
    }

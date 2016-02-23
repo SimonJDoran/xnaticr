@@ -67,8 +67,8 @@ import org.dcm4che2.data.BasicDicomObject;
 import org.dcm4che2.data.Tag;
 import org.dcm4che2.io.DicomInputStream;
 import org.dcm4che2.iod.module.composite.ImagePixel;
-import dataRepresentations.RTStruct_old.Contour;
 import dataRepresentations.RTStruct_old.ROIContour;
+import dataRepresentations.dicom.Contour;
 import exceptions.XNATException;
 import java.awt.BasicStroke;
 import java.awt.geom.GeneralPath;
@@ -125,24 +125,24 @@ public class ContourRenderer
       
       for (Contour c : roiContour.contourList)
       {
-         if (c.imageList.length != 1)
-         {
-            String msg = "This type of contour cannot yet be rendered."
-                         + "More than one base image for a single contour.";
-            logger.error(msg);
-            throw new DataFormatException(msg);
-         }
-         
-         RContour rc = new RContour();
-         rc.baseImageUID   = c.imageList[0].SOPInstanceUID;
-         rc.nContourPoints = c.nContourPoints;
-         rc.contourPoints  = new float[c.nContourPoints][3];
-
-         for (int j=0; j<c.nContourPoints; j++)
-            for (int i=0; i<3; i++)
-               rc.contourPoints[j][i] = c.contourPoints[j][i];
-         
-         rcList.add(rc);
+//         if (c.imageList.length != 1)
+//         {
+//            String msg = "This type of contour cannot yet be rendered."
+//                         + "More than one base image for a single contour.";
+//            logger.error(msg);
+//            throw new DataFormatException(msg);
+//         }
+//         
+//         RContour rc = new RContour();
+//         rc.baseImageUID   = c.imageList[0].SOPInstanceUID;
+//         rc.nContourPoints = c.nContourPoints;
+//         rc.contourPoints  = new float[c.nContourPoints][3];
+//
+//         for (int j=0; j<c.nContourPoints; j++)
+//            for (int i=0; i<3; i++)
+//               rc.contourPoints[j][i] = c.contourPoints[j][i];
+//         
+//         rcList.add(rc);
       }
    }
    

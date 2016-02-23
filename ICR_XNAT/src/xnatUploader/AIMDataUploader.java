@@ -53,7 +53,7 @@ package xnatUploader;
  * First created on Nov 15, 2010 at 3:00:38 PM
  *
  */
-import dataRepresentations.RTStructureSetUploader;
+import xnatUploader.RTStructureSetUploader;
 import com.generationjava.io.xml.SimpleXmlWriter;
 import dataRepresentations.xnatUpload.AIMOutput;
 import dataRepresentations.ContourRenderer;
@@ -424,18 +424,18 @@ public class AIMDataUploader extends QCAssessmentDataUploader
    @Override
    public void createSpecificMetadataXML()
    {
-      try
-      {
-         dppXML.delayedWriteEntity("outputType")
-                  .delayedWriteText(getStringField("Type"))
-               .delayedEndEntity();
-         
-         for (Map.Entry<String, String> entry : simpleEntries.entrySet())
-            dppXML.delayedWriteEntity(entry.getValue())
-                     .delayedWriteText(getStringField(entry.getKey()))
-                  .delayedEndEntity();
-      }
-      catch (IOException exIO){{reportError(exIO, "write MRIW specific elements");}}
+//      try
+//      {
+//         dppXML.delayedWriteEntity("outputType")
+//                  .delayedWriteText(getStringField("Type"))
+//               .delayedEndEntity();
+//         
+//         for (Map.Entry<String, String> entry : simpleEntries.entrySet())
+//            dppXML.delayedWriteEntity(entry.getValue())
+//                     .delayedWriteText(getStringField(entry.getKey()))
+//                  .delayedEndEntity();
+//      }
+//      catch (IOException exIO){{reportError(exIO, "write MRIW specific elements");}}
    }
    
    

@@ -44,10 +44,8 @@
 
 package xnatUploader;
 
-import dataRepresentations.RTStructureSetUploader;
 import generalUtilities.NextMatchingFileWorker;
 import generalUtilities.SimpleColourTable;
-import generalUtilities.UIDGenerator;
 import imageUtilities.DownloadIcon;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
@@ -536,7 +534,7 @@ public final class XNATUploader extends XNATGUI
    
 
    /**
-    * Until all the different DataUploader objects are implemented, then there
+    * Until all the different DataUploader objects are implemented, there
     * are restrictions on what can be uploaded and hence, some menu options
     * will be greyed out.
     */

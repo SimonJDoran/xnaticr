@@ -44,7 +44,6 @@
 
 package xnatUploader;
 
-import dataRepresentations.RTStructureSetUploader;
 import dataRepresentations.ROI_old;
 import java.util.ArrayList;
 import org.dcm4che2.data.BasicDicomObject;
@@ -274,149 +273,149 @@ public class RTStructureSetUploader extends QCAssessmentDataUploader
    @Override
    public void uploadMetadata() throws Exception
    {
-      errorOccurred = false;
-      
-      // The icr:roiSetData and icr:roiData XML files are mutually dependent
-      // inasmuch as the ROI_old Set needs to know the IDs of the contained ROIs,
-      // whereas each ROI_old needs to know the ID's of all the ROI_old Sets that contain
-      // it. In this case, it makes sense to pre-calculate the IDs for all the
-      // ROI_old's to be uploaded.
-      // N.B. The only reason for instantiating the following uploader is to
-      // access the method ru.getRootElement() below.
-      ROI_old ru = new ROI_old(xnprf);     
-      for (int i=0; i<rts.roiList.length; i++)
-      {
-         rts.roiList[i].roiXNATID = ru.getRootElement()
-                                    + '_' + UIDGenerator.createShortUnique();
-      }
-      
-      
-      // -------------------------------------------
-      // Step 1: Upload the icr:roiSetData metadata.
-      // -------------------------------------------
-      
-      if (XNATAccessionID == null)
-         XNATAccessionID = getRootElement() + '_' + UIDGenerator.createShortUnique();
-      
-      String labelPrefix = getStringField("Label");
-      
-      Document metaDoc = createMetadataXML();
-      if (errorOccurred) throw new XNATException(XNATException.FILE_UPLOAD,
-                          "There was a problem in creating the metadata to "
-                          + "metadata to describe the uploaded DICOM-RT "
-                          + "structure set file.\n"
-                          + getErrorMessage());
-            
-      try
-      {
-         RESTCommand = getMetadataUploadCommand();
-         
-         InputStream is = xnprf.doRESTPut(RESTCommand, metaDoc);
-         int         n  = is.available();
-         byte[]      b  = new byte[n];
-         is.read(b, 0, n);
-         String XNATUploadMessage = new String(b);
-         
-         if ((xnrt.XNATRespondsWithError(XNATUploadMessage)) ||
-             (!XNATUploadMessage.equals(XNATAccessionID)))
-         {
-            errorOccurred = true;
-            errorMessage  = XNATUploadMessage;
-            throw new XNATException(XNATException.FILE_UPLOAD,
-                          "XNAT generated the message:\n" + XNATUploadMessage);
-         }
-         
-         
-         rts.roiSetID    = XNATAccessionID;
-         rts.roiSetLabel = getStringField("Label"); // TODO: This won't work for batch mode. 
-      }
-      catch (Exception ex)
-      {
-         // Here we cater both for reporting the error by throwing an exception
-         // and by setting the error variables. When performing the upload via
-         // a SwingWorker, it is not easy to retrieve an Exception.
-         errorOccurred = true;
-         errorMessage = ex.getMessage();
-         throw new XNATException(XNATException.FILE_UPLOAD, ex.getMessage());
-      }
-     
-      
-      // ----------------------------------------------------------
-      // Step 2: Upload the icr:roiData metadata and data files for
-      //         each ROI_old referred to by the structure set.
-      // ----------------------------------------------------------    
-      
-		if (errorOccurred)
-		{
-			throw new XNATException(XNATException.FILE_UPLOAD, errorMessage);
-		}
-		
-      for (int i=0; i<rts.roiList.length; i++)
-      {
-         ru = new ROI_old(rts, i, labelPrefix, uploadStructure);
-         try
-         {
-            ru.XNATAccessionID = rts.roiList[i].roiXNATID;
-            ru.associatedRoiSetIDs = new ArrayList<String>();
-            ru.associatedRoiSetIDs.add(XNATAccessionID);
-            ru.uploadMetadata();
-            ru.uploadFilesToRepository();
-         }
-         catch (Exception ex)
-         {
-            errorOccurred = true;
-            errorMessage = "Problem uploading ROI data to XNAT.\n"
-                           + ex.getMessage();
-            throw new XNATException(XNATException.FILE_UPLOAD, ex.getMessage());
-         }
-      }
-         
-   }
-	
-	
-	/**
-	 * Get the list of files containing the input data used in the creation of this
-	 * XNAT assessor. 
-	 * @return ArrayList of String file names
-	 */
-	@Override
-   protected ArrayList<String> getInputCatEntries()
-	{
-		ArrayList<String>	fileURIs	= new ArrayList<>();
-		Set<String>			ks			= rts.fileSOPMap.keySet();
-      for (String s : ks) fileURIs.add(rts.fileSOPMap.get(s));
-		
-		return fileURIs;
-	}
-	
-	
-	
-	@Override
-	public void createPrimaryResourceFile()
-	{
-		primaryFile					= new XNATResourceFile();
-		primaryFile.content		= "EXTERNAL";
-		primaryFile.description	= "DICOM RT-STRUCT file created in an external application";
-		primaryFile.format		= "DICOM";
-		primaryFile.file			= uploadFile;
-		primaryFile.name			= "RT-STRUCT";
-		primaryFile.inOut			= "out";
-	}
-   
-   
-   
-   /**
-    * Create additional thumbnail files for upload with the DICOM-RT structure set.
-    */
-   @Override
-   public void createAuxiliaryResourceFiles()
-   {
-      // In the first instance, the only auxiliary file needed is the
-		// input catalogue, since the referenced ROI_old objects already contain
-		// the required thumbnails.
-      // TODO: Consider whether some composite visualisation is needed to
-      // summarise all the ROI_old's making up the ROISet object.
-		createInputCatalogueFile("DICOM", "RAW", "referenced contour image");
+//      errorOccurred = false;
+//      
+//      // The icr:roiSetData and icr:roiData XML files are mutually dependent
+//      // inasmuch as the ROI_old Set needs to know the IDs of the contained ROIs,
+//      // whereas each ROI_old needs to know the ID's of all the ROI_old Sets that contain
+//      // it. In this case, it makes sense to pre-calculate the IDs for all the
+//      // ROI_old's to be uploaded.
+//      // N.B. The only reason for instantiating the following uploader is to
+//      // access the method ru.getRootElement() below.
+//      ROI_old ru = new ROI_old(xnprf);     
+//      for (int i=0; i<rts.roiList.length; i++)
+//      {
+//         rts.roiList[i].roiXNATID = ru.getRootElement()
+//                                    + '_' + UIDGenerator.createShortUnique();
+//      }
+//      
+//      
+//      // -------------------------------------------
+//      // Step 1: Upload the icr:roiSetData metadata.
+//      // -------------------------------------------
+//      
+//      if (XNATAccessionID == null)
+//         XNATAccessionID = getRootElement() + '_' + UIDGenerator.createShortUnique();
+//      
+//      String labelPrefix = getStringField("Label");
+//      
+//      Document metaDoc = createMetadataXML();
+//      if (errorOccurred) throw new XNATException(XNATException.FILE_UPLOAD,
+//                          "There was a problem in creating the metadata to "
+//                          + "metadata to describe the uploaded DICOM-RT "
+//                          + "structure set file.\n"
+//                          + getErrorMessage());
+//            
+//      try
+//      {
+//         RESTCommand = getMetadataUploadCommand();
+//         
+//         InputStream is = xnprf.doRESTPut(RESTCommand, metaDoc);
+//         int         n  = is.available();
+//         byte[]      b  = new byte[n];
+//         is.read(b, 0, n);
+//         String XNATUploadMessage = new String(b);
+//         
+//         if ((xnrt.XNATRespondsWithError(XNATUploadMessage)) ||
+//             (!XNATUploadMessage.equals(XNATAccessionID)))
+//         {
+//            errorOccurred = true;
+//            errorMessage  = XNATUploadMessage;
+//            throw new XNATException(XNATException.FILE_UPLOAD,
+//                          "XNAT generated the message:\n" + XNATUploadMessage);
+//         }
+//         
+//         
+//         rts.roiSetID    = XNATAccessionID;
+//         rts.roiSetLabel = getStringField("Label"); // TODO: This won't work for batch mode. 
+//      }
+//      catch (Exception ex)
+//      {
+//         // Here we cater both for reporting the error by throwing an exception
+//         // and by setting the error variables. When performing the upload via
+//         // a SwingWorker, it is not easy to retrieve an Exception.
+//         errorOccurred = true;
+//         errorMessage = ex.getMessage();
+//         throw new XNATException(XNATException.FILE_UPLOAD, ex.getMessage());
+//      }
+//     
+//      
+//      // ----------------------------------------------------------
+//      // Step 2: Upload the icr:roiData metadata and data files for
+//      //         each ROI_old referred to by the structure set.
+//      // ----------------------------------------------------------    
+//      
+//		if (errorOccurred)
+//		{
+//			throw new XNATException(XNATException.FILE_UPLOAD, errorMessage);
+//		}
+//		
+//      for (int i=0; i<rts.roiList.length; i++)
+//      {
+//         ru = new ROI_old(rts, i, labelPrefix, uploadStructure);
+//         try
+//         {
+//            ru.XNATAccessionID = rts.roiList[i].roiXNATID;
+//            ru.associatedRoiSetIDs = new ArrayList<String>();
+//            ru.associatedRoiSetIDs.add(XNATAccessionID);
+//            ru.uploadMetadata();
+//            ru.uploadFilesToRepository();
+//         }
+//         catch (Exception ex)
+//         {
+//            errorOccurred = true;
+//            errorMessage = "Problem uploading ROI data to XNAT.\n"
+//                           + ex.getMessage();
+//            throw new XNATException(XNATException.FILE_UPLOAD, ex.getMessage());
+//         }
+//      }
+//         
+//   }
+//	
+//	
+//	/**
+//	 * Get the list of files containing the input data used in the creation of this
+//	 * XNAT assessor. 
+//	 * @return ArrayList of String file names
+//	 */
+//	@Override
+//   protected ArrayList<String> getInputCatEntries()
+//	{
+//		ArrayList<String>	fileURIs	= new ArrayList<>();
+//		Set<String>			ks			= rts.fileSOPMap.keySet();
+//      for (String s : ks) fileURIs.add(rts.fileSOPMap.get(s));
+//		
+//		return fileURIs;
+//	}
+//	
+//	
+//	
+//	@Override
+//	public void createPrimaryResourceFile()
+//	{
+//		primaryFile					= new XNATResourceFile();
+//		primaryFile.content		= "EXTERNAL";
+//		primaryFile.description	= "DICOM RT-STRUCT file created in an external application";
+//		primaryFile.format		= "DICOM";
+//		primaryFile.file			= uploadFile;
+//		primaryFile.name			= "RT-STRUCT";
+//		primaryFile.inOut			= "out";
+//	}
+//   
+//   
+//   
+//   /**
+//    * Create additional thumbnail files for upload with the DICOM-RT structure set.
+//    */
+//   @Override
+//   public void createAuxiliaryResourceFiles()
+//   {
+//      // In the first instance, the only auxiliary file needed is the
+//		// input catalogue, since the referenced ROI_old objects already contain
+//		// the required thumbnails.
+//      // TODO: Consider whether some composite visualisation is needed to
+//      // summarise all the ROI_old's making up the ROISet object.
+//		createInputCatalogueFile("DICOM", "RAW", "referenced contour image");
    }
    
    
@@ -429,108 +428,108 @@ public class RTStructureSetUploader extends QCAssessmentDataUploader
    @Override
    public void createSpecificMetadataXML()
    {
-      try
-      {
-         dppXML.delayedWriteEntity("subjectID")
-                  .delayedWriteText(XNATSubjectID)
-               .delayedEndEntity() 
-                                 
-               .delayedWriteEntity("dcmPatientName")
-                  .delayedWriteText(rts.patientName)
-               .delayedEndEntity()
-                 
-               .delayedWriteEntity("nROIs")
-                  .delayedWriteText(getStringField("Number of ROIs contained"))
-               .delayedEndEntity()
-
-               
-               .delayedWriteEntity("associatedStructureSetUID")
-                  .delayedWriteText(rts.structureSetUID)
-               .delayedEndEntity()
-
-               .delayedWriteEntity("structureSetLabel")
-                  .delayedWriteText(getStringField("Structure set label"))
-               .delayedEndEntity()
-
-               .delayedWriteEntity("structureSetName")
-                  .delayedWriteText(getStringField("Structure set name"))
-               .delayedEndEntity()
-
-               .delayedWriteEntity("structureSetDescription")
-                  .delayedWriteText(getStringField("Structure set description"))
-               .delayedEndEntity()
-
-               .delayedWriteEntity("structureSetDate")
-                  .delayedWriteText(getStringField("Structure set date"))
-               .delayedEndEntity()
-
-               .delayedWriteEntity("structureSetTime")
-                  .delayedWriteText(getStringField("Structure set time"))
-               .delayedEndEntity();
-         
-         
-         dppXML.delayedWriteEntity("roiDisplays");
-         for (int i=0; i<rts.roiList.length; i++)
-         {
-            // Most of the elements of icr:roiDisplayData cannot be
-            // filled in. The ROI_old line colour is present in
-            // the structure set, but the other properties are
-            // extensions not found in the structure set and the intention is
-            // to let future applications have the option of assigning non-
-            // DICOM properties such as ROI_old shading to the roiSet.
-            int[] c = rts.roiContourList[rts.roiList[i].correspondingROIContour].roiDisplayColour;
-            dppXML.delayedWriteEntity("roiDisplay")
-               
-               .delayedWriteEntity("roiID")
-                  .delayedWriteText(rts.roiList[i].roiXNATID)
-               .delayedEndEntity()
-                    
-               .delayedWriteEntity("lineColour")
-                  .delayedWriteText(c[0] + "/" + c[1] + "/" + c[2])
-               .delayedEndEntity()
-            
-            .delayedEndEntity();
-         }
-         dppXML.delayedEndEntity();
-         
-         
-         dppXML.delayedWriteEntity("referencedFramesOfReference");
-         for (int i=0; i<rts.fORList.length; i++)
-         {
-            dppXML.delayedWriteEntity("referencedFrameOfReference")
-                    
-               .delayedWriteEntity("frameOfReferenceUID")
-                  .delayedWriteText(rts.fORList[i].UID)
-               .delayedEndEntity()
-                    
-               .delayedWriteEntity("frameOfReferenceRelationships");
-               
-               for (int j=0; j<rts.fORList[i].nRelatedFOR; j++)
-               {
-                  dppXML.delayedWriteEntity("frameOfReferenceRelationship")
-                          
-                     .delayedWriteEntity("relatedFrameOfReferenceUID")
-                        .delayedWriteText(rts.fORList[i].relatedFOR[j].UID)
-                     .delayedEndEntity()
-                          
-                     .delayedWriteEntity("frameOfReferenceTransformationMatrix")
-                        .delayedWriteText(rts.fORList[i].relatedFOR[j].transformationMatrix)
-                     .delayedEndEntity()
-                          
-                     .delayedWriteEntity("frameOfReferenceTransformationComment")
-                        .delayedWriteText(rts.fORList[i].relatedFOR[j].transformationComment)
-                     .delayedEndEntity()
-                          
-                 .delayedEndEntity();
-               }
-               
-               dppXML.delayedEndEntity();
-            dppXML.delayedEndEntity();
-         }
-         dppXML.delayedEndEntity();
-         
-      }
-      catch (IOException exIO){{reportError(exIO, "write RT-STRUCT specific elements");}}
+//      try
+//      {
+//         dppXML.delayedWriteEntity("subjectID")
+//                  .delayedWriteText(XNATSubjectID)
+//               .delayedEndEntity() 
+//                                 
+//               .delayedWriteEntity("dcmPatientName")
+//                  .delayedWriteText(rts.patientName)
+//               .delayedEndEntity()
+//                 
+//               .delayedWriteEntity("nROIs")
+//                  .delayedWriteText(getStringField("Number of ROIs contained"))
+//               .delayedEndEntity()
+//
+//               
+//               .delayedWriteEntity("associatedStructureSetUID")
+//                  .delayedWriteText(rts.structureSetUID)
+//               .delayedEndEntity()
+//
+//               .delayedWriteEntity("structureSetLabel")
+//                  .delayedWriteText(getStringField("Structure set label"))
+//               .delayedEndEntity()
+//
+//               .delayedWriteEntity("structureSetName")
+//                  .delayedWriteText(getStringField("Structure set name"))
+//               .delayedEndEntity()
+//
+//               .delayedWriteEntity("structureSetDescription")
+//                  .delayedWriteText(getStringField("Structure set description"))
+//               .delayedEndEntity()
+//
+//               .delayedWriteEntity("structureSetDate")
+//                  .delayedWriteText(getStringField("Structure set date"))
+//               .delayedEndEntity()
+//
+//               .delayedWriteEntity("structureSetTime")
+//                  .delayedWriteText(getStringField("Structure set time"))
+//               .delayedEndEntity();
+//         
+//         
+//         dppXML.delayedWriteEntity("roiDisplays");
+//         for (int i=0; i<rts.roiList.length; i++)
+//         {
+//            // Most of the elements of icr:roiDisplayData cannot be
+//            // filled in. The ROI_old line colour is present in
+//            // the structure set, but the other properties are
+//            // extensions not found in the structure set and the intention is
+//            // to let future applications have the option of assigning non-
+//            // DICOM properties such as ROI_old shading to the roiSet.
+//            int[] c = rts.roiContourList[rts.roiList[i].correspondingROIContour].roiDisplayColour;
+//            dppXML.delayedWriteEntity("roiDisplay")
+//               
+//               .delayedWriteEntity("roiID")
+//                  .delayedWriteText(rts.roiList[i].roiXNATID)
+//               .delayedEndEntity()
+//                    
+//               .delayedWriteEntity("lineColour")
+//                  .delayedWriteText(c[0] + "/" + c[1] + "/" + c[2])
+//               .delayedEndEntity()
+//            
+//            .delayedEndEntity();
+//         }
+//         dppXML.delayedEndEntity();
+//         
+//         
+//         dppXML.delayedWriteEntity("referencedFramesOfReference");
+//         for (int i=0; i<rts.fORList.length; i++)
+//         {
+//            dppXML.delayedWriteEntity("referencedFrameOfReference")
+//                    
+//               .delayedWriteEntity("frameOfReferenceUID")
+//                  .delayedWriteText(rts.fORList[i].UID)
+//               .delayedEndEntity()
+//                    
+//               .delayedWriteEntity("frameOfReferenceRelationships");
+//               
+//               for (int j=0; j<rts.fORList[i].nRelatedFOR; j++)
+//               {
+//                  dppXML.delayedWriteEntity("frameOfReferenceRelationship")
+//                          
+//                     .delayedWriteEntity("relatedFrameOfReferenceUID")
+//                        .delayedWriteText(rts.fORList[i].relatedFOR[j].UID)
+//                     .delayedEndEntity()
+//                          
+//                     .delayedWriteEntity("frameOfReferenceTransformationMatrix")
+//                        .delayedWriteText(rts.fORList[i].relatedFOR[j].transformationMatrix)
+//                     .delayedEndEntity()
+//                          
+//                     .delayedWriteEntity("frameOfReferenceTransformationComment")
+//                        .delayedWriteText(rts.fORList[i].relatedFOR[j].transformationComment)
+//                     .delayedEndEntity()
+//                          
+//                 .delayedEndEntity();
+//               }
+//               
+//               dppXML.delayedEndEntity();
+//            dppXML.delayedEndEntity();
+//         }
+//         dppXML.delayedEndEntity();
+//         
+//      }
+//      catch (IOException exIO){{reportError(exIO, "write RT-STRUCT specific elements");}}
    }
    
    
@@ -644,5 +643,23 @@ public class RTStructureSetUploader extends QCAssessmentDataUploader
       String fs = System.getProperty("file.separator");
       return XNATGUI.getHomeDir() + fs + "temp" + fs + "tempRT-STRUCT.dcm";        
    }
+
+	@Override
+	protected ArrayList<String> getInputCatEntries()
+	{
+		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+	}
+
+	@Override
+	protected void createPrimaryResourceFile()
+	{
+		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+	}
+
+	@Override
+	protected void createAuxiliaryResourceFiles()
+	{
+		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+	}
 
 }

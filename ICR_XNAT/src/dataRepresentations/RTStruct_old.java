@@ -937,129 +937,129 @@ public final class RTStruct_old extends XnatUpload implements RtStructWriter
     */
    protected void extractContourInfo(List<String> issues)
    {
-		DicomElement seqRoiContour = bdo.get(Tag.ROIContourSequence);
-		if (seqRoiContour == null)
-		{
-			issues.add("Source does not contain any contour information.");
-			return;
-		}
-
-		int nc = seqRoiContour.countItems();
-		roiContourList = new ROIContour[nc];
-
-		for (int i=0; i<nc; i++)
-		{
-			roiContourList[i] = new ROIContour();
-			DicomObject roiC = seqRoiContour.getDicomObject(i);
-
-			roiContourList[i].referencedRoiNumber = roiC.getInt(Tag.ReferencedROINumber);
-			roiContourList[i].roiDisplayColour    = roiC.getInts(Tag.ROIDisplayColor, new int[3]);
-
-			// Search through the list of ROI's for the one with the above
-			// referencedRoiNumber and insert the matching contour list number
-			// for later cross-referencing. In addition, copy the frame-of-reference
-			// information here for use by other routines.
-			for (int j=0; j<roiList.length; j++)
-			{
-				if (roiList[j].roiNumber == roiContourList[i].referencedRoiNumber)
-				{
-					roiList[j].correspondingROIContour    = i;
-					roiContourList[i].frameOfReferenceUID = roiList[j].referencedFrameOfReferenceUID;
-				}
-			}
-
-			DicomElement seqContour = roiC.get(Tag.ContourSequence);
-			if (seqContour == null)
-			{
-				logger.warn("No contours found in source for referenced ROI number " +
-									 + roiContourList[i].referencedRoiNumber + ". \n\n");
-				// Is this actually an error?
-				//issues.add("No contours found in source for referenced ROI number " +
-				//                + roiContourList[i].referencedRoiNumber + ". \n\n");
-			}
-			else
-			{            
-				int nCont = seqContour.countItems();
-				roiContourList[i].contourList = new Contour[nCont];
-
-				for (int j=0; j<nCont; j++)
-				{
-					roiContourList[i].contourList[j] = new Contour();
-					DicomObject contour = seqContour.getDicomObject(j);
-
-					if (contour.contains(Tag.ContourNumber))
-						roiContourList[i].contourList[j].contourNumber
-											 = contour.getInt(Tag.ContourNumber);
-
-					if (contour.contains(Tag.AttachedContours))
-						roiContourList[i].contourList[j].attachedContours
-											 = contour.getInts(Tag.AttachedContours);
-
-					roiContourList[i].contourList[j].geometricType
-											 = contour.getString(Tag.ContourGeometricType);
-
-					if (contour.contains(Tag.ContourSlabThickness))
-						roiContourList[i].contourList[j].slabThickness
-											  = contour.getFloat(Tag.AttachedContours);
-
-					if (contour.contains(Tag.ContourOffsetVector))
-						roiContourList[i].contourList[j].offsetVector
-											  = contour.getFloats(Tag.ContourOffsetVector);
-
-					int n = contour.getInt(Tag.NumberOfContourPoints);
-					roiContourList[i].contourList[j].nContourPoints = n;
-
-					roiContourList[i].contourList[j].contourPoints = new float[n][3];
-
-					float[] coords = contour.getFloats(Tag.ContourData);
-					int nCoords = (coords == null) ? -1 : coords.length;
-					if (nCoords != 3*n)
-					{
-						issues.add("The source does not contain the correct information about "
-											 + " the contour datapoints themselves.");
-						return;
-					}
-
-
-					for (int k=0; k<n; k++)
-						for (int m=0; m<3; m++)
-							roiContourList[i].contourList[j].contourPoints[k][m]
-								  = coords[k*3 + m];
-
-
-					DicomElement seqContourImage = contour.get(Tag.ContourImageSequence);
-					if (seqContourImage == null)
-					{
-						issues.add("The source does not contain required information about "
-											 + " the images on which the regions-of-interest were drawn.");
-						return;
-					}
-
-					int ni = seqContourImage.countItems();
-					roiContourList[i].contourList[j].imageList = new ContourImage[ni];
-
-					for (int k=0; k<ni; k++)
-					{
-						roiContourList[i].contourList[j].imageList[k] = new ContourImage();
-						DicomObject contourImage = seqContourImage.getDicomObject(k);
-
-						String uid = contourImage.getString(Tag.ReferencedSOPInstanceUID);
-						roiContourList[i].contourList[j].imageList[k].SOPInstanceUID = uid;
-
-						// Check that the corresponding file is definitely present in XNAT.
-						// Ignore this test if XNATExperiment has not yet been disambiguated.
-						if ((XNATExperimentID != null) && (!fileSOPMap.containsKey(uid)))
-						{
-							issues.add("The image data file corresponding to the DICOM "
-							  + "SOPInstance UID " + uid + " is not present in the XNAT database."
-							  + "You must upload all required contour base image data "
-							  + "before uploading the RT-STRUCT file.");
-							return;
-						}            
-					}
-				}
-			}
-		}
+//		DicomElement seqRoiContour = bdo.get(Tag.ROIContourSequence);
+//		if (seqRoiContour == null)
+//		{
+//			issues.add("Source does not contain any contour information.");
+//			return;
+//		}
+//
+//		int nc = seqRoiContour.countItems();
+//		roiContourList = new ROIContour[nc];
+//
+//		for (int i=0; i<nc; i++)
+//		{
+//			roiContourList[i] = new ROIContour();
+//			DicomObject roiC = seqRoiContour.getDicomObject(i);
+//
+//			roiContourList[i].referencedRoiNumber = roiC.getInt(Tag.ReferencedROINumber);
+//			roiContourList[i].roiDisplayColour    = roiC.getInts(Tag.ROIDisplayColor, new int[3]);
+//
+//			// Search through the list of ROI's for the one with the above
+//			// referencedRoiNumber and insert the matching contour list number
+//			// for later cross-referencing. In addition, copy the frame-of-reference
+//			// information here for use by other routines.
+//			for (int j=0; j<roiList.length; j++)
+//			{
+//				if (roiList[j].roiNumber == roiContourList[i].referencedRoiNumber)
+//				{
+//					roiList[j].correspondingROIContour    = i;
+//					roiContourList[i].frameOfReferenceUID = roiList[j].referencedFrameOfReferenceUID;
+//				}
+//			}
+//
+//			DicomElement seqContour = roiC.get(Tag.ContourSequence);
+//			if (seqContour == null)
+//			{
+//				logger.warn("No contours found in source for referenced ROI number " +
+//									 + roiContourList[i].referencedRoiNumber + ". \n\n");
+//				// Is this actually an error?
+//				//issues.add("No contours found in source for referenced ROI number " +
+//				//                + roiContourList[i].referencedRoiNumber + ". \n\n");
+//			}
+//			else
+//			{            
+//				int nCont = seqContour.countItems();
+//				roiContourList[i].contourList = new Contour[nCont];
+//
+//				for (int j=0; j<nCont; j++)
+//				{
+//					roiContourList[i].contourList[j] = new Contour();
+//					DicomObject contour = seqContour.getDicomObject(j);
+//
+//					if (contour.contains(Tag.ContourNumber))
+//						roiContourList[i].contourList[j].contourNumber
+//											 = contour.getInt(Tag.ContourNumber);
+//
+//					if (contour.contains(Tag.AttachedContours))
+//						roiContourList[i].contourList[j].attachedContours
+//											 = contour.getInts(Tag.AttachedContours);
+//
+//					roiContourList[i].contourList[j].geometricType
+//											 = contour.getString(Tag.ContourGeometricType);
+//
+//					if (contour.contains(Tag.ContourSlabThickness))
+//						roiContourList[i].contourList[j].slabThickness
+//											  = contour.getFloat(Tag.AttachedContours);
+//
+//					if (contour.contains(Tag.ContourOffsetVector))
+//						roiContourList[i].contourList[j].offsetVector
+//											  = contour.getFloats(Tag.ContourOffsetVector);
+//
+//					int n = contour.getInt(Tag.NumberOfContourPoints);
+//					roiContourList[i].contourList[j].nContourPoints = n;
+//
+//					roiContourList[i].contourList[j].contourPoints = new float[n][3];
+//
+//					float[] coords = contour.getFloats(Tag.ContourData);
+//					int nCoords = (coords == null) ? -1 : coords.length;
+//					if (nCoords != 3*n)
+//					{
+//						issues.add("The source does not contain the correct information about "
+//											 + " the contour datapoints themselves.");
+//						return;
+//					}
+//
+//
+//					for (int k=0; k<n; k++)
+//						for (int m=0; m<3; m++)
+//							roiContourList[i].contourList[j].contourPoints[k][m]
+//								  = coords[k*3 + m];
+//
+//
+//					DicomElement seqContourImage = contour.get(Tag.ContourImageSequence);
+//					if (seqContourImage == null)
+//					{
+//						issues.add("The source does not contain required information about "
+//											 + " the images on which the regions-of-interest were drawn.");
+//						return;
+//					}
+//
+//					int ni = seqContourImage.countItems();
+//					roiContourList[i].contourList[j].imageList = new ContourImage[ni];
+//
+//					for (int k=0; k<ni; k++)
+//					{
+//						roiContourList[i].contourList[j].imageList[k] = new ContourImage();
+//						DicomObject contourImage = seqContourImage.getDicomObject(k);
+//
+//						String uid = contourImage.getString(Tag.ReferencedSOPInstanceUID);
+//						roiContourList[i].contourList[j].imageList[k].SOPInstanceUID = uid;
+//
+//						// Check that the corresponding file is definitely present in XNAT.
+//						// Ignore this test if XNATExperiment has not yet been disambiguated.
+//						if ((XNATExperimentID != null) && (!fileSOPMap.containsKey(uid)))
+//						{
+//							issues.add("The image data file corresponding to the DICOM "
+//							  + "SOPInstance UID " + uid + " is not present in the XNAT database."
+//							  + "You must upload all required contour base image data "
+//							  + "before uploading the RT-STRUCT file.");
+//							return;
+//						}            
+//					}
+//				}
+//			}
+//		}
    }
       
       
@@ -1402,7 +1402,7 @@ public final class RTStruct_old extends XnatUpload implements RtStructWriter
       outputReferencedFrameOfReferenceSequence(odo);
       outputStructureSetROISequence(odo);
       outputROIContourSequence(odo);
-      outputRTROIObservationsSequence(odo);
+     // outputRTROIObservationsSequence(odo);
      
       return odo;
    }
@@ -1570,184 +1570,184 @@ public final class RTStruct_old extends XnatUpload implements RtStructWriter
     */
    protected void outputROIContourSequence(DicomObject odo)
    {
-      if ((roiContourList != null) && (roiContourList.length != 0))
-      {
-         DicomElement seqRoiContour = odo.putSequence(Tag.ROIContourSequence);
-         for (int i=0; i<roiContourList.length; i++)
-         {
-            DicomObject doRoiContour = new BasicDicomObject();
-            doRoiContour.setParent(odo);
-            seqRoiContour.addDicomObject(doRoiContour);
-            
-            ROIContour roiCont = roiContourList[i];
-            
-            doRoiContour.putInt(Tag.ReferencedROINumber, VR.IS, roiCont.referencedRoiNumber);
-            
-            if (roiCont.roiDisplayColour[0] != -1)
-               doRoiContour.putInts(Tag.ROIDisplayColor, VR.IS, roiCont.roiDisplayColour);
-            
-            if ((roiCont.contourList != null) && (roiCont.contourList.length != 0))
-            {
-               // Subsequence at (3006, 0040)
-               DicomElement seqContour = doRoiContour.putSequence(Tag.ContourSequence);
-               for (int j=0; j<roiCont.contourList.length; j++)
-               {
-                  DicomObject doContour = new BasicDicomObject();
-                  doContour.setParent(doRoiContour);
-                  seqContour.addDicomObject(doContour);
-                  
-                  Contour cont = roiCont.contourList[j];
-                  
-                  if (cont.contourNumber != DUMMY_INT)
-                     doContour.putInt(Tag.ContourNumber, VR.IS, cont.contourNumber);
-                  
-                  if (cont.attachedContours[0] != DUMMY_INT)
-                     doContour.putInts(Tag.AttachedContours, VR.IS, cont.attachedContours);
-                  
-                  if ((cont.imageList != null) && (cont.imageList.length != 0))
-                  {
-                     DicomElement seqContourImage = doContour.putSequence(Tag.ContourImageSequence);
-                     for (int k=0; k<cont.imageList.length; k++)
-                     {
-                        DicomObject doContourImage = new BasicDicomObject();
-                        doContourImage.setParent(doContour);
-                        seqContourImage.addDicomObject(doContourImage);
-                        
-                        doContourImage.putString(Tag.ReferencedSOPClassUID, VR.UI,
-                            cont.imageList[k].SOPClassUID);
-                        
-                        doContourImage.putString(Tag.ReferencedSOPInstanceUID, VR.UI,
-                            cont.imageList[k].SOPInstanceUID);
-                     }
-                  }
-                  
-                  doContour.putString(Tag.ContourGeometricType,    VR.CS, cont.geometricType);
-                   
-                  if (cont.slabThickness != DUMMY_FLOAT)
-                     doContour.putFloat( Tag.ContourSlabThickness, VR.DS, cont.slabThickness);
-                  
-                  if (cont.offsetVector[0] != DUMMY_FLOAT)
-                     doContour.putFloats(Tag.ContourOffsetVector,  VR.DS, cont.offsetVector);
-                  
-                  doContour.putInt(Tag.NumberOfContourPoints,      VR.IS, cont.nContourPoints);
-                  
-                  int n = cont.nContourPoints;
-                  if (n != 0)
-                  {
-                     float[] contPoints = new float[n*3];
-                     for (int k=0; k<n; k++)
-                        for (int l=0; l<3; l++)
-                           contPoints[k*3 + l] = cont.contourPoints[k][l];
-                     
-                     doContour.putFloats(Tag.ContourData, VR.DS, contPoints);
-                  }
-               }
-            }
-         }         
-      }
-   }
-   
-   
-   /**
-    * Write the DICOM sequence at (3006, 0080).
-    * @param odo - BasicDicomObject being constructed for output to a file
-    */
-   protected void outputRTROIObservationsSequence(DicomObject odo)
-   {
-      if (roiObsList.length != 0)
-      {
-         DicomElement seqRtRoiObs = odo.putSequence(Tag.RTROIObservationsSequence);
-         for (int i=0; i<roiObsList.length; i++)
-         {
-            DicomObject doRtRoiObs = new BasicDicomObject();
-            doRtRoiObs.setParent(odo);
-            seqRtRoiObs.addDicomObject(doRtRoiObs);
-            
-            RTROIObservation obs = roiObsList[i];
-            
-            doRtRoiObs.putInt(Tag.ObservationNumber,   VR.IS, obs.obsNumber);
-            doRtRoiObs.putInt(Tag.ReferencedROINumber, VR.IS, obs.referencedRoiNumber);
-            
-            if ((obs.obsLabel != null) && (!obs.obsLabel.isEmpty()))
-               doRtRoiObs.putString(Tag.ROIObservationLabel, VR.SH, obs.obsLabel);
-            
-            if ((obs.obsDescription != null) && (!obs.obsDescription.isEmpty()))
-               doRtRoiObs.putString(Tag.ROIObservationDescription, VR.ST, obs.obsDescription);
-            
-            if ((obs.relatedROIs != null) && (obs.relatedROIs.length != 0))
-            {
-               // Subsequence at (3006, 0030)
-               DicomElement seqRtRelRoi = doRtRoiObs.putSequence(Tag.RTRelatedROISequence);
-               for (int j=0; j<obs.relatedROIs.length; j++)
-               {
-                  DicomObject doRtRelRoi = new BasicDicomObject();
-                  doRtRelRoi.setParent(doRtRoiObs);
-                  seqRtRoiObs.addDicomObject(doRtRelRoi);
-                  
-                  doRtRelRoi.putInt(Tag.ReferencedROINumber, VR.IS,
-                                        obs.relatedROIs[j].referencedRoiNumber);
-                     
-                  if ((obs.relatedROIs[j].relationship != null) &&
-                      (!(obs.relatedROIs[j].relationship.isEmpty())))
-                     doRtRelRoi.putString(Tag.RTROIRelationship, VR.CS,
-                                        obs.relatedROIs[j].relationship);
-               }
-            }
-            
-            if (obs.relatedROIObservations.length != 0)
-            {
-               // Subsequence at (3006, 00A0)
-               DicomElement seqRelRtRoiObs = doRtRoiObs.putSequence(Tag.RelatedRTROIObservationsSequence);
-               for (int j=0; j<obs.relatedROIs.length; j++)
-               {
-                  DicomObject doRelRtRoiObs = new BasicDicomObject();
-                  doRelRtRoiObs.setParent(doRtRoiObs);
-                  seqRtRoiObs.addDicomObject(doRelRtRoiObs);
-                  
-                  doRelRtRoiObs.putInt(Tag.ObservationNumber, VR.IS,
-                                        obs.relatedROIObservations[j]);
-               }
-            }
-            
-            doRtRoiObs.putString(Tag.RTROIInterpretedType, VR.CS, obs.rtRoiInterpretedType);
-            doRtRoiObs.putString(Tag.ROIInterpreter,       VR.PN, obs.roiInterpreter);
-            
-            if ((obs.roiMaterialID != null) && (!obs.roiMaterialID.isEmpty()))
-               doRtRoiObs.putString(Tag.MaterialID, VR.SH, obs.roiMaterialID);
-            
-            if ((obs.roiPhysicalProps != null) && (obs.roiPhysicalProps.length != 0))
-            {
-               DicomElement seqRoiPhysProp = doRtRoiObs.putSequence(Tag.ROIPhysicalPropertiesSequence);
-               for (int j=0; j<obs.roiPhysicalProps.length; j++)
-               {
-                  DicomObject doRoiPhysProp = new BasicDicomObject();
-                  doRoiPhysProp.setParent(doRtRoiObs);
-                  seqRoiPhysProp.addDicomObject(doRoiPhysProp);
-                  
-                  ROIPhysicalProperties phys = obs.roiPhysicalProps[j];
-                  
-                  doRoiPhysProp.putString(Tag.ROIPhysicalProperty,      VR.CS, phys.propertyName);                 
-                  doRoiPhysProp.putString(Tag.ROIPhysicalPropertyValue, VR.CS, phys.propertyValue);
-                  
-                  if ((phys.elementalComp != null) && (phys.elementalComp.length != 0))
-                  {
-                     DicomElement seqRoiElemComp = doRoiPhysProp.putSequence(Tag.ROIElementalCompositionSequence);
-                     for (int k=0; j<phys.elementalComp.length; k++)
-                     {
-                        DicomObject doRoiElemComp = new BasicDicomObject();
-                        doRoiElemComp.setParent(doRoiPhysProp);
-                        seqRoiElemComp.addDicomObject(doRoiElemComp);
-                        
-                        doRoiElemComp.putInt(Tag.ROIElementalCompositionAtomicNumber, VR.US,
-                                      phys.elementalComp[j].atomicNumber);
-                        
-                        doRoiElemComp.putFloat(Tag.ROIElementalCompositionAtomicMassFraction, VR.FL,
-                                      phys.elementalComp[j].atomicMassFraction);
-                     }
-                  }
-               }
-            }
-         }
-      }
+//      if ((roiContourList != null) && (roiContourList.length != 0))
+//      {
+//         DicomElement seqRoiContour = odo.putSequence(Tag.ROIContourSequence);
+//         for (int i=0; i<roiContourList.length; i++)
+//         {
+//            DicomObject doRoiContour = new BasicDicomObject();
+//            doRoiContour.setParent(odo);
+//            seqRoiContour.addDicomObject(doRoiContour);
+//            
+//            ROIContour roiCont = roiContourList[i];
+//            
+//            doRoiContour.putInt(Tag.ReferencedROINumber, VR.IS, roiCont.referencedRoiNumber);
+//            
+//            if (roiCont.roiDisplayColour[0] != -1)
+//               doRoiContour.putInts(Tag.ROIDisplayColor, VR.IS, roiCont.roiDisplayColour);
+//            
+//            if ((roiCont.contourList != null) && (roiCont.contourList.length != 0))
+//            {
+//               // Subsequence at (3006, 0040)
+//               DicomElement seqContour = doRoiContour.putSequence(Tag.ContourSequence);
+//               for (int j=0; j<roiCont.contourList.length; j++)
+//               {
+//                  DicomObject doContour = new BasicDicomObject();
+//                  doContour.setParent(doRoiContour);
+//                  seqContour.addDicomObject(doContour);
+//                  
+//                  Contour cont = roiCont.contourList[j];
+//                  
+//                  if (cont.contourNumber != DUMMY_INT)
+//                     doContour.putInt(Tag.ContourNumber, VR.IS, cont.contourNumber);
+//                  
+//                  if (cont.attachedContours[0] != DUMMY_INT)
+//                     doContour.putInts(Tag.AttachedContours, VR.IS, cont.attachedContours);
+//                  
+//                  if ((cont.imageList != null) && (cont.imageList.length != 0))
+//                  {
+//                     DicomElement seqContourImage = doContour.putSequence(Tag.ContourImageSequence);
+//                     for (int k=0; k<cont.imageList.length; k++)
+//                     {
+//                        DicomObject doContourImage = new BasicDicomObject();
+//                        doContourImage.setParent(doContour);
+//                        seqContourImage.addDicomObject(doContourImage);
+//                        
+//                        doContourImage.putString(Tag.ReferencedSOPClassUID, VR.UI,
+//                            cont.imageList[k].SOPClassUID);
+//                        
+//                        doContourImage.putString(Tag.ReferencedSOPInstanceUID, VR.UI,
+//                            cont.imageList[k].SOPInstanceUID);
+//                     }
+//                  }
+//                  
+//                  doContour.putString(Tag.ContourGeometricType,    VR.CS, cont.geometricType);
+//                   
+//                  if (cont.slabThickness != DUMMY_FLOAT)
+//                     doContour.putFloat( Tag.ContourSlabThickness, VR.DS, cont.slabThickness);
+//                  
+//                  if (cont.offsetVector[0] != DUMMY_FLOAT)
+//                     doContour.putFloats(Tag.ContourOffsetVector,  VR.DS, cont.offsetVector);
+//                  
+//                  doContour.putInt(Tag.NumberOfContourPoints,      VR.IS, cont.nContourPoints);
+//                  
+//                  int n = cont.nContourPoints;
+//                  if (n != 0)
+//                  {
+//                     float[] contPoints = new float[n*3];
+//                     for (int k=0; k<n; k++)
+//                        for (int l=0; l<3; l++)
+//                           contPoints[k*3 + l] = cont.contourPoints[k][l];
+//                     
+//                     doContour.putFloats(Tag.ContourData, VR.DS, contPoints);
+//                  }
+//               }
+//            }
+//         }         
+//      }
+//   }
+//   
+//   
+//   /**
+//    * Write the DICOM sequence at (3006, 0080).
+//    * @param odo - BasicDicomObject being constructed for output to a file
+//    */
+//   protected void outputRTROIObservationsSequence(DicomObject odo)
+//   {
+//      if (roiObsList.length != 0)
+//      {
+//         DicomElement seqRtRoiObs = odo.putSequence(Tag.RTROIObservationsSequence);
+//         for (int i=0; i<roiObsList.length; i++)
+//         {
+//            DicomObject doRtRoiObs = new BasicDicomObject();
+//            doRtRoiObs.setParent(odo);
+//            seqRtRoiObs.addDicomObject(doRtRoiObs);
+//            
+//            RTROIObservation obs = roiObsList[i];
+//            
+//            doRtRoiObs.putInt(Tag.ObservationNumber,   VR.IS, obs.obsNumber);
+//            doRtRoiObs.putInt(Tag.ReferencedROINumber, VR.IS, obs.referencedRoiNumber);
+//            
+//            if ((obs.obsLabel != null) && (!obs.obsLabel.isEmpty()))
+//               doRtRoiObs.putString(Tag.ROIObservationLabel, VR.SH, obs.obsLabel);
+//            
+//            if ((obs.obsDescription != null) && (!obs.obsDescription.isEmpty()))
+//               doRtRoiObs.putString(Tag.ROIObservationDescription, VR.ST, obs.obsDescription);
+//            
+//            if ((obs.relatedROIs != null) && (obs.relatedROIs.length != 0))
+//            {
+//               // Subsequence at (3006, 0030)
+//               DicomElement seqRtRelRoi = doRtRoiObs.putSequence(Tag.RTRelatedROISequence);
+//               for (int j=0; j<obs.relatedROIs.length; j++)
+//               {
+//                  DicomObject doRtRelRoi = new BasicDicomObject();
+//                  doRtRelRoi.setParent(doRtRoiObs);
+//                  seqRtRoiObs.addDicomObject(doRtRelRoi);
+//                  
+//                  doRtRelRoi.putInt(Tag.ReferencedROINumber, VR.IS,
+//                                        obs.relatedROIs[j].referencedRoiNumber);
+//                     
+//                  if ((obs.relatedROIs[j].relationship != null) &&
+//                      (!(obs.relatedROIs[j].relationship.isEmpty())))
+//                     doRtRelRoi.putString(Tag.RTROIRelationship, VR.CS,
+//                                        obs.relatedROIs[j].relationship);
+//               }
+//            }
+//            
+//            if (obs.relatedROIObservations.length != 0)
+//            {
+//               // Subsequence at (3006, 00A0)
+//               DicomElement seqRelRtRoiObs = doRtRoiObs.putSequence(Tag.RelatedRTROIObservationsSequence);
+//               for (int j=0; j<obs.relatedROIs.length; j++)
+//               {
+//                  DicomObject doRelRtRoiObs = new BasicDicomObject();
+//                  doRelRtRoiObs.setParent(doRtRoiObs);
+//                  seqRtRoiObs.addDicomObject(doRelRtRoiObs);
+//                  
+//                  doRelRtRoiObs.putInt(Tag.ObservationNumber, VR.IS,
+//                                        obs.relatedROIObservations[j]);
+//               }
+//            }
+//            
+//            doRtRoiObs.putString(Tag.RTROIInterpretedType, VR.CS, obs.rtRoiInterpretedType);
+//            doRtRoiObs.putString(Tag.ROIInterpreter,       VR.PN, obs.roiInterpreter);
+//            
+//            if ((obs.roiMaterialID != null) && (!obs.roiMaterialID.isEmpty()))
+//               doRtRoiObs.putString(Tag.MaterialID, VR.SH, obs.roiMaterialID);
+//            
+//            if ((obs.roiPhysicalProps != null) && (obs.roiPhysicalProps.length != 0))
+//            {
+//               DicomElement seqRoiPhysProp = doRtRoiObs.putSequence(Tag.ROIPhysicalPropertiesSequence);
+//               for (int j=0; j<obs.roiPhysicalProps.length; j++)
+//               {
+//                  DicomObject doRoiPhysProp = new BasicDicomObject();
+//                  doRoiPhysProp.setParent(doRtRoiObs);
+//                  seqRoiPhysProp.addDicomObject(doRoiPhysProp);
+//                  
+//                  ROIPhysicalProperties phys = obs.roiPhysicalProps[j];
+//                  
+//                  doRoiPhysProp.putString(Tag.ROIPhysicalProperty,      VR.CS, phys.propertyName);                 
+//                  doRoiPhysProp.putString(Tag.ROIPhysicalPropertyValue, VR.CS, phys.propertyValue);
+//                  
+//                  if ((phys.elementalComp != null) && (phys.elementalComp.length != 0))
+//                  {
+//                     DicomElement seqRoiElemComp = doRoiPhysProp.putSequence(Tag.ROIElementalCompositionSequence);
+//                     for (int k=0; j<phys.elementalComp.length; k++)
+//                     {
+//                        DicomObject doRoiElemComp = new BasicDicomObject();
+//                        doRoiElemComp.setParent(doRoiPhysProp);
+//                        seqRoiElemComp.addDicomObject(doRoiElemComp);
+//                        
+//                        doRoiElemComp.putInt(Tag.ROIElementalCompositionAtomicNumber, VR.US,
+//                                      phys.elementalComp[j].atomicNumber);
+//                        
+//                        doRoiElemComp.putFloat(Tag.ROIElementalCompositionAtomicMassFraction, VR.FL,
+//                                      phys.elementalComp[j].atomicMassFraction);
+//                     }
+//                  }
+//               }
+//            }
+//         }
+//      }
    }
 }

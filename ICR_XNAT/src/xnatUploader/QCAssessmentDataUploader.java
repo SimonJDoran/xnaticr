@@ -124,34 +124,34 @@ public abstract class QCAssessmentDataUploader extends DataUploader
     */
    protected void initialiseXML()
    {          
-      baos    = new ByteArrayOutputStream();
-      dppXML  = new DelayedPrettyPrinterXmlWriter(
-                   new SimpleXmlWriter(
-                      new OutputStreamWriter(baos)));
-      
-      String label;
-      String note;
-      if (isBatchMode)
-         currentLabel = batchLabelPrefix + (new Long(System.nanoTime())).toString();
-      else
-         currentLabel = getStringField("Label");
-      
-      try
-      {
-         dppXML.setIndent("   ")
-               .writeXmlVersion()
-               .writeEntity(getRootElement())
-               .writeAttribute("xmlns:xnat", "http://nrg.wustl.edu/xnat")
-               .writeAttribute("xmlns:xsi",  "http://www.w3.org/2001/XMLSchema-instance")
-               .writeAttribute("xmlns:prov", "http://www.nbirn.net/prov")
-               .writeAttribute("xmlns:icr",  "http://www.icr.ac.uk/icr")
-               .writeAttribute("ID",         XNATAccessionID)
-               .writeAttribute("label",      currentLabel)
-               .writeAttribute("project",    XNATProject);
-      }
-         
-
-      catch (IOException exIO){reportError(exIO, "initialise XML");}
+//      baos    = new ByteArrayOutputStream();
+//      dppXML  = new DelayedPrettyPrinterXmlWriter(
+//                   new SimpleXmlWriter(
+//                      new OutputStreamWriter(baos)));
+//      
+//      String label;
+//      String note;
+//      if (isBatchMode)
+//         currentLabel = batchLabelPrefix + (new Long(System.nanoTime())).toString();
+//      else
+//         currentLabel = getStringField("Label");
+//      
+//      try
+//      {
+//         dppXML.setIndent("   ")
+//               .writeXmlVersion()
+//               .writeEntity(getRootElement())
+//               .writeAttribute("xmlns:xnat", "http://nrg.wustl.edu/xnat")
+//               .writeAttribute("xmlns:xsi",  "http://www.w3.org/2001/XMLSchema-instance")
+//               .writeAttribute("xmlns:prov", "http://www.nbirn.net/prov")
+//               .writeAttribute("xmlns:icr",  "http://www.icr.ac.uk/icr")
+//               .writeAttribute("ID",         XNATAccessionID)
+//               .writeAttribute("label",      currentLabel)
+//               .writeAttribute("project",    XNATProject);
+//      }
+//         
+//
+//      catch (IOException exIO){reportError(exIO, "initialise XML");}
    }
 
    
@@ -234,7 +234,7 @@ public abstract class QCAssessmentDataUploader extends DataUploader
           (provProgs.size() != provMachines.size())  ||
           (provProgs.size() != provPlatforms.size()))
          {
-            reportError(null, "creating qcAssessmentData: provenance");
+       //     reportError(null, "creating qcAssessmentData: provenance");
             return;
          }
       
@@ -243,74 +243,75 @@ public abstract class QCAssessmentDataUploader extends DataUploader
 
       
       // Write the data out.
-      try
-      {
-         dppXML.delayedWriteEntity("date")
-                  .delayedWriteText(date)
-               .delayedEndEntity()
-               
-               .delayedWriteEntity("time")
-                  .delayedWriteText(time)
-               .delayedEndEntity()
-               
-               .writeEntity("note")
-                  .writeText(isBatchMode ? batchNote : getStringField("Note"))
-               .endEntity()
-               
-               .writeEntity("investigator")
-                  .writeEntity("title")
-                     .writeText(xninv.title)
-                  .endEntity()
-                  .writeEntity("firstname")
-                     .writeText(xninv.firstName)
-                  .endEntity()
-                  .writeEntity("lastname")
-                     .writeText(xninv.lastName)
-                  .endEntity()
-                  .writeEntity("institution")
-                     .writeText(xninv.institution)
-                  .endEntity()
-                  .writeEntity("department")
-                     .writeText(xninv.department)
-                  .endEntity()
-                  .writeEntity("email")
-                     .writeText(xninv.email)
-                  .endEntity()
-                  .writeEntity("phone")
-                     .writeText(xninv.phoneNumber)
-                  .endEntity()
-               .endEntity();
+//      try
+//      {
+//         dppXML.delayedWriteEntity("date")
+//                  .delayedWriteText(date)
+//               .delayedEndEntity()
+//               
+//               .delayedWriteEntity("time")
+//                  .delayedWriteText(time)
+//               .delayedEndEntity()
+//               
+//               .writeEntity("note")
+//                  .writeText(isBatchMode ? batchNote : getStringField("Note"))
+//               .endEntity()
+//               
+//               .writeEntity("investigator")
+//                  .writeEntity("title")
+//                     .writeText(xninv.title)
+//                  .endEntity()
+//                  .writeEntity("firstname")
+//                     .writeText(xninv.firstName)
+//                  .endEntity()
+//                  .writeEntity("lastname")
+//                     .writeText(xninv.lastName)
+//                  .endEntity()
+//                  .writeEntity("institution")
+//                     .writeText(xninv.institution)
+//                  .endEntity()
+//                  .writeEntity("department")
+//                     .writeText(xninv.department)
+//                  .endEntity()
+//                  .writeEntity("email")
+//                     .writeText(xninv.email)
+//                  .endEntity()
+//                  .writeEntity("phone")
+//                     .writeText(xninv.phoneNumber)
+//                  .endEntity()
+//               .endEntity();
+//
+//         if (!provProgs.isEmpty())
+//         {
+//            dppXML.writeEntity("provenance");
+//            for (int i=0; i<provProgs.size(); i++)
+//            {
+//               dppXML.writeEntity("processStep")
+//                  .delayedWriteEntity("program")
+//                     .delayedWriteAttribute("version", provVersions.get(i))
+//                     .delayedWriteAttribute("arguments", provArguments.get(i))
+//                     .delayedWriteText(provProgs.get(i))
+//                  .delayedEndEntity()
+//                  .delayedWriteEntity("timestamp")
+//                     .delayedWriteText(date + " " + time)
+//                  .delayedEndEntity()
+//                  .delayedWriteEntity("cvs")
+//                     .delayedWriteText("not specified")
+//                  .delayedEndEntity()
+//                  .delayedWriteEntity("user")
+//                     .delayedWriteText(provUsers.get(i))
+//                  .delayedEndEntity()
+//                  .delayedWriteEntity("machine")
+//                     .delayedWriteText(provMachines.get(i))
+//                  .delayedEndEntity()
+//                  .delayedWriteEntity("platform")
+//                     .delayedWriteText(provPlatforms.get(i))
+//                  .delayedEndEntity()
+//               .endEntity();
+//            }
+//            dppXML.endEntity();
+         
 
-         if (!provProgs.isEmpty())
-         {
-            dppXML.writeEntity("provenance");
-            for (int i=0; i<provProgs.size(); i++)
-            {
-               dppXML.writeEntity("processStep")
-                  .delayedWriteEntity("program")
-                     .delayedWriteAttribute("version", provVersions.get(i))
-                     .delayedWriteAttribute("arguments", provArguments.get(i))
-                     .delayedWriteText(provProgs.get(i))
-                  .delayedEndEntity()
-                  .delayedWriteEntity("timestamp")
-                     .delayedWriteText(date + " " + time)
-                  .delayedEndEntity()
-                  .delayedWriteEntity("cvs")
-                     .delayedWriteText("not specified")
-                  .delayedEndEntity()
-                  .delayedWriteEntity("user")
-                     .delayedWriteText(provUsers.get(i))
-                  .delayedEndEntity()
-                  .delayedWriteEntity("machine")
-                     .delayedWriteText(provMachines.get(i))
-                  .delayedEndEntity()
-                  .delayedWriteEntity("platform")
-                     .delayedWriteText(provPlatforms.get(i))
-                  .delayedEndEntity()
-               .endEntity();
-            }
-            dppXML.endEntity();
-         }
          
          // Note that I write out only an "in" section. The philosophy of the
          // uploader is that all files used to create the qcAssessment must
@@ -338,9 +339,9 @@ public abstract class QCAssessmentDataUploader extends DataUploader
 //                  .writeText(XNATExperimentID)
 //               .endEntity();
                                 
-      } 
-   
-      catch (IOException exIO) {reportError(exIO, "creating qcAssessmentData");}
+//      } 
+//   
+//      catch (IOException exIO) {reportError(exIO, "creating qcAssessmentData");}
    }
              
            
@@ -429,19 +430,19 @@ public abstract class QCAssessmentDataUploader extends DataUploader
     */
    protected void createScanListXML()
    {
-      try
-      {
-         dppXML.delayedWriteEntity("scans");
-
-         for (String scan : XNATScanID)
-         {
-            dppXML.delayedWriteEntity("scan")
-                  .delayedWriteAttribute("id", scan)
-            .delayedEndEntity();
-         }
-         dppXML.delayedEndEntity();
-      }
-      catch (IOException exIO) {reportError(exIO, "create scan list");}
+//      try
+//      {
+//         dppXML.delayedWriteEntity("scans");
+//
+//         for (String scan : XNATScanID)
+//         {
+//            dppXML.delayedWriteEntity("scan")
+//                  .delayedWriteAttribute("id", scan)
+//            .delayedEndEntity();
+//         }
+//         dppXML.delayedEndEntity();
+//      }
+//      catch (IOException exIO) {reportError(exIO, "create scan list");}
    }
    
    
@@ -462,12 +463,12 @@ public abstract class QCAssessmentDataUploader extends DataUploader
     */
    protected void finishWritingXML()
    {
-      try
-      {
-         dppXML.endEntity();
-         dppXML.close();
-      }
-      catch (IOException exIO) {reportError(exIO, "finish writing XML");}
+//      try
+//      {
+//         dppXML.endEntity();
+//         dppXML.close();
+//      }
+//      catch (IOException exIO) {reportError(exIO, "finish writing XML");}
    }
    
   
@@ -479,15 +480,15 @@ public abstract class QCAssessmentDataUploader extends DataUploader
    protected Document getXMLDocument()
    {
       Document metaDoc = null;
-      try
-      {
-         ByteArrayInputStream bis = new ByteArrayInputStream(baos.toByteArray());     
-         metaDoc = (new XMLUtilities()).getDOMDocument(bis);
-      }
-      catch (XMLException exXML)
-      {
-         reportError(exXML, "convert OutputStream to Document");
-      }
+//      try
+//      {
+//         ByteArrayInputStream bis = new ByteArrayInputStream(baos.toByteArray());     
+//         metaDoc = (new XMLUtilities()).getDOMDocument(bis);
+//      }
+//      catch (XMLException exXML)
+//      {
+//         reportError(exXML, "convert OutputStream to Document");
+//      }
       
       return metaDoc;
    }
