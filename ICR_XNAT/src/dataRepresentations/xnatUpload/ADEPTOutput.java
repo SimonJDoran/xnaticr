@@ -46,7 +46,7 @@
 package dataRepresentations.xnatUpload;
 
 import dataRepresentations.RtStructWriter;
-import dataRepresentations.xnatUpload.XnatUploadRepresentation;
+import dataRepresentations.xnatUpload.XnatUpload;
 import exceptions.XMLException;
 import exceptions.XNATException;
 import java.util.zip.DataFormatException;
@@ -55,7 +55,7 @@ import org.dcm4che2.data.DicomObject;
 import org.w3c.dom.Document;
 import xnatDAO.XNATProfile;
 
-public class ADEPTOutput extends XnatUploadRepresentation implements RtStructWriter
+public class ADEPTOutput extends XnatUpload implements RtStructWriter
 {
 	public Document doc;
 	

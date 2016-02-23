@@ -45,7 +45,7 @@
 package dataRepresentations.xnatUpload;
 
 import dataRepresentations.RtStructWriter;
-import dataRepresentations.xnatUpload.XnatUploadRepresentation;
+import dataRepresentations.xnatUpload.XnatUpload;
 import etherj.aim.ImageAnnotationCollection;
 import exceptions.DataFormatException;
 import exceptions.XMLException;
@@ -71,7 +71,7 @@ import xnatDAO.XNATProfile;
 import xnatRestToolkit.XNATNamespaceContext;
 import xnatRestToolkit.XNATRESTToolkit;
 
-public class AIMOutput extends XnatUploadRepresentation implements RtStructWriter
+public class AIMOutput extends XnatUpload implements RtStructWriter
 {
    static Logger logger = Logger.getLogger(AIMOutput.class);
 	public Document                  doc;

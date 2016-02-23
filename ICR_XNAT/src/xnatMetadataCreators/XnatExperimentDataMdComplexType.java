@@ -100,6 +100,7 @@ public class XnatExperimentDataMdComplexType extends MdComplexType
 				xid.insertXmlAsElement("investigator", dppXML);
 	}
 	
+	
 	public void setDate(String s)
 	{
 		date = s;

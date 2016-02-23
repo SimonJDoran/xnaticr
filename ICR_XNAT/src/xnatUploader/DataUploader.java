@@ -411,7 +411,7 @@ public abstract class DataUploader
     * Note that the default type of file is XML, but this method will be over-
     * ridden in subclasses to allow us to open arbitrary file types, such as
     * DICOM.
-    * @return a boolean variable with true if the file was opened successfuly
+    * @return a boolean variable with true if the file was opened successfully
     *         and false otherwise.
     */
    public boolean readFile()
@@ -853,7 +853,7 @@ public abstract class DataUploader
    /**
     * Transfer the software version from the GUI to the uploader, so that it
     * is only set in one place.
-    @ @param version a String containing the version number
+    * @param version a String containing the version number
     */
    public void setVersion(String version)
    {

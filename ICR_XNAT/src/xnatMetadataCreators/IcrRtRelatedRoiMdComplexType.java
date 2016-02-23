@@ -56,19 +56,18 @@ public class IcrRtRelatedRoiMdComplexType extends MdComplexType
 {
 	protected RtRelatedRoi rrr;
 	
+	
+	
 	public IcrRtRelatedRoiMdComplexType(RtRelatedRoi rrr)
 	{
 		this.rrr = rrr;
 	}
 	
 	
-	public IcrRtRelatedRoiMdComplexType()
-	{
-		rrr = new RtRelatedRoi();
-	}	
+	public IcrRtRelatedRoiMdComplexType() {}	
 	
 	
-	public void setAdditionalField(RtRelatedRoi rrr)
+	public void setRtRelatedRoi(RtRelatedRoi rrr)
 	{
 		this.rrr = rrr;
 	}

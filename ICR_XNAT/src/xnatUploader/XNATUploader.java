@@ -546,7 +546,7 @@ public final class XNATUploader extends XNATGUI
       uploaderClassMap = new HashMap<TypeSubtype, Class<? extends DataUploader>>();
       
       uploaderClassMap.put(new TypeSubtype("Regions-of-interest", "Set of ROIs"),
-                           RTStructureSetUploader.class);
+                           RtStructDataUploader.class);
       uploaderClassMap.put(new TypeSubtype("Application outputs", "Adept output"),
                            AdeptDataUploader.class);
       uploaderClassMap.put(new TypeSubtype("Application outputs", "MRIW output"),

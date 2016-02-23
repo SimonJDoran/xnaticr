@@ -44,16 +44,12 @@
 
 package dataRepresentations.dicom;
 
-import dataRepresentations.dicom.RtRelatedRoi;
-import dataRepresentations.dicom.RoiPhysicalProperty;
-import dataRepresentations.dicom.RelatedRtRoiObservation;
-import dataRepresentations.dicom.DicomEntityRepresentation;
 import java.util.List;
 import org.dcm4che2.data.DicomObject;
 import org.dcm4che2.data.Tag;
 import org.dcm4che2.data.VR;
 
-public class RtRoiObservation extends DicomEntityRepresentation
+public class RtRoiObservation extends DicomEntity
 {
    public int                           observationNumber;
    public int                           referencedRoiNumber;

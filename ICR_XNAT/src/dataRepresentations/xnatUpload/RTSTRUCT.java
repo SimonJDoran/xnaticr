@@ -1,5 +1,5 @@
 /********************************************************************
-* Copyright (c) 2012, Institute of Cancer Research
+* Copyright (c) 2016, Institute of Cancer Research
 * All rights reserved.
 * 
 * Redistribution and use in source and binary forms, with or without
@@ -35,38 +35,18 @@
 
 /*********************************************************************
 * @author Simon J Doran
-* Java class: DataRepresentation.java
-* First created on Sep 6, 2012 at 11:22:28 PM
+* Java class: RTSTRUCT.java
+* First created on Feb 23, 2016 at 9:05:03 AM
 * 
-* Provide the common features that will be used by all classes that
-* represent data objects to be uploaded to XNAT.
+* Define the data structures particular to an upload of DICOM
+* RT-STRUCT region-of-interest data into XNAT.
 *********************************************************************/
 
 package dataRepresentations.xnatUpload;
 
-import java.util.ArrayList;
-import java.util.SortedMap;
-import xnatDAO.XNATProfile;
+import dataRepresentations.dicom.RtStruct;
 
-public abstract class XnatUploadRepresentation
+public class RTSTRUCT extends XnatUpload
 {
-   // Question: Does it make sense to place XNAT-specific information in an
-   // object that is describing a concept external to XNAT?
-   //
-   // Answer: In many cases, we want to be able to render the object, using
-   // base images that are stored in the XNAT database (e.g., overlaying them
-   // with a region of interest. So we have to be able to extract 
-   // these base images from the database.
-
-   public String                       XNATProjectID;
-   public String                       XNATExperimentID;
-   public String                       XNATRefExperimentID;
-   public String                       XNATSubjectID;
-   public String                       XNATSubjectLabel;
-   public ArrayList<String>            XNATScanID;
-   public SortedMap<String, String>    fileSOPMap;
-   public SortedMap<String, String>    fileScanMap;
-   public XNATProfile                  xnprf;
-	
-	public XnatUploadRepresentation() {}
+	RtStruct rts;
 }

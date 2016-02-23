@@ -48,7 +48,7 @@ import org.dcm4che2.data.DicomObject;
 import org.dcm4che2.data.Tag;
 import org.dcm4che2.data.VR;
 
-public class GeneralEquipment extends DicomEntityRepresentation
+public class GeneralEquipment extends DicomEntity
 {
 	public String   manufacturer;
 	public String   institutionName;

@@ -44,16 +44,12 @@
 
 package dataRepresentations.dicom;
 
-import dataRepresentations.dicom.RtReferencedSeries;
-import dataRepresentations.dicom.DicomEntityRepresentation;
 import java.util.List;
 import org.dcm4che2.data.DicomObject;
-import java.util.ArrayList;
-import org.dcm4che2.data.DicomElement;
 import org.dcm4che2.data.Tag;
 import org.dcm4che2.data.VR;
 
-public class RtReferencedStudy extends DicomEntityRepresentation
+public class RtReferencedStudy extends DicomEntity
 {
 	public String                   referencedSopClassUid;
 	public String                   referencedSopInstanceUid;

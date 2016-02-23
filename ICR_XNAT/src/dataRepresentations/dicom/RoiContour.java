@@ -44,14 +44,12 @@
 
 package dataRepresentations.dicom;
 
-import dataRepresentations.dicom.Contour;
-import dataRepresentations.dicom.DicomEntityRepresentation;
 import java.util.List;
 import org.dcm4che2.data.DicomObject;
 import org.dcm4che2.data.Tag;
 import org.dcm4che2.data.VR;
 
-public class RoiContour extends DicomEntityRepresentation
+public class RoiContour extends DicomEntity
 {
    public int           referencedRoiNumber;
    public int[]         roiDisplayColour;

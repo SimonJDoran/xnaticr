@@ -46,7 +46,7 @@ package dataRepresentations.xnatUpload;
 
 import dataRepresentations.ContourRenderer;
 import dataRepresentations.RtStructWriter;
-import dataRepresentations.xnatUpload.XnatUploadRepresentation;
+import dataRepresentations.xnatUpload.XnatUpload;
 import exceptions.XMLException;
 import exceptions.XNATException;
 import generalUtilities.UIDGenerator;
@@ -73,7 +73,7 @@ import xnatDAO.XNATProfile;
 import xnatRestToolkit.XNATNamespaceContext;
 import xnatRestToolkit.XNATRESTToolkit;
 
-public final class MRIWOutput extends XnatUploadRepresentation implements RtStructWriter
+public final class MRIWOutput extends XnatUpload implements RtStructWriter
 {
    static  Logger logger = Logger.getLogger(MRIWOutput.class);
    

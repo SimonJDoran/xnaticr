@@ -47,7 +47,7 @@ package dataRepresentations.xnatSchema;
 
 import java.util.List;
 
-public class AbstractResource extends XnatSchemaElementRepresentation
+public class AbstractResource extends XnatSchemaElement
 {
 	public final class Tag
 	{

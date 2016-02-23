@@ -52,8 +52,9 @@ import java.util.Map;
 
 public class XMLException extends CodedException
 {
-	public static final int PARSE  = 0;
-   public static final int OUTPUT = 1;
+	public static final int PARSE        = 0;
+   public static final int OUTPUT       = 1;
+	public static final int ROOT_ELEMENT = 2;
 	
 	private static final HashMap<Integer, String> messages;
 	static Logger logger = Logger.getLogger(XNATException.class);
@@ -61,8 +62,9 @@ public class XMLException extends CodedException
 	static
 	{
 		messages = new HashMap();
-	   messages.put(PARSE,  "Problem parsing XML" );
-		messages.put(OUTPUT, "Problem outputting XML" );
+	   messages.put(PARSE,        "Problem parsing XML" );
+		messages.put(OUTPUT,       "Problem outputting XML" );
+		messages.put(ROOT_ELEMENT, "Complex type cannot be use as a root element");
 	};
 
 

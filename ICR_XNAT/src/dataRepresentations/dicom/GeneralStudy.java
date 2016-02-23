@@ -48,7 +48,7 @@ import org.dcm4che2.data.DicomObject;
 import org.dcm4che2.data.Tag;
 import org.dcm4che2.data.VR;
 
-public class GeneralStudy extends DicomEntityRepresentation
+public class GeneralStudy extends DicomEntity
 {
 	public String studyInstanceUid;
 	public String studyDate;

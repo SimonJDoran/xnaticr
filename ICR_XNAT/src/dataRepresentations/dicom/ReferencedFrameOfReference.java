@@ -45,16 +45,12 @@
 
 package dataRepresentations.dicom;
 
-import dataRepresentations.dicom.DicomEntityRepresentation;
-import dataRepresentations.dicom.FrameOfReferenceRelationship;
 import java.util.List;
-import java.util.ArrayList;
-import org.dcm4che2.data.DicomElement;
 import org.dcm4che2.data.DicomObject;
 import org.dcm4che2.data.Tag;
 import org.dcm4che2.data.VR;
 
-public class ReferencedFrameOfReference extends DicomEntityRepresentation
+public class ReferencedFrameOfReference extends DicomEntity
 {
 	public String                             frameOfReferenceUid;
 	public List<RtReferencedStudy>            rtReferencedStudyList;

@@ -33,31 +33,32 @@
 * OF THE POSSIBILITY OF SUCH DAMAGE.
 *********************************************************************/
 
-/********************************************************************
+/*********************************************************************
 * @author Simon J Doran
-* Java class: AdditionalField.java
-* First created on Jan 20, 2016 at 12:12:48 PM
+* Java class: XnatUpload.java
+* First created in Feb 2016
 * 
-* Formally declare an additional field (e.g., custom variable). This
-* class is used in conjunction with XnatAddFieldMDComplexType.
-* 
-* Eventually, the plan for this whole package is to replace the
-* explicit writing of the XML files with a higher level interface,
-* e.g., JAXB. However, this is for a later refactoring.
+* Provide the common features that will be used by all classes that
+* represent data objects to be uploaded to XNAT.
 *********************************************************************/
 
-package dataRepresentations.xnatSchema;
+package dataRepresentations.xnatUpload;
 
-public class AdditionalField extends XnatSchemaElement
+import java.util.ArrayList;
+import java.util.SortedMap;
+import xnatDAO.XNATProfile;
+
+public abstract class XnatUpload
 {
-	public String name;
-	public String value;
+   public String                       XNATProjectID;
+   public String                       XNATExperimentID;
+   public String                       XNATRefExperimentID;
+   public String                       XNATSubjectID;
+   public String                       XNATSubjectLabel;
+   public ArrayList<String>            XNATScanID;
+   public SortedMap<String, String>    fileSOPMap;
+   public SortedMap<String, String>    fileScanMap;
+   public XNATProfile                  xnprf;
 	
-	public AdditionalField(){}
-	
-	public AdditionalField(String name, String value)
-	{
-		this.name  = name;
-		this.value = value;
-	}
+	public XnatUpload() {}
 }

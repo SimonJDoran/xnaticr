@@ -43,15 +43,12 @@
 
 package dataRepresentations.dicom;
 
-import dataRepresentations.dicom.Code;
-import dataRepresentations.dicom.DicomEntityRepresentation;
 import java.util.List;
-import org.dcm4che2.data.DicomElement;
 import org.dcm4che2.data.DicomObject;
 import org.dcm4che2.data.Tag;
 import org.dcm4che2.data.VR;
 
-public class StructureSetRoi extends DicomEntityRepresentation
+public class StructureSetRoi extends DicomEntity
 {
 	public int         roiNumber;
 	public int         correspondingROIContour;

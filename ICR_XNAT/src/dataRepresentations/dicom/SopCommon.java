@@ -43,12 +43,12 @@
 *********************************************************************/
 package dataRepresentations.dicom;
 
-import dataRepresentations.dicom.DicomEntityRepresentation;
+import dataRepresentations.dicom.DicomEntity;
 import org.dcm4che2.data.DicomObject;
 import org.dcm4che2.data.Tag;
 import org.dcm4che2.data.VR;
 
-public class SopCommon extends DicomEntityRepresentation
+public class SopCommon extends DicomEntity
 {
 	public String mediaStorageSopClassUid;
 	public String sopClassUid;

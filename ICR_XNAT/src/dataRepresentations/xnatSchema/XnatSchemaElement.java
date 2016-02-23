@@ -45,6 +45,6 @@
 *********************************************************************/
 package dataRepresentations.xnatSchema;
 
-public abstract class XnatSchemaElementRepresentation
+public abstract class XnatSchemaElement
 {	
 }

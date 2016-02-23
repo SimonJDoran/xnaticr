@@ -43,14 +43,12 @@
 *********************************************************************/
 package dataRepresentations.dicom;
 
-import dataRepresentations.dicom.ContourImage;
-import dataRepresentations.dicom.DicomEntityRepresentation;
 import java.util.List;
 import org.dcm4che2.data.DicomObject;
 import org.dcm4che2.data.Tag;
 import org.dcm4che2.data.VR;
 
-public class RtReferencedSeries extends DicomEntityRepresentation
+public class RtReferencedSeries extends DicomEntity
 {
 	public String             seriesInstanceUid;
 	public List<ContourImage> contourImageList;

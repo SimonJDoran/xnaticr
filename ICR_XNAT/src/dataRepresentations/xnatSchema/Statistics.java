@@ -44,11 +44,11 @@
 
 package dataRepresentations.xnatSchema;
 
-import dataRepresentations.xnatSchema.XnatSchemaElementRepresentation;
+import dataRepresentations.xnatSchema.XnatSchemaElement;
 import dataRepresentations.xnatSchema.AdditionalField;
 import java.util.List;
 
-public class Statistics extends XnatSchemaElementRepresentation
+public class Statistics extends XnatSchemaElement
 {
 	public Double  mean;
 	public Double  snr;

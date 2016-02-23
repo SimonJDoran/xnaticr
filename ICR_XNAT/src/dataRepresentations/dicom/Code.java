@@ -52,14 +52,12 @@
 
 package dataRepresentations.dicom;
 
-import dataRepresentations.dicom.DicomEntityRepresentation;
 import java.util.List;
-import org.dcm4che2.data.BasicDicomObject;
 import org.dcm4che2.data.DicomObject;
 import org.dcm4che2.data.Tag;
 import org.dcm4che2.data.VR;
 
-public class Code extends DicomEntityRepresentation
+public class Code extends DicomEntity
 {
 	public  static final String SEPARATOR        = "_!DC!_";
 	private static final int    TagLongCodeValue = 0x0008_0119;

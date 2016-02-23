@@ -33,31 +33,18 @@
 * OF THE POSSIBILITY OF SUCH DAMAGE.
 *********************************************************************/
 
-/********************************************************************
+/*********************************************************************
 * @author Simon J Doran
-* Java class: AdditionalField.java
-* First created on Jan 20, 2016 at 12:12:48 PM
+* Java interface TextRepresentation.java
+* First created on Feb 23, 2016 at 9:59:00 AM
 * 
-* Formally declare an additional field (e.g., custom variable). This
-* class is used in conjunction with XnatAddFieldMDComplexType.
-* 
-* Eventually, the plan for this whole package is to replace the
-* explicit writing of the XML files with a higher level interface,
-* e.g., JAXB. However, this is for a later refactoring.
+* Specify the interface by which objects to be uploaded to XNAT can
+* produce a text representation of their fields.
 *********************************************************************/
 
-package dataRepresentations.xnatSchema;
+package xnatUploader;
 
-public class AdditionalField extends XnatSchemaElement
+public interface TextRepresentation
 {
-	public String name;
-	public String value;
-	
-	public AdditionalField(){}
-	
-	public AdditionalField(String name, String value)
-	{
-		this.name  = name;
-		this.value = value;
-	}
+	public String getTextRepresentation();
 }

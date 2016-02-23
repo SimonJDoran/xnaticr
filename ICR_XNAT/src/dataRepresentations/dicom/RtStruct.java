@@ -46,39 +46,20 @@
 
 package dataRepresentations.dicom;
 
-import dataRepresentations.RtStructWriter;
-import dataRepresentations.dicom.StructureSetRoi;
-import dataRepresentations.dicom.StructureSet;
-import dataRepresentations.dicom.SopCommon;
-import dataRepresentations.dicom.RtRoiObservation;
-import dataRepresentations.dicom.RtReferencedStudy;
-import dataRepresentations.dicom.RtReferencedSeries;
-import dataRepresentations.dicom.RoiContour;
-import dataRepresentations.dicom.ReferencedFrameOfReference;
-import dataRepresentations.dicom.Patient;
-import dataRepresentations.dicom.ContourImage;
-import dataRepresentations.dicom.Contour;
-import dataRepresentations.dicom.DicomEntityRepresentation;
-import dataRepresentations.dicom.GeneralEquipment;
-import dataRepresentations.dicom.GeneralStudy;
-import dataRepresentations.dicom.RtSeries;
 import exceptions.DataFormatException;
 import exceptions.DataRepresentationException;
 import generalUtilities.UIDGenerator;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.TreeMap;
 import org.dcm4che2.data.DicomObject;
 import org.dcm4che2.data.Tag;
 import org.dcm4che2.data.VR;
-import xnatDAO.XNATProfile;
 
-public class RtStruct extends DicomEntityRepresentation
+public class RtStruct extends DicomEntity
 {
 	/* The aim here is to follow the DICOM model fairly closely.
 	   The IOD modules mandatory for an RT-STRUCT file are in Table A.1-4

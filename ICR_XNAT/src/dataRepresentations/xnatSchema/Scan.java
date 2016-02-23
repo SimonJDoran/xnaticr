@@ -49,12 +49,12 @@ import java.util.ArrayList;
 import java.util.List;
 import xnatMetadataCreators.MdComplexType;
 
-public class Scan extends XnatSchemaElementRepresentation
+public class Scan extends XnatSchemaElement
 {
 	public class Slice
 	{
-		String        number;
-		MdComplexType sliceStatistics;
+		public String        number;
+		public MdComplexType sliceStatistics;
 	}
 	
 	public String        id;

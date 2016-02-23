@@ -55,16 +55,17 @@ import org.dcm4che2.data.BasicDicomObject;
 import org.dcm4che2.data.DicomElement;
 import org.dcm4che2.data.DicomObject;
 import org.dcm4che2.data.VR;
+import xnatUploader.TextRepresentation;
 
-public abstract class DicomEntityRepresentation
+public abstract class DicomEntity implements TextRepresentation
 {
    protected static final int   DUMMY_INT   = -9909;
    protected static final float DUMMY_FLOAT = -9909.9f;
 	public ArrayList<String>     errors      = new ArrayList<>();
 	public ArrayList<String>     warnings    = new ArrayList<>();
 	
-	protected DicomEntityRepresentation(){}
-	protected DicomEntityRepresentation(DicomObject src){}
+	protected DicomEntity(){}
+	protected DicomEntity(DicomObject src){}
    
    protected abstract void writeToDicom(DicomObject dcmObj);
    
@@ -181,13 +182,13 @@ public abstract class DicomEntityRepresentation
 	}
 	
 	
-	public <T extends DicomEntityRepresentation> List<T> readSequence(Class<T> cls, DicomObject dcmObj, int tag, int requirementType)
+	public <T extends DicomEntity> List<T> readSequence(Class<T> cls, DicomObject dcmObj, int tag, int requirementType)
 	{
 		return readSequence(cls, dcmObj, tag, Integer.toString(requirementType));
 	}
 	
 	
-	public <T extends DicomEntityRepresentation> List<T> readSequence(Class<T> cls, DicomObject dcmObj, int tag, String requirementType)
+	public <T extends DicomEntity> List<T> readSequence(Class<T> cls, DicomObject dcmObj, int tag, String requirementType)
 	{
 		List<T>      list       = new ArrayList<>();
 		boolean      tagPresent = dcmObj.contains(tag);
@@ -380,7 +381,7 @@ public abstract class DicomEntityRepresentation
    }
 	
    
-   public <T extends DicomEntityRepresentation> void
+   public <T extends DicomEntity> void
                            writeSequence(DicomObject dcmObj, int tag, VR vr,
                                          int requirementType, List<T> list)
 	{
@@ -388,7 +389,7 @@ public abstract class DicomEntityRepresentation
 	}
 	
 	
-	public <T extends DicomEntityRepresentation> void
+	public <T extends DicomEntity> void
                            writeSequence(DicomObject dcmObj, int tag, VR vr,
                                          String requirementType, List<T> list)
 	{
@@ -474,7 +475,7 @@ public abstract class DicomEntityRepresentation
 	}
 	
 	
-	public <T extends DicomEntityRepresentation> T deepCopy()
+	public <T extends DicomEntity> T deepCopy()
 	{
 		// Create the empty object.
 		Class cls = this.getClass();
@@ -508,18 +509,18 @@ public abstract class DicomEntityRepresentation
 				throw new RuntimeException("Programming issue: " + exIA.getMessage());
 			}
 			
-			// For all objects that are subtypes of DicomEntityRepresentation
+			// For all objects that are subtypes of DicomEntity
 			// (i.e., the only ones that can call this method) the only types
 			// of field present are:
-			// * primitive types or String, which can be cloned;
-			// * other DicomEntityRepresentations, which are copied by a
-			//   call to their own deepCopy method;
-			// * Lists of DicomEntityRepresentations.
+			// (1) other DicomEntityRepresentations, which are copied by a
+			//     call to their own deepCopy method;
+			// (2) Lists of DicomEntityRepresentations;
+			// (3) primitive types or String, which can be cloned.
 			if (a != null)
 			{
-				if (a instanceof DicomEntityRepresentation)
+				if (a instanceof DicomEntity)
 				{
-					DicomEntityRepresentation b = (DicomEntityRepresentation) a;
+					DicomEntity b = (DicomEntity) a;
 
 					try
 					{
@@ -533,7 +534,7 @@ public abstract class DicomEntityRepresentation
 
 				else if (a instanceof List)
 				{
-					List<DicomEntityRepresentation> b = (List) a;
+					List<DicomEntity> b = (List) a;
 					try
 					{
 						fld.set(dest, deepCopyList(b));
@@ -563,7 +564,7 @@ public abstract class DicomEntityRepresentation
 	}
 	
 	
-	public <T extends DicomEntityRepresentation> List<T> deepCopyList(List<T> srcList)
+	public <T extends DicomEntity> List<T> deepCopyList(List<T> srcList)
 	{
 		List<T> destList = new ArrayList<>();
 		for (T srcD : srcList)
@@ -574,5 +575,94 @@ public abstract class DicomEntityRepresentation
 		
 		return destList;
 	}
+	
+
+	
+	@Override
+	public String getTextRepresentation()
+	{
+		return getDicomTextRepresentation();
+	}
+	
+	
+	public <T extends DicomEntity> String getDicomTextRepresentation()
+	{
+		return getDicomTextRepresentation(new StringBuilder());
+	}
+	
+	
+	public <T extends DicomEntity> String getDicomTextRepresentation(StringBuilder indent)
+	{
+		final String  IND    = "   ";
+		StringBuilder sb     = new StringBuilder();
+		Class         cls    = this.getClass();
+		Field[]       fields = cls.getDeclaredFields(); 
+		
+		for (Field fld : fields)
+		{
+			sb.append("\n").append(indent).append(fld.getName()).append(IND);
+			
+			Object a;
+			try
+			{
+				a = fld.get(this);
+			}
+			catch (IllegalAccessException exIA)
+			{
+				throw new RuntimeException("Programming issue: " + exIA.getMessage());
+			}
+			
+			// For all objects that are subtypes of DicomEntity
+			// (i.e., the only ones that can call this method) the only types
+			// of field present are:
+			// (1) other DicomEntityRepresentations, whose text representations
+			//     are obtained by a call to their own getDicomTextRepresentation method;
+			// (2) Lists of DicomEntityRepresentations;
+			// (3) primitive types or String, whose values can be obtained directly.
+			if (a != null)
+			{
+				if (a instanceof DicomEntity)
+				{
+					DicomEntity b = (DicomEntity) a;
+					sb.append(b.getClass().getSimpleName());
+					indent.append(IND);					
+					sb.append(b.getDicomTextRepresentation(indent));
+					indent.delete(indent.length()-IND.length(), indent.length()-1);
+				}
+
+				else if (a instanceof List)
+				{
+					List<DicomEntity> b = (List<DicomEntity>) a;
+					sb.append(getListTextRepresentation(b, indent));
+				}
+				
+				else sb.append(a);				
+			}
+		}
+		
+		return sb.toString();
+	}
+	
+	
+	public <T extends DicomEntity> String getListTextRepresentation(List<T> list, StringBuilder indent)
+	{
+		final String  IND   = "   ";
+		StringBuilder sb    = new StringBuilder();
+		int           count = 0;
+		
+		sb.append(list.getClass().getSimpleName());
+		indent.append(IND);
+		
+		for (T item : list)
+		{
+			sb.append("Item ").append(++count);
+			sb.append(item.getDicomTextRepresentation(indent));
+		}
+		
+		indent.delete(indent.length()-IND.length(), indent.length()-1);
+		
+		return sb.toString();
+	}
+	
 }
 

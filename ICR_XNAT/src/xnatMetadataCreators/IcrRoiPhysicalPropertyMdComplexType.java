@@ -75,11 +75,11 @@ public class IcrRoiPhysicalPropertyMdComplexType extends MdComplexType
 	public void insertXml(DelayedPrettyPrinterXmlWriter dppXML)
 			      throws IOException, XMLException
 	{		
-		dppXML.delayedWriteEntityWithText("propertyName",  rpp.propertyName)
-				.delayedWriteEntityWithText("propertyValue", rpp.propertyValue);
+		dppXML.delayedWriteEntityWithText("propertyName",  rpp.roiPhysicalProperty)
+				.delayedWriteEntityWithText("propertyValue", rpp.roiPhysicalPropertyValue);
 		
 		dppXML.delayedWriteEntity("elementalCompositionList");
-		      for (RoiElementalComposition ec : rpp.elementalCompositionList)
+		      for (RoiElementalComposition ec : rpp.roiElementalCompositionList)
 				{
 					(new IcrElementalCompositionDataMdComplexType(ec)).insertXmlAsElement("elementalComposition", dppXML);
 				}

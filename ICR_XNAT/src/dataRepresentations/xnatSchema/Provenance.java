@@ -46,7 +46,7 @@ package dataRepresentations.xnatSchema;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Provenance extends XnatSchemaElementRepresentation
+public class Provenance extends XnatSchemaElement
 {
 	private static final String PROV_STRING = "_!PS!_";
 	private static final String LIB_STRING  = "_!LS!_";

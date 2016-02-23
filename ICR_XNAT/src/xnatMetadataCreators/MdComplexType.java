@@ -68,13 +68,16 @@ public abstract class MdComplexType
 	}
 	
 	
-	public void createXmlAsRootElement(String rootElementName,
-												  DelayedPrettyPrinterXmlWriter dppXML)
+	public void createXmlAsRootElement(DelayedPrettyPrinterXmlWriter dppXML)
 		         throws IOException, XMLException
 	{
+		if (getRootElementName().equals("None"))
+		{
+			throw new XMLException(XMLException.ROOT_ELEMENT);
+		}
 		dppXML.setIndent("   ")
 				.writeXmlVersion()
-				.writeEntity(rootElementName)
+				.writeEntity(getRootElementName())
 				.writeAttribute("xmlns:xnat", "http://nrg.wustl.edu/xnat")
 				.writeAttribute("xmlns:xsi",  "http://www.w3.org/2001/XMLSchema-instance")
 				.writeAttribute("xmlns:prov", "http://www.nbirn.net/prov")
@@ -98,4 +101,11 @@ public abstract class MdComplexType
 	
 	abstract void insertXml(DelayedPrettyPrinterXmlWriter dppXML)
 			        throws IOException, XMLException;
+	
+	
+	
+	String getRootElementName()
+	{
+		return "None";
+	}
 }

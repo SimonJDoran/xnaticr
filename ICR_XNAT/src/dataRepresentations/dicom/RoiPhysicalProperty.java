@@ -44,14 +44,12 @@
 
 package dataRepresentations.dicom;
 
-import dataRepresentations.dicom.DicomEntityRepresentation;
-import dataRepresentations.dicom.RoiElementalComposition;
 import java.util.List;
 import org.dcm4che2.data.DicomObject;
 import org.dcm4che2.data.Tag;
 import org.dcm4che2.data.VR;
 
-public class RoiPhysicalProperty extends DicomEntityRepresentation
+public class RoiPhysicalProperty extends DicomEntity
 {
 	public String                        roiPhysicalProperty; // the property name
 	public String                        roiPhysicalPropertyValue;

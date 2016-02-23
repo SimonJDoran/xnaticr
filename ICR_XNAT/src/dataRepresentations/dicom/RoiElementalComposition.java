@@ -45,12 +45,11 @@
 
 package dataRepresentations.dicom;
 
-import dataRepresentations.dicom.DicomEntityRepresentation;
 import org.dcm4che2.data.DicomObject;
 import org.dcm4che2.data.Tag;
 import org.dcm4che2.data.VR;
 
-public class RoiElementalComposition extends DicomEntityRepresentation
+public class RoiElementalComposition extends DicomEntity
 {
 	public int   atomicNumber;
 	public float atomicMassFraction;

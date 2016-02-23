@@ -49,7 +49,7 @@ package dataRepresentations;
 import dataRepresentations.xnatUpload.MRIWOutput;
 import dataRepresentations.xnatUpload.AIMOutput;
 import dataRepresentations.xnatUpload.ADEPTOutput;
-import dataRepresentations.xnatUpload.XnatUploadRepresentation;
+import dataRepresentations.xnatUpload.XnatUpload;
 import exceptions.ImageUtilitiesException;
 import imageUtilities.ImageUtilities;
 import java.awt.Color;
@@ -92,7 +92,7 @@ public class ContourRenderer
    
    static    Logger              logger = Logger.getLogger(ContourRenderer.class);
    private   static final int    THUMBNAIL_SIZE = 128;
-   protected XnatUploadRepresentation  dr;
+   protected XnatUpload  dr;
 	protected Map<String, File>   cachedImageFiles;
    protected float[]             pixelSpacing;
    protected float[]             dirCosines;

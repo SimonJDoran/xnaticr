@@ -45,7 +45,7 @@
 
 package dataRepresentations;
 
-import dataRepresentations.xnatUpload.XnatUploadRepresentation;
+import dataRepresentations.xnatUpload.XnatUpload;
 import dataRepresentations.dicom.Contour;
 import exceptions.XNATException;
 import generalUtilities.Vector2D;
@@ -64,7 +64,7 @@ import xnatRestToolkit.XNATNamespaceContext;
 import xnatRestToolkit.XNATRESTToolkit;
 import xnatUploader.AmbiguousSubjectAndExperiment;
 
-public final class RTStruct_old extends XnatUploadRepresentation implements RtStructWriter
+public final class RTStruct_old extends XnatUpload implements RtStructWriter
 {
    static    Logger             logger      = Logger.getLogger(RTStruct_old.class);
    

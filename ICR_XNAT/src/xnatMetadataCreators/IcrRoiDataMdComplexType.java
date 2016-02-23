@@ -150,6 +150,12 @@ public class IcrRoiDataMdComplexType extends IcrGenericImageAssessmentDataMdComp
 	}
 	
 	
+	public String getRootElement()
+	{
+		return "ROISet";
+	}
+	
+	
 	public void setAssociatedRoiSetIdList(List<String> ls)
 	{
 		associatedRoiSetIdList = ls;
