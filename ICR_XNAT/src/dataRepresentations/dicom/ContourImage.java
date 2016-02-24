@@ -67,10 +67,12 @@ public class ContourImage extends DicomEntity
 		// easy access to the relevant DICOM file to check whether it is multiframe.
 		// For the moment, just try to read, but swallow the error if nothing
 		// comes back.
-		ArrayList<String> tempErrors = errors;
+		ArrayList<String> tempErrors = new ArrayList<>();
+		tempErrors.addAll(errors);
 		referencedFrameNumber   = readInts(ciDo, Tag.ReferencedFrameNumber, "1C");
 		referencedSegmentNumber = readInt(ciDo, Tag.ReferencedFrameNumber,  "1C");
-		errors = tempErrors;
+		errors = new ArrayList<>();
+		errors.addAll(tempErrors);
 	}
 	
 	

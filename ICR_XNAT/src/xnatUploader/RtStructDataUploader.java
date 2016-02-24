@@ -45,14 +45,21 @@
 package xnatUploader;
 
 import dataRepresentations.ROI_old;
+import dataRepresentations.dicom.RtStruct;
 import exceptions.DataFormatException;
+import exceptions.DataRepresentationException;
 import exceptions.XMLException;
 import exceptions.XNATException;
 import generalUtilities.UIDGenerator;
+import java.io.BufferedInputStream;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Set;
+import org.dcm4che2.data.BasicDicomObject;
+import org.dcm4che2.data.DicomObject;
+import org.dcm4che2.io.DicomInputStream;
 import org.w3c.dom.Document;
 import xmlUtilities.DelayedPrettyPrinterXmlWriter;
 import xnatDAO.XNATProfile;
@@ -60,6 +67,8 @@ import xnatMetadataCreators.IcrRoiSetDataMdComplexType;
 
 public class RtStructDataUploader extends DataUploader
 {
+	private DicomObject bdo;
+	
 	public RtStructDataUploader(XNATProfile xnprf)
 	{
 		super(xnprf);
@@ -74,9 +83,37 @@ public class RtStructDataUploader extends DataUploader
 	
 
    @Override
+   public boolean readFile()
+   {
+      bdo = new BasicDicomObject();
+      try
+      {
+         BufferedInputStream bis
+            = new BufferedInputStream(new FileInputStream(uploadFile));
+         DicomInputStream dis = new DicomInputStream(bis);
+         dis.readDicomObject(bdo, -1);
+      }
+      catch (IOException exIO)
+      {
+         errorOccurred = true;
+         errorMessage  = "Unable to open selected file. \n\n" + exIO.getMessage();
+         return false;
+      }
+
+      return true;
+   }
+	
+	
+	@Override
    public boolean parseFile()
    { 
-		return false;
+		try
+		{
+			RtStruct rts = new RtStruct(bdo);
+		}
+		catch (DataFormatException | DataRepresentationException ex){}
+		
+		return true;
 	}
 	
 	/**

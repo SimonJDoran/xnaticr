@@ -81,11 +81,14 @@ public abstract class DicomEntity implements TextRepresentation
 		
 		// Note that dcm4che's getInt function always returns a value.
 		// I use DUMMY_INT as an "unlikely" value that can be taken to indicate
-		// failure.
+		// failure. 
 		int     tagValue   = dcmObj.getInt(tag, DUMMY_INT);
 		boolean tagValueOK = (tagValue != DUMMY_INT);
 		
-		reportReadStatus(tag, tagPresent, tagValueOK, requirementType);
+		// Variable zeroLength not relevant here, but required for compatibility.
+		boolean zeroLength = !(tagValueOK);
+		
+		reportReadStatus(tag, tagPresent, tagValueOK, zeroLength, requirementType);
 		return tagValue;	
 	}
 	
@@ -101,8 +104,10 @@ public abstract class DicomEntity implements TextRepresentation
 		boolean tagPresent = dcmObj.contains(tag);
 		int[]   tagValue   = dcmObj.getInts(tag);
 		boolean tagValueOK = (tagValue != null);
+		boolean zeroLength = true;
+		if (tagValue != null) zeroLength = (tagValue.length == 0);
 		
-		reportReadStatus(tag, tagPresent, tagValueOK, requirementType);
+		reportReadStatus(tag, tagPresent, tagValueOK, zeroLength, requirementType);
 		return tagValue;	
 	}
 	
@@ -123,7 +128,10 @@ public abstract class DicomEntity implements TextRepresentation
 		float   tagValue   = dcmObj.getFloat(tag, DUMMY_FLOAT);
 		boolean tagValueOK = (tagValue != DUMMY_FLOAT);
 		
-		reportReadStatus(tag, tagPresent, tagValueOK, requirementType);
+		// Variable zeroLength not relevant here, but required for compatibility.
+		boolean zeroLength = !(tagValueOK);
+		
+		reportReadStatus(tag, tagPresent, tagValueOK, zeroLength, requirementType);
 		return tagValue;	
 	}
 	
@@ -139,8 +147,10 @@ public abstract class DicomEntity implements TextRepresentation
 		boolean tagPresent = dcmObj.contains(tag);
 		float[]   tagValue = dcmObj.getFloats(tag);
 		boolean tagValueOK = (tagValue != null);
+		boolean zeroLength = true;
+		if (tagValue != null) zeroLength = (tagValue.length == 0);
 		
-		reportReadStatus(tag, tagPresent, tagValueOK, requirementType);
+		reportReadStatus(tag, tagPresent, tagValueOK, zeroLength, requirementType);
 		return tagValue;	
 	}
 	
@@ -153,12 +163,19 @@ public abstract class DicomEntity implements TextRepresentation
 	public String readString(DicomObject dcmObj, int tag, String requirementType)
 	{
 		String  tagValue   = null;
-		boolean tagValueOK = false;
-		boolean tagPresent = dcmObj.contains(tag);
-		if (tagPresent)       tagValue   = dcmObj.getString(tag);
-		if (tagValue != null) tagValueOK = (tagValue.length() != 0);
+
+		// Note: we can't be certain of whether a string value is OK until
+		//       we know whether we are dealing with a requirement type of 2.
+		boolean tagValueOK = true;
+		boolean zeroLength = true;
 		
-		reportReadStatus(tag, tagPresent, tagValueOK, requirementType);
+		boolean tagPresent = dcmObj.contains(tag);
+		if (tagPresent) tagValue = dcmObj.getString(tag);
+		
+
+		if (tagValue != null) zeroLength = (tagValue.length() == 0);
+		
+		reportReadStatus(tag, tagPresent, tagValueOK, zeroLength, requirementType);
 		return tagValue;
 	}
 	
@@ -171,13 +188,27 @@ public abstract class DicomEntity implements TextRepresentation
 	
 	public String[] readStrings(DicomObject dcmObj, int tag, String requirementType)
 	{
-		String[]  tagValue   = null;
-		boolean   tagValueOK = false;
-		boolean   tagPresent = dcmObj.contains(tag);
-		if (tagPresent)       tagValue   = dcmObj.getStrings(tag);
-		if (tagValue != null) tagValueOK = (tagValue.length != 0);
+		String[] tagValue   = null;
+		boolean  tagValueOK = true;
+		boolean  tagPresent = dcmObj.contains(tag);
+		boolean  zeroLength = true;
 		
-		reportReadStatus(tag, tagPresent, tagValueOK, requirementType);
+		if (tagPresent) tagValue = dcmObj.getStrings(tag);
+		if (tagValue != null)
+		{
+			tagValueOK = (tagValue.length != 0);
+			if (tagValue.length != 0)
+			{
+				tagValueOK = true;
+				zeroLength = false;
+				for (int i=0; i<tagValue.length; i++)
+				{
+					if (tagValue[i].length() == 0) zeroLength = true;
+				}
+			}
+		}
+		
+		reportReadStatus(tag, tagPresent, tagValueOK, zeroLength, requirementType);
 		return tagValue;
 	}
 	
@@ -247,7 +278,8 @@ public abstract class DicomEntity implements TextRepresentation
 	
 
                    
-	private void reportReadStatus(int tag, boolean tagPresent, boolean tagValueOK, String requirementType)
+	private void reportReadStatus(int tag, boolean tagPresent, boolean tagValueOK,
+										   boolean zeroLength, String requirementType)
 	{
 		if (tagPresent && !tagValueOK)
 		{
@@ -262,7 +294,8 @@ public abstract class DicomEntity implements TextRepresentation
 				        // This is hard to treat for the general case. 
 				        // Treat as if required and handle the conditions in the
 				        // calling code.
-				if (!tagPresent) errorRequiredTagNotPresent(tag);
+				if ((!tagPresent) || zeroLength) errorRequiredTagNotPresent(tag);
+				break;
 				
 			
 			case "2":  // Required but can have zero length
@@ -271,16 +304,22 @@ public abstract class DicomEntity implements TextRepresentation
 				        // required but can have zero length and handle the
 				        // conditions in the calling code.
 				if (!tagPresent) errorRequiredTagNotPresent(tag);
+				break;
 				
 			
 			case "3":  // Optional
 				if (!tagPresent) warningOptionalTagNotPresent(tag);
+				break;
 				
 			
 			case "4": // Retired - this is not an official DICOM value, but
 				       // caters for the case where an element is no longer in
 				       // the latest DICOM standard.
 				if (tagPresent) warningRetiredTagPresent(tag);
+				break;
+				
+				
+			default: throw new RuntimeException("Programming error: invalid case in DicomEntity");			
 		}
 	}
 	
@@ -424,6 +463,7 @@ public abstract class DicomEntity implements TextRepresentation
 				        // Treat as if required and handle the conditions in the
 				        // calling code.
 				if (isNull) errorRequiredTagNotPresent(tag);
+				break;
 				
 			
 			case "2":  // Required but can have zero length
@@ -432,16 +472,22 @@ public abstract class DicomEntity implements TextRepresentation
 				        // required but can have zero length and handle the
 				        // conditions in the calling code.
 				if (isNull) errorRequiredTagNotPresent(tag);
+				break;
 				
 			
 			case "3":  // Optional
 				if (isNull) warningOptionalTagNotPresent(tag);
+				break;
 				
 			
 			case "4": // Retired - this is not an official DICOM value, but
 				       // caters for the case where an element is no longer in
 				       // the latest DICOM standard.
 				if (!isNull) warningRetiredTagPresent(tag);
+				break;
+				
+			
+			default: throw new RuntimeException("Programming error: invalid case in DicomEntity");
 		}
    }
    
@@ -450,28 +496,28 @@ public abstract class DicomEntity implements TextRepresentation
 	public void errorRequiredTagNotPresent(int tag)
 	{
 		errors.add("Required tag " + Integer.toHexString(tag) + " not found in input: "
-				  + Integer.toHexString(tag) + " " + (new BasicDicomObject()).nameOf(tag));
+				  + (new BasicDicomObject()).nameOf(tag));
 	}
 	
 	
 	public void errorTagContentsInvalid(int tag)
 	{
 		errors.add("Required tag " + Integer.toHexString(tag) + " had invalid contents: "
-				  + Integer.toHexString(tag) + " " + (new BasicDicomObject()).nameOf(tag));
+				  + (new BasicDicomObject()).nameOf(tag));
 	}
 	
 	
 	public void warningOptionalTagNotPresent(int tag)
 	{
 		warnings.add("Optional tag " + Integer.toHexString(tag) + " not found in input: "
-			     + Integer.toHexString(tag) + " " + (new BasicDicomObject()).nameOf(tag));
+			     + (new BasicDicomObject()).nameOf(tag));
 	}
 
 
 	public void warningRetiredTagPresent(int tag)
 	{
-		warnings.add("Retired tag present in input: "
-				  + Integer.toHexString(tag) + " " + (new BasicDicomObject()).nameOf(tag));
+		warnings.add("Retired tag "  + Integer.toHexString(tag) + " present in input: "
+				 + (new BasicDicomObject()).nameOf(tag));
 	}
 	
 	
