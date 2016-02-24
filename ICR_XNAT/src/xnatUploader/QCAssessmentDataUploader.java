@@ -434,7 +434,7 @@ public abstract class QCAssessmentDataUploader extends DataUploader
 //      {
 //         dppXML.delayedWriteEntity("scans");
 //
-//         for (String scan : XNATScanID)
+//         for (String scan : XNATScanIdList)
 //         {
 //            dppXML.delayedWriteEntity("scan")
 //                  .delayedWriteAttribute("id", scan)
@@ -523,7 +523,7 @@ public abstract class QCAssessmentDataUploader extends DataUploader
              (!getStringField("Note").equals(""))  &&
              (!XNATSubjectID.equals(""))           &&
              (!XNATExperimentID.equals(""))        &&
-             (!XNATScanID.get(0).equals(""));
+             (!XNATScanIdList.get(0).equals(""));
    }
    
 	

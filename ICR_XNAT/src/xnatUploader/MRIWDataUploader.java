@@ -133,7 +133,7 @@ public class MRIWDataUploader extends QCAssessmentDataUploader
          XNATProject      = mriw.XNATProjectID; 
          XNATSubjectID    = mriw.XNATSubjectID;
          XNATExperimentID = mriw.XNATExperimentID;
-         XNATScanID       = mriw.XNATScanID;
+         XNATScanIdList       = mriw.XNATScanID;
          
          populateStringFields();
          

@@ -145,7 +145,7 @@ public class AdeptDataUploader extends QCAssessmentDataUploader
 //               uniqueSeries.add(seriesUIDs.get(i));
 //
 //         allPresent = true;
-//         XNATScanID = new ArrayList<String>();
+//         XNATScanIdList = new ArrayList<String>();
 //         for (String seriesUID : uniqueSeries)
 //         {
 //            boolean seriesPresent = false;
@@ -154,7 +154,7 @@ public class AdeptDataUploader extends QCAssessmentDataUploader
 //               if (parseResult[i][1].equals(seriesUID))
 //               {
 //                  seriesPresent = true;
-//                  XNATScanID.add(parseResult[i][0]);
+//                  XNATScanIdList.add(parseResult[i][0]);
 //               }
 //            }
 //            allPresent = allPresent && seriesPresent;

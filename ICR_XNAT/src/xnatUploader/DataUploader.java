@@ -112,8 +112,11 @@ public abstract class DataUploader
    protected String                        time;
    protected String                        XNATExperimentID;
    protected String                        XNATProject;
-   protected ArrayList<String>             XNATScanID;
+   protected ArrayList<String>             XNATScanIdList;
    protected String                        XNATSubjectID;
+	protected String                        XNATSubjectLabel;
+	protected String                        XNATGender;
+	protected String                        XNATDateOfBirth;
    protected String                        XNATAccessionID;
    protected LinkedHashMap<String, AmbiguousSubjectAndExperiment> ambiguousSubjExp;
    protected UploadStructure               uploadStructure;
@@ -130,9 +133,12 @@ public abstract class DataUploader
 
    public DataUploader(XNATProfile xnprf)
    {
+		this.xnprf      = xnprf;
+				
+		// The project has already been specified in the UI. In the current
+      // incarnation, this comes about by uploading to a profile that consists
+      // of only one project, but this will change.
       XNATProject     = xnprf.getProjectList().get(0);
-      this.xnprf      = xnprf;
-
       XMLUtil         = new XMLUtilities();
       XNATns          = new XNATNamespaceContext();
       xnrt            = new XNATRESTToolkit(this.xnprf);
@@ -159,6 +165,7 @@ public abstract class DataUploader
       
       if (!readFile())                return;
       if (!parseFile())               return;
+		if (!retrieveDemographics())    return;
       if (!getProjectInvestigators()) return;
       isPrepared = true;
       mostRecentSuccessfulPrep = uploadFile;
@@ -432,6 +439,37 @@ public abstract class DataUploader
    }
    
    
+	// Retrieve some demographic information so that it is available
+   // for output where necessary.
+	public boolean retrieveDemographics() 
+	{
+      try
+      {
+         RESTCommand    = "/data/archive/projects/" + XNATProject
+                                + "/subjects/"        + XNATSubjectID
+                                + "?format=xml";
+         resultDoc      = xnrt.RESTGetDoc(RESTCommand);
+         String[] attrs = XMLUtilities.getAttribute(resultDoc, XNATns,
+                                                   "xnat:Subject", "label");
+         if (attrs != null) XNATSubjectLabel = attrs[0];
+         
+         attrs = XMLUtilities.getElementText(resultDoc, XNATns, "xnat:gender");
+         if (attrs != null) XNATGender = attrs[0];
+         
+         attrs = XMLUtilities.getElementText(resultDoc, XNATns, "xnat:dob");
+         if (attrs != null) XNATDateOfBirth = attrs[0];      
+      }
+      catch (XNATException | XMLException ex)
+      {
+			errorOccurred = true;
+			errorMessage  = "Problem retrieving demographic information:\n"
+				             + ex.getMessage();
+         return false;
+      }
+		
+		return true;
+	}
+	
    
    /**
     * Retrieve the investigators for the currently selected project from XNAT.

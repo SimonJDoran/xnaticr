@@ -101,10 +101,8 @@ public class RtStruct extends DicomEntity
     * @param rtsDo a DCM4CHE DICOM object that has already been initialised,
     * typically from an RT-STRUCT file, although it could have been created dynamically.
 	 * @throws exceptions.DataFormatException 
-	 * @throws DataRepresentationException 
     */
-	public RtStruct(DicomObject rtsDo)
-          throws DataFormatException, DataRepresentationException
+	public RtStruct(DicomObject rtsDo) throws DataFormatException
    {         
 		// Before we start, check that this really is a structure set!
 		if (!rtsDo.getString(Tag.Modality).equals("RTSTRUCT"))

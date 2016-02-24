@@ -53,7 +53,7 @@ public class AmbiguousSubjectAndExperiment
    
    public AmbiguousSubjectAndExperiment()
    {
-      experimentIDs    = new ArrayList<String>();
-      experimentLabels = new ArrayList<String>();
+      experimentIDs    = new ArrayList<>();
+      experimentLabels = new ArrayList<>();
    }
 }

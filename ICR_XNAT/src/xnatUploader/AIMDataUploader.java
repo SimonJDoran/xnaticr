@@ -155,7 +155,7 @@ public class AIMDataUploader extends QCAssessmentDataUploader
          XNATProject      = aim.XNATProjectID; 
          XNATSubjectID    = aim.XNATSubjectID;
          XNATExperimentID = aim.XNATExperimentID;
-         XNATScanID       = aim.XNATScanID;
+         XNATScanIdList       = aim.XNATScanID;
          
          populateStringFields();
          
