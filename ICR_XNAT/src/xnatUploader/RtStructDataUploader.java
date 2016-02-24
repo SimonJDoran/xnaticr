@@ -44,24 +44,17 @@
 
 package xnatUploader;
 
-import dataRepresentations.ROI_old;
 import dataRepresentations.dicom.RtStruct;
 import exceptions.DataFormatException;
-import exceptions.DataRepresentationException;
 import exceptions.XMLException;
-import exceptions.XNATException;
-import generalUtilities.UIDGenerator;
 import java.io.BufferedInputStream;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.Set;
 import org.dcm4che2.data.BasicDicomObject;
 import org.dcm4che2.data.DicomObject;
 import org.dcm4che2.io.DicomInputStream;
 import org.w3c.dom.Document;
-import xmlUtilities.DelayedPrettyPrinterXmlWriter;
 import xnatDAO.XNATProfile;
 import xnatMetadataCreators.IcrRoiSetDataMdComplexType;
 
@@ -113,8 +106,12 @@ public class RtStructDataUploader extends DataUploader
 		{
 			rts = new RtStruct(bdo);
 			dump = rts.getDicomTextRepresentation();
+			System.out.println("Finally!");
 		}
-		catch (DataFormatException | DataRepresentationException ex){}
+		catch (Exception ex)
+		{
+			System.out.println(ex.getMessage());
+		}
 		
 		return true;
 	}

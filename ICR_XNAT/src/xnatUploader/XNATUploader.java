@@ -118,7 +118,7 @@ public final class XNATUploader extends XNATGUI
       populateSpecificComponents();
       
       // Temporary code to relieve some clicking during development.
-      dataTypeJComboBox.setSelectedItem("Regions-of-Interest");
+      dataTypeJComboBox.setSelectedItem("Regions-of-interest");
       
       // The upload button should be greyed out until there are some valid
       // data to upload.
@@ -663,7 +663,7 @@ public final class XNATUploader extends XNATGUI
       chooserCurrentDir = fileOrDir.getParentFile();
       if (fileOrDir.isFile())
       {
-         uploader.setUploadFile(fileOrDir);
+			uploader.setUploadFile(fileOrDir);
          invokeUploadPreparation();
       }
       
@@ -1166,7 +1166,10 @@ public final class XNATUploader extends XNATGUI
             catch (InstantiationException exIE)    {logger.error(exIE);}
             catch (IllegalAccessException exIA)    {logger.error(exIA);}
             catch (IllegalArgumentException exIA)  {logger.error(exIA);}
-            catch (InvocationTargetException exIT) {logger.error(exIT);}
+            catch (InvocationTargetException exIT)
+				{
+					logger.error(exIT);
+				}
          }
       }
       

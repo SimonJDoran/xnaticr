@@ -57,7 +57,7 @@ public class SopCommon extends DicomEntity
 	public String instanceCreationDate;
 	public String instanceCreationTime;
 	
-	
+
 	public SopCommon() {}
 	
 	

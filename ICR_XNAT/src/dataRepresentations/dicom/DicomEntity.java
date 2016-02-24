@@ -48,6 +48,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -661,10 +662,12 @@ public abstract class DicomEntity implements TextRepresentation
 			// For all objects that are subtypes of DicomEntity
 			// (i.e., the only ones that can call this method) the only types
 			// of field present are:
-			// (1) other DicomEntityRepresentations, whose text representations
-			//     are obtained by a call to their own getDicomTextRepresentation method;
-			// (2) Lists of DicomEntityRepresentations;
-			// (3) primitive types or String, whose values can be obtained directly.
+			// (1)  other DicomEntityRepresentations, whose text representations
+			//      are obtained by a call to their own getDicomTextRepresentation method;
+			// (2a) Lists of DicomEntityRepresentations;
+			// (2b) Lists of primitive types or String;
+			// (2c) Lists of arrays of primitive types/String;
+			// (3)  primitive types or String, whose values can be obtained directly.
 			if (a != null)
 			{
 				if (a instanceof DicomEntity)
@@ -673,13 +676,20 @@ public abstract class DicomEntity implements TextRepresentation
 					sb.append(b.getClass().getSimpleName());
 					indent.append(IND);					
 					sb.append(b.getDicomTextRepresentation(indent));
-					indent.delete(indent.length()-IND.length(), indent.length()-1);
+					indent.delete(indent.length()-IND.length(), indent.length());
 				}
 
 				else if (a instanceof List)
 				{
-					List<DicomEntity> b = (List<DicomEntity>) a;
-					sb.append(getListTextRepresentation(b, indent));
+					List b = (List) a;
+					if (!b.isEmpty())
+					{
+						if ((b.get(0) instanceof DicomEntity))
+							sb.append(getDicomEntityListTextRepresentation((List<DicomEntity>) b, indent));
+					
+						else
+							sb.append(getObjectListTextRepresentation((List<Object>) b, indent));
+					}
 				}
 				
 				else sb.append(a);				
@@ -690,7 +700,7 @@ public abstract class DicomEntity implements TextRepresentation
 	}
 	
 	
-	public <T extends DicomEntity> String getListTextRepresentation(List<T> list, StringBuilder indent)
+	public <T extends DicomEntity> String getDicomEntityListTextRepresentation(List<T> list, StringBuilder indent)
 	{
 		final String  IND   = "   ";
 		StringBuilder sb    = new StringBuilder();
@@ -698,14 +708,56 @@ public abstract class DicomEntity implements TextRepresentation
 		
 		sb.append(list.getClass().getSimpleName());
 		indent.append(IND);
-		
+		if (!list.isEmpty()) sb.append("<").append(list.get(0).getClass().getSimpleName()).append(">");
 		for (T item : list)
 		{
-			sb.append("Item ").append(++count);
+			sb.append("\n").append(indent).append("Item ").append(++count);
 			sb.append(item.getDicomTextRepresentation(indent));
 		}
 		
-		indent.delete(indent.length()-IND.length(), indent.length()-1);
+		indent.delete(indent.length()-IND.length(), indent.length());
+		
+		return sb.toString();
+	}
+	
+	
+	public String getObjectListTextRepresentation(List<Object> list, StringBuilder indent)
+	{
+		final String  IND   = "   ";
+		StringBuilder sb    = new StringBuilder();
+		int           count = 0;
+		
+		sb.append(list.getClass().getSimpleName());
+		indent.append(IND);
+		if (!list.isEmpty()) sb.append("<").append(list.get(0).getClass().getSimpleName()).append(">");
+			
+		for (int i=0; i<list.size(); i++)
+		{
+			sb.append("\n").append(indent).append("Item ").append(++count);
+			Object item = list.get(i);
+			if (item.getClass().isArray())
+			{
+				// There doesn't seem to be any clever way of boxing the output here into
+				// an object of the right type.
+				if (item instanceof boolean[]) sb.append(indent).append(Arrays.toString((boolean[]) item));
+				if (item instanceof byte[])    sb.append(indent).append(Arrays.toString((byte[])    item));
+				if (item instanceof short[])   sb.append(indent).append(Arrays.toString((short[])   item));
+				if (item instanceof int[])     sb.append(indent).append(Arrays.toString((int[])     item));
+				if (item instanceof long[])    sb.append(indent).append(Arrays.toString((long[])    item));
+				if (item instanceof float[])   sb.append(indent).append(Arrays.toString((float[])   item));
+				if (item instanceof double[])  sb.append(indent).append(Arrays.toString((double[])  item));
+				if (item instanceof boolean[]) sb.append(indent).append(Arrays.toString((boolean[]) item));
+				if (item instanceof String[])
+				{
+					String[] s = (String[]) item;
+					for (int j=0; j<s.length; j++) sb.append(IND).append(s[j]);
+				}
+			}
+
+			else sb.append(IND).append(item.toString());
+		}
+		
+		indent.delete(indent.length()-IND.length()-1, indent.length()-1);
 		
 		return sb.toString();
 	}
