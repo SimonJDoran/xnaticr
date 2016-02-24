@@ -106,10 +106,13 @@ public class RtStructDataUploader extends DataUploader
 	
 	@Override
    public boolean parseFile()
-   { 
+   {
+		RtStruct rts;
+		String dump;
 		try
 		{
-			RtStruct rts = new RtStruct(bdo);
+			rts = new RtStruct(bdo);
+			dump = rts.getDicomTextRepresentation();
 		}
 		catch (DataFormatException | DataRepresentationException ex){}
 		
