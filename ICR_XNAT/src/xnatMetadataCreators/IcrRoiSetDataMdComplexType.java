@@ -183,7 +183,7 @@ public class IcrRoiSetDataMdComplexType extends IcrGenericImageAssessmentDataMdC
 	}
 	
 	
-	public void seSttructureSetTime(String s)
+	public void setStructureSetTime(String s)
 	{
 		structureSetTime = s;
 	}

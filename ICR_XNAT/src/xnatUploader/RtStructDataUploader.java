@@ -46,9 +46,13 @@ package xnatUploader;
 
 import dataRepresentations.dicom.ContourImage;
 import dataRepresentations.dicom.ReferencedFrameOfReference;
+import dataRepresentations.dicom.RoiContour;
 import dataRepresentations.dicom.RtReferencedSeries;
 import dataRepresentations.dicom.RtReferencedStudy;
 import dataRepresentations.dicom.RtStruct;
+import dataRepresentations.dicom.StructureSetRoi;
+import dataRepresentations.xnatSchema.RoiDisplay;
+import dataRepresentations.xnatSchema.Scan;
 import exceptions.DataFormatException;
 import exceptions.XMLException;
 import exceptions.XNATException;
@@ -57,6 +61,7 @@ import java.io.BufferedInputStream;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -472,7 +477,67 @@ public class RtStructDataUploader extends DataUploader
 	@Override
 	public Document createMetadataXML()
 	{
+		// Metadata are created simply by instantiating the metadata creator
+		// object for the required complex type, filling it with the correct
+		// and calling its createXmlAsRootElement() method. The complexity
+		// in the method comes from the number of pieces of data that must
+		// be transferred from the RT-STRUCT to the creator.
 		IcrRoiSetDataMdComplexType roiSet  = new IcrRoiSetDataMdComplexType();
+		
+		roiSet.setOriginalUid(rts.sopCommon.sopInstanceUid);
+		roiSet.setOriginalDataType("RT-STRUCT");
+		roiSet.setOriginalLabel(rts.structureSet.structureSetLabel);
+		roiSet.setOriginatingApplicationName(rts.generalEquipment.modelName);
+		
+		final String sep = " | ";
+		StringBuilder sb = new StringBuilder();
+		for (String s : rts.generalEquipment.softwareVersions) sb.append(s).append(sep);
+		roiSet.setOriginatingApplicationVersion(sb.toString());
+		
+		roiSet.setNRois(rts.structureSet.structureSetRoiList.size());
+		
+		List<RoiDisplay> rdl = new ArrayList<>();
+		for (RoiContour rc : rts.roiContourList)
+		{
+			// Nulls here because RT-STRUCTS contain only a subset of the
+			// information other formats can carry about the ROI presentation.
+			RoiDisplay rd = new RoiDisplay(Integer.toString(rc.referencedRoiNumber),
+				                            null, Arrays.toString(rc.roiDisplayColour),
+				                            null, null, null);
+			rdl.add(rd);
+		}
+		roiSet.setRoiDisplayList(rdl);
+		
+		roiSet.setStructureSetLabel(rts.structureSet.structureSetLabel);
+		roiSet.setStructureSetName(rts.structureSet.structureSetName);
+		roiSet.setStructureSetDescription(rts.structureSet.structureSetDescription);
+		roiSet.setStructureInstanceNumber(rts.structureSet.instanceNumber);
+		roiSet.setStructureSetDate(rts.structureSet.structureSetDate);
+		roiSet.setStructureSetTime(rts.structureSet.structureSetTime);
+		roiSet.setReferencedFrameOfReferenceList(rts.structureSet.referencedFrameOfReferenceList);
+		
+		// IcrRoiSetDataMdComplexType inherits from IcrGenericImageAssessmentDataMdComplexType.
+		
+		// roiSet.setType();  Not currently sure what should go here.
+		roiSet.setXnatSubjId(XNATSubjectID);
+		roiSet.setDicomSubjName(rts.patient.patientName);
+		
+		// Although the full version of Scan, including scan and slice image
+		// statistics is implemented, this is overkill for the RT-STRUCT and
+		// the only part of scan for which information is available is the
+		// list of scan IDs.
+		List<Scan> lsc = new ArrayList<Scan>();
+		for (String id : seriesUidSet)
+		{
+			Scan sc = new Scan();
+			sc.id = id;
+			lsc.add(sc);
+		}
+		roiSet.setScanList(lsc);
+		
+		// IcrGenericImageAssessmentDataMdComplexType inherits from XnatImageAssessorDataMdComplexType.
+		
+		
 		
 		Document metadoc = null;
 		try
