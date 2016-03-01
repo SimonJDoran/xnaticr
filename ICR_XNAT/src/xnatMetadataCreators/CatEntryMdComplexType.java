@@ -35,55 +35,34 @@
 
 /********************************************************************
 * @author Simon J Doran
-* Java class: IcrAimAnnotationCollectionDataMDComplexType.java
-* First created on Jan 25, 2016 at 12:16:54 PM
+* Java class: CatEntryMdComplexType.java
+* First created on Mar 1, 2016 at 4:58:41 PM
 * 
-* Creation of metadata XML for icr:aimAnnotationCollectionData
+* Creation of metadata XML for cat:entry
 * 
 * Eventually, the plan for this whole package is to replace the
 * explicit writing of the XML files with a higher level interface,
-* e.g., JAXB. However, this is for a later refactoring.
+* e.g., JAXB. However, this is for a later refactoring. In addition
+* note that, at present, only a subset of xnat:experimentData is
+* implemented.
 *********************************************************************/
+
 
 package xnatMetadataCreators;
 
+import dataRepresentations.xnatSchema.CatalogueEntry;
 import exceptions.XMLException;
 import java.io.IOException;
-import xmlUtilities.DelayedPrettyPrinterXmlWriter;
 
-public class IcrAimAnnotationCollectionDataMdComplexType extends IcrGenericImageAssessmentDataMdComplexType
+public class CatEntryMdComplexType extends MdComplexType
 {
-	protected String aimVersion;
-	protected String numImageAnnotations;
-	protected String associatedRoiSetId;
+	protected CatalogueEntry catEntry;
 	
 	@Override
 	public void insertXml() throws IOException, XMLException
 	{
-		super.insertXml();
-		
-		dppXML.delayedWriteEntityWithText("aimVersion",          aimVersion)
-				.delayedWriteEntityWithText("numImageAnnotations", numImageAnnotations)
-				.delayedWriteEntityWithText("associatedRoiSetID",  associatedRoiSetId);
+		dppXML.delayedWriteAttribute("URI",  catEntry.uri)
+		      .delayedWriteAttribute("id",   catEntry.id)
+				.delayedWriteAttribute("name", catEntry.name)
 	}
-	
-	
-	public void setAimVersion(String s)
-	{
-		aimVersion = s;
-	}
-	
-	
-	public void setnumImageAnnotations(String s)
-	{
-		numImageAnnotations = s;
-	}
-	
-	
-	public void setAssociatedRoiSetId(String s)
-	{
-		associatedRoiSetId = s;
-	}
-	
-	
 }

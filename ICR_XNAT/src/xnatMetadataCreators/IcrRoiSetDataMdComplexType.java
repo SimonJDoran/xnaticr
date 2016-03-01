@@ -193,8 +193,5 @@ public class IcrRoiSetDataMdComplexType extends IcrGenericImageAssessmentDataMdC
 	{
 		this.rforList = rl;
 	}
-	
-	
-	
-	
+		
 }

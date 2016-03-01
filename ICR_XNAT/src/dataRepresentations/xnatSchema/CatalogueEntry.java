@@ -35,55 +35,49 @@
 
 /********************************************************************
 * @author Simon J Doran
-* Java class: IcrAimAnnotationCollectionDataMDComplexType.java
-* First created on Jan 25, 2016 at 12:16:54 PM
+* Java class: CatalogueEntry.java
+* First created on Jan 20, 2016 at 12:12:48 PM
 * 
-* Creation of metadata XML for icr:aimAnnotationCollectionData
+* Formally declare an entry in an input or output resource catalogue.
+* This class is used in conjunction with CatEntryMdComplexType
 * 
 * Eventually, the plan for this whole package is to replace the
 * explicit writing of the XML files with a higher level interface,
 * e.g., JAXB. However, this is for a later refactoring.
 *********************************************************************/
 
-package xnatMetadataCreators;
+/********************************************************************
+* @author Simon J Doran
+* Java class: CatalogueEntry.java
+* First created on Mar 1, 2016 at 4:43:38 PM
+*********************************************************************/
 
-import exceptions.XMLException;
-import java.io.IOException;
-import xmlUtilities.DelayedPrettyPrinterXmlWriter;
+package dataRepresentations.xnatSchema;
 
-public class IcrAimAnnotationCollectionDataMdComplexType extends IcrGenericImageAssessmentDataMdComplexType
+import java.util.List;
+
+public class CatalogueEntry
 {
-	protected String aimVersion;
-	protected String numImageAnnotations;
-	protected String associatedRoiSetId;
-	
-	@Override
-	public void insertXml() throws IOException, XMLException
+	public static class MetaField
 	{
-		super.insertXml();
-		
-		dppXML.delayedWriteEntityWithText("aimVersion",          aimVersion)
-				.delayedWriteEntityWithText("numImageAnnotations", numImageAnnotations)
-				.delayedWriteEntityWithText("associatedRoiSetID",  associatedRoiSetId);
+		public String name;
+		public String value;
 	}
 	
-	
-	public void setAimVersion(String s)
-	{
-		aimVersion = s;
-	}
-	
-	
-	public void setnumImageAnnotations(String s)
-	{
-		numImageAnnotations = s;
-	}
-	
-	
-	public void setAssociatedRoiSetId(String s)
-	{
-		associatedRoiSetId = s;
-	}
-	
-	
+	public String          uri;
+	public String          id;
+	public String          name;
+	public String          description;
+	public String          format;
+	public String          content;
+	public String          cachePath;
+	public String          createdTime;
+	public String          createdBy;
+	public String          createdEventId;
+	public String          modifiedTime;
+	public String          modifiedBy;
+	public String          modifiedEventId;
+	public String          digest;
+	public List<MetaField> metaFieldList;
+	public List<String>    tags;	
 }

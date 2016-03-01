@@ -35,7 +35,7 @@
 
 /********************************************************************
 * @author Simon J Doran
-* Java class: XnatStatisticsDataMDComplexType.java
+* Java class: XnatStatisticsDataMdComplexType.java
 * First created on Jan 21, 2016 at 23:59:00 PM
 * 
 * Creation of metadata XML for xnat:statisticsData
