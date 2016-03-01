@@ -49,7 +49,7 @@ import java.util.List;
 
 public class AbstractResource extends XnatSchemaElement
 {
-	public final class Tag
+	public static final class Tag
 	{
 		public String name;
 		public String value;
@@ -75,12 +75,14 @@ public class AbstractResource extends XnatSchemaElement
 	public Integer   fileCount;
 	public Long      fileSize;
 	public String    note;
-	public List<Tag> tags;
+	public List<Tag> tagList;
 
 	// Give users the option to use either a single-line constructor (with
 	// possible nulls). Given that there is no "implementation" as such -
 	// these are just variables - there seems no reason to invoke setter
 	// methods and I will just expose the variables publicly.
+	public AbstractResource() {}
+	
 	public AbstractResource(String label, Integer fileCount, Long fileSize,
 			                  String note, List<Tag> tags)
 	{
@@ -88,6 +90,6 @@ public class AbstractResource extends XnatSchemaElement
 		this.fileCount = fileCount;
 		this.fileSize  = fileSize;
 		this.note      = note;
-		this.tags      = tags;
+		this.tagList   = tags;
 	}	
 }

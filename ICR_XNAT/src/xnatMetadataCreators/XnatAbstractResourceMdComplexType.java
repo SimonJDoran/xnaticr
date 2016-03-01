@@ -79,7 +79,7 @@ public class XnatAbstractResourceMdComplexType extends MdComplexType
 				.delayedWriteEntityWithText("note",  ar.note)
 				.delayedWriteEntity("tags");
 		
-				for (Tag tag : ar.tags)
+				for (Tag tag : ar.tagList)
 				{
 					dppXML.delayedWriteEntity("tag")
 								.delayedWriteAttribute("name", tag.name)

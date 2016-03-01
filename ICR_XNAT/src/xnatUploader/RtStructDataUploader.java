@@ -51,6 +51,8 @@ import dataRepresentations.dicom.RtReferencedSeries;
 import dataRepresentations.dicom.RtReferencedStudy;
 import dataRepresentations.dicom.RtStruct;
 import dataRepresentations.dicom.StructureSetRoi;
+import dataRepresentations.xnatSchema.AbstractResource;
+import dataRepresentations.xnatSchema.AbstractResource.Tag;
 import dataRepresentations.xnatSchema.RoiDisplay;
 import dataRepresentations.xnatSchema.Scan;
 import exceptions.DataFormatException;
@@ -526,7 +528,7 @@ public class RtStructDataUploader extends DataUploader
 		// statistics is implemented, this is overkill for the RT-STRUCT and
 		// the only part of scan for which information is available is the
 		// list of scan IDs.
-		List<Scan> lsc = new ArrayList<Scan>();
+		List<Scan> lsc = new ArrayList<>();
 		for (String id : seriesUidSet)
 		{
 			Scan sc = new Scan();
@@ -537,7 +539,23 @@ public class RtStructDataUploader extends DataUploader
 		
 		// IcrGenericImageAssessmentDataMdComplexType inherits from XnatImageAssessorDataMdComplexType.
 		
-		
+		// Note that I write out only an "in" section. The philosophy of the
+      // uploader is that all files used to create the qcAssessment must
+      // already be present in the database and the catalog file created
+      // here records them. By contrast, the upload procedure itself may
+      // create new files (such as thumbnails) and these are placed in the
+      // repository by the XNAT Uploader. XNAT automatically records all
+      // new files uploaded in its own catalog file.
+		createInputCatalogFile();
+		List<AbstractResource>     inList  = new ArrayList<>();
+		List<Tag>                  tagList = new ArrayList<>();
+
+		AbstractResource ar = new AbstractResource();
+		ar.label     = "Input catalogue file";
+		ar.fileCount = 1;
+		ar.tagList   = tagList;
+		ar.tagList.add(new Tag("URI", XnatAccessionId + + "_input_catalogue.xml"));
+		ar.tagList.add(new Tag("format", "XML"));
 		
 		Document metadoc = null;
 		try
