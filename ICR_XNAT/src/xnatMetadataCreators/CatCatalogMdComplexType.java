@@ -35,59 +35,53 @@
 
 /********************************************************************
 * @author Simon J Doran
-* Java class: CatEntryMdComplexType.java
-* First created on Mar 1, 2016 at 4:58:41 PM
+* Java class: CatCatalogMdComplexType.java
+* First created on Mar 2, 2016 at 5:30:08 PM
 * 
-* Creation of metadata XML for cat:entry
+* Creation of metadata XML for cat:catalog
 * 
 * Eventually, the plan for this whole package is to replace the
 * explicit writing of the XML files with a higher level interface,
-* e.g., JAXB. However, this is for a later refactoring. In addition
-* note that, at present, only a subset of xnat:experimentData is
-* implemented.
+* e.g., JAXB. However, this is for a later refactoring.
 *********************************************************************/
 
 
 package xnatMetadataCreators;
 
+import dataRepresentations.xnatSchema.Catalog;
 import dataRepresentations.xnatSchema.CatalogEntry;
 import dataRepresentations.xnatSchema.MetaField;
 import exceptions.XMLException;
 import java.io.IOException;
 import xmlUtilities.DelayedPrettyPrinterXmlWriter;
 
-public class CatEntryMdComplexType extends MdComplexType
+public class CatCatalogMdComplexType extends MdComplexType
 {
-	protected CatalogEntry catEntry;
+	protected  Catalog cat;
 	
-	protected CatEntryMdComplexType() {}
+	public CatCatalogMdComplexType() {}
 	
-	protected CatEntryMdComplexType(CatalogEntry catEntry, DelayedPrettyPrinterXmlWriter dppXML)
+	public CatCatalogMdComplexType(Catalog cat)
 	{
-		this.catEntry = catEntry;
-		this.dppXML   = dppXML;
+		this.cat = cat;
 	}
 	
+	public CatCatalogMdComplexType(Catalog cat, DelayedPrettyPrinterXmlWriter dppXML)
+	{
+		this.cat    = cat;
+		this.dppXML = dppXML;
+	}
+
 	@Override
 	public void insertXml() throws IOException, XMLException
 	{
-		dppXML.delayedWriteAttribute("URI",             catEntry.uri)
-		      .delayedWriteAttribute("ID",              catEntry.id)
-				.delayedWriteAttribute("name",            catEntry.name)
-				.delayedWriteAttribute("description",     catEntry.description)
-				.delayedWriteAttribute("format",          catEntry.format)
-				.delayedWriteAttribute("content",         catEntry.content)
-				.delayedWriteAttribute("cachePath",       catEntry.cachePath)
-				.delayedWriteAttribute("createdTime",     catEntry.createdTime)
-				.delayedWriteAttribute("createdBy",       catEntry.createdBy)
-				.delayedWriteAttribute("createdEventId",  catEntry.createdEventId)
-				.delayedWriteAttribute("modifiedTime",    catEntry.modifiedTime)
-				.delayedWriteAttribute("modifiedBy",      catEntry.modifiedBy)
-				.delayedWriteAttribute("modifiedEventId", catEntry.modifiedEventId)
-				.delayedWriteAttribute("digest",          catEntry.digest);
+		dppXML.delayedWriteAttribute("ID",          cat.id)
+				.delayedWriteAttribute("name",        cat.name)
+				.delayedWriteAttribute("description", cat.description);
+		
 		
 		dppXML.delayedWriteEntity("metaFields");
-		for (MetaField mf : catEntry.metaFieldList)
+		for (MetaField mf : cat.metaFieldList)
 		{
 			(new MetaFieldMdComplexType(mf, dppXML)).insertXmlAsElement("metaField");
 		}
@@ -95,11 +89,28 @@ public class CatEntryMdComplexType extends MdComplexType
 		
 		
 		dppXML.delayedWriteEntity("tags");
-		for (String tag : catEntry.tagList)
+		for (String tag : cat.tagList)
 		{
 			dppXML.delayedWriteEntityWithText("tag", tag);
 		}
 		dppXML.delayedEndEntity();
-				  
+		
+		
+		dppXML.delayedWriteEntity("sets");
+		for (Catalog set : cat.setList)
+		{
+			(new CatCatalogMdComplexType(set, dppXML)).insertXmlAsElement("entrySet");
+		}
+		dppXML.delayedEndEntity();
+		
+		
+		dppXML.delayedWriteEntity("entries");
+		for (CatalogEntry entry : cat.entryList)
+		{
+			(new CatEntryMdComplexType(entry, dppXML)).insertXmlAsElement("entry");
+		}
+		dppXML.delayedEndEntity();
 	}
 }
+
+

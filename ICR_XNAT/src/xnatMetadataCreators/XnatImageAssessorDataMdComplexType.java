@@ -54,8 +54,6 @@ import dataRepresentations.xnatSchema.AbstractResource;
 import exceptions.XMLException;
 import java.io.IOException;
 import java.util.List;
-import xmlUtilities.DelayedPrettyPrinterXmlWriter;
-import dataRepresentations.xnatSchema.AbstractResource.Tag;
 
 public class XnatImageAssessorDataMdComplexType extends XnatDerivedDataMdComplexType
 {

@@ -44,19 +44,17 @@
 
 package xnatUploader;
 
+import dataRepresentations.xnatSchema.Catalog;
 import dataRepresentations.xnatSchema.InvestigatorList;
 import exceptions.XNATException;
 import generalUtilities.UIDGenerator;
 import generalUtilities.Vector2D;
 import java.awt.Cursor;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Set;
 import java.util.zip.DataFormatException;
@@ -66,15 +64,13 @@ import javax.swing.RootPaneContainer;
 import org.apache.log4j.Logger;
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
-import xmlUtilities.DelayedPrettyPrinterXmlWriter;
 import xmlUtilities.XMLUtilities;
 import xnatDAO.XNATProfile;
 import xnatRestToolkit.XNATNamespaceContext;
 import xnatRestToolkit.XNATRESTToolkit;
-import xnatRestToolkit.XNATServerConnection;
-import dataRepresentations.xnatSchema.InvestigatorList.Investigator;
 import exceptions.XMLException;
-import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import xnatMetadataCreators.CatCatalogMdComplexType;
 
 
 public abstract class DataUploader
@@ -651,6 +647,79 @@ public abstract class DataUploader
       jcbSubj.setSelectedItem(subjLabel);
       jcbExp.setSelectedItem(expLabels.get(ind));
    }
+	
+	
+	/**
+    * Create an XML representation of the metadata relating to the input files
+    * referred to and output files created by the application whose data we are
+    * uploading.
+    */
+   protected void createInputCatalogueFile(Catalog cat)
+   {
+		// The file is temporarily constructed in a scratch directory before being uploaded.
+      String homeDir       = System.getProperty("user.home");
+      String fileSep       = System.getProperty("file.separator");
+      String XNAT_DAO_HOME = homeDir + fileSep + ".XNAT_DAO" + fileSep;
+      String catFilename   = XNAT_DAO_HOME + "temp" + fileSep 
+                              + XNATAccessionID + "_input_catalogue.xml";
+      File   catFile       = new File(catFilename);
+      
+      try
+      {
+         File parent = catFile.getParentFile();
+         if (!parent.exists()) parent.mkdirs();
+         
+			Document xmlDoc = (new CatCatalogMdComplexType(cat)).createXmlAsRootElement();
+			
+      }
+      catch (IOException | XMLException ex)
+      {
+         reportError(ex, "create input catalogue file");
+      }
+      
+      if (!errorOccurred)
+		{
+			XNATResourceFile rf	= new XNATResourceFile();
+			rf.content				= "FILE_CATALOGUE";
+			rf.description			= "catalogue of primary data files contributing to this region-of-interest";
+			rf.format				= "XML";
+			rf.file					= catFile;
+			rf.name					= "INPUT_CATALOGUE";
+			rf.inOut					= "in";
+			auxiliaryFiles.add(rf);
+		}
+   }
+	
+	
+	
+	/**
+    * Error reporting method that takes some often repeated lines out of the
+    * other methods
+    * @param ex the Exception that gave rise to this call
+    * @param operation a String giving details of what the program was doing
+    */
+   protected void reportError(Exception ex, String operation)
+   {
+      logger.error("Error during operation " + operation + " of metadata XML creation.");
+      
+      errorOccurred = true;
+      errorMessage  = "Unable to create XML document required for uploading the data.\n";
+      errorMessage  = "Error during operation " + operation + "\n\n";
+      
+      if (ex == null) return;
+      if (ex.getMessage() != null) errorMessage += "The detailed error message was:\n"
+                                                     + ex.getMessage();
+   }
+   
+
+	
+	/**
+	 * Get the list of files containing the input data used in the creation of this
+	 * XNAT assessor. Each subclass implements its own method for populating the
+	 * list returned.
+	 * @return 
+	 */
+   protected abstract ArrayList<String> getInputCatEntries();
    
    
    /**

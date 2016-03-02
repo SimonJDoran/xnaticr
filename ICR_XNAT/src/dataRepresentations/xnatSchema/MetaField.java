@@ -35,64 +35,22 @@
 
 /********************************************************************
 * @author Simon J Doran
-* Java class: XnatAbstractResourceMDComplexType.java
-* First created on Jan 20, 2016 at 9:00:08 AM
+* Java class: MetaField.java
+* First created on Mar 2, 2016 at 4:56:16 PM
 * 
-* Creation of metadata XML for xnat:abstractResource
+* This is a trivial definition for a simple extension of xs:string
+* that defines an attribute. It is used formally with the file
+* MetafieldMdComplexType for inserting XML snippets.
 * 
 * Eventually, the plan for this whole package is to replace the
 * explicit writing of the XML files with a higher level interface,
-* e.g., JAXB. However, this is for a later refactoring. In addition
-* note that, at present, only a subset of xnat:experimentData is
-* implemented.
+* e.g., JAXB. However, this is for a later refactoring.
 *********************************************************************/
 
-package xnatMetadataCreators;
+package dataRepresentations.xnatSchema;
 
-import dataRepresentations.xnatSchema.AbstractResource;
-import exceptions.XMLException;
-import java.io.IOException;
-import xmlUtilities.DelayedPrettyPrinterXmlWriter;
-import dataRepresentations.xnatSchema.MetaField;
-
-public class XnatAbstractResourceMdComplexType extends MdComplexType
+public class MetaField
 {
-	protected AbstractResource ar;
-	
-	
-	// Give the user two options for constructing the object.
-	public XnatAbstractResourceMdComplexType() {}
-	
-	public XnatAbstractResourceMdComplexType(AbstractResource ar,
-			                                   DelayedPrettyPrinterXmlWriter dppXML)
-	{
-		this.ar     = ar;
-		this.dppXML = dppXML;
-	}
-	
-	@Override
-	public void insertXml() throws IOException, XMLException
-	{
-		dppXML.delayedWriteAttribute("label",      ar.label)
-				.delayedWriteAttribute("file_count", ar.fileCount)
-				.delayedWriteAttribute("file_size",  ar.fileSize)
-				.delayedWriteEntityWithText("note",  ar.note)
-				.delayedWriteEntity("tags");
-		
-				for (MetaField tag : ar.tagList)
-				{
-					dppXML.delayedWriteEntity("tag")
-								.delayedWriteAttribute("name", tag.name)
-								.delayedWriteText(tag.value)
-							.delayedEndEntity();
-				}
-				
-		dppXML.delayedEndEntity();
-				  
-	}
-	
-	public void setResource(AbstractResource ar)
-	{
-		this.ar = ar;
-	}
+	public String name;
+	public String value;
 }

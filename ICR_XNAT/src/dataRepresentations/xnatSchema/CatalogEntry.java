@@ -36,7 +36,7 @@
 /********************************************************************
 * @author Simon J Doran
 * Java class: CatalogueEntry.java
-* First created on Jan 20, 2016 at 12:12:48 PM
+* First created on Mar 1, 2016 at 4:43:38 PM
 * 
 * Formally declare an entry in an input or output resource catalogue.
 * This class is used in conjunction with CatEntryMdComplexType
@@ -46,24 +46,12 @@
 * e.g., JAXB. However, this is for a later refactoring.
 *********************************************************************/
 
-/********************************************************************
-* @author Simon J Doran
-* Java class: CatalogueEntry.java
-* First created on Mar 1, 2016 at 4:43:38 PM
-*********************************************************************/
-
 package dataRepresentations.xnatSchema;
 
 import java.util.List;
 
-public class CatalogueEntry
-{
-	public static class MetaField
-	{
-		public String name;
-		public String value;
-	}
-	
+public class CatalogEntry
+{	
 	public String          uri;
 	public String          id;
 	public String          name;
@@ -79,5 +67,5 @@ public class CatalogueEntry
 	public String          modifiedEventId;
 	public String          digest;
 	public List<MetaField> metaFieldList;
-	public List<String>    tags;	
+	public List<String>    tagList;	
 }

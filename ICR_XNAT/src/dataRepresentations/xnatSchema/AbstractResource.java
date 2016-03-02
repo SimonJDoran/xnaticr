@@ -48,34 +48,16 @@ package dataRepresentations.xnatSchema;
 import java.util.List;
 
 public class AbstractResource extends XnatSchemaElement
-{
-	public static final class Tag
-	{
-		public String name;
-		public String value;
-		
-	   public Tag(String name, String value)
-		{
-			this.name = name;
-			this.value = value;
-		}
-		
-		public void setName(String s)
-		{
-			name = s;
-		}
-		
-		public void setValue(String s)
-		{
-			value = s;
-		}
-	}
+{		
+	public String          label;
+	public Integer         fileCount;
+	public Long            fileSize;
+	public String          note;
 	
-	public String    label;
-	public Integer   fileCount;
-	public Long      fileSize;
-	public String    note;
-	public List<Tag> tagList;
+	// Note that, in a highly confusing lack of consistency, tag in xnat.xsd
+	// is the extension of xs:string called metaField in catalog.xsd, while
+	// tag in catalog.xsd is a simple xs:string.
+	public List<MetaField> tagList;
 
 	// Give users the option to use either a single-line constructor (with
 	// possible nulls). Given that there is no "implementation" as such -
@@ -84,7 +66,7 @@ public class AbstractResource extends XnatSchemaElement
 	public AbstractResource() {}
 	
 	public AbstractResource(String label, Integer fileCount, Long fileSize,
-			                  String note, List<Tag> tags)
+			                  String note, List<MetaField> tags)
 	{
 		this.label     = label;
 		this.fileCount = fileCount;
