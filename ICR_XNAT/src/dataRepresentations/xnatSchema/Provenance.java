@@ -52,64 +52,60 @@ public class Provenance extends XnatSchemaElement
 	private static final String LIB_STRING  = "_!LS!_";
 	private static final String UNKNOWN_STRING = "Unknown";
 			  
-	public class Program
-	{
-		public String name;
-		public String version;
-		public String arguments;
-		
-		public Program(String name, String version, String arguments)
-		{
-			this.name      = name;
-			this.version   = version;
-			this.arguments = arguments;
-		}
-	}
-	
-	public class Platform
-	{
-		public String name;
-		public String version;
-		
-		public Platform(String name, String version)
-		{
-			this.name    = name;
-			this.version = version;
-		}
-	}
-	
-	public class Compiler
-	{
-		public String name;
-		public String version;
-		
-		public Compiler(String name, String version)
-		{
-			this.name    = name;
-			this.version = version;
-		}
-	}
-	
-	public class Library
-	{
-		public String name;
-		public String version;
-		
-		public Library(String name, String version)
-		{
-			this.name    = name;
-			this.version = version;
-		}
-	}
-	
-	// Allow users two different ways to instantiate the two Provenance classes
-	// below: (a) no arguments and just set the variables; (b) provide all the
-	// variables in an argument list. Here the objects are really little more than
-	// a structure of variables - there is no real "implementation", so no reason
-	// for complicating with getter and setter methods.
-	public class ProvenanceEntry
+
+	public static class ProcessStep
    {
-      public Program       program;
+      public static class Program
+		{
+			public String name;
+			public String version;
+			public String arguments;
+
+			public Program(String name, String version, String arguments)
+			{
+				this.name      = name;
+				this.version   = version;
+				this.arguments = arguments;
+			}
+		}
+
+		public static class Platform
+		{
+			public String name;
+			public String version;
+
+			public Platform(String name, String version)
+			{
+				this.name    = name;
+				this.version = version;
+			}
+		}
+
+		public static class Compiler
+		{
+			public String name;
+			public String version;
+
+			public Compiler(String name, String version)
+			{
+				this.name    = name;
+				this.version = version;
+			}
+		}
+
+		public static class Library
+		{
+			public String name;
+			public String version;
+
+			public Library(String name, String version)
+			{
+				this.name    = name;
+				this.version = version;
+			}
+		}
+	
+		public Program       program;
       public String        timestamp;
       public String        cvs;
       public String        user;
@@ -118,14 +114,14 @@ public class Provenance extends XnatSchemaElement
 		public Compiler      compiler;
 		public List<Library> libraryList;
       
-      public ProvenanceEntry(Program       program,
-                             String        timestamp,
-                             String        cvs,
-                             String        user,
-                             String        machine,
-                             Platform      platform,
-                             Compiler      compiler,
-								     List<Library> libraryList)
+      public ProcessStep(Program       program,
+                         String        timestamp,
+                         String        cvs,
+                         String        user,
+                         String        machine,
+                         Platform      platform,
+                         Compiler      compiler,
+								 List<Library> libraryList)
       {
          this.program     = program;
          this.timestamp   = timestamp;
@@ -138,55 +134,60 @@ public class Provenance extends XnatSchemaElement
       }
    }
 		
-   public List<ProvenanceEntry> entries;
+   public List<ProcessStep> stepList;
 	
    
-	public Provenance()
+	public Provenance() {}
+	
+	
+	public Provenance(List<ProcessStep> stepList)
 	{
-		entries = new ArrayList<>();
+		this.stepList = stepList;
 	}
 	
-	public Provenance(List<Program>       programs,
-                     List<String>        timestamps,
-                     List<String>        cvss,
-                     List<String>        users,
-                     List<String>        machines,
-                     List<Platform>      platforms,
-                     List<Compiler>      compilers,
-	                  List<List<Library>> libraryLists)
-   { 
-		entries = new ArrayList<>();
-
-		// It is a programming error if any of the fields are null
-		// or if the constituent lists have different numbers of
-		// entries, so just let the program crash if this happens.
-		// However, it is perfectly permissable for the entries all
-		// to have zero length.
-		for (int i=0; i<programs.size(); i++)
-		{
-			entries.add(new ProvenanceEntry(programs.get(i),
-												     timestamps.get(i),
-												     cvss.get(i),
-				                             users.get(i),
-				                             machines.get(i),
-				                             platforms.get(i),
-				                             compilers.get(i),
-							                    libraryLists.get(i)));
-
-      }
-   }
-   
-   public ProvenanceEntry getProvenanceEntry(int n) throws IllegalArgumentException
+	
+	
+//	public Provenance(List<Program>       programs,
+//                     List<String>        timestamps,
+//                     List<String>        cvss,
+//                     List<String>        users,
+//                     List<String>        machines,
+//                     List<Platform>      platforms,
+//                     List<Compiler>      compilers,
+//	                  List<List<Library>> libraryLists)
+//   { 
+//		stepList = new ArrayList<>();
+//
+//		// It is a programming error if any of the fields are null
+//		// or if the constituent lists have different numbers of
+//		// stepList, so just let the program crash if this happens.
+//		// However, it is perfectly permissable for the stepList all
+//		// to have zero length.
+//		for (int i=0; i<programs.size(); i++)
+//		{
+//			stepList.add(new ProcessStep(programs.get(i),
+//												     timestamps.get(i),
+//												     cvss.get(i),
+//				                             users.get(i),
+//				                             machines.get(i),
+//				                             platforms.get(i),
+//				                             compilers.get(i),
+//							                    libraryLists.get(i)));
+//
+//      }
+//   }
+//   
+   public ProcessStep getProvenanceEntry(int n) throws IllegalArgumentException
    {
-      if ((n < 0) || (n>entries.size()-1))
+      if ((n < 0) || (n>stepList.size()-1))
 			throw new IllegalArgumentException("Invalid investigator number");
 		
-      return entries.get(n);
+      return stepList.get(n);
    }
    
 	/**
-	 * Turn a list of String entries into a single string separated by a "unique"
-	 * marker. This is a kludge to solve a display problem. It is useful to have
+	 * Turn a list of String stepList into a single string separated by a "unique"
+ marker. This is a kludge to solve a display problem. It is useful to have
 	 * an indication in the user interface of what the provenance of an uploaded
 	 * file is. However, the current display mechanism has just a single line per 
 	 * uploaded entity and is not able to represent a multi-step provenance. To
@@ -211,8 +212,8 @@ public class Provenance extends XnatSchemaElement
 	/**
     * Take a single String and turn it back into the List<String> originally
 	 * used to create it.
-    * @param provString String containing processStep entries in a provenance
-    * list, separated by the "unique" marker String.
+    * @param provString String containing processStep stepList in a provenance
+ list, separated by the "unique" marker String.
     * @return an ArrayList of the separated values
     */
    private List<String> decodeProvenanceString(String provString)

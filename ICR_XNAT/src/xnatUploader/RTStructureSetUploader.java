@@ -276,8 +276,8 @@ public class RTStructureSetUploader extends QCAssessmentDataUploader
 //      errorOccurred = false;
 //      
 //      // The icr:roiSetData and icr:roiData XML files are mutually dependent
-//      // inasmuch as the ROI_old Set needs to know the IDs of the contained ROIs,
-//      // whereas each ROI_old needs to know the ID's of all the ROI_old Sets that contain
+//      // inasmuch as the ROISet needs to know the IDs of the contained ROIs,
+//      // whereas each ROI needs to know the ID's of all the ROI_old Sets that contain
 //      // it. In this case, it makes sense to pre-calculate the IDs for all the
 //      // ROI_old's to be uploaded.
 //      // N.B. The only reason for instantiating the following uploader is to

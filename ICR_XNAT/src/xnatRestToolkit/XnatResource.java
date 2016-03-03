@@ -118,6 +118,10 @@ public class XnatResource
 		
 		sb.append("?inbody=true");
 		
+		if (format != null)  sb.append("&format=").append(format);
+		
+		if (content != null) sb.append("&content=").append(content);
+		
 		return sb.toString();
    }
 	

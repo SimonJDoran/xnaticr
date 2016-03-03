@@ -53,6 +53,11 @@ import dataRepresentations.dicom.RtStruct;
 import dataRepresentations.dicom.StructureSetRoi;
 import dataRepresentations.xnatSchema.AbstractResource;
 import dataRepresentations.xnatSchema.AbstractResource.Tag;
+import dataRepresentations.xnatSchema.MetaField;
+import dataRepresentations.xnatSchema.Provenance;
+import dataRepresentations.xnatSchema.Provenance.Platform;
+import dataRepresentations.xnatSchema.Provenance.Program;
+import dataRepresentations.xnatSchema.Provenance.ProcessStep;
 import dataRepresentations.xnatSchema.RoiDisplay;
 import dataRepresentations.xnatSchema.Scan;
 import exceptions.DataFormatException;
@@ -78,6 +83,7 @@ import xnatDAO.XNATProfile;
 import xnatMetadataCreators.IcrRoiSetDataMdComplexType;
 import xnatRestToolkit.XNATNamespaceContext;
 import xnatRestToolkit.XNATRESTToolkit;
+import xnatRestToolkit.XnatResource;
 
 public class RtStructDataUploader extends DataUploader
 {
@@ -449,15 +455,25 @@ public class RtStructDataUploader extends DataUploader
 	
 	
 	@Override
-	public void createPrimaryResourceFile()
+	public void createPrimaryResource()
 	{
-		primaryFile					= new XNATResourceFile();
-		primaryFile.content		= "EXTERNAL";
-		primaryFile.description	= "DICOM RT-STRUCT file created in an external application";
-		primaryFile.format		= "DICOM";
-		primaryFile.file			= uploadFile;
-		primaryFile.name			= "RT-STRUCT";
-		primaryFile.inOut			= "out";
+		StringBuilder description;
+		description.append("DICOM RT-STRUCT file created by node ")
+					  .append(rts.generalEquipment.stationName)
+					  .append(" of type ")
+				     .append(rts.generalEquipment.manufacturer)
+				     .append(" ")
+				     .append(rts.generalEquipment.modelName)
+				     .append(" using software ")
+				     .append(rts.generalEquipment.softwareVersions);
+
+		primaryResource = new XnatResource(uploadFile,
+		                                   "out",
+		                                   "RT-STRUCT",
+				                             "DICOM",
+		                                   "EXTERNAL",
+		                                   description.toString(),
+				                             uploadFile.getName());
 	}
    
    
@@ -466,10 +482,10 @@ public class RtStructDataUploader extends DataUploader
     * Create additional thumbnail files for upload with the DICOM-RT structure set.
     */
    @Override
-   public void createAuxiliaryResourceFiles()
+   public void createAuxiliaryResources()
    {
       // In the first instance, the only auxiliary file needed is the
-		// input catalogue, since the referenced ROI_old objects already contain
+		// input catalogue, since the referenced ROI objects already contain
 		// the required thumbnails.
       // TODO: Consider whether some composite visualisation is needed to
       // summarise all the ROI_old's making up the ROISet object.
@@ -539,23 +555,70 @@ public class RtStructDataUploader extends DataUploader
 		
 		// IcrGenericImageAssessmentDataMdComplexType inherits from XnatImageAssessorDataMdComplexType.
 		
-		// Note that I write out only an "in" section. The philosophy of the
-      // uploader is that all files used to create the qcAssessment must
-      // already be present in the database and the catalog file created
-      // here records them. By contrast, the upload procedure itself may
-      // create new files (such as thumbnails) and these are placed in the
-      // repository by the XNAT Uploader. XNAT automatically records all
-      // new files uploaded in its own catalog file.
-		createInputCatalogFile();
-		List<AbstractResource>     inList  = new ArrayList<>();
-		List<Tag>                  tagList = new ArrayList<>();
-
-		AbstractResource ar = new AbstractResource();
-		ar.label     = "Input catalogue file";
-		ar.fileCount = 1;
-		ar.tagList   = tagList;
-		ar.tagList.add(new Tag("URI", XnatAccessionId + + "_input_catalogue.xml"));
-		ar.tagList.add(new Tag("format", "XML"));
+		// The "in" section of the assessor XML contains all files that were already
+		// in the database at the time of upload, whilst the "out" section lists
+		// the files that added at the time of upload, including those generated
+		// automatically. In this, the only generated files are the snapshots, but
+		// this information is already included in the separately uploaded ROI
+		// metadata files and need not be duplicated here.
+		List<AbstractResource> inList = new ArrayList<>();
+		
+		for (String filename : fileSopMap.keySet())
+		{
+			AbstractResource ar  = new AbstractResource();
+			List<MetaField>  mfl = new ArrayList<>();
+			mfl.add(new MetaField("filename",       filename));
+			mfl.add(new MetaField("format",         "DICOM"));
+			mfl.add(new MetaField("SOPInstanceUID", fileSopMap.get(filename)));
+			ar.tagList = mfl;
+			inList.add(ar);
+		}
+		
+		List<AbstractResource> outList = new ArrayList<>();
+		AbstractResource       ar      = new AbstractResource();
+		List<MetaField>        mfl     = new ArrayList<>();
+		mfl.add(new MetaField("filename",       uploadFile.getName()));
+		mfl.add(new MetaField("format",         "RT-STRUCT"));
+		ar.tagList = mfl;
+		outList.add(ar);
+		
+		roiSet.setInList(inList);
+		roiSet.setOutList(outList);
+		
+		roiSet.setImageSessionId(XNATExperimentID);
+		
+		
+		// XnatImageAssessorDataMdComplexType inherits from XnatDerivedDataMdComplexType.
+		
+		StringBuilder versions = new StringBuilder();
+		for (String s : rts.generalEquipment.softwareVersions) versions.append(s);
+		
+		Program prog       = new Program(rts.generalEquipment.manufacturer + " software",
+		                           versions.toString(),
+		                           null);
+		
+		Platform plt       = new Platform(rts.generalEquipment.modelName, null);
+		
+		String timestamp   = rts.structureSet.structureSetDate + "_"
+				               + rts.structureSet.structureSetTime;
+		
+		String user        = rts.rtRoiObservationList.get(0).roiInterpreter;
+		
+		String machine     = rts.generalEquipment.stationName;
+		
+		ProcessStep ps     = new ProcessStep(prog, timestamp, null, user, machine, plt, null, null);
+				                   
+		ArrayList<ProcessStep> stepList = new ArrayList<>();
+		stepList.add(ps);
+		
+		roiSet.setProvenance(new Provenance(stepList));
+				  
+				                                
+		
+		// XnatDerivedDataMdComplexType inherits from XnatExperimentData.
+		
+		
+		
 		
 		Document metadoc = null;
 		try

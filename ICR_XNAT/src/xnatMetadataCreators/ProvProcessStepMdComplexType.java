@@ -52,65 +52,56 @@ package xnatMetadataCreators;
 import dataRepresentations.xnatSchema.Provenance;
 import exceptions.XMLException;
 import java.io.IOException;
-import java.util.ArrayList;
 import xmlUtilities.DelayedPrettyPrinterXmlWriter;
-import dataRepresentations.xnatSchema.Provenance.Library;
-import dataRepresentations.xnatSchema.Provenance.ProvenanceEntry;
+import dataRepresentations.xnatSchema.Provenance.ProcessStep.Library;
 
-public class ProvProcessMdComplexType extends MdComplexType
+public class ProvProcessStepMdComplexType extends MdComplexType
 {
-	protected Provenance prov;
+	protected Provenance.ProcessStep ps;
 	
-	public ProvProcessMdComplexType(Provenance p)
+	public ProvProcessStepMdComplexType(Provenance.ProcessStep ps, DelayedPrettyPrinterXmlWriter dppXML)
 	{
-		prov = p;
+		this.ps     = ps;
+		this.dppXML = dppXML;
 	}
 	
-	public void setProvenance(Provenance p)
-	{
-		prov = p;
-	}
 	
 	@Override
 	public void insertXml() throws IOException, XMLException
 	{		
-		for (Provenance.ProvenanceEntry pe: prov.entries)
-		{
-			dppXML.writeEntity("processStep")
-				.delayedWriteEntity("program")
-					.delayedWriteAttribute("version", pe.program.version)
-					.delayedWriteAttribute("arguments", pe.program.arguments)
-					.delayedWriteText(pe.platform.name)
+		dppXML.delayedWriteEntity("program")
+					.delayedWriteAttribute("version", ps.program.version)
+					.delayedWriteAttribute("arguments", ps.program.arguments)
+					.delayedWriteText(ps.platform.name)
 				.delayedEndEntity()
 				.delayedWriteEntity("timestamp")
-					.delayedWriteText(pe.timestamp)
+					.delayedWriteText(ps.timestamp)
 				.delayedEndEntity()
 				.delayedWriteEntity("cvs")
-					.delayedWriteText(pe.cvs)
+					.delayedWriteText(ps.cvs)
 				.delayedEndEntity()
 				.delayedWriteEntity("user")
-					.delayedWriteText(pe.user)
+					.delayedWriteText(ps.user)
 				.delayedEndEntity()
 				.delayedWriteEntity("machine")
-					.delayedWriteText(pe.machine)
+					.delayedWriteText(ps.machine)
 				.delayedEndEntity()
 				.delayedWriteEntity("platform")
-					.delayedWriteAttribute("version", pe.platform.version)
-					.delayedWriteText(pe.platform.name)
+					.delayedWriteAttribute("version", ps.platform.version)
+					.delayedWriteText(ps.platform.name)
 				.delayedEndEntity()
 				.delayedWriteEntity("compiler")
-					.delayedWriteAttribute("version", pe.compiler.version)
-					.delayedWriteText(pe.compiler.name)
+					.delayedWriteAttribute("version", ps.compiler.version)
+					.delayedWriteText(ps.compiler.name)
 				.delayedEndEntity();
 
-				for (Library lib: pe.libraryList)
+				for (Library lib: ps.libraryList)
 				{
 					dppXML.delayedWriteEntity("library")
 						.delayedWriteAttribute("version", lib.version)
 						.delayedWriteText(lib.name)
 					.delayedEndEntity();
 				}
-			dppXML.endEntity();
-		}
+		dppXML.delayedEndEntity();
 	}
 }

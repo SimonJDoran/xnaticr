@@ -203,7 +203,7 @@ public abstract class DataUploader
       Document metaDoc = createMetadataXML();
       if (errorOccurred) throw new XNATException(XNATException.FILE_UPLOAD,
                           "There was a problem in creating the metadata to "
-                          + "metadata to describe the uploaded file.\n"
+                          + "describe the uploaded file.\n"
                           + getErrorMessage());
       
       
@@ -278,9 +278,9 @@ public abstract class DataUploader
    
   	/**
 	 * Create the XNAT resources corresponding to the types of data being
-	 * uploaded. This call will create a resource for the primaryFile data file
- being uploaded and then a separate resource for each of the auxiliary
- data formats. 
+	 * uploaded. This call will create a resource for the primary data file
+	 * being uploaded and then a separate resource for each of the
+	 * auxiliary data formats. 
 	 */
 	public void createXNATResources() throws XNATException
    {
@@ -340,8 +340,8 @@ public abstract class DataUploader
    {
       try
       {
-			if (uploadFile != null) createPrimaryResourceFile();
-			createAuxiliaryResourceFiles();
+			if (uploadFile != null) createPrimaryResource();
+			createAuxiliaryResources();
 			createXNATResources();
 			
 			
@@ -626,6 +626,13 @@ public abstract class DataUploader
     * Create an XML representation of the metadata relating to the input files
     * referred to and output files created by the application whose data we are
     * uploading.
+	 * 
+	 * Note: Although I have set up the infrastructure here to create this
+	 * input catalogue file, it is not really necessary, because XNAT does a
+	 * good job of maintaining its own catalogues for every separate resource
+	 * the material contained within my catalogue file is virtually redundant.
+	 * So, this method call is actually commented out in practice.
+	 * 
 	 * @param cat input catalog data structure
     */
    protected void createInputCatalogue(Catalog cat)
@@ -649,7 +656,7 @@ public abstract class DataUploader
 					                             "XML",
 			                                   "FILE_CATALOGUE",
 			                                   "catalogue of input files",
-			                                   XNATAccessionID+"_input_catalogue.xml");
+			                                   XNATAccessionID+"_input.xml");
 
 			auxiliaryResources.add(xr);
 		}
@@ -694,12 +701,12 @@ public abstract class DataUploader
 
    
    /**
-    * Create primaryFile files. All files uploaded to the XNAT repository need to
- be created within the context of an XNAT resource. This method manages
- the setting of resource attributes label, format, content and description
- for the primaryFile file being uploaded.
+    * Create primary resource. All files uploaded to the XNAT repository need to
+    * be created within the context of an XNAT resource. This method manages
+    * the setting of resource attributes label, format, content and description
+    * for the primaryFile file being uploaded.
     */
-   protected abstract void createPrimaryResourceFile();
+   protected abstract void createPrimaryResource();
 	
 	
 	/**
@@ -709,7 +716,7 @@ public abstract class DataUploader
 	 * both creates the auxiliary files and manages the setting of resource
 	 * attributes label, format, content and description
     */
-   protected abstract void createAuxiliaryResourceFiles();
+   protected abstract void createAuxiliaryResources();
 	
 	
    /**

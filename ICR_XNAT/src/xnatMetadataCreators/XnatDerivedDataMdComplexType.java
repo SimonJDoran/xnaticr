@@ -62,8 +62,19 @@ public class XnatDerivedDataMdComplexType extends XnatExperimentDataMdComplexTyp
 	public void insertXml() throws IOException, XMLException
 	{
 		super.insertXml();
+		
+		dppXML.delayedWriteEntity("provenance");
+		
+		for (Provenance.ProcessStep ps : prov.stepList)
+		{
+			(new ProvProcessStepMdComplexType(ps, dppXML)).insertXmlAsElement("processStep");
+		}
 	
-		ProvProcessMdComplexType ppct = new ProvProcessMdComplexType(prov);
-		ppct.insertXmlAsElement("provenance");	
+		dppXML.delayedEndEntity();
+	}
+	
+	public void setProvenance(Provenance p)
+	{
+		prov = p;
 	}
 }

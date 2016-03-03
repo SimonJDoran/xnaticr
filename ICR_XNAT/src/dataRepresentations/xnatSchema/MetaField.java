@@ -53,4 +53,12 @@ public class MetaField
 {
 	public String name;
 	public String value;
+	
+	public MetaField() {}
+	
+	public MetaField(String name, String value)
+	{
+		this.name  = name;
+		this.value = value;
+	}
 }
