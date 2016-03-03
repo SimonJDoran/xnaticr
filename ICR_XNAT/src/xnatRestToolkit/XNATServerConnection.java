@@ -513,13 +513,15 @@ public class XNATServerConnection
     * @param RESTMethod a String with enumerated values "GET", "POST" or "PUT"
     * @param doc a Document to upload
     * @param file a File to upload
+	 * @param is an InputStream to upload
     * @return an InputStream to allow the XNAT REST response to be processed 
     * @throws FailedToConnectException
     * @throws XMLException
+	 * @throws java.io.IOException
     */
    public InputStream doRESTCommand(String RESTCommand, String RESTMethod,
                                     Document doc, File file, InputStream is)
-          throws FailedToConnectException, XMLException, Exception
+          throws FailedToConnectException, XMLException, IOException
    {
       int                  responseCode    = 0;
       String               responseMessage = null;
@@ -532,9 +534,8 @@ public class XNATServerConnection
       sb.append(RESTCommand);
 
       int count = ((doc == null)?0:1) + ((file == null)?0:1) + ((is == null)?0:1);
-      if (count > 1)
-         throw new Exception("No more than one Document, File or OutputStream should be selected");
-
+      assert ((count == 0) || (count == 1));
+  
 
       if (doc != null)
       {
@@ -577,24 +578,25 @@ public class XNATServerConnection
             osw.close();
          }
 
-         if (file != null)
+         if ((file != null) || (is != null))
          {
             connection.setRequestProperty("Cache-Control", "no-cache");
 			   connection.setRequestProperty("Connection", "Keep-Alive");
             connection.setRequestProperty("Content-Type", "application/octet-stream");
 
             BufferedOutputStream bos  = new BufferedOutputStream(connection.getOutputStream());
-            FileInputStream      fis  = new FileInputStream(file);
+            if (file != null)     is  = new FileInputStream(file);
             byte[]               buff = new byte[256];
             int bytesRead;
 
-            while (-1 != (bytesRead = fis.read(buff, 0, buff.length)))
+            assert (is != null);
+				while (-1 != (bytesRead = is.read(buff, 0, buff.length)))
             {
                bos.write(buff, 0, bytesRead);
                bos.flush();
             }
 
-            fis.close();
+            is.close();
             bos.flush();
             bos.close();
          }

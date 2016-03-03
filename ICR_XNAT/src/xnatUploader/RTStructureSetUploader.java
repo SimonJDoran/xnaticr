@@ -415,7 +415,7 @@ public class RTStructureSetUploader extends QCAssessmentDataUploader
 //		// the required thumbnails.
 //      // TODO: Consider whether some composite visualisation is needed to
 //      // summarise all the ROI_old's making up the ROISet object.
-//		createInputCatalogueFile("DICOM", "RAW", "referenced contour image");
+//		createInputCatalogue("DICOM", "RAW", "referenced contour image");
    }
    
    

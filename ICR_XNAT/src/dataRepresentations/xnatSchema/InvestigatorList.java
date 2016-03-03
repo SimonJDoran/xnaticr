@@ -43,15 +43,20 @@
 
 package dataRepresentations.xnatSchema;
 
+import exceptions.XMLException;
+import exceptions.XNATException;
 import java.util.ArrayList;
 import java.util.List;
+import org.w3c.dom.Document;
+import org.w3c.dom.NodeList;
+import xmlUtilities.XMLUtilities;
+import xnatDAO.XNATProfile;
+import xnatRestToolkit.XNATNamespaceContext;
+import xnatRestToolkit.XNATRESTToolkit;
 
 public class InvestigatorList extends XnatSchemaElement
 {
-   // Note that there is no "implementation" as such for this class; it is
-	// merely a structure for collecting together Strings. As such, it makes no
-	// sense not to make the variables public and to use getter or setter methods.
-	public class Investigator
+	public static class Investigator
    {
       public String title;
       public String firstName;
@@ -79,44 +84,43 @@ public class InvestigatorList extends XnatSchemaElement
       }
    }
 		
-   // By contrast, the InvestigatorList could possibly be implemented differently
-	// internally and is hidden.
-	private List<Investigator> invList;
+	public Investigator       pi;
+	public List<Investigator> invList = new ArrayList<>();
    private int chosenInvNum;
 	
-	public InvestigatorList()
+	
+	
+	/**
+	 * Initialisation of object directly from an XNAT project
+	 * @param xnatProject a String containing the project name
+	 * @param xnprf the XNAT connection profile
+	 * @throws XNATException
+	 * @throws exceptions.XMLException
+	 */
+	public InvestigatorList(String xnatProject, XNATProfile xnprf)
+			 throws XNATException, XMLException
 	{
-		invList = new ArrayList<>();
+		String               restCommand = "/data/archive/projects/" + xnatProject + "?format=xml";
+		XNATRESTToolkit      xnrt        = new XNATRESTToolkit(xnprf);		
+
+		Document             resultDoc   = xnrt.RESTGetDoc(restCommand);
+		XNATNamespaceContext xnatNs      = new XNATNamespaceContext();
+		NodeList             ndlPI       = XMLUtilities.getElement(resultDoc, xnatNs, "xnat:PI");
+		NodeList             ndlInv      = XMLUtilities.getElement(resultDoc, xnatNs, "xnat:investigator");
+
+		int      nPI    = (ndlPI  == null) ? 0 : ndlPI.getLength();
+		int      nInv   = (ndlInv == null) ? 0 : ndlInv.getLength();
+		int      nTot   = nPI + nInv;
+		
+		System.out.println("Extracting investigator list ...");
 	}
-
-   public InvestigatorList(List<String> titles,
-                           List<String> firstNames,
-                           List<String> lastNames,
-                           List<String> institutions,
-                           List<String> departments,
-                           List<String> emails,
-                           List<String> phoneNumbers)
+	
+	
+	public InvestigatorList(Investigator pi, List<Investigator> invList)
    {
-      invList = new ArrayList<>();
+		this.pi      = pi;
+      this.invList = invList;
 
-		// It is a programming error if any of the fields are null
-		// or if the constituent lists have different numbers of
-		// entries, so just let the program crash if this happens.
-		// However, it is perfectly permissable for the entries all
-		// to have zero length.
-		for (int i=0; i<titles.size(); i++)
-		{
-			invList.add(new Investigator(titles.get(i),
-												  firstNames.get(i),
-												  lastNames.get(i),
-												  institutions.get(i),
-												  departments.get(i),
-												  emails.get(i),
-												  phoneNumbers.get(i)));
-      }
-      
-      // Start off with the default investigator being the first in the list.
-      chosenInvNum = 0;
    }
    
    
@@ -157,4 +161,5 @@ public class InvestigatorList extends XnatSchemaElement
       
       return list;
    }
+	
 }

@@ -71,29 +71,15 @@ import xnatRestToolkit.XNATRESTToolkit;
 import exceptions.XMLException;
 import java.io.IOException;
 import xnatMetadataCreators.CatCatalogMdComplexType;
+import xnatRestToolkit.XnatResource;
 
 
 public abstract class DataUploader
 {
 	static  Logger logger = Logger.getLogger(MRIWDataUploader.class);
 	
-	public class XNATResourceFile
-	{
-		protected File		file;
-		protected String  inOut;
-		protected String	name;
-		protected String	format;
-		protected String	content;
-		protected String	description;
-		
-		public File getFile()
-		{
-			return file;
-		}
-	}
-	
-	protected XNATResourceFile					 primaryFile;
-	protected ArrayList<XNATResourceFile>   auxiliaryFiles;
+	protected XnatResource					    primaryResource;
+	protected ArrayList<XnatResource>       auxiliaryResources;
 	protected XMLUtilities                  XMLUtil;
    protected XNATNamespaceContext          XNATns;
    protected XNATProfile                   xnprf;
@@ -114,6 +100,7 @@ public abstract class DataUploader
 	protected String                        XNATGender;
 	protected String                        XNATDateOfBirth;
    protected String                        XNATAccessionID;
+	protected InvestigatorList              invList;
    protected LinkedHashMap<String, AmbiguousSubjectAndExperiment> ambiguousSubjExp;
    protected UploadStructure               uploadStructure;
    protected boolean                       isPrepared;
@@ -134,12 +121,12 @@ public abstract class DataUploader
 		// The project has already been specified in the UI. In the current
       // incarnation, this comes about by uploading to a profile that consists
       // of only one project, but this will change.
-      XNATProject     = xnprf.getProjectList().get(0);
-      XMLUtil         = new XMLUtilities();
-      XNATns          = new XNATNamespaceContext();
-      xnrt            = new XNATRESTToolkit(this.xnprf);
-      uploadStructure = new UploadStructure(getRootComplexType());
-      auxiliaryFiles  = new ArrayList<>();
+      XNATProject        = xnprf.getProjectList().get(0);
+      XMLUtil            = new XMLUtilities();
+      XNATns             = new XNATNamespaceContext();
+      xnrt               = new XNATRESTToolkit(this.xnprf);
+      uploadStructure    = new UploadStructure(getRootComplexType());
+      auxiliaryResources = new ArrayList<>();
    }
    
    
@@ -196,45 +183,7 @@ public abstract class DataUploader
 	{
 		return getUploadRootCommand(XNATAccessionID) + "?inbody=true";
 	}
-	
-	
-	/**
-	 * Return a URL that defines the XNAT resource on the server into which
-	 * a given XNATResourceFile will be loaded.
-	 * @param rf the XNAT resource file to be uploaded
-    * @return a String containing the REST URL to which upload will occur
-	 */
-	protected String getResourceCreationCommand(XNATResourceFile rf)
-	{
-		String s = getUploadRootCommand(XNATAccessionID) + "/resources/"
-				//  + rf.inOut			+ '/'
-				  + rf.name
-				  + "?content="		+ rf.content
-				  + "&description="	+ rf.description
-				  + "&format="			+ rf.format
-				  + "&name="			+ rf.name;
-		
-		// Replace spaces in any of the query string parameters with + signs,
-		// conforming to the requirements in RFC3986.
-		return s.replace(" ", "+");
-	}
-	
 
-	
-	/**
-	 * Create the XNAT resources on the server that form the structure into which
- the primaryFile and auxiliary files are placed.
-	 * @param rf the XNAT resource file to be uploaded
-    * @return a String containing the REST URL to which upload will occur
-	 */
-	public String getRepositoryUploadCommand(XNATResourceFile rf)
-   {
-      return getUploadRootCommand(XNATAccessionID)
-					+ "/resources/"	+ rf.name
-					+ "/files/"			+ rf.file.getName()
-					+ "?inbody=true";
-   }
-	
 	
 	/**
     * Uploading data to XNAT is a two-stage process. First the metadata
@@ -289,11 +238,19 @@ public abstract class DataUploader
    
    
    
-   public void uploadResourceFileToRepository(XNATResourceFile rf) throws XNATException
+   public void uploadResourceToRepository(XnatResource xr) throws XNATException
    {
       try
       {
-         InputStream is = xnprf.doRESTPut(getRepositoryUploadCommand(rf), rf.getFile());
+			String rootCmd = getUploadRootCommand(XNATAccessionID);
+			String cmd     = xr.getResourceDataUploadCommand(rootCmd);
+			
+         InputStream is = null;
+			if (xr.getFile()     != null) is = xnprf.doRESTPut(cmd, xr.getFile());
+			if (xr.getDocument() != null) is = xnprf.doRESTPut(cmd, xr.getDocument());
+			if (xr.getStream()   != null) is = xnprf.doRESTPut(cmd, xr.getStream());
+			
+			assert (is != null);
          int         n  = is.available( );
          byte[]      b  = new byte[n];
          is.read(b, 0, n);
@@ -327,23 +284,25 @@ public abstract class DataUploader
 	 */
 	public void createXNATResources() throws XNATException
    {
-		ArrayList<XNATResourceFile> rfs = new ArrayList<>();
-		if (primaryFile != null) rfs.add(primaryFile);
-		for (XNATResourceFile rf: auxiliaryFiles) rfs.add(rf);
+		ArrayList<XnatResource> xrList = new ArrayList<>();	
+		if (primaryResource != null) xrList.add(primaryResource);		
+		for (XnatResource ar: auxiliaryResources) xrList.add(ar);
 		
 		Set<String> names = new HashSet<>();
 
 		// Create a resource for each unique label in the set of files to be
 		// uploaded.
-		for (XNATResourceFile rf: rfs)
+		for (XnatResource xr: xrList)
 		{
-			if (!names.contains(rf.name))
+			if (!names.contains(xr.getName()))
 			{
-				names.add(rf.name);
+				names.add(xr.getName());
 				
 				try
 				{
-					InputStream is = xnprf.doRESTPut(getResourceCreationCommand(rf));
+					String rootCmd = getUploadRootCommand(XNATAccessionID);
+					String cmd     = xr.getResourceCreationCommand(rootCmd);
+					InputStream is = xnprf.doRESTPut(cmd);
 					int         n  = is.available( );
 					byte[]      b  = new byte[n];
 					is.read(b, 0, n);
@@ -388,14 +347,13 @@ public abstract class DataUploader
 			
          if (uploadFile != null)
          {
-            uploadResourceFileToRepository(primaryFile);
+            uploadResourceToRepository(primaryResource);
             if (errorOccurred)
                throw new XNATException(XNATException.FILE_UPLOAD, errorMessage);
          }
 			
-			for (XNATResourceFile af : auxiliaryFiles) {
-				uploadResourceFileToRepository(af);
-				af.getFile().delete();
+			for (XnatResource ar : auxiliaryResources) {
+				uploadResourceToRepository(ar);
 				if (errorOccurred)
 					throw new XNATException(XNATException.FILE_UPLOAD, errorMessage);
 			}
@@ -422,9 +380,9 @@ public abstract class DataUploader
       try
       {
          FileInputStream fis = new FileInputStream(uploadFile);
-         doc = XMLUtil.getDOMDocument(fis);
+         doc = XMLUtilities.getDOMDocument(fis);
       }
-      catch (Exception ex)
+      catch (IOException | XMLException ex)
       {
          errorOccurred = true;
          errorMessage  = "Unable to open selected file. \n\n" + ex.getMessage();
@@ -474,50 +432,52 @@ public abstract class DataUploader
     */
    protected boolean getProjectInvestigators()
    {
-      String[] titles       = null;
-      String[] firstNames   = null;
-      String[] lastNames    = null;
-      String[] institutions = null;
-      String[] departments  = null;
-      String[] emails       = null;
-      String[] phoneNumbers = null;
-      try
-      {
-         RESTCommand   = "/REST/projects/" + XNATProject
-                         + "?format=xml";
-         resultDoc     = xnrt.RESTGetDoc(RESTCommand);
-         NodeList ndlPI  = XMLUtilities.getElement(resultDoc, XNATns, "xnat:PI");
-         NodeList ndlInv = XMLUtilities.getElement(resultDoc, XNATns, "xnat:investigator");
-         
-         int      nPI    = (ndlPI  == null) ? 0 : ndlPI.getLength();
-         int      nInv   = (ndlInv == null) ? 0 : ndlInv.getLength();
-         int      nTot   = nPI + nInv;
-         
-         if (nTot != 0)
-         {
-            titles        = new String[nTot];
-            firstNames    = new String[nTot];
-            lastNames     = new String[nTot];
-            institutions  = new String[nTot];
-            departments   = new String[nTot];
-            emails        = new String[nTot];
-            phoneNumbers  = new String[nTot];
-         }
-
-         // Needs fixing - this is broken!!
-         for (int i=0; i<nTot; i++)
-         {         
-            titles[i]       = extractInvestigatorProperty(ndlPI, i, "xnat:title");
-            firstNames[i]   = extractInvestigatorProperty(ndlPI, i, "xnat:firstname");
-            lastNames[i]    = extractInvestigatorProperty(ndlPI, i, "xnat:lastname");
-            institutions[i] = extractInvestigatorProperty(ndlPI, i, "xnat:institution");
-            departments[i]  = extractInvestigatorProperty(ndlPI, i, "xnat:department");
-            emails[i]       = extractInvestigatorProperty(ndlPI, i, "xnat:email");
-            phoneNumbers[i] = extractInvestigatorProperty(ndlPI, i, "xnat:phone");
-         }         
-         
-  
-//         for (int i=0; i<nPI; i++)
+		try
+		{
+			invList = new InvestigatorList(XNATProject, xnprf);
+		}
+		catch (XNATException | XMLException ex)
+		{
+			errorOccurred = true;
+			errorMessage  = "Problem retrieving project investigator information:\n"
+				             + ex.getMessage();
+         return false;
+      }
+		
+		return true;
+	}
+//      String[] titles       = null;
+//      String[] firstNames   = null;
+//      String[] lastNames    = null;
+//      String[] institutions = null;
+//      String[] departments  = null;
+//      String[] emails       = null;
+//      String[] phoneNumbers = null;
+//      try
+//      {
+//         RESTCommand   = "/REST/projects/" + XNATProject
+//                         + "?format=xml";
+//         resultDoc     = xnrt.RESTGetDoc(RESTCommand);
+//         NodeList ndlPI  = XMLUtilities.getElement(resultDoc, XNATns, "xnat:PI");
+//         NodeList ndlInv = XMLUtilities.getElement(resultDoc, XNATns, "xnat:investigator");
+//         
+//         int      nPI    = (ndlPI  == null) ? 0 : ndlPI.getLength();
+//         int      nInv   = (ndlInv == null) ? 0 : ndlInv.getLength();
+//         int      nTot   = nPI + nInv;
+//         
+//         if (nTot != 0)
+//         {
+//            titles        = new String[nTot];
+//            firstNames    = new String[nTot];
+//            lastNames     = new String[nTot];
+//            institutions  = new String[nTot];
+//            departments   = new String[nTot];
+//            emails        = new String[nTot];
+//            phoneNumbers  = new String[nTot];
+//         }
+//
+//         // Needs fixing - this is broken!!
+//         for (int i=0; i<nTot; i++)
 //         {         
 //            titles[i]       = extractInvestigatorProperty(ndlPI, i, "xnat:title");
 //            firstNames[i]   = extractInvestigatorProperty(ndlPI, i, "xnat:firstname");
@@ -526,53 +486,65 @@ public abstract class DataUploader
 //            departments[i]  = extractInvestigatorProperty(ndlPI, i, "xnat:department");
 //            emails[i]       = extractInvestigatorProperty(ndlPI, i, "xnat:email");
 //            phoneNumbers[i] = extractInvestigatorProperty(ndlPI, i, "xnat:phone");
-//         }
+//         }         
 //         
-//         for (int i=0; i<nInv; i++)
-//         {
-//            titles[i+nPI]       = extractInvestigatorProperty(ndlInv, i, "xnat:title");
-//            firstNames[i+nPI]   = extractInvestigatorProperty(ndlInv, i, "xnat:firstname");
-//            lastNames[i+nPI]    = extractInvestigatorProperty(ndlInv, i, "xnat:lastname");
-//            institutions[i+nPI] = extractInvestigatorProperty(ndlInv, i, "xnat:institution");
-//            departments[i+nPI]  = extractInvestigatorProperty(ndlInv, i, "xnat:department");
-//            emails[i+nPI]       = extractInvestigatorProperty(ndlInv, i, "xnat:email");
-//            phoneNumbers[i+nPI] = extractInvestigatorProperty(ndlInv, i, "xnat:phone");
-//         }
-      }
-      catch (Exception ex)
-      {
-         errorOccurred = true;
-         errorMessage  = "Unable to open selected file. \n\n" + ex.getMessage();
-         return false;
-      }
-      
-      setXNATInvestigators(titles, firstNames, lastNames, institutions,
-                               departments, emails, phoneNumbers);
-      
-      return true;
-   }
-   
-   
-   
-   // Needs fixing - this is broken!!
-   private String extractInvestigatorProperty(NodeList ndl, int n, String element)
-           throws Exception
-   {
-      String[] values;
-      try
-      {
-         values = XMLUtilities.getElementText(ndl.item(0), XNATns, element); //Wrong - should be n!
-      }
-      catch (Exception ex)
-      {
-         throw ex;
-      }
-      
-      if (values == null)       return "";
-      if (values.length < n+1 ) return ""; // Kludge
-      if (values[n] == null)    return ""; // This is wrong - kludged just to get something working
-      return values[n]; // This is wrong!
-   }
+//  
+////         for (int i=0; i<nPI; i++)
+////         {         
+////            titles[i]       = extractInvestigatorProperty(ndlPI, i, "xnat:title");
+////            firstNames[i]   = extractInvestigatorProperty(ndlPI, i, "xnat:firstname");
+////            lastNames[i]    = extractInvestigatorProperty(ndlPI, i, "xnat:lastname");
+////            institutions[i] = extractInvestigatorProperty(ndlPI, i, "xnat:institution");
+////            departments[i]  = extractInvestigatorProperty(ndlPI, i, "xnat:department");
+////            emails[i]       = extractInvestigatorProperty(ndlPI, i, "xnat:email");
+////            phoneNumbers[i] = extractInvestigatorProperty(ndlPI, i, "xnat:phone");
+////         }
+////         
+////         for (int i=0; i<nInv; i++)
+////         {
+////            titles[i+nPI]       = extractInvestigatorProperty(ndlInv, i, "xnat:title");
+////            firstNames[i+nPI]   = extractInvestigatorProperty(ndlInv, i, "xnat:firstname");
+////            lastNames[i+nPI]    = extractInvestigatorProperty(ndlInv, i, "xnat:lastname");
+////            institutions[i+nPI] = extractInvestigatorProperty(ndlInv, i, "xnat:institution");
+////            departments[i+nPI]  = extractInvestigatorProperty(ndlInv, i, "xnat:department");
+////            emails[i+nPI]       = extractInvestigatorProperty(ndlInv, i, "xnat:email");
+////            phoneNumbers[i+nPI] = extractInvestigatorProperty(ndlInv, i, "xnat:phone");
+////         }
+//      }
+//      catch (Exception ex)
+//      {
+//         errorOccurred = true;
+//         errorMessage  = "Unable to open selected file. \n\n" + ex.getMessage();
+//         return false;
+//      }
+//      
+//      setXNATInvestigators(titles, firstNames, lastNames, institutions,
+//                               departments, emails, phoneNumbers);
+//      
+//      return true;
+//   }
+//   
+//   
+//   
+//   // Needs fixing - this is broken!!
+//   private String extractInvestigatorProperty(NodeList ndl, int n, String element)
+//           throws Exception
+//   {
+//      String[] values;
+//      try
+//      {
+//         values = XMLUtilities.getElementText(ndl.item(0), XNATns, element); //Wrong - should be n!
+//      }
+//      catch (Exception ex)
+//      {
+//         throw ex;
+//      }
+//      
+//      if (values == null)       return "";
+//      if (values.length < n+1 ) return ""; // Kludge
+//      if (values[n] == null)    return ""; // This is wrong - kludged just to get something working
+//      return values[n]; // This is wrong!
+//   }
    
    
 
@@ -649,44 +621,37 @@ public abstract class DataUploader
    }
 	
 	
+	
 	/**
     * Create an XML representation of the metadata relating to the input files
     * referred to and output files created by the application whose data we are
     * uploading.
+	 * @param cat input catalog data structure
     */
-   protected void createInputCatalogueFile(Catalog cat)
+   protected void createInputCatalogue(Catalog cat)
    {
-		// The file is temporarily constructed in a scratch directory before being uploaded.
-      String homeDir       = System.getProperty("user.home");
-      String fileSep       = System.getProperty("file.separator");
-      String XNAT_DAO_HOME = homeDir + fileSep + ".XNAT_DAO" + fileSep;
-      String catFilename   = XNAT_DAO_HOME + "temp" + fileSep 
-                              + XNATAccessionID + "_input_catalogue.xml";
-      File   catFile       = new File(catFilename);
-      
+		Document xmlDoc = null;
       try
       {
-         File parent = catFile.getParentFile();
-         if (!parent.exists()) parent.mkdirs();
-         
-			Document xmlDoc = (new CatCatalogMdComplexType(cat)).createXmlAsRootElement();
-			
+         xmlDoc = (new CatCatalogMdComplexType(cat)).createXmlAsRootElement();
       }
-      catch (IOException | XMLException ex)
+      catch (XMLException | IOException ex)
       {
          reportError(ex, "create input catalogue file");
       }
       
       if (!errorOccurred)
 		{
-			XNATResourceFile rf	= new XNATResourceFile();
-			rf.content				= "FILE_CATALOGUE";
-			rf.description			= "catalogue of primary data files contributing to this region-of-interest";
-			rf.format				= "XML";
-			rf.file					= catFile;
-			rf.name					= "INPUT_CATALOGUE";
-			rf.inOut					= "in";
-			auxiliaryFiles.add(rf);
+			assert (xmlDoc != null);
+			XnatResource xr = new XnatResource(xmlDoc,
+					                             "in",
+					                             "INPUT_CATALOGUE",
+					                             "XML",
+			                                   "FILE_CATALOGUE",
+			                                   "catalogue of input files",
+			                                   XNATAccessionID+"_input_catalogue.xml");
+
+			auxiliaryResources.add(xr);
 		}
    }
 	
