@@ -50,25 +50,25 @@ import dataRepresentations.dicom.RoiContour;
 import dataRepresentations.dicom.RtReferencedSeries;
 import dataRepresentations.dicom.RtReferencedStudy;
 import dataRepresentations.dicom.RtStruct;
-import dataRepresentations.dicom.StructureSetRoi;
 import dataRepresentations.xnatSchema.AbstractResource;
-import dataRepresentations.xnatSchema.AbstractResource.Tag;
 import dataRepresentations.xnatSchema.MetaField;
 import dataRepresentations.xnatSchema.Provenance;
-import dataRepresentations.xnatSchema.Provenance.Platform;
-import dataRepresentations.xnatSchema.Provenance.Program;
+import dataRepresentations.xnatSchema.Provenance.ProcessStep.Platform;
+import dataRepresentations.xnatSchema.Provenance.ProcessStep.Program;
 import dataRepresentations.xnatSchema.Provenance.ProcessStep;
 import dataRepresentations.xnatSchema.RoiDisplay;
 import dataRepresentations.xnatSchema.Scan;
 import exceptions.DataFormatException;
 import exceptions.XMLException;
 import exceptions.XNATException;
-import generalUtilities.Vector2D;
 import java.io.BufferedInputStream;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -81,8 +81,6 @@ import org.w3c.dom.Document;
 import xmlUtilities.XMLUtilities;
 import xnatDAO.XNATProfile;
 import xnatMetadataCreators.IcrRoiSetDataMdComplexType;
-import xnatRestToolkit.XNATNamespaceContext;
-import xnatRestToolkit.XNATRESTToolkit;
 import xnatRestToolkit.XnatResource;
 
 public class RtStructDataUploader extends DataUploader
@@ -457,7 +455,7 @@ public class RtStructDataUploader extends DataUploader
 	@Override
 	public void createPrimaryResource()
 	{
-		StringBuilder description;
+		StringBuilder description = new StringBuilder();
 		description.append("DICOM RT-STRUCT file created by node ")
 					  .append(rts.generalEquipment.stationName)
 					  .append(" of type ")
@@ -498,8 +496,8 @@ public class RtStructDataUploader extends DataUploader
 		// Metadata are created simply by instantiating the metadata creator
 		// object for the required complex type, filling it with the correct
 		// and calling its createXmlAsRootElement() method. The complexity
-		// in the method comes from the number of pieces of data that must
-		// be transferred from the RT-STRUCT to the creator.
+		// in this method comes from the number of pieces of data that must
+		// be transferred from the RT-STRUCT to the metadata creator.
 		IcrRoiSetDataMdComplexType roiSet  = new IcrRoiSetDataMdComplexType();
 		
 		roiSet.setOriginalUid(rts.sopCommon.sopInstanceUid);
@@ -590,36 +588,29 @@ public class RtStructDataUploader extends DataUploader
 		
 		// XnatImageAssessorDataMdComplexType inherits from XnatDerivedDataMdComplexType.
 		
-		StringBuilder versions = new StringBuilder();
-		for (String s : rts.generalEquipment.softwareVersions) versions.append(s);
-		
-		Program prog       = new Program(rts.generalEquipment.manufacturer + " software",
-		                           versions.toString(),
-		                           null);
-		
-		Platform plt       = new Platform(rts.generalEquipment.modelName, null);
-		
-		String timestamp   = rts.structureSet.structureSetDate + "_"
-				               + rts.structureSet.structureSetTime;
-		
-		String user        = rts.rtRoiObservationList.get(0).roiInterpreter;
-		
-		String machine     = rts.generalEquipment.stationName;
-		
-		ProcessStep ps     = new ProcessStep(prog, timestamp, null, user, machine, plt, null, null);
-				                   
-		ArrayList<ProcessStep> stepList = new ArrayList<>();
-		stepList.add(ps);
-		
-		roiSet.setProvenance(new Provenance(stepList));
-				  
-				                                
+ 
+		roiSet.setProvenance(retrieveProvenance());
+				                                 
 		
 		// XnatDerivedDataMdComplexType inherits from XnatExperimentData.
 		
+      roiSet.setId(XNATAccessionID);
+      roiSet.setProject(XNATProject);
+      
+      StringBuilder versions = new StringBuilder();
+		for (String s : rts.generalEquipment.softwareVersions) versions.append(s);
+      roiSet.setVersion(versions.toString());
+      
+      roiSet.setLabel(rts.structureSet.structureSetLabel);
+      roiSet.setDate(rts.structureSet.structureSetDate);
+      roiSet.setTime(rts.structureSet.structureSetTime);
+      roiSet.setNote(getStringField("Note"));
 		
-		
-		
+      // No correlates in the structure set read in for visit, visitId,
+      // original and protocol.
+      
+      
+      // Finally write the metadata XML document.
 		Document metadoc = null;
 		try
 		{
@@ -630,6 +621,50 @@ public class RtStructDataUploader extends DataUploader
 		return metadoc;
 		
 	}
+   
+   
+   @Override
+   public Provenance retrieveProvenance()
+   {
+      
+		StringBuilder versions = new StringBuilder();
+		for (String s : rts.generalEquipment.softwareVersions) versions.append(s);
+		
+		Program prog1      = new Program(rts.generalEquipment.manufacturer + " software",
+		                           versions.toString(),
+		                           null);
+		
+		Platform plat1     = new Platform(rts.generalEquipment.modelName, null);
+		
+		String timestamp1  = rts.structureSet.structureSetDate + "_"
+				               + rts.structureSet.structureSetTime;
+		
+		String user1       = rts.rtRoiObservationList.get(0).roiInterpreter;
+		
+		String machine1    = rts.generalEquipment.stationName;
+		
+		ProcessStep ps1    = new ProcessStep(prog1, timestamp1, null, user1, machine1, plat1, null, null);
+				                   
+      Platform plat2     = new Platform(null, null);
+   
+      Program prog2      = new Program("ICR XNAT DataUploader", version, null);
+      
+      String timestamp2  = LocalDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME);
+      
+      String user2       = System.getProperty("user.name");
+      
+      StringBuilder mac2 = new StringBuilder(System.getProperty("os.arch")).append(" ")
+                             .append(System.getProperty("os.name")).append(" ")
+                             .append(System.getProperty("os.version"));
+    
+		ProcessStep ps2    = new ProcessStep(prog2, timestamp2, null, user2, mac2.toString(), plat2, null, null);
+		
+      ArrayList<ProcessStep> stepList = new ArrayList<>();
+		stepList.add(ps1);
+      stepList.add(ps2);
+      
+      return new Provenance(stepList);
+   }
 	
 	
 	public String convertToDateTime(String date, String time) throws DataFormatException

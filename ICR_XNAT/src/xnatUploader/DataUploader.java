@@ -46,6 +46,7 @@ package xnatUploader;
 
 import dataRepresentations.xnatSchema.Catalog;
 import dataRepresentations.xnatSchema.InvestigatorList;
+import dataRepresentations.xnatSchema.Provenance;
 import exceptions.XNATException;
 import generalUtilities.UIDGenerator;
 import generalUtilities.Vector2D;
@@ -101,6 +102,7 @@ public abstract class DataUploader
 	protected String                        XNATDateOfBirth;
    protected String                        XNATAccessionID;
 	protected InvestigatorList              invList;
+   protected Provenance                    prov;
    protected LinkedHashMap<String, AmbiguousSubjectAndExperiment> ambiguousSubjExp;
    protected UploadStructure               uploadStructure;
    protected boolean                       isPrepared;
@@ -149,7 +151,7 @@ public abstract class DataUploader
       if (!readFile())                return;
       if (!parseFile())               return;
 		if (!retrieveDemographics())    return;
-      if (!getProjectInvestigators()) return;
+      if (!retrieveProjectInvestigators()) return;
       isPrepared = true;
       mostRecentSuccessfulPrep = uploadFile;
    }
@@ -430,7 +432,7 @@ public abstract class DataUploader
     * 
     * @return true if the method executed without errors
     */
-   protected boolean getProjectInvestigators()
+   protected boolean retrieveProjectInvestigators()
    {
 		try
 		{
@@ -547,7 +549,16 @@ public abstract class DataUploader
 //   }
    
    
-
+   /**
+    * Retrieve any provenance information contained in the uploaded data
+    * file. Note that not all upload types. Exactly what information is
+    * available will clearly depend on the specific datatype and this
+    * method may or may not be over-ridden by subclasses of DataUploader.
+    */
+   public Provenance retrieveProvenance()
+   {
+      return new Provenance();
+   }
    
    /**
     * This method interprets the file just opened. It is implemented differently

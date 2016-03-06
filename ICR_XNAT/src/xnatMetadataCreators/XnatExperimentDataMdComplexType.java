@@ -60,7 +60,7 @@ public class XnatExperimentDataMdComplexType extends MdComplexType
 	protected String id;
 	protected String project;
 	protected String visit;
-	protected String visit_id;
+	protected String visitId;
 	protected String version;
 	protected String original;
 	protected String protocol;
@@ -78,7 +78,7 @@ public class XnatExperimentDataMdComplexType extends MdComplexType
 	{
 		dppXML.delayedWriteAttribute("id",       id)
 				.delayedWriteAttribute("project",  project)
-				.delayedWriteAttribute("visit_id", visit_id)
+				.delayedWriteAttribute("visit_id", visitId)
 				.delayedWriteAttribute("visit",    visit)
 			   .delayedWriteAttribute("version",  version)
 				.delayedWriteAttribute("label",    label)
@@ -151,7 +151,7 @@ public class XnatExperimentDataMdComplexType extends MdComplexType
 	
 	public void setVisitID(String s)
 	{
-		visit_id = s;
+		visitId = s;
 	}
 	
 	
