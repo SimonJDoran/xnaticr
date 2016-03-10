@@ -48,6 +48,7 @@ import exceptions.XNATException;
 import java.util.ArrayList;
 import java.util.List;
 import org.w3c.dom.Document;
+import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import xmlUtilities.XMLUtilities;
 import xnatDAO.XNATProfile;
@@ -65,6 +66,8 @@ public class InvestigatorList extends XnatSchemaElement
       public String department;
       public String email;
       public String phoneNumber;
+		
+		public Investigator() {}
       
       public Investigator(String title,
                           String firstName,
@@ -84,9 +87,10 @@ public class InvestigatorList extends XnatSchemaElement
       }
    }
 		
-	public Investigator       pi;
-	public List<Investigator> invList = new ArrayList<>();
-   private int chosenInvNum;
+	public Investigator          pi      = new Investigator();;
+	public List<Investigator>    invList = new ArrayList<>();  
+	private XNATNamespaceContext xnatNs  = new XNATNamespaceContext();
+	private Document             invDoc;
 	
 	
 	
@@ -100,19 +104,66 @@ public class InvestigatorList extends XnatSchemaElement
 	public InvestigatorList(String xnatProject, XNATProfile xnprf)
 			 throws XNATException, XMLException
 	{
-		String               restCommand = "/data/archive/projects/" + xnatProject + "?format=xml";
-		XNATRESTToolkit      xnrt        = new XNATRESTToolkit(xnprf);		
+		String          restCommand = "/data/archive/projects/" + xnatProject + "?format=xml";
+		XNATRESTToolkit xnrt        = new XNATRESTToolkit(xnprf);		
 
-		Document             resultDoc   = xnrt.RESTGetDoc(restCommand);
-		XNATNamespaceContext xnatNs      = new XNATNamespaceContext();
-		NodeList             ndlPI       = XMLUtilities.getElement(resultDoc, xnatNs, "xnat:PI");
-		NodeList             ndlInv      = XMLUtilities.getElement(resultDoc, xnatNs, "xnat:investigator");
+		invDoc = xnrt.RESTGetDoc(restCommand);
+		NodeList ndlPI     = XMLUtilities.getElement(invDoc, xnatNs, "xnat:PI");
+		NodeList ndlInv    = XMLUtilities.getElement(invDoc, xnatNs, "xnat:investigator");
 
-		int      nPI    = (ndlPI  == null) ? 0 : ndlPI.getLength();
-		int      nInv   = (ndlInv == null) ? 0 : ndlInv.getLength();
-		int      nTot   = nPI + nInv;
+		int      nPI       = (ndlPI  == null) ? 0 : ndlPI.getLength();
+		int      nInv      = (ndlInv == null) ? 0 : ndlInv.getLength();
 		
-		System.out.println("Extracting investigator list ...");
+		if (nPI != 0)
+		{			
+			pi.title        = getPiProperty("title");
+			pi.firstName    = getPiProperty("firstname");
+			pi.lastName     = getPiProperty("lastname");
+			pi.institution  = getPiProperty("institution");
+			pi.department   = getPiProperty("department");
+			pi.email        = getPiProperty("email");
+			pi.phoneNumber  = getPiProperty("phone");
+		}
+		
+		
+		for (int i=0; i<nInv; i++)
+		{
+			Investigator inv = new Investigator();
+			
+			inv.title        = getInvestigatorProperty(i, "title");
+			inv.firstName    = getInvestigatorProperty(i, "firstname");
+			inv.lastName     = getInvestigatorProperty(i, "lastname");
+			inv.institution  = getInvestigatorProperty(i, "institution");
+			inv.department   = getInvestigatorProperty(i, "department");
+			inv.email        = getInvestigatorProperty(i, "email");
+			inv.phoneNumber  = getInvestigatorProperty(i, "phone");
+			
+			invList.add(inv);
+		}
+		
+	}
+	
+	
+	// The assumption for the investigator properties is that either there will
+	// be no such element or that there is only one element.
+	// If, for some strange reason, there is more than one value for a property,
+	// we return only the first.
+	
+	private String getPiProperty(String propertyName)
+			  throws XMLException
+	{
+		String xpe    = "/xnat:Project/xnat:PI/xnat:" + propertyName;
+		return XMLUtilities.getFirstXPathResult(invDoc, xnatNs, xpe);
+	}
+	
+	
+	private String getInvestigatorProperty(int invNum, String propertyName)
+			  throws XMLException
+	{
+
+		String xpe    = "/xnat:Project/xnat:investigators[1]//xnat:investigator["
+				                  + (invNum+1) + "]/xnat:" + propertyName;
+		return XMLUtilities.getFirstXPathResult(invDoc, xnatNs, xpe);
 	}
 	
 	
@@ -120,28 +171,6 @@ public class InvestigatorList extends XnatSchemaElement
    {
 		this.pi      = pi;
       this.invList = invList;
-
-   }
-   
-   
-   public void setChosenInvestigatorNumber(int n) throws IllegalArgumentException 
-   {
-      if ((n < 0) || (n>invList.size()-1))
-			throw new IllegalArgumentException("Invalid investigator number");
-		
-      chosenInvNum = n;
-   }
-   
-   
-   public int getChosenInvestigatorNumber()
-   {
-      return chosenInvNum;
-   }
-   
-   
-   public Investigator getChosenInvestigator()
-   {
-      return invList.get(chosenInvNum);
    }
    
    

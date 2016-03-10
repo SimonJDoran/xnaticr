@@ -622,6 +622,7 @@ public class XMLUtilities
 		XPath			 xpath = xpf.newXPath();
       xpath.setNamespaceContext(namespaceContext);
 		NodeList		 nodes;
+		
 		try
 		{
 			XPathExpression xpe    = xpath.compile("//" + elementName);

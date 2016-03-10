@@ -214,12 +214,12 @@ public class RtStructDataUploader extends DataUploader
 		if (!errorMessage.isEmpty()) return false;
       
 		checkForScansInDatabase();
-		return (!errorMessage.isEmpty()); 
+		return (errorMessage.isEmpty()); 
    }
 	
    
    protected void checkForSubjectSessionAmbiguities()
-   {    
+   {
       try
       {         
          // Find information on all the studies in the project.

@@ -71,6 +71,7 @@ import xnatRestToolkit.XNATNamespaceContext;
 import xnatRestToolkit.XNATRESTToolkit;
 import exceptions.XMLException;
 import java.io.IOException;
+import java.util.Map;
 import xnatMetadataCreators.CatCatalogMdComplexType;
 import xnatRestToolkit.XnatResource;
 
@@ -103,7 +104,7 @@ public abstract class DataUploader
    protected String                        XNATAccessionID;
 	protected InvestigatorList              invList;
    protected Provenance                    prov;
-   protected LinkedHashMap<String, AmbiguousSubjectAndExperiment> ambiguousSubjExp;
+   protected Map<String, AmbiguousSubjectAndExperiment> ambiguousSubjExp;
    protected UploadStructure               uploadStructure;
    protected boolean                       isPrepared;
    protected boolean                       errorOccurred;
@@ -129,6 +130,7 @@ public abstract class DataUploader
       xnrt               = new XNATRESTToolkit(this.xnprf);
       uploadStructure    = new UploadStructure(getRootComplexType());
       auxiliaryResources = new ArrayList<>();
+		ambiguousSubjExp   = new LinkedHashMap<>();
    }
    
    
@@ -448,105 +450,7 @@ public abstract class DataUploader
 		
 		return true;
 	}
-//      String[] titles       = null;
-//      String[] firstNames   = null;
-//      String[] lastNames    = null;
-//      String[] institutions = null;
-//      String[] departments  = null;
-//      String[] emails       = null;
-//      String[] phoneNumbers = null;
-//      try
-//      {
-//         RESTCommand   = "/REST/projects/" + XNATProject
-//                         + "?format=xml";
-//         resultDoc     = xnrt.RESTGetDoc(RESTCommand);
-//         NodeList ndlPI  = XMLUtilities.getElement(resultDoc, XNATns, "xnat:PI");
-//         NodeList ndlInv = XMLUtilities.getElement(resultDoc, XNATns, "xnat:investigator");
-//         
-//         int      nPI    = (ndlPI  == null) ? 0 : ndlPI.getLength();
-//         int      nInv   = (ndlInv == null) ? 0 : ndlInv.getLength();
-//         int      nTot   = nPI + nInv;
-//         
-//         if (nTot != 0)
-//         {
-//            titles        = new String[nTot];
-//            firstNames    = new String[nTot];
-//            lastNames     = new String[nTot];
-//            institutions  = new String[nTot];
-//            departments   = new String[nTot];
-//            emails        = new String[nTot];
-//            phoneNumbers  = new String[nTot];
-//         }
-//
-//         // Needs fixing - this is broken!!
-//         for (int i=0; i<nTot; i++)
-//         {         
-//            titles[i]       = extractInvestigatorProperty(ndlPI, i, "xnat:title");
-//            firstNames[i]   = extractInvestigatorProperty(ndlPI, i, "xnat:firstname");
-//            lastNames[i]    = extractInvestigatorProperty(ndlPI, i, "xnat:lastname");
-//            institutions[i] = extractInvestigatorProperty(ndlPI, i, "xnat:institution");
-//            departments[i]  = extractInvestigatorProperty(ndlPI, i, "xnat:department");
-//            emails[i]       = extractInvestigatorProperty(ndlPI, i, "xnat:email");
-//            phoneNumbers[i] = extractInvestigatorProperty(ndlPI, i, "xnat:phone");
-//         }         
-//         
-//  
-////         for (int i=0; i<nPI; i++)
-////         {         
-////            titles[i]       = extractInvestigatorProperty(ndlPI, i, "xnat:title");
-////            firstNames[i]   = extractInvestigatorProperty(ndlPI, i, "xnat:firstname");
-////            lastNames[i]    = extractInvestigatorProperty(ndlPI, i, "xnat:lastname");
-////            institutions[i] = extractInvestigatorProperty(ndlPI, i, "xnat:institution");
-////            departments[i]  = extractInvestigatorProperty(ndlPI, i, "xnat:department");
-////            emails[i]       = extractInvestigatorProperty(ndlPI, i, "xnat:email");
-////            phoneNumbers[i] = extractInvestigatorProperty(ndlPI, i, "xnat:phone");
-////         }
-////         
-////         for (int i=0; i<nInv; i++)
-////         {
-////            titles[i+nPI]       = extractInvestigatorProperty(ndlInv, i, "xnat:title");
-////            firstNames[i+nPI]   = extractInvestigatorProperty(ndlInv, i, "xnat:firstname");
-////            lastNames[i+nPI]    = extractInvestigatorProperty(ndlInv, i, "xnat:lastname");
-////            institutions[i+nPI] = extractInvestigatorProperty(ndlInv, i, "xnat:institution");
-////            departments[i+nPI]  = extractInvestigatorProperty(ndlInv, i, "xnat:department");
-////            emails[i+nPI]       = extractInvestigatorProperty(ndlInv, i, "xnat:email");
-////            phoneNumbers[i+nPI] = extractInvestigatorProperty(ndlInv, i, "xnat:phone");
-////         }
-//      }
-//      catch (Exception ex)
-//      {
-//         errorOccurred = true;
-//         errorMessage  = "Unable to open selected file. \n\n" + ex.getMessage();
-//         return false;
-//      }
-//      
-//      setXNATInvestigators(titles, firstNames, lastNames, institutions,
-//                               departments, emails, phoneNumbers);
-//      
-//      return true;
-//   }
-//   
-//   
-//   
-//   // Needs fixing - this is broken!!
-//   private String extractInvestigatorProperty(NodeList ndl, int n, String element)
-//           throws Exception
-//   {
-//      String[] values;
-//      try
-//      {
-//         values = XMLUtilities.getElementText(ndl.item(0), XNATns, element); //Wrong - should be n!
-//      }
-//      catch (Exception ex)
-//      {
-//         throw ex;
-//      }
-//      
-//      if (values == null)       return "";
-//      if (values.length < n+1 ) return ""; // Kludge
-//      if (values[n] == null)    return ""; // This is wrong - kludged just to get something working
-//      return values[n]; // This is wrong!
-//   }
+
    
    
    /**
