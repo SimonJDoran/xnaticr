@@ -68,9 +68,7 @@ public class XnatExperimentDataMdComplexType extends MdComplexType
 	protected String date;
 	protected String time;
 	protected String note;
-	protected InvestigatorList.Investigator investigator;
-	protected String investigatorID;
-	
+	protected InvestigatorList.Investigator investigator;	
 	
 	@Override
 	public void insertXml()
@@ -155,9 +153,8 @@ public class XnatExperimentDataMdComplexType extends MdComplexType
 	}
 	
 	
-	public void setInvestigator(InvestigatorList.Investigator inv, String invID)
+	public void setInvestigator(InvestigatorList.Investigator inv)
 	{
 		investigator   = inv;
-		investigatorID = invID;
 	}
 }

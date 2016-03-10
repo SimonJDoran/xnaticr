@@ -58,7 +58,7 @@ import configurationLists.DAOSearchableElementsList;
 
 public class UploadStructure
 {
-   static  Logger                   logger = Logger.getLogger(XNATUploader.class);
+   static  Logger                   logger = Logger.getLogger(UploadStructure.class);
    private String                   rootElement;
    private HashMap<String, Object>  fieldMap;
    private DAOSearchableElementsList sel = null;

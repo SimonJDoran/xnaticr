@@ -105,6 +105,14 @@ public class RtStructDataUploader extends DataUploader
       mdsp.populateJTextField("Note",  "", true);
    }
 	
+	
+	@Override
+	public void populateFields(MetadataPanel mdsp)
+	{
+		mdsp.populateJTextField("Label", "", true);
+      mdsp.populateJTextField("Note",  "", true);
+	}
+	
 
    @Override
    public boolean readFile()
