@@ -299,7 +299,7 @@ public class RTStructureSetUploader extends QCAssessmentDataUploader
 //      
 //      String labelPrefix = getStringField("Label");
 //      
-//      Document metaDoc = createMetadataXML();
+//      Document metaDoc = createMetadataXml();
 //      if (errorOccurred) throw new XNATException(XNATException.FILE_UPLOAD,
 //                          "There was a problem in creating the metadata to "
 //                          + "metadata to describe the uploaded DICOM-RT "
@@ -651,13 +651,13 @@ public class RTStructureSetUploader extends QCAssessmentDataUploader
 	}
 
 	@Override
-	protected void createPrimaryResourceFile()
+	protected void createPrimaryResource()
 	{
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 
 	@Override
-	protected void createAuxiliaryResourceFiles()
+	protected void createAuxiliaryResources()
 	{
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}

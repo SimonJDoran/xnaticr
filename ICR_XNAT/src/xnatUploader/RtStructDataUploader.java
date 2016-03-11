@@ -109,6 +109,7 @@ public class RtStructDataUploader extends DataUploader
 	@Override
 	public void populateFields(MetadataPanel mdsp)
 	{
+		metaDoc = createMetadataXml();
 		mdsp.populateJTextField("Label", "", true);
       mdsp.populateJTextField("Note",  "", true);
 	}
@@ -267,7 +268,7 @@ public class RtStructDataUploader extends DataUploader
                   RESTCommand    = "/data/archive/projects/" + XNATProject
                                    + "/subjects/"            + subjID
                                    + "?format=xml";
-                  resultDoc      = xnrt.RESTGetDoc(RESTCommand);                 
+                  Document resultDoc = xnrt.RESTGetDoc(RESTCommand);                 
                   String[] attrs = XMLUtilities.getAttribute(resultDoc, XNATns, "xnat:Subject", "label");
                   subjLabel      = attrs[0];
                }
@@ -300,15 +301,16 @@ public class RtStructDataUploader extends DataUploader
    
    public void checkForScansInDatabase()
    {      
-      XNATScanIdList = new ArrayList<>();
-      
-      try
+      XNATScanIdList = new ArrayList<>(); 
+      String[][] parseResult;
+		
+		try
       {
          RESTCommand = "/data/archive/projects/" + XNATProject
                        + "/subjects/"            + XNATSubjectID
                        + "/experiments/"         + XNATExperimentID
                        + "?format=xml";
-         resultDoc   = xnrt.RESTGetDoc(RESTCommand);
+         Document resultDoc   = xnrt.RESTGetDoc(RESTCommand);
          parseResult = XMLUtilities.getAttributes(resultDoc, XNATns, "xnat:scan",
                                              new String[] {"ID", "UID"});
       }
@@ -363,7 +365,7 @@ public class RtStructDataUploader extends DataUploader
                              + "/experiments/"         + XNATExperimentID
                              + "/scans/"               + scanId
                              + "/resources/DICOM?format=xml";
-            resultDoc   = xnrt.RESTGetDoc(RESTCommand);
+            Document resultDoc   = xnrt.RESTGetDoc(RESTCommand);
             parseResult = XMLUtilities.getAttributes(resultDoc, XNATns, "cat:entry",
                                                      new String[] {"URI", "UID"});
          }
@@ -386,9 +388,9 @@ public class RtStructDataUploader extends DataUploader
 
          for (int j=0; j<parseResult.length; j++)
          {
-            if (seriesUidSet.contains(parseResult[j][1]))
-               fileSopMap.put(parseResult[j][1], parseResult[j][0]);
-               fileScanMap.put(parseResult[j][1], scanId);
+            if (sopInstanceUidSet.contains(parseResult[j][1]))
+               fileSopMap.put(parseResult[j][0], parseResult[j][1]);
+            fileScanMap.put(parseResult[j][0], scanId);
          }
       }
       
@@ -499,7 +501,7 @@ public class RtStructDataUploader extends DataUploader
    }
 	
 	@Override
-	public Document createMetadataXML()
+	public Document createMetadataXml()
 	{
 		// Metadata are created simply by instantiating the metadata creator
 		// object for the required complex type, filling it with the correct

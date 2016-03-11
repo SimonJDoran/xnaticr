@@ -44,8 +44,10 @@
 
 package xnatUploader;
 
+import java.util.ArrayList;
 import org.w3c.dom.Document;
 import xnatDAO.XNATProfile;
+import xnatRestToolkit.XnatResource;
 
 
 /* Currently a stub, just created to allow some tests to take place.
@@ -104,25 +106,29 @@ public class ParametricImageUploader extends DataUploader
     * @return an XNAT-compatible metadata XML Document
     */
    @Override
-   public Document createMetadataXML()
+   public Document createMetadataXml()
    {
       return null;
    }
    
    
    @Override
-	public void createPrimaryResourceFile()
+	public void createPrimaryResource()
 	{
-		primaryFile					= new XNATResourceFile();
-		primaryFile.content		= "EXTERNAL";
-		primaryFile.description	= "parametric image file created in an external application";
-		primaryFile.format		= "???";
-		primaryFile.file			= uploadFile;
-		primaryFile.name			= "Defined in subclass";
+		StringBuilder description = new StringBuilder();
+		description.append("MRIW output file created by ... ");
+		
+		primaryResource = new XnatResource(uploadFile,
+		                                   "out",
+		                                   "???",
+				                             "???",
+		                                   "EXTERNAL",
+		                                   description.toString(),
+				                             uploadFile.getName());
 	}
 	
 	
-	   @Override
+	@Override
    public String getUploadRootCommand(String uploadItem)
    {
 		return "/data/archive/projects/" + XNATProject
@@ -133,10 +139,18 @@ public class ParametricImageUploader extends DataUploader
 	
 	
 	@Override
-   public void createAuxiliaryResourceFiles()
+   public void createAuxiliaryResources()
    {
       
    }
+	
+	
+	@Override
+   protected ArrayList<String> getInputCatEntries()
+	{
+		return new ArrayList<String>();
+	}
+	
 
 
    @Override

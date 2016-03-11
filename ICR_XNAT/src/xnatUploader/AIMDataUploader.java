@@ -81,6 +81,7 @@ import org.w3c.dom.Document;
 import xmlUtilities.DelayedPrettyPrinterXmlWriter;
 import xnatDAO.XNATGUI;
 import xnatDAO.XNATProfile;
+import xnatRestToolkit.XnatResource;
 
 
 public class AIMDataUploader extends QCAssessmentDataUploader
@@ -337,7 +338,7 @@ public class AIMDataUploader extends QCAssessmentDataUploader
       
       String labelPrefix = getStringField("Label");
       
-      Document metaDoc = createMetadataXML();
+      Document metaDoc = createMetadataXml();
       if (errorOccurred) throw new XNATException(XNATException.FILE_UPLOAD,
                           "There was a problem in creating the metadata to "
                           + "metadata to describe the uploaded DICOM-RT "
@@ -455,14 +456,18 @@ public class AIMDataUploader extends QCAssessmentDataUploader
 	
 	
    @Override
-	public void createPrimaryResourceFile()
+	public void createPrimaryResource()
 	{
-		primaryFile					= new DataUploader.XNATResourceFile();
-		primaryFile.content		= "EXTERNAL";
-		primaryFile.description	= "AIM file created in an external application";
-		primaryFile.format		= "XML";
-		primaryFile.file			= uploadFile;
-		primaryFile.name			= "AIM_OUTPUT";
+		StringBuilder description = new StringBuilder();
+		description.append("AIM instance file created by ... ");
+		
+		primaryResource = new XnatResource(uploadFile,
+		                                   "out",
+		                                   "AIM_INSTANCE",
+				                             "XML",
+		                                   "EXTERNAL",
+		                                   description.toString(),
+				                             uploadFile.getName());
 	}
    
 	
@@ -472,7 +477,7 @@ public class AIMDataUploader extends QCAssessmentDataUploader
  AIM object.
     */
    @Override
-   public void createAuxiliaryResourceFiles()
+   public void createAuxiliaryResources()
    {
       createInputCatalogueFile("DICOM", "RAW", "image referenced by AIM");
 		
@@ -488,13 +493,15 @@ public class AIMDataUploader extends QCAssessmentDataUploader
          {
             File outputFile = new File(thumbnailFile + i);
             ImageIO.write(thumbnails.get(i), "png", outputFile);
-            DataUploader.XNATResourceFile rf	= new DataUploader.XNATResourceFile();
-				rf.content				= "GENERATED";
-				rf.description			= "thumbnail image containing ROI contour";
-				rf.format				= "PNG";
-				rf.file					= outputFile;
-				rf.name					= "AIM_THUMBNAIL";
-            auxiliaryFiles.add(rf);
+            
+				XnatResource xr = new XnatResource(outputFile,
+		                                         "out",
+		                                         "AIM_ROI_THUMBNAIL",
+				                                   "PNG",
+		                                         "GENERATED",
+		                                         "thumbnail image containing ROI contour",
+				                                   outputFile.getName());
+				auxiliaryResources.add(xr);
          }
       }
       catch (Exception ex)

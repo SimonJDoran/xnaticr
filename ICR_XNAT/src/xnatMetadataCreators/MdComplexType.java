@@ -81,18 +81,18 @@ public abstract class MdComplexType
 		
 		dppXML.setIndent("   ")
 				.writeXmlVersion()
-				.writeEntity(getRootElementName())
-				.writeAttribute("xmlns:xnat", "http://nrg.wustl.edu/xnat")
-				.writeAttribute("xmlns:xsi",  "http://www.w3.org/2001/XMLSchema-instance")
-				.writeAttribute("xmlns:prov", "http://www.nbirn.net/prov")
-				.writeAttribute("xmlns:icr",  "http://www.icr.ac.uk/icr");
+				.delayedWriteEntity(getRootElementName())
+				   .writeAttribute("xmlns:xnat", "http://nrg.wustl.edu/xnat")
+				   .writeAttribute("xmlns:xsi",  "http://www.w3.org/2001/XMLSchema-instance")
+				   .writeAttribute("xmlns:prov", "http://www.nbirn.net/prov")
+				   .writeAttribute("xmlns:icr",  "http://www.icr.ac.uk/icr");
 		
 		      insertXml();
 		
-		dppXML.endEntity();
+		dppXML.delayedEndEntity();
 		dppXML.close();
 		
-		Document metaDoc = null;
+		String s = new String(baos.toByteArray());
       ByteArrayInputStream bis = new ByteArrayInputStream(baos.toByteArray());     
       
 		return XMLUtilities.getDOMDocument(bis);

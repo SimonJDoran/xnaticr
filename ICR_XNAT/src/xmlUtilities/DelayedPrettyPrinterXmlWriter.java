@@ -71,8 +71,8 @@ import java.util.Stack;
  *
  * 2. If all of the text or attribute calls made between an invocation of
  *    delayedWriteElement and its corresponding delayedEndElement are
- *    *either* null or start with the text "Unknown", then write nothing for
- *    that element.
+ *    *either* null (_or start with the text "Unknown"_ this condition removed
+ *    11.3.16), then write nothing for that element.
  *
  * 3. Special case relevant only to XNAT. If the element is an xnat:addParam,
  *    then it will always have an attribute that is non-null (i.e., the name).
@@ -144,7 +144,7 @@ public class DelayedPrettyPrinterXmlWriter
       boolean writeIt = false;
       if (forceWrite ||
           !((attributeValue == null) ||
-            (attributeValue.toString().startsWith("Undefined")) ||
+ //           (attributeValue.toString().startsWith("Undefined")) ||
             (currentEntityName.equals("xnat:addParam"))))
       {
          writeIt = true;
@@ -307,15 +307,16 @@ public class DelayedPrettyPrinterXmlWriter
       /* Note: text.toString() is not an attribute name, but it does not seem
        * worth creating another field in the Call object just for this one case.
        */
+		String textString = null;
+		if (text != null) textString = text.toString();
       callStack.push(new Call("writeEntityWithText",
                               argument,
-                              text.toString(),
+                              textString,
                               writeIt,
                               currentParent,
                               -1));
 
       currentEntityName = argument;
-      currentParent = callStack.size()-1;
 
       return this;
    }
@@ -332,7 +333,8 @@ public class DelayedPrettyPrinterXmlWriter
    public DelayedPrettyPrinterXmlWriter delayedWriteText(String argument, boolean forceWrite)
    {
       boolean writeIt = false;
-      if ( forceWrite || ((argument != null) && (!argument.startsWith("Undefined"))))
+   //   if ( forceWrite || ((argument != null) && (!argument.startsWith("Undefined"))))
+		if ( forceWrite || (argument != null))
       {
          writeIt = true;
          setParentTrue(currentParent);
@@ -389,6 +391,7 @@ public class DelayedPrettyPrinterXmlWriter
          
          if (c.writeIt)
          {
+				System.out.println(c.command + "  |  " + c.argument);
             if (c.command.equals("writeAttribute"))
                ppXMLw.writeAttribute(c.argument, c.attributeValue);
 

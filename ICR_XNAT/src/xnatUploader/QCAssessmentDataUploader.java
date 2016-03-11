@@ -67,7 +67,7 @@ public abstract class QCAssessmentDataUploader extends DataUploader
    
    
 /**
-    * Utility function used in createMetadataXML below
+    * Utility function used in createMetadataXml below
     * @param provString String containing processStep entries in a provenance
     * list, separated by the characteristic identifier !PS!
     * @return an ArrayList of the separated values
@@ -105,7 +105,7 @@ public abstract class QCAssessmentDataUploader extends DataUploader
     * @return a Document to be uploaded into XNAT
     */
    @Override
-   public Document createMetadataXML()
+   public Document createMetadataXml()
    {
       initialiseXML();
       createQCMetadataXML();
@@ -238,8 +238,8 @@ public abstract class QCAssessmentDataUploader extends DataUploader
             return;
          }
       
-      InvestigatorList.Investigator xninv   = getXNATInvestigators()
-                                                 .getChosenInvestigator();
+    //  InvestigatorList.Investigator xninv   = getXNATInvestigators()
+    //                                             .getChosenInvestigator();
 
       
       // Write the data out.
@@ -400,17 +400,17 @@ public abstract class QCAssessmentDataUploader extends DataUploader
          reportError(ex, "create input catalogue file");
       }
       
-      if (!errorOccurred)
-		{
-			XNATResourceFile rf	= new XNATResourceFile();
-			rf.content				= "FILE_CATALOGUE";
-			rf.description			= "catalogue of primary data files contributing to this region-of-interest";
-			rf.format				= "XML";
-			rf.file					= catFile;
-			rf.name					= "INPUT_CATALOGUE";
-			rf.inOut					= "in";
-			auxiliaryFiles.add(rf);
-		}
+//      if (!errorOccurred)
+//		{
+//			XNATResourceFile rf	= new XNATResourceFile();
+//			rf.content				= "FILE_CATALOGUE";
+//			rf.description			= "catalogue of primary data files contributing to this region-of-interest";
+//			rf.format				= "XML";
+//			rf.file					= catFile;
+//			rf.name					= "INPUT_CATALOGUE";
+//			rf.inOut					= "in";
+//			auxiliaryFiles.add(rf);
+//		}
    }
    
 

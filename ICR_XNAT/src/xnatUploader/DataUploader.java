@@ -87,9 +87,8 @@ public abstract class DataUploader
    protected XNATProfile                   xnprf;
    protected XNATRESTToolkit               xnrt;
    protected String                        RESTCommand;
-   protected String[][]                    parseResult;
    protected Vector2D<String>              result;
-   protected Document                      resultDoc;
+   protected Document                      metaDoc;
    protected Document                      doc;
    protected File                          uploadFile;
    protected String                        date;
@@ -204,7 +203,7 @@ public abstract class DataUploader
       if (XNATAccessionID == null)
             XNATAccessionID = getRootElement() + '_' + UIDGenerator.createShortUnique();
 
-      Document metaDoc = createMetadataXML();
+      Document metaDoc = createMetadataXml();
       if (errorOccurred) throw new XNATException(XNATException.FILE_UPLOAD,
                           "There was a problem in creating the metadata to "
                           + "describe the uploaded file.\n"
@@ -406,7 +405,7 @@ public abstract class DataUploader
          RESTCommand    = "/data/archive/projects/" + XNATProject
                                 + "/subjects/"        + XNATSubjectID
                                 + "?format=xml";
-         resultDoc      = xnrt.RESTGetDoc(RESTCommand);
+         Document resultDoc = xnrt.RESTGetDoc(RESTCommand);
          String[] attrs = XMLUtilities.getAttribute(resultDoc, XNATns,
                                                    "xnat:Subject", "label");
          if (attrs != null) XNATSubjectLabel = attrs[0];
@@ -510,11 +509,10 @@ public abstract class DataUploader
    public void populateFields(MetadataPanel mdsp)
    {
       // Some tasks are common for many types of upload.
-      InvestigatorList xninv = getXNATInvestigators();
-      mdsp.populateJComboBox("Investigators", xninv.getFullNames());
+      //InvestigatorList xninv = getXNATInvestigators();
+     // mdsp.populateJComboBox("Investigators", xninv.getFullNames());
            
-      ArrayList<String> subjLabels = new ArrayList<String>();
-      int i=0;
+      ArrayList<String> subjLabels = new ArrayList<>();
       for (String key : ambiguousSubjExp.keySet())
       {
          subjLabels.add(ambiguousSubjExp.get(key).subjectLabel);
@@ -672,7 +670,7 @@ public abstract class DataUploader
     * @return an XNAT-compatible metadata XML Document
 	 * @throws java.util.zip.DataFormatException
     */
-   public abstract Document createMetadataXML() throws DataFormatException;
+   public abstract Document createMetadataXml() throws DataFormatException;
    
   
 

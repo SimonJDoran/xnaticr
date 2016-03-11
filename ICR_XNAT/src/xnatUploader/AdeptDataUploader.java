@@ -58,6 +58,7 @@ import org.apache.log4j.Logger;
 import xmlUtilities.DelayedPrettyPrinterXmlWriter;
 import xnatDAO.XNATProfile;
 import xnatDAO.XNATGUI;
+import xnatRestToolkit.XnatResource;
 
 public class AdeptDataUploader extends QCAssessmentDataUploader
 {
@@ -224,14 +225,18 @@ public class AdeptDataUploader extends QCAssessmentDataUploader
 	
 	
    @Override
-	public void createPrimaryResourceFile()
+	public void createPrimaryResource()
 	{
-		primaryFile					= new XNATResourceFile();
-		primaryFile.content		= "EXTERNAL";
-		primaryFile.description	= "ADEPT file created in an external application";
-		primaryFile.format		= "XML";
-		primaryFile.file			= uploadFile;
-		primaryFile.name			= "ADEPT_OUTPUT";
+		StringBuilder description = new StringBuilder();
+		description.append("ADEPT output file created by ... ");
+		
+		primaryResource = new XnatResource(uploadFile,
+		                                   "out",
+		                                   "ADEPT_OUTPUT",
+				                             "XML",
+		                                   "EXTERNAL",
+		                                   description.toString(),
+				                             uploadFile.getName());
 	}
 	
 	
@@ -239,9 +244,9 @@ public class AdeptDataUploader extends QCAssessmentDataUploader
     * Create additional thumbnail files for upload with the ADEPT object set.
     */
    @Override
-   public void createAuxiliaryResourceFiles()
+   public void createAuxiliaryResources()
    {
-		createInputCatalogueFile("DICOM", "RAW", "image referenced by ADEPT");
+		//createInputCatalogueFile("DICOM", "RAW", "image referenced by ADEPT");
 		
       String fileSep    = System.getProperty("file.separator");
       String filePrefix = XNATGUI.getHomeDir() + "temp" + fileSep + XNATAccessionID;
@@ -255,13 +260,15 @@ public class AdeptDataUploader extends QCAssessmentDataUploader
          {
             File outputFile = new File(thumbnailFile + i);
             ImageIO.write(thumbnails.get(i), "png", outputFile);
-            XNATResourceFile rf	= new XNATResourceFile();
-				rf.content				= "GENERATED";
-				rf.description			= "thumbnail image containing ROI contour";
-				rf.format				= "PNG";
-				rf.file					= outputFile;
-				rf.name					= "MRIW_THUMBNAIL";
-            auxiliaryFiles.add(rf);
+            
+				XnatResource xr = new XnatResource(outputFile,
+		                                         "out",
+		                                         "ADEPT_ROI_THUMBNAIL",
+				                                   "PNG",
+		                                         "GENERATED",
+		                                         "thumbnail image containing ROI contour",
+				                                   outputFile.getName());
+            auxiliaryResources.add(xr);
          }
       }
 

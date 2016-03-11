@@ -74,6 +74,7 @@ import org.dcm4che2.io.DicomOutputStream;
 import org.w3c.dom.Document;
 import xnatDAO.XNATGUI;
 import xnatDAO.XNATProfile;
+import xnatRestToolkit.XnatResource;
 
 
 public class MRIWDataUploader extends QCAssessmentDataUploader
@@ -310,7 +311,7 @@ public class MRIWDataUploader extends QCAssessmentDataUploader
       
       String labelPrefix = getStringField("Label");
       
-      Document metaDoc = createMetadataXML();
+      Document metaDoc = createMetadataXml();
       if (errorOccurred) throw new XNATException(XNATException.FILE_UPLOAD,
                           "There was a problem in creating the metadata to "
                           + "metadata to describe the uploaded DICOM-RT "
@@ -428,14 +429,18 @@ public class MRIWDataUploader extends QCAssessmentDataUploader
 	
 	
    @Override
-	public void createPrimaryResourceFile()
+	public void createPrimaryResource()
 	{
-		primaryFile					= new XNATResourceFile();
-		primaryFile.content		= "EXTERNAL";
-		primaryFile.description	= "MRIW file created in an external application";
-		primaryFile.format		= "XML";
-		primaryFile.file			= uploadFile;
-		primaryFile.name			= "MRIW_OUTPUT";
+		StringBuilder description = new StringBuilder();
+		description.append("MRIW output file created by ... ");
+		
+		primaryResource = new XnatResource(uploadFile,
+		                                   "out",
+		                                   "MRIW_OUTPUT",
+				                             "XML",
+		                                   "EXTERNAL",
+		                                   description.toString(),
+				                             uploadFile.getName());
 	}
    
 	
@@ -445,9 +450,9 @@ public class MRIWDataUploader extends QCAssessmentDataUploader
 	 * MRIW object.
     */
    @Override
-   public void createAuxiliaryResourceFiles()
+   public void createAuxiliaryResources()
    {
-      createInputCatalogueFile("DICOM", "RAW", "image referenced by MRIW");
+      //createInputCatalogueFile("DICOM", "RAW", "image referenced by MRIW");
 		
 		String fileSep    = System.getProperty("file.separator");
       String filePrefix = XNATGUI.getHomeDir() + "temp" + fileSep + XNATAccessionID;
@@ -461,13 +466,15 @@ public class MRIWDataUploader extends QCAssessmentDataUploader
          {
             File outputFile = new File(thumbnailFile + i);
             ImageIO.write(thumbnails.get(i), "png", outputFile);
-            XNATResourceFile rf	= new XNATResourceFile();
-				rf.content				= "GENERATED";
-				rf.description			= "thumbnail image containing ROI contour";
-				rf.format				= "PNG";
-				rf.file					= outputFile;
-				rf.name					= "MRIW_THUMBNAIL";
-            auxiliaryFiles.add(rf);
+				
+				XnatResource xr = new XnatResource(outputFile,
+		                                         "out",
+		                                         "MRIW_ROI_THUMBNAIL",
+				                                   "PNG",
+		                                         "GENERATED",
+		                                         "thumbnail image containing ROI contour",
+				                                   outputFile.getName());
+            auxiliaryResources.add(xr);
          }
       }
       catch (Exception ex)

@@ -150,9 +150,10 @@ public class IcrRoiDataMdComplexType extends IcrGenericImageAssessmentDataMdComp
 	}
 	
 	
-	public String getRootElement()
+	@Override
+	public String getRootElementName()
 	{
-		return "ROISet";
+		return "ROI";
 	}
 	
 	
