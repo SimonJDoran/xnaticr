@@ -721,6 +721,10 @@ public class RtStructDataUploader extends DataUploader
    
    
    @Override
+	public void updateVariablesForEditableFields.
+	
+	
+	@Override
    public List<String> getEditableFields()
    {
       List<String> s = new ArrayList<>();

@@ -685,8 +685,12 @@ public abstract class DataUploader
     */
    protected abstract void createAuxiliaryResources();
 	
+	/**
+	 * Change appropriate data variables to reflect any edits made by users.
+	 */
+   public abstract void updateVariablesForEditableFields();
 	
-   /**
+	/**
     * Return a list of the fields that may be edited.
 	 * Allow the flexibility for each concrete class to define its own.
     */
