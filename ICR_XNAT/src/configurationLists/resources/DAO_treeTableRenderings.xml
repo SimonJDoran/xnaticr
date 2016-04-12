@@ -1015,7 +1015,7 @@
 
 <!-- roiSet properties -->
 
-   <renderProperties element="icr:roiSetData/dcmPatientName">
+   <renderProperties element="icr:roiSetData/dicomSubjName">
       <property name="Letter">D</property>
       <property name="Colour">orange</property>
       <property name="tooltip">Subject demographics/administration: name</property>
@@ -1039,43 +1039,49 @@
       <property name="tooltip">Application output: number of ROIs contained in this set</property>
    </renderProperties>
    
-   <renderProperties element="icr:roiSetData/structureSetLabel">
-      <property name="Letter">O</property>
+   <renderProperties element="icr:roiSetData/originatingRoiSetSource/originalDataType">
+      <property name="Letter">T</property>
       <property name="Colour">light blue</property>
-      <property name="tooltip">Application output: structure set label</property>
+      <property name="tooltip">Application output: original data type</property>
    </renderProperties>
    
-   <renderProperties element="icr:roiSetData/structureSetName">
-      <property name="Letter">O</property>
+   <renderProperties element="icr:roiSetData/originatingRoiSetSource/originalLabel">
+      <property name="Letter">L</property>
       <property name="Colour">light blue</property>
-      <property name="tooltip">Application output: structure set name</property>
+      <property name="tooltip">Application output: original label</property>
    </renderProperties>
    
-   <renderProperties element="icr:roiSetData/structureSetDescription">
-      <property name="Letter">O</property>
+   <renderProperties element="icr:roiSetData/originatingRoiSetSource/originatingApplicationName">
+      <property name="Letter">N</property>
       <property name="Colour">light blue</property>
-      <property name="tooltip">Application output: structure set description</property>
+      <property name="tooltip">Application output: originating application name</property>
    </renderProperties>
    
-   <renderProperties element="icr:roiSetData/structureSetDate">
-      <property name="Letter">O</property>
+   <renderProperties element="icr:roiSetData/originatingRoiSetSource/originatingApplicationVersion">
+      <property name="Letter">V</property>
       <property name="Colour">light blue</property>
-      <property name="tooltip">Application output: structure set creation date</property>
+      <property name="tooltip">Application output: originating application version</property>
    </renderProperties>
    
-   <renderProperties element="icr:roiSetData/structureSetTime">
-      <property name="Letter">O</property>
+   <renderProperties element="icr:roiSetData/originatingRoiSetSource/originalUID">
+      <property name="Letter">U</property>
       <property name="Colour">light blue</property>
-      <property name="tooltip">Application output: structure set creation time</property>
+      <property name="tooltip">Application output: original UID</property>
    </renderProperties>
    
-   <renderProperties element="icr:roiSetData/structureSetLabel">
-      <property name="Letter">O</property>
+   <renderProperties element="icr:roiSetData/date">
+      <property name="Letter">D</property>
       <property name="Colour">light blue</property>
-      <property name="tooltip">Application output: structure set label</property>
+      <property name="tooltip">Application output: creation date</property>
+   </renderProperties>
+	
+	<renderProperties element="icr:roiSetData/time">
+      <property name="Letter">T</property>
+      <property name="Colour">light blue</property>
+      <property name="tooltip">Application output: creation time</property>
    </renderProperties>
    
-   <renderProperties element="icr:roiSetData/subjectID">
+   <renderProperties element="icr:roiSetData/xnatSubjID">
       <property name="Letter">X</property>
       <property name="Colour">XNAT green</property>
       <property name="tooltip">ID of the XNAT subject for which this ROI is stored</property>

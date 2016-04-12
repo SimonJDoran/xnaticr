@@ -75,11 +75,11 @@ public class AdeptDataUploader extends QCAssessmentDataUploader
 //      // Find information on all the studies in the database.
 //      try
 //      {
-//         studyUIDs       = (XMLUtil.getAttributeA(doc, XNATns, "input",
+//         studyUIDs       = (XMLUtil.getAttributeA(doc, XnatNs, "input",
 //                                 "study-uid"));
-//         seriesUIDs      = XMLUtil.getAttributeA(doc, XNATns, "image",
+//         seriesUIDs      = XMLUtil.getAttributeA(doc, XnatNs, "image",
 //                                 "series-uid");
-//         SOPInstanceUIDs = XMLUtil.getAttributeA(doc, XNATns, "image",
+//         SOPInstanceUIDs = XMLUtil.getAttributeA(doc, XnatNs, "image",
 //                                 "sop-instance-uid");
 //
 //         RESTCommand = "/REST/projects/" + XNATProject + "/experiments"
@@ -128,7 +128,7 @@ public class AdeptDataUploader extends QCAssessmentDataUploader
 //                          + "/experiments/" + XNATExperimentID
 //                          + "?format=xml";
 //            resultDoc   = xnrt.RESTGetDoc(RESTCommand);
-//            parseResult = XMLUtil.getAttributes(resultDoc, XNATns, "xnat:scan",
+//            parseResult = XMLUtil.getAttributes(resultDoc, XnatNs, "xnat:scan",
 //                                                   new String[] {"ID", "UID"});
 //         }
 //         catch (Exception ex)

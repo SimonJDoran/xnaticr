@@ -78,7 +78,7 @@ public class IcrRoiSetDataMdComplexType extends IcrGenericImageAssessmentDataMdC
 	@Override
 	public void insertXml() throws IOException, XMLException
 	{
-		//super.insertXml();
+		super.insertXml();
 		
 		dppXML.delayedWriteEntity("originatingRoiSetSource")
 				   .delayedWriteAttribute("originalUID",                   originalUid)
@@ -87,7 +87,7 @@ public class IcrRoiSetDataMdComplexType extends IcrGenericImageAssessmentDataMdC
 				   .delayedWriteAttribute("originatingApplicationName",    originatingApplicationName)
 				   .delayedWriteAttribute("originatingApplicationVersion", originatingApplicationVersion)
 				.delayedEndEntity()
-				.delayedWriteEntityWithText("nRois", Integer.toString(nRois));
+				.delayedWriteEntityWithText("nROIs", Integer.toString(nRois));
 
 		dppXML.delayedWriteEntity("roiDisplays");
 		         for (RoiDisplay rd : roiDisplayList)
@@ -107,7 +107,8 @@ public class IcrRoiSetDataMdComplexType extends IcrGenericImageAssessmentDataMdC
 		      for (ReferencedFrameOfReference rfor : rforList)
 				{
 					(new IcrReferencedFrameOfReferenceDataMdComplexType(rfor, dppXML)).insertXmlAsElement("referencedFrameOfReference");
-				}		  
+				}
+		dppXML.delayedEndEntity();
 	}
 	
 	@Override

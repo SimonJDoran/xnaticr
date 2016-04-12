@@ -53,6 +53,7 @@ import dataRepresentations.xnatSchema.AdditionalField;
 import dataRepresentations.xnatSchema.AbstractResource;
 import exceptions.XMLException;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 public class XnatImageAssessorDataMdComplexType extends XnatDerivedDataMdComplexType
@@ -110,5 +111,11 @@ public class XnatImageAssessorDataMdComplexType extends XnatDerivedDataMdComplex
 	public void setImageSessionId(String s)
 	{
 		imageSessionId = s;
+	}
+	
+	
+	public void setParamList(List<AdditionalField> pl)
+	{
+		paramList = pl;
 	}
 }

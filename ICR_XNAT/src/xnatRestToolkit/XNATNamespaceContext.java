@@ -57,7 +57,7 @@ public class XNATNamespaceContext implements NamespaceContext
    @Override
    public String getNamespaceURI(String prefix)
    {
-      if (prefix == null) throw new NullPointerException("Null prefix");
+      if (prefix == null) throw new IllegalArgumentException("Null prefix");
 
       else if (prefix.equals("arc"))    return "http://nrg.wustl.edu/arc";
       else if (prefix.equals("cat"))    return "http://nrg.wustl.edu/catalog";
@@ -69,6 +69,7 @@ public class XNATNamespaceContext implements NamespaceContext
       else if (prefix.equals("xnat_a")) return "http://nrg.wustl.edu/xnat_assessments";
       else if (prefix.equals("xsi"))    return "http://www.w3.org/2001/XMLSchema-instance";
       else if (prefix.equals("rpacs"))  return "http://domain.com/ResearchPACS";
+		else if (prefix.equals("icr"))    return "http://www.icr.ac.uk/icr";
       else if (prefix.equals("xml"))    return XMLConstants.XML_NS_URI;
 
       else return XMLConstants.NULL_NS_URI;

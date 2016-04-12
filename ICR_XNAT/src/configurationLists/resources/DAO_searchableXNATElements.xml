@@ -289,32 +289,20 @@
    </XNATSearchRootElement>
    
    <XNATSearchRootElement element="icr:roiSetData">
-      <searchableXNATElement alias="Patient name">icr:roiSetData/dcmPatientName</searchableXNATElement>
+      <searchableXNATElement alias="Patient name">icr:roiSetData/dicomSubjName</searchableXNATElement>
       <searchableXNATElement alias="Label">icr:roiSetData/label</searchableXNATElement>
       <searchableXNATElement alias="Note">icr:roiSetData/note</searchableXNATElement>
       <searchableXNATElement alias="Number of ROIs contained">icr:roiSetData/nROIs</searchableXNATElement>
-      <searchableXNATElement alias="Structure set label">icr:roiSetData/structureSetLabel</searchableXNATElement>
-      <searchableXNATElement alias="Structure set name">icr:roiSetData/structureSetName</searchableXNATElement>
-      <searchableXNATElement alias="Structure set description">icr:roiSetData/structureSetDescription</searchableXNATElement>
-      <searchableXNATElement alias="Structure set date">icr:roiSetData/structureSetDate</searchableXNATElement>
-      <searchableXNATElement alias="Structure set time">icr:roiSetData/structureSetTime</searchableXNATElement>
-      <searchableXNATElement alias="Data acquisition date">icr:roiSetData/date</searchableXNATElement>
-      <searchableXNATElement alias="Data acquisition time">icr:roiSetData/time</searchableXNATElement>
-      <searchableXNATElement alias="Investigator first name">icr:roiSetData/investigator/firstname</searchableXNATElement>
-      <searchableXNATElement alias="Investigator last name">icr:roiSetData/investigator/lastname</searchableXNATElement>
-      <searchableXNATElement alias="Investigator institution">icr:roiSetData/investigator/institution</searchableXNATElement>
-      <searchableXNATElement alias="Investigator department">icr:roiSetData/investigator/department</searchableXNATElement>
-      <searchableXNATElement alias="Associated XNAT image session ID">icr:roiSetData/imageSession_ID</searchableXNATElement>
-      <searchableXNATElement alias="Provenance: program">icr:roiSetData/provenance/processStep/program</searchableXNATElement>
-      <searchableXNATElement alias="Provenance: version">icr:roiSetData/provenance/processStep/program/version</searchableXNATElement>
-      <searchableXNATElement alias="Provenance: arguments">icr:roiSetData/provenance/processStep/program/arguments</searchableXNATElement>
-      <searchableXNATElement alias="Provenance: timestamp">icr:roiSetData/provenance/processStep/timestamp</searchableXNATElement>
-      <searchableXNATElement alias="Provenance: user">icr:roiSetData/provenance/processStep/user</searchableXNATElement>
-      <searchableXNATElement alias="Provenance: machine">icr:roiSetData/provenance/processStep/machine</searchableXNATElement>
-      <searchableXNATElement alias="Provenance: platform">icr:roiSetData/provenance/processStep/platform</searchableXNATElement>
-      <searchableXNATElement alias="XNAT subject ID">icr:roiSetData/subjectID</searchableXNATElement>
+      <searchableXNATElement alias="Original data type">icr:roiSetData/originatingRoiSetSource/originalDataType</searchableXNATElement>
+      <searchableXNATElement alias="Original label">icr:roiSetData/originatingRoiSetSource/originalLabel</searchableXNATElement>
+      <searchableXNATElement alias="Originating application name">icr:roiSetData/originatingRoiSetSource/originatingApplicationName</searchableXNATElement>
+      <searchableXNATElement alias="Originating application version">icr:roiSetData/originatingRoiSetSource/originatingApplicationVersion</searchableXNATElement>
+      <searchableXNATElement alias="Original UID">icr:roiSetData/originatingRoiSetSource/originalUID</searchableXNATElement>
+      <searchableXNATElement alias="Creation date">icr:roiSetData/date</searchableXNATElement>
+      <searchableXNATElement alias="Creation time">icr:roiSetData/time</searchableXNATElement>
+      <searchableXNATElement alias="XNAT subject ID">icr:roiSetData/xnatSubjID</searchableXNATElement>
       <searchableXNATElement alias="XNAT assessment ID">icr:roiSetData/ID</searchableXNATElement>
-      <searchableXNATElement alias="Associated project">icr:roiSetData/project</searchableXNATElement>
+      <searchableXNATElement alias="Associated XNAT project">icr:roiSetData/project</searchableXNATElement>
    </XNATSearchRootElement>
    
    <XNATSearchRootElement element="icr:roiData">

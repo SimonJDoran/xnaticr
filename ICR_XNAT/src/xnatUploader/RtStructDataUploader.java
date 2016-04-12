@@ -44,6 +44,7 @@
 
 package xnatUploader;
 
+import configurationLists.DAOSearchableElementsList;
 import dataRepresentations.dicom.ContourImage;
 import dataRepresentations.dicom.ReferencedFrameOfReference;
 import dataRepresentations.dicom.RoiContour;
@@ -51,11 +52,14 @@ import dataRepresentations.dicom.RtReferencedSeries;
 import dataRepresentations.dicom.RtReferencedStudy;
 import dataRepresentations.dicom.RtStruct;
 import dataRepresentations.xnatSchema.AbstractResource;
+import dataRepresentations.xnatSchema.AdditionalField;
+import dataRepresentations.xnatSchema.InvestigatorList.Investigator;
 import dataRepresentations.xnatSchema.MetaField;
 import dataRepresentations.xnatSchema.Provenance;
 import dataRepresentations.xnatSchema.Provenance.ProcessStep.Platform;
 import dataRepresentations.xnatSchema.Provenance.ProcessStep.Program;
 import dataRepresentations.xnatSchema.Provenance.ProcessStep;
+import dataRepresentations.xnatSchema.Provenance.ProcessStep.Library;
 import dataRepresentations.xnatSchema.RoiDisplay;
 import dataRepresentations.xnatSchema.Scan;
 import exceptions.DataFormatException;
@@ -74,6 +78,8 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.Vector;
+import org.apache.log4j.Logger;
 import org.dcm4che2.data.BasicDicomObject;
 import org.dcm4che2.data.DicomObject;
 import org.dcm4che2.io.DicomInputStream;
@@ -104,15 +110,6 @@ public class RtStructDataUploader extends DataUploader
       mdsp.populateJTextField("Label", "", true);
       mdsp.populateJTextField("Note",  "", true);
    }
-	
-	
-	@Override
-	public void populateFields(MetadataPanel mdsp)
-	{
-		metaDoc = createMetadataXml();
-		mdsp.populateJTextField("Label", "", true);
-      mdsp.populateJTextField("Note",  "", true);
-	}
 	
 
    @Override
@@ -269,7 +266,7 @@ public class RtStructDataUploader extends DataUploader
                                    + "/subjects/"            + subjID
                                    + "?format=xml";
                   Document resultDoc = xnrt.RESTGetDoc(RESTCommand);                 
-                  String[] attrs = XMLUtilities.getAttribute(resultDoc, XNATns, "xnat:Subject", "label");
+                  String[] attrs = XMLUtilities.getAttribute(resultDoc, XnatNs, "xnat:Subject", "label");
                   subjLabel      = attrs[0];
                }
                catch (XMLException | XNATException ex)
@@ -311,7 +308,7 @@ public class RtStructDataUploader extends DataUploader
                        + "/experiments/"         + XNATExperimentID
                        + "?format=xml";
          Document resultDoc   = xnrt.RESTGetDoc(RESTCommand);
-         parseResult = XMLUtilities.getAttributes(resultDoc, XNATns, "xnat:scan",
+         parseResult = XMLUtilities.getAttributes(resultDoc, XnatNs, "xnat:scan",
                                              new String[] {"ID", "UID"});
       }
       catch (XMLException | XNATException ex)
@@ -366,7 +363,7 @@ public class RtStructDataUploader extends DataUploader
                              + "/scans/"               + scanId
                              + "/resources/DICOM?format=xml";
             Document resultDoc   = xnrt.RESTGetDoc(RESTCommand);
-            parseResult = XMLUtilities.getAttributes(resultDoc, XNATns, "cat:entry",
+            parseResult = XMLUtilities.getAttributes(resultDoc, XnatNs, "cat:entry",
                                                      new String[] {"URI", "UID"});
          }
          catch(XNATException | XMLException ex)
@@ -585,8 +582,8 @@ public class RtStructDataUploader extends DataUploader
 		List<AbstractResource> outList = new ArrayList<>();
 		AbstractResource       ar      = new AbstractResource();
 		List<MetaField>        mfl     = new ArrayList<>();
-		mfl.add(new MetaField("filename",       uploadFile.getName()));
-		mfl.add(new MetaField("format",         "RT-STRUCT"));
+		mfl.add(new MetaField("filename", uploadFile.getName()));
+		mfl.add(new MetaField("format",   "RT-STRUCT"));
 		ar.tagList = mfl;
 		outList.add(ar);
 		
@@ -594,6 +591,10 @@ public class RtStructDataUploader extends DataUploader
 		roiSet.setOutList(outList);
 		
 		roiSet.setImageSessionId(XNATExperimentID);
+		
+		// For this object, there are no additional fields. This entry is
+		// empty, but still needs to be set.
+		roiSet.setParamList(new ArrayList<AdditionalField>());
 		
 		
 		// XnatImageAssessorDataMdComplexType inherits from XnatDerivedDataMdComplexType.
@@ -617,18 +618,18 @@ public class RtStructDataUploader extends DataUploader
       roiSet.setNote(getStringField("Note"));
 		
       // No correlates in the structure set read in for visit, visitId,
-      // original and protocol.
-      
+      // original, protocol and investigator.
+		roiSet.setInvestigator(new Investigator());      
       
       // Finally write the metadata XML document.
-		Document metadoc = null;
+		Document metaDoc = null;
 		try
 		{
-			metadoc = roiSet.createXmlAsRootElement();
+			metaDoc = roiSet.createXmlAsRootElement();
 		}
 		catch (IOException | XMLException ex){}
 		
-		return metadoc;
+		return metaDoc;
 		
 	}
    
@@ -653,9 +654,19 @@ public class RtStructDataUploader extends DataUploader
 		
 		String machine1    = rts.generalEquipment.stationName;
 		
-		ProcessStep ps1    = new ProcessStep(prog1, timestamp1, null, user1, machine1, plat1, null, null);
-				                   
-      Platform plat2     = new Platform(null, null);
+		// We don't have a compiler version, but we still need to specify it, as
+		// the instance variables are accessed later. (Still needed even though the instance
+		// variables are null themselves ...)
+		ProcessStep.Compiler c1 = new ProcessStep.Compiler(null, null);
+		
+      // Even though  the library list is empty we still need to specify it, otherwise
+		// a null pointer exception will pop up when we try to iterate through the list.
+		List<Library> ll1  = new ArrayList<Library>();
+				  
+		ProcessStep ps1    = new ProcessStep(prog1, timestamp1, null, user1, machine1, plat1, c1, ll1);
+
+		
+		Platform plat2     = new Platform(null, null);
    
       Program prog2      = new Program("ICR XNAT DataUploader", version, null);
       
@@ -667,7 +678,11 @@ public class RtStructDataUploader extends DataUploader
                              .append(System.getProperty("os.name")).append(" ")
                              .append(System.getProperty("os.version"));
     
-		ProcessStep ps2    = new ProcessStep(prog2, timestamp2, null, user2, mac2.toString(), plat2, null, null);
+		List<Library> ll2  = new ArrayList<Library>();
+		
+		ProcessStep.Compiler c2 = new ProcessStep.Compiler(null, null);
+		
+		ProcessStep ps2    = new ProcessStep(prog2, timestamp2, null, user2, mac2.toString(), plat2, c2, ll2);
 		
       ArrayList<ProcessStep> stepList = new ArrayList<>();
 		stepList.add(ps1);
@@ -705,11 +720,24 @@ public class RtStructDataUploader extends DataUploader
    }
    
    
-   
    @Override
-   public String[] getRequiredFields()
+   public List<String> getEditableFields()
    {
-      return new String[]{"Label", "Note"};
+      List<String> s = new ArrayList<>();
+		s.add("Label");
+		s.add("Note");
+		
+		return s;
+   }
+   
+	
+	@Override
+   public List<String> getRequiredFields()
+   {
+      List<String> s = new ArrayList<>();
+		s.add("Label");
+		
+		return s;
    }
    
    
@@ -717,7 +745,6 @@ public class RtStructDataUploader extends DataUploader
    public boolean rightMetadataPresent()
    {
       return (!getStringField("Label").equals("")) &&
-             (!getStringField("Note").equals(""))  &&
              (!XNATSubjectID.equals(""))           &&
              (!XNATExperimentID.equals(""))        &&
              (!XNATScanIdList.equals(""));

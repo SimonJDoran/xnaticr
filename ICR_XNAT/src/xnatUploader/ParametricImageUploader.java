@@ -45,6 +45,7 @@
 package xnatUploader;
 
 import java.util.ArrayList;
+import java.util.List;
 import org.w3c.dom.Document;
 import xnatDAO.XNATProfile;
 import xnatRestToolkit.XnatResource;
@@ -91,11 +92,19 @@ public class ParametricImageUploader extends DataUploader
    }
 
 
-
-   @Override
-   public String[] getRequiredFields()
+	@Override
+   public List<String> getEditableFields()
    {
-      return new String[0];
+      List<String> s = new ArrayList<>();
+		return s;
+   }
+	
+	
+   @Override
+   public List<String> getRequiredFields()
+   {
+      List<String> s = new ArrayList<>();
+		return s;
    }
 
 

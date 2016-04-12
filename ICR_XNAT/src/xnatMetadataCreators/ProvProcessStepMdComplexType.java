@@ -72,20 +72,12 @@ public class ProvProcessStepMdComplexType extends MdComplexType
 		dppXML.delayedWriteEntity("program")
 					.delayedWriteAttribute("version", ps.program.version)
 					.delayedWriteAttribute("arguments", ps.program.arguments)
-					.delayedWriteText(ps.platform.name)
+					.delayedWriteText(ps.program.name)
 				.delayedEndEntity()
-				.delayedWriteEntity("timestamp")
-					.delayedWriteText(ps.timestamp)
-				.delayedEndEntity()
-				.delayedWriteEntity("cvs")
-					.delayedWriteText(ps.cvs)
-				.delayedEndEntity()
-				.delayedWriteEntity("user")
-					.delayedWriteText(ps.user)
-				.delayedEndEntity()
-				.delayedWriteEntity("machine")
-					.delayedWriteText(ps.machine)
-				.delayedEndEntity()
+				.delayedWriteEntityWithText("timestamp", ps.timestamp)
+				.delayedWriteEntityWithText("cvs",       ps.cvs)
+				.delayedWriteEntityWithText("user",      ps.user)
+				.delayedWriteEntityWithText("machine",   ps.machine)
 				.delayedWriteEntity("platform")
 					.delayedWriteAttribute("version", ps.platform.version)
 					.delayedWriteText(ps.platform.name)
@@ -95,13 +87,12 @@ public class ProvProcessStepMdComplexType extends MdComplexType
 					.delayedWriteText(ps.compiler.name)
 				.delayedEndEntity();
 
-				for (Library lib: ps.libraryList)
-				{
-					dppXML.delayedWriteEntity("library")
-						.delayedWriteAttribute("version", lib.version)
-						.delayedWriteText(lib.name)
-					.delayedEndEntity();
-				}
-		dppXML.delayedEndEntity();
+		for (Library lib: ps.libraryList)
+		{
+			dppXML.delayedWriteEntity("library")
+				.delayedWriteAttribute("version", lib.version)
+				.delayedWriteText(lib.name)
+			.delayedEndEntity();
+		}
 	}
 }

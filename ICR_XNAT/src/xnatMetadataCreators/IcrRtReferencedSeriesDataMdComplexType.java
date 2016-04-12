@@ -76,12 +76,13 @@ public class IcrRtReferencedSeriesDataMdComplexType extends MdComplexType
 	@Override
 	public void insertXml() throws IOException, XMLException
 	{		
-		dppXML.delayedWriteEntityWithText("seriesInstanceUID", rrs.seriesInstanceUid)
-				.delayedWriteEntity("ContourImages");
+		dppXML.delayedWriteEntityWithText("seriesInstanceUID", rrs.seriesInstanceUid);
 		
+		dppXML.delayedWriteEntity("ContourImages");
 		      for (ContourImage ci : rrs.contourImageList)
 				{
 					(new IcrContourImageDataMdComplexType(ci, dppXML)).insertXmlAsElement("ContourImage");
 				}
+		dppXML.delayedEndEntity();
 	}
 }

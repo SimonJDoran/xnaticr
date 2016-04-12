@@ -87,12 +87,12 @@ public abstract class MdComplexType
 				   .writeAttribute("xmlns:prov", "http://www.nbirn.net/prov")
 				   .writeAttribute("xmlns:icr",  "http://www.icr.ac.uk/icr");
 		
-		      insertXml();
+		         insertXml();
 		
 		dppXML.delayedEndEntity();
 		dppXML.close();
 		
-		String s = new String(baos.toByteArray());
+//		String s = new String(baos.toByteArray()); // for diagnostics
       ByteArrayInputStream bis = new ByteArrayInputStream(baos.toByteArray());     
       
 		return XMLUtilities.getDOMDocument(bis);

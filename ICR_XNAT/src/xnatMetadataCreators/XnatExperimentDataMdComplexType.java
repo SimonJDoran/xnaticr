@@ -81,17 +81,9 @@ public class XnatExperimentDataMdComplexType extends MdComplexType
 			   .delayedWriteAttribute("version",  version)
 				.delayedWriteAttribute("label",    label)
 				  
-				.delayedWriteEntity("date")
-					.delayedWriteText(date)
-				.delayedEndEntity()
-
-				.delayedWriteEntity("time")
-					.delayedWriteText(time)
-				.delayedEndEntity()
-
-				.delayedWriteEntity("note")
-					.delayedWriteText(note)
-				.delayedEndEntity();
+				.delayedWriteEntityWithText("date", date)
+				.delayedWriteEntityWithText("time", time)
+				.delayedWriteEntityWithText("note", note);
 		
 				XnatInvestigatorDataMdComplexType xid = new XnatInvestigatorDataMdComplexType(dppXML);
 				xid.setInvestigator(investigator);

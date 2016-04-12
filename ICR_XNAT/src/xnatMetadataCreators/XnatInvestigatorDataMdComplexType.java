@@ -75,33 +75,13 @@ public class XnatInvestigatorDataMdComplexType extends MdComplexType
 	{		
 		dppXML.delayedWriteAttribute("ID", id);
 		
-		dppXML.delayedWriteEntity("title")
-					.writeText(investigator.title)
-				.delayedEndEntity()
-
-				.delayedWriteEntity("firstname")
-					.writeText(investigator.firstName)
-				.delayedEndEntity()
-
-				.delayedWriteEntity("lastname")
-					.writeText(investigator.lastName)
-				.delayedEndEntity()
-
-				.delayedWriteEntity("institution")
-					.writeText(investigator.institution)
-				.delayedEndEntity()
-
-				.delayedWriteEntity("department")
-					.writeText(investigator.department)
-				.delayedEndEntity()
-
-				.delayedWriteEntity("email")
-					.writeText(investigator.email)
-				.delayedEndEntity()
-
-				.delayedWriteEntity("phone")
-					.writeText(investigator.phoneNumber)
-				.delayedEndEntity();	
+		dppXML.delayedWriteEntityWithText("title",       investigator.title)
+				.delayedWriteEntityWithText("firstname",   investigator.firstName)
+				.delayedWriteEntityWithText("lastname",    investigator.lastName)
+				.delayedWriteEntityWithText("institution", investigator.institution)  
+				.delayedWriteEntityWithText("department",  investigator.department)  
+				.delayedWriteEntityWithText("email",       investigator.email)
+				.delayedWriteEntityWithText("phone",       investigator.phoneNumber);
 	}
 	
 	

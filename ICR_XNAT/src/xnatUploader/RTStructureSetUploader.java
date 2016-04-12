@@ -60,6 +60,7 @@ import org.dcm4che2.io.DicomOutputStream;
 import dataRepresentations.RtStructWriter;
 import dataRepresentations.RTStruct_old;
 import generalUtilities.UIDGenerator;
+import java.util.List;
 import org.apache.log4j.Logger;
 import xnatDAO.XNATGUI;
 
@@ -567,9 +568,13 @@ public class RTStructureSetUploader extends QCAssessmentDataUploader
    
    
    @Override
-   public String[] getRequiredFields()
+   public List<String> getRequiredFields()
    {
-      return new String[]{"Label", "Note"};
+      List<String> s = new ArrayList<>();
+		s.add("Label");
+		s.add("Note");
+		
+		return s;
    }
    
    

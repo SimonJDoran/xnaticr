@@ -49,6 +49,7 @@ import com.generationjava.io.xml.SimpleXmlWriter;
 import exceptions.XMLException;
 import java.io.*;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.regex.Pattern;
 import org.apache.log4j.Logger;
 import org.w3c.dom.Document;
@@ -529,9 +530,24 @@ public abstract class QCAssessmentDataUploader extends DataUploader
 	
    
    @Override
-   public String[] getRequiredFields()
+   public List<String> getRequiredFields()
    {
-      return new String[]{"Label", "Note"};
+      List<String> s = new ArrayList<>();
+		s.add("Label");
+		s.add("Note");
+		
+		return s;
+   }
+	
+	
+	@Override
+   public List<String> getEditableFields()
+   {
+      List<String> s = new ArrayList<>();
+		s.add("Label");
+		s.add("Note");
+		
+		return s;
    }
    
 	

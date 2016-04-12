@@ -147,10 +147,7 @@ public class MetadataPanel extends JPanel
       DAOSearchableElementsList sel = null;
       try
       {
-         // The DAOSearchableElementsList (sel) is an object that maps the contents of the
-         // searchableXNATElements.xml file into an easy format for the program to
-         // interrogate. It is used here when creating the tabs and in a variety of
-         // other places around XNAT_DAO.
+         // This try-catch behaviour with a RunTimeException needs refactoring!!
          sel = DAOSearchableElementsList.getSingleton();
       }
       catch (IOException exIO)
@@ -365,6 +362,7 @@ public class MetadataPanel extends JPanel
       textField.setText(value);
       textField.setEditable(editable);
       if (editable) textField.setBackground(DAOConstants.EDITABLE_COLOUR);
+		textField.setCaretPosition(0);
    }
    
    
@@ -468,11 +466,11 @@ public class MetadataPanel extends JPanel
       
       // Add listeners for the editable fields. Allow the flexibility for each
       //concrete class to define its own fields to watch.
-      String[] requiredData = du.getRequiredFields();
+      List<String> requiredData = du.getRequiredFields();
 
-      for (int i=0; i<requiredData.length; i++)
+      for (int i=0; i<requiredData.size(); i++)
       {
-         final String     alias = requiredData[i];
+         final String     alias = requiredData.get(i);
          final JTextField tf    = (JTextField) getComponent(alias);
          tf.addActionListener(new ActionListener()
          {
@@ -510,21 +508,21 @@ public class MetadataPanel extends JPanel
          });
       }
 
-      // All the uploaders allow the investigator to be selected.
-      final JComboBox jcb = (JComboBox) getComponent("Investigators");
-      jcb.addItemListener(new ItemListener()
-      {
-         @Override
-         public void itemStateChanged(ItemEvent evt)
-         {
-            // Note: There are two passes through this method per click: once to tell you
-            // that an item has been deselected and once to say that a new item has been chosen.
-            // Ignore the first of these.
-            if (evt.getStateChange() == ItemEvent.DESELECTED) return;
-            int ind = jcb.getSelectedIndex();
-          //  du.getXNATInvestigators().setInvestigatorNumber(ind);
-         }
-      });
+//      // All the uploaders allow the investigator to be selected.
+//      final JComboBox jcb = (JComboBox) getComponent("Investigators");
+//      jcb.addItemListener(new ItemListener()
+//      {
+//         @Override
+//         public void itemStateChanged(ItemEvent evt)
+//         {
+//            // Note: There are two passes through this method per click: once to tell you
+//            // that an item has been deselected and once to say that a new item has been chosen.
+//            // Ignore the first of these.
+//            if (evt.getStateChange() == ItemEvent.DESELECTED) return;
+//            int ind = jcb.getSelectedIndex();
+//          //  du.getXNATInvestigators().setInvestigatorNumber(ind);
+//         }
+//      });
    }
    
    

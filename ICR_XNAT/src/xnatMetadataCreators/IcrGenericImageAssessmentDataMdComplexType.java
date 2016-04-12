@@ -93,36 +93,40 @@ public class IcrGenericImageAssessmentDataMdComplexType extends XnatImageAssesso
 	@Override
 	public void insertXml() throws IOException, XMLException
 	{
+		super.insertXml();
+		
 		dppXML.delayedWriteAttribute("type", type)
 				.delayedWriteEntityWithText("xnatSubjID",    xnatSubjId)
-				.delayedWriteEntityWithText("dicomSubjName", dicomSubjName)
-				.delayedWriteEntity("scans");
+				.delayedWriteEntityWithText("dicomSubjName", dicomSubjName);
 		
+		dppXML.delayedWriteEntity("scans");	
 				for (Scan scan : scanList)
 				{
 					dppXML.delayedWriteEntity("scan")
-							.delayedWriteAttribute("id", scan.id)
-					      .delayedWriteEntity("sliceQC");
-					
-					      for (Slice slice : scan.sliceList)
-							{
-								dppXML.delayedWriteEntity("slice")
-										   .delayedWriteAttribute("number", slice.number);
-										   if (slice.sliceStatistics != null)
-											{
-												slice.sliceStatistics.dppXML = dppXML;
-												slice.sliceStatistics.insertXmlAsElement("sliceStatistics");
-											}
-								dppXML.delayedEndEntity();
-							}
+							  
+								.delayedWriteAttribute("id", scan.id)
+								.delayedWriteEntity("sliceQC");
+								for (Slice slice : scan.sliceList)
+								{
+									dppXML.delayedWriteEntity("slice")
+												.delayedWriteAttribute("number", slice.number);
+												if (slice.sliceStatistics != null)
+												{
+													slice.sliceStatistics.dppXML = dppXML;
+													slice.sliceStatistics.insertXmlAsElement("sliceStatistics");
+												}
+									dppXML.delayedEndEntity();
+								}
+						dppXML.delayedEndEntity();
 							
-					if (scan.scanStatistics != null)
-					{
-						scan.scanStatistics.dppXML = dppXML;
-						scan.scanStatistics.insertXmlAsElement("scanStatistics");
-					}
-					
-					dppXML.delayedEndEntity();
-				}		
+						if (scan.scanStatistics != null)
+						{
+							scan.scanStatistics.dppXML = dppXML;
+							scan.scanStatistics.insertXmlAsElement("scanStatistics");
+						}
+						
+					dppXML.delayedEndEntity();			
+				}
+		dppXML.delayedEndEntity();
 	}
 }
