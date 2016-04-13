@@ -96,6 +96,12 @@ public abstract class DataUploader
    protected File                          uploadFile;
    protected String                        date;
    protected String                        time;
+	protected String                        label;
+   protected String                        note;
+	protected String                        visit;
+   protected String                        visitID;
+	protected String                        original;
+   protected String                        protocol;
    protected String                        XNATExperimentID;
    protected String                        XNATProject;
    protected ArrayList<String>             XNATScanIdList;
@@ -509,24 +515,24 @@ public abstract class DataUploader
     * in on the screen. Again, this is over-ridden by each subclass to allow
     * for the fact that different fields will be filled in for each data type.
     */
-   public void populateFields(MetadataPanel mdsp)
+   public void populateFields(MetadataPanel mdp)
    {
       ArrayList<String> subjLabels = new ArrayList<>();
       for (String key : ambiguousSubjExp.keySet())
       {
          subjLabels.add(ambiguousSubjExp.get(key).subjectLabel);
       }   
-      mdsp.populateJComboBox("XNAT Subject", subjLabels);
+      mdp.populateJComboBox("XNAT Subject", subjLabels);
       AmbiguousSubjectAndExperiment ase = ambiguousSubjExp.get(XNATSubjectID);
       String            subjLabel = ase.subjectLabel;
       ArrayList<String> expLabels = ase.experimentLabels;
       ArrayList<String> expIDs    = ase.experimentIDs;
       int               ind       = expIDs.indexOf(XNATExperimentID);
       
-      mdsp.populateJComboBox("XNAT Session Label", expLabels);
+      mdp.populateJComboBox("XNAT Session Label", expLabels);
       
-      JComboBox jcbSubj = (JComboBox) mdsp.getComponent("XNAT Subject");
-      JComboBox jcbExp  = (JComboBox) mdsp.getComponent("XNAT Session Label");
+      JComboBox jcbSubj = (JComboBox) mdp.getComponent("XNAT Subject");
+      JComboBox jcbExp  = (JComboBox) mdp.getComponent("XNAT Session Label");
       
       jcbSubj.setSelectedItem(subjLabel);
       jcbExp.setSelectedItem(expLabels.get(ind));
@@ -577,7 +583,7 @@ public abstract class DataUploader
 				boolean editable = false;
 				if (getEditableFields().contains(elementAliases.get(i))) editable = true;
 				
-				if (result != null) mdsp.populateJTextField(elementAliases.get(i), result, editable);
+				if (result != null) mdp.populateJTextField(elementAliases.get(i), result, editable);
 			}
 			catch (XMLException exXML)
 			{
@@ -688,7 +694,7 @@ public abstract class DataUploader
 	/**
 	 * Change appropriate data variables to reflect any edits made by users.
 	 */
-   public abstract void updateVariablesForEditableFields();
+   public abstract void updateVariablesForEditableFields(MetadataPanel mdsp);
 	
 	/**
     * Return a list of the fields that may be edited.

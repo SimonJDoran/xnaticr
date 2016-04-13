@@ -566,8 +566,14 @@ public class RTStructureSetUploader extends QCAssessmentDataUploader
    }
    
    
-   
-   @Override
+	@Override
+	public void updateVariablesForEditableFields(MetadataPanel mdsp)
+	{
+		label = mdsp.getJTextFieldContents("Label");
+		note  = mdsp.getJTextFieldContents("Note");
+	}
+	
+	@Override
    public List<String> getRequiredFields()
    {
       List<String> s = new ArrayList<>();

@@ -74,12 +74,14 @@ public class XnatExperimentDataMdComplexType extends MdComplexType
 	public void insertXml()
 			      throws IOException, XMLException
 	{
-		dppXML.delayedWriteAttribute("id",       id)
-				.delayedWriteAttribute("project",  project)
-				.delayedWriteAttribute("visit_id", visitId)
-				.delayedWriteAttribute("visit",    visit)
-			   .delayedWriteAttribute("version",  version)
-				.delayedWriteAttribute("label",    label)
+		dppXML.delayedWriteAttribute("id",        id)
+				.delayedWriteAttribute("project",   project)
+				.delayedWriteAttribute("visit_id",  visitId)
+				.delayedWriteAttribute("visit",     visit)
+			   .delayedWriteAttribute("version",   version)
+				.delayedWriteAttribute("label",     label)
+				.delayedWriteAttribute("original",  original)
+				.delayedWriteAttribute("protocol",  protocol)
 				  
 				.delayedWriteEntityWithText("date", date)
 				.delayedWriteEntityWithText("time", time)
@@ -115,9 +117,21 @@ public class XnatExperimentDataMdComplexType extends MdComplexType
 	}
 	
 	
-	public void setProject(String s)
+	public void setOriginal(String s)
 	{
 		project = s;
+	}
+	
+	
+	public void setProject(String s)
+	{
+		original = s;
+	}
+	
+	
+	public void setProtocol(String s)
+	{
+		protocol = s;
 	}
 	
 	

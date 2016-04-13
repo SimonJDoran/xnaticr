@@ -105,10 +105,10 @@ public class RtStructDataUploader extends DataUploader
 	}
 	
 	@Override
-   public void clearFields(MetadataPanel mdsp)
+   public void clearFields(MetadataPanel mdp)
    {
-      mdsp.populateJTextField("Label", "", true);
-      mdsp.populateJTextField("Note",  "", true);
+      mdp.populateJTextField("Label", "", true);
+      mdp.populateJTextField("Note",  "", true);
    }
 	
 
@@ -147,6 +147,14 @@ public class RtStructDataUploader extends DataUploader
          errorMessage  = "Unable to parse file. \n" + exDF.getMessage();
 			return false;
 		}
+		
+		
+		date  = rts.structureSet.structureSetDate;
+		time  = rts.structureSet.structureSetTime;
+		
+		// Initially, the label of the XNAT assessor will be set to the same
+		// as the structure set label, but this can be changed on the upload screen.
+		label = rts.structureSet.structureSetLabel;
 		
 		// Generate a single Set of all studies referenced for later use
 		// and similarly for all series and SOPInstances referenced.
@@ -612,10 +620,10 @@ public class RtStructDataUploader extends DataUploader
 		for (String s : rts.generalEquipment.softwareVersions) versions.append(s);
       roiSet.setVersion(versions.toString());
       
-      roiSet.setLabel(rts.structureSet.structureSetLabel);
-      roiSet.setDate(rts.structureSet.structureSetDate);
-      roiSet.setTime(rts.structureSet.structureSetTime);
-      roiSet.setNote(getStringField("Note"));
+      roiSet.setLabel(label);
+      roiSet.setDate(date);
+      roiSet.setTime(time);
+      roiSet.setNote(note);
 		
       // No correlates in the structure set read in for visit, visitId,
       // original, protocol and investigator.
@@ -721,7 +729,11 @@ public class RtStructDataUploader extends DataUploader
    
    
    @Override
-	public void updateVariablesForEditableFields.
+	public void updateVariablesForEditableFields(MetadataPanel mdp)
+	{
+		label = mdp.getJTextFieldContents("Label");
+		note  = mdp.getJTextFieldContents("Note");
+	}
 	
 	
 	@Override
@@ -748,7 +760,7 @@ public class RtStructDataUploader extends DataUploader
    @Override
    public boolean rightMetadataPresent()
    {
-      return (!getStringField("Label").equals("")) &&
+      return (!label.equals("")) &&
              (!XNATSubjectID.equals(""))           &&
              (!XNATExperimentID.equals(""))        &&
              (!XNATScanIdList.equals(""));

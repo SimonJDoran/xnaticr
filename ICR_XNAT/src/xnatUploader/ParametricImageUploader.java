@@ -93,6 +93,12 @@ public class ParametricImageUploader extends DataUploader
 
 
 	@Override
+	public void updateVariablesForEditableFields(MetadataPanel mdsp)
+	{
+	}
+	
+	
+	@Override
    public List<String> getEditableFields()
    {
       List<String> s = new ArrayList<>();

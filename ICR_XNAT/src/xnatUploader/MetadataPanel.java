@@ -477,7 +477,7 @@ public class MetadataPanel extends JPanel
             @Override
             public void actionPerformed(ActionEvent evt)
             {
-               du.setStringField(alias, tf.getText());
+               du.updateVariablesForEditableFields(MetadataPanel.this);
                MetadataPanel.this.putClientProperty("enableUpload", du.rightMetadataPresent());
                }
          });
@@ -502,7 +502,8 @@ public class MetadataPanel extends JPanel
             @Override
             public void keyTyped(KeyEvent evt)
             {
-               du.setStringField(alias, tf.getText());
+               du.updateVariablesForEditableFields(MetadataPanel.this);
+					System.out.println(du.rightMetadataPresent());
                MetadataPanel.this.putClientProperty("enableUpload", du.rightMetadataPresent());
             }
          });

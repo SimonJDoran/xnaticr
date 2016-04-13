@@ -391,7 +391,6 @@ public class DelayedPrettyPrinterXmlWriter
          
          if (c.writeIt)
          {
-				System.out.println(c.command + "  |  " + c.argument);
             if (c.command.equals("writeAttribute"))
                ppXMLw.writeAttribute(c.argument, c.attributeValue);
 
