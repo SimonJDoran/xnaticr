@@ -91,7 +91,6 @@ public abstract class DataUploader
    protected XNATRESTToolkit               xnrt;
    protected String                        RESTCommand;
    protected Vector2D<String>              result;
-   protected Document                      metaDoc;
    protected Document                      doc;
    protected File                          uploadFile;
    protected String                        date;
@@ -216,7 +215,7 @@ public abstract class DataUploader
       if (errorOccurred) throw new XNATException(XNATException.FILE_UPLOAD,
                           "There was a problem in creating the metadata to "
                           + "describe the uploaded file.\n"
-                          + getErrorMessage());
+                          + errorMessage);
       
       
       try
@@ -555,7 +554,7 @@ public abstract class DataUploader
 		
 		
 		
-		metaDoc = createMetadataXml();
+		Document metaDoc = createMetadataXml();
 		
 		for (int i=0; i<elements.size(); i++)
 		{

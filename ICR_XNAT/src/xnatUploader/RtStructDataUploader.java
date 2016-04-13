@@ -635,7 +635,13 @@ public class RtStructDataUploader extends DataUploader
 		{
 			metaDoc = roiSet.createXmlAsRootElement();
 		}
-		catch (IOException | XMLException ex){}
+		catch (IOException | XMLException ex)
+		{
+			// This really shouldn't happen, but the mechanism is there to handle
+			// it if it does.
+			errorOccurred = true;
+			errorMessage  = ex.getMessage();
+		}
 		
 		return metaDoc;
 		
