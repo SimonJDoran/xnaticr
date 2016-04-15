@@ -126,7 +126,7 @@ public class IcrRoiDataMdComplexType extends IcrGenericImageAssessmentDataMdComp
 		dppXML.delayedWriteEntity("rtRelatedRois");
 		      for (RtRelatedRoi rrr : rrrList)
 				{
-			(new IcrRtRelatedRoiMdComplexType(rrr, dppXML)).insertXmlAsElement("rtRelatedRoi");
+					(new IcrRtRelatedRoiMdComplexType(rrr, dppXML)).insertXmlAsElement("rtRelatedRoi");
 				}
 		dppXML.delayedEndEntity();
 		

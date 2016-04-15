@@ -44,7 +44,6 @@
 
 package xnatUploader;
 
-import configurationLists.DAOSearchableElementsList;
 import dataRepresentations.dicom.ContourImage;
 import dataRepresentations.dicom.ReferencedFrameOfReference;
 import dataRepresentations.dicom.RoiContour;
@@ -65,21 +64,20 @@ import dataRepresentations.xnatSchema.Scan;
 import exceptions.DataFormatException;
 import exceptions.XMLException;
 import exceptions.XNATException;
+import generalUtilities.UIDGenerator;
 import java.io.BufferedInputStream;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Calendar;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.Vector;
-import org.apache.log4j.Logger;
 import org.dcm4che2.data.BasicDicomObject;
 import org.dcm4che2.data.DicomObject;
 import org.dcm4che2.io.DicomInputStream;
@@ -92,12 +90,17 @@ import xnatRestToolkit.XnatResource;
 public class RtStructDataUploader extends DataUploader
 {
 	private DicomObject         bdo;
-	private RtStruct            rts;
-  	private Set<String>         studyUidSet       = new LinkedHashSet<>();
-	private Set<String>         seriesUidSet      = new LinkedHashSet<>();
-	private Set<String>         sopInstanceUidSet = new LinkedHashSet<>();
-	private Map<String, String> fileSopMap        = new HashMap<>();
-	private Map<String, String> fileScanMap       = new HashMap<>();	
+	
+	// These instance variables are public because they need to be accessed by
+	// the RoiFromRtStructDataUploader class in the uploadMetadata method.
+	public  RtStruct            rts;
+  	public Set<String>         studyUidSet       = new LinkedHashSet<>();
+	public Set<String>         seriesUidSet      = new LinkedHashSet<>();
+	public Set<String>         sopInstanceUidSet = new LinkedHashSet<>();
+	public Map<String, String> fileSopMap        = new HashMap<>();
+	public Map<String, String> fileScanMap       = new HashMap<>();
+	public ArrayList<String>   assignedRoiIdList = new ArrayList<>();
+	public int                 nRois;
 	
 	public RtStructDataUploader(XNATProfile xnprf)
 	{
@@ -154,7 +157,7 @@ public class RtStructDataUploader extends DataUploader
 		
 		// Initially, the label of the XNAT assessor will be set to the same
 		// as the structure set label, but this can be changed on the upload screen.
-		label = rts.structureSet.structureSetLabel;
+		labelPrefix = rts.structureSet.structureSetLabel;
 		
 		// Generate a single Set of all studies referenced for later use
 		// and similarly for all series and SOPInstances referenced.
@@ -413,9 +416,8 @@ public class RtStructDataUploader extends DataUploader
    @Override
    public void updateParseFile()
    {
-//      rts.XNATExperimentID = XNATExperimentID;
-//      rts.XNATSubjectID    = XNATSubjectID;
-//      
+
+// TODO: This can probably all be deleted now.      
 //		ArrayList<String> issues = new ArrayList<>();
 //		rts.checkForScansInDatabase(issues);
 //		
@@ -445,25 +447,82 @@ public class RtStructDataUploader extends DataUploader
     * @throws Exception
     */
    @Override
-   public void uploadMetadata() throws Exception
+   public void uploadMetadata() throws XNATException
    {
       errorOccurred = false;
+		
+		// -------------------------------------------
+      // Step 1: Upload the icr:roiSetData metadata.
+      // -------------------------------------------
+      
+      if (XNATAccessionID == null)
+         XNATAccessionID = getRootElement() + "_" + UIDGenerator.createShortUnique();
+		
+		// Create separate accession IDs for all the individual ROI's.
+		nRois = rts.structureSet.structureSetRoiList.size();
+		for (int i=0; i<nRois; i++) assignedRoiIdList.add("ROI_" + UIDGenerator.createShortUnique());
+		 
+      Document metaDoc = createMetadataXml();
+      if (errorOccurred) throw new XNATException(XNATException.FILE_UPLOAD,
+                          "There was a problem in creating the metadata to "
+                          + "metadata to describe the uploaded DICOM-RT "
+                          + "structure set file.\n"
+                          + errorMessage);
+            
+      try
+      {
+         RESTCommand = getMetadataUploadCommand();
+         
+         InputStream is = xnprf.doRESTPut(RESTCommand, metaDoc);
+         int         n  = is.available();
+         byte[]      b  = new byte[n];
+         is.read(b, 0, n);
+         String XNATUploadMessage = new String(b);
+         
+         if ((xnrt.XNATRespondsWithError(XNATUploadMessage)) ||
+             (!XNATUploadMessage.equals(XNATAccessionID)))
+         {
+            errorOccurred = true;
+            errorMessage  = XNATUploadMessage;
+            throw new XNATException(XNATException.FILE_UPLOAD,
+                          "XNAT generated the message:\n" + XNATUploadMessage);
+         }
+      }
+      catch (Exception ex)
+      {
+         // Here we cater both for reporting the error by throwing an exception
+         // and by setting the error variables. When performing the upload via
+         // a SwingWorker, it is not easy to retrieve an Exception.
+         errorOccurred = true;
+         errorMessage = ex.getMessage();
+         throw new XNATException(XNATException.FILE_UPLOAD, ex.getMessage());
+      }
+ 
+      // ----------------------------------------------------------
+      // Step 2: Upload the icr:roiData metadata and data files for
+      //         each ROI_old referred to by the structure set.
+      // ----------------------------------------------------------    
+      	
+      for (int i=0; i<rts.structureSet.structureSetRoiList.size(); i++)
+      {
+         RoiFromRtStructDataUploader ru = new RoiFromRtStructDataUploader();
+         try
+         {
+            ru.XNATAccessionID = rts.roiList[i].roiXNATID;
+            ru.uploadFilesToRepository();
+         }
+         catch (Exception ex)
+         {
+            errorOccurred = true;
+            errorMessage = "Problem uploading ROI data to XNAT.\n"
+                           + ex.getMessage();
+            throw new XNATException(XNATException.FILE_UPLOAD, ex.getMessage());
+         }
+    
+      
    }
 	
 	
-	/**
-	 * Get the list of files containing the input data used in the creation of this
-	 * XNAT assessor. 
-	 * @return ArrayList of String file names
-	 */
-   protected ArrayList<String> getInputCatEntries()
-	{
-		ArrayList<String>	fileURIs	= new ArrayList<>();
-//		Set<String>			ks			= rts.fileSOPMap.keySet();
-//      for (String s : ks) fileURIs.add(rts.fileSOPMap.get(s));
-		
-		return fileURIs;
-	}
 	
 	
 	
@@ -532,7 +591,8 @@ public class RtStructDataUploader extends DataUploader
 		{
 			// Nulls here because RT-STRUCTS contain only a subset of the
 			// information other formats can carry about the ROI presentation.
-			RoiDisplay rd = new RoiDisplay(Integer.toString(rc.referencedRoiNumber),
+			// The ID entry is an arbitrary unique string.
+			RoiDisplay rd = new RoiDisplay("ROI_" + UIDGenerator.createShortUnique(),
 				                            null, Arrays.toString(rc.roiDisplayColour),
 				                            null, null, null);
 			rdl.add(rd);
@@ -616,12 +676,19 @@ public class RtStructDataUploader extends DataUploader
       roiSet.setId(XNATAccessionID);
       roiSet.setProject(XNATProject);
       
-      StringBuilder versions = new StringBuilder();
-		for (String s : rts.generalEquipment.softwareVersions) versions.append(s);
-      roiSet.setVersion(versions.toString());
+      //StringBuilder versions = new StringBuilder();
+		//for (String s : rts.generalEquipment.softwareVersions) versions.append(s);
+      //roiSet.setVersion(versions.toString());
       
-      roiSet.setLabel(label);
-      roiSet.setDate(date);
+		// Apparently the version XML element has to be an integer, so my ideal
+		// version above is no use.
+		roiSet.setVersion("1");
+		
+      String labelSuffix = "_" + uploadFile.getName() + "_" + UIDGenerator.createShortUnique();
+		label = isBatchMode ? labelPrefix + labelSuffix : labelPrefix;
+		roiSet.setLabel(label);
+      
+		roiSet.setDate(date);
       roiSet.setTime(time);
       roiSet.setNote(note);
 		
@@ -635,62 +702,105 @@ public class RtStructDataUploader extends DataUploader
 		{
 			metaDoc = roiSet.createXmlAsRootElement();
 		}
-		catch (IOException | XMLException ex){}
+		catch (IOException | XMLException ex)
+		{
+			// This really shouldn't happen, but the mechanism is there to handle
+			// it if it does.
+			errorOccurred = true;
+			errorMessage  = ex.getMessage();
+		}
 		
 		return metaDoc;
 		
 	}
    
    
-   @Override
+   private String getDefaultIfEmpty(String src)
+	{
+		final String DEFAULT = "Unknown";
+		
+		if (src == null)   return DEFAULT;
+		if (src.isEmpty()) return DEFAULT;
+		return src;
+	}
+	
+	@Override
    public Provenance retrieveProvenance()
    {
-      
-		StringBuilder versions = new StringBuilder();
-		for (String s : rts.generalEquipment.softwareVersions) versions.append(s);
+      // A number of fields are mandatory in the birn.xsd provenance schema,
+		// so provide defaults if they do not exist.
+		final String DEFAULT = "Unknown";
 		
-		Program prog1      = new Program(rts.generalEquipment.manufacturer + " software",
-		                           versions.toString(),
-		                           null);
 		
-		Platform plat1     = new Platform(rts.generalEquipment.modelName, null);
+		// Provenance step 1 : source data
 		
-		String timestamp1  = rts.structureSet.structureSetDate + "_"
-				               + rts.structureSet.structureSetTime;
+		StringBuilder sb = new StringBuilder();
+		for (String s : rts.generalEquipment.softwareVersions) sb.append(s);
+      String                 versions = getDefaultIfEmpty(sb.toString());
 		
-		String user1       = rts.rtRoiObservationList.get(0).roiInterpreter;
+		Program                prog1    = new Program(getDefaultIfEmpty(rts.generalEquipment.manufacturer) + " software",
+		                                              versions,
+		                                              DEFAULT);
 		
-		String machine1    = rts.generalEquipment.stationName;
+		Platform               plat1    = new Platform(getDefaultIfEmpty(rts.generalEquipment.modelName),
+				                                         DEFAULT);
+		
+		String                 ts1      = "1900-01-01T00:00:00";
+		try
+		{
+			ts1 = convertToDateTime(rts.structureSet.structureSetDate,
+				                     rts.structureSet.structureSetTime);
+		}
+		catch (DataFormatException exDF)
+		{
+			errorOccurred = true;
+			errorMessage  = "Incorrect DICOM date format in structure set file";
+		}
+		
+		String                 cvs1     = null;
+		
+		String                 user1    = getDefaultIfEmpty(rts.rtRoiObservationList.get(0).roiInterpreter);
+
+		
+		String                 mach1    = getDefaultIfEmpty(rts.generalEquipment.stationName);
 		
 		// We don't have a compiler version, but we still need to specify it, as
 		// the instance variables are accessed later. (Still needed even though the instance
 		// variables are null themselves ...)
-		ProcessStep.Compiler c1 = new ProcessStep.Compiler(null, null);
+		
+		String                 compN1   = null;
+		String                 compV1   = null;
+		ProcessStep.Compiler   comp1    = new ProcessStep.Compiler(compN1, compV1);
 		
       // Even though  the library list is empty we still need to specify it, otherwise
 		// a null pointer exception will pop up when we try to iterate through the list.
-		List<Library> ll1  = new ArrayList<Library>();
+		List<Library>          ll1      = new ArrayList<Library>();
 				  
-		ProcessStep ps1    = new ProcessStep(prog1, timestamp1, null, user1, machine1, plat1, c1, ll1);
+		ProcessStep            ps1      = new ProcessStep(prog1, ts1, cvs1, user1, mach1, plat1, comp1, ll1);
+		
 
+		// Provenance step 2: record transit through DataUploader
 		
-		Platform plat2     = new Platform(null, null);
+      Program                prog2    = new Program("ICR XNAT DataUploader", version, "None");
+      
+		Platform               plat2    = new Platform(System.getProperty("os.arch") + " " + System.getProperty("os.name"),
+				                                         System.getProperty("os.version"));
    
-      Program prog2      = new Program("ICR XNAT DataUploader", version, null);
+      String                 ts2      = LocalDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME);
       
-      String timestamp2  = LocalDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME);
+      String                 cvs2     = null;
+		
+		String                 user2    = System.getProperty("user.name");
       
-      String user2       = System.getProperty("user.name");
-      
-      StringBuilder mac2 = new StringBuilder(System.getProperty("os.arch")).append(" ")
-                             .append(System.getProperty("os.name")).append(" ")
-                             .append(System.getProperty("os.version"));
+      String                 mach2    = DEFAULT;
     
-		List<Library> ll2  = new ArrayList<Library>();
+		List<Library>          ll2      = new ArrayList<Library>();
 		
-		ProcessStep.Compiler c2 = new ProcessStep.Compiler(null, null);
+		String                 compN2   = null;
+		String                 compV2   = null;
+		ProcessStep.Compiler   comp2    = new ProcessStep.Compiler(compN2, compV2);
 		
-		ProcessStep ps2    = new ProcessStep(prog2, timestamp2, null, user2, mac2.toString(), plat2, c2, ll2);
+		ProcessStep            ps2      = new ProcessStep(prog2, ts2, cvs2, user2, mach2, plat2, comp2, ll2);
 		
       ArrayList<ProcessStep> stepList = new ArrayList<>();
 		stepList.add(ps1);
@@ -731,8 +841,8 @@ public class RtStructDataUploader extends DataUploader
    @Override
 	public void updateVariablesForEditableFields(MetadataPanel mdp)
 	{
-		label = mdp.getJTextFieldContents("Label");
-		note  = mdp.getJTextFieldContents("Note");
+		labelPrefix = mdp.getJTextFieldContents("Label");
+		note        = mdp.getJTextFieldContents("Note");
 	}
 	
 	
@@ -760,7 +870,7 @@ public class RtStructDataUploader extends DataUploader
    @Override
    public boolean rightMetadataPresent()
    {
-      return (!label.equals("")) &&
+      return (!labelPrefix.equals("")) &&
              (!XNATSubjectID.equals(""))           &&
              (!XNATExperimentID.equals(""))        &&
              (!XNATScanIdList.equals(""));

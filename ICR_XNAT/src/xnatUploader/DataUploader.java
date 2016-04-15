@@ -91,12 +91,12 @@ public abstract class DataUploader
    protected XNATRESTToolkit               xnrt;
    protected String                        RESTCommand;
    protected Vector2D<String>              result;
-   protected Document                      metaDoc;
    protected Document                      doc;
    protected File                          uploadFile;
    protected String                        date;
    protected String                        time;
 	protected String                        label;
+	protected String                        labelPrefix;
    protected String                        note;
 	protected String                        visit;
    protected String                        visitID;
@@ -120,7 +120,6 @@ public abstract class DataUploader
    protected File                          mostRecentSuccessfulPrep;
    protected String                        batchLabelPrefix;
    protected String                        batchNote;
-   protected String                        currentLabel;
    protected boolean                       isBatchMode;
    protected String                        version;
 
@@ -216,7 +215,7 @@ public abstract class DataUploader
       if (errorOccurred) throw new XNATException(XNATException.FILE_UPLOAD,
                           "There was a problem in creating the metadata to "
                           + "describe the uploaded file.\n"
-                          + getErrorMessage());
+                          + errorMessage);
       
       
       try
@@ -412,7 +411,7 @@ public abstract class DataUploader
       try
       {
          RESTCommand    = "/data/archive/projects/" + XNATProject
-                                + "/subjects/"        + XNATSubjectID
+                                + "/subjects/"      + XNATSubjectID
                                 + "?format=xml";
          Document resultDoc = xnrt.RESTGetDoc(RESTCommand);
          String[] attrs = XMLUtilities.getAttribute(resultDoc, XnatNs,
@@ -555,7 +554,7 @@ public abstract class DataUploader
 		
 		
 		
-		metaDoc = createMetadataXml();
+		Document metaDoc = createMetadataXml();
 		
 		for (int i=0; i<elements.size(); i++)
 		{
