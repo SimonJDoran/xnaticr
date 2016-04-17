@@ -505,10 +505,11 @@ public class RtStructDataUploader extends DataUploader
       	
       for (int i=0; i<rts.structureSet.structureSetRoiList.size(); i++)
       {
-         RoiFromRtStructDataUploader ru = new RoiFromRtStructDataUploader();
+         RoiFromRtStructDataUploader ru = new RoiFromRtStructDataUploader(xnprf, this);
          try
          {
-            ru.XNATAccessionID = rts.roiList[i].roiXNATID;
+            ru.setAccessionId(assignedRoiIdList.get(i));
+            ru.setRoiNumberInOriginal(rts.structureSet.structureSetRoiList.get(i).roiNumber);
             ru.uploadFilesToRepository();
          }
          catch (Exception ex)
@@ -518,7 +519,7 @@ public class RtStructDataUploader extends DataUploader
                            + ex.getMessage();
             throw new XNATException(XNATException.FILE_UPLOAD, ex.getMessage());
          }
-    
+      }
       
    }
 	
@@ -585,26 +586,9 @@ public class RtStructDataUploader extends DataUploader
 		roiSet.setOriginatingApplicationVersion(sb.toString());
 		
 		roiSet.setNRois(rts.structureSet.structureSetRoiList.size());
-		
-		List<RoiDisplay> rdl = new ArrayList<>();
-		for (RoiContour rc : rts.roiContourList)
-		{
-			// Nulls here because RT-STRUCTS contain only a subset of the
-			// information other formats can carry about the ROI presentation.
-			// The ID entry is an arbitrary unique string.
-			RoiDisplay rd = new RoiDisplay("ROI_" + UIDGenerator.createShortUnique(),
-				                            null, Arrays.toString(rc.roiDisplayColour),
-				                            null, null, null);
-			rdl.add(rd);
-		}
-		roiSet.setRoiDisplayList(rdl);
-		
-		roiSet.setStructureSetLabel(rts.structureSet.structureSetLabel);
+		roiSet.setRoiIdList(assignedRoiIdList);
 		roiSet.setStructureSetName(rts.structureSet.structureSetName);
-		roiSet.setStructureSetDescription(rts.structureSet.structureSetDescription);
 		roiSet.setStructureInstanceNumber(rts.structureSet.instanceNumber);
-		roiSet.setStructureSetDate(rts.structureSet.structureSetDate);
-		roiSet.setStructureSetTime(rts.structureSet.structureSetTime);
 		roiSet.setReferencedFrameOfReferenceList(rts.structureSet.referencedFrameOfReferenceList);
 		
 		// IcrRoiSetDataMdComplexType inherits from IcrGenericImageAssessmentDataMdComplexType.

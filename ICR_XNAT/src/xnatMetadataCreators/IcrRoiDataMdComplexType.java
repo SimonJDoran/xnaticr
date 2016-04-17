@@ -62,6 +62,7 @@ public class IcrRoiDataMdComplexType extends IcrGenericImageAssessmentDataMdComp
 	protected String                    originalUid;
 	protected String                    originalDataType;
 	protected String                    originalLabel;
+   protected String                    originalDescription;
 	protected String                    originatingApplicationName;
 	protected String                    originatingApplicationVersion;
 	protected String                    originalContainsMultipleRois;
@@ -69,7 +70,12 @@ public class IcrRoiDataMdComplexType extends IcrGenericImageAssessmentDataMdComp
 	protected String                    roiDisplayColorInStructureSet;
 	protected String                    referencedFrameOfReferenceUid;
 	protected String                    roiName;
-	protected String                    roiDescription;
+   protected String                    roiDescription;
+   protected String                    lineType;
+   protected String                    lineColour;
+   protected String                    shadingType;
+   protected String                    shadingColour;
+	protected String                    shadingTransparency;
 	protected String                    roiVolume;
 	protected String                    roiGenerationAlgorithm;
 	protected String                    roiGenerationDescription;
@@ -104,7 +110,8 @@ public class IcrRoiDataMdComplexType extends IcrGenericImageAssessmentDataMdComp
 			      .delayedWriteAttribute("originalUID",                     originalUid)
 			      .delayedWriteAttribute("originalDataType",                originalDataType)
 					.delayedWriteAttribute("originalLabel",                   originalLabel)
-			      .delayedWriteAttribute("originatingApplicationName",      originatingApplicationName)
+			      .delayedWriteAttribute("originalDescription",             originalDescription)
+               .delayedWriteAttribute("originatingApplicationName",      originatingApplicationName)
 		         .delayedWriteAttribute("originatingApplicationVersion",   originatingApplicationVersion)
 		         .delayedWriteAttribute("originalContainsMultipleRois",    originalContainsMultipleRois)
 			      .delayedWriteAttribute("roiNumberInOriginal",             roiNumberInOriginal)
@@ -113,7 +120,12 @@ public class IcrRoiDataMdComplexType extends IcrGenericImageAssessmentDataMdComp
 			   .delayedWriteEntityWithText("referencedFrameOfReferenceUID", referencedFrameOfReferenceUid)
 				.delayedWriteEntityWithText("roiName",                       roiName)
 				.delayedWriteEntityWithText("roiDescription",                roiDescription)
-				.delayedWriteEntityWithText("roiVolume",                     roiVolume)
+				.delayedWriteEntityWithText("lineType",                      lineType)
+				.delayedWriteEntityWithText("lineColour",                    lineColour)
+				.delayedWriteEntityWithText("shadingType",                   shadingType)
+				.delayedWriteEntityWithText("shadingColour",                 shadingColour)
+				.delayedWriteEntityWithText("shadingTransparency",           shadingTransparency)
+            .delayedWriteEntityWithText("roiVolume",                     roiVolume)
 				.delayedWriteEntityWithText("roiGenerationAlgorithm",        roiGenerationAlgorithm)
 				.delayedWriteEntityWithText("roiGenerationDescription",      roiGenerationDescription)
 			   .delayedWriteEntityWithText("roiGeometricType",              roiGeometricType)
@@ -178,6 +190,12 @@ public class IcrRoiDataMdComplexType extends IcrGenericImageAssessmentDataMdComp
 	public void setOriginalLabel(String s)
 	{
 		originalLabel = s;
+	}
+	
+	
+	public void setOriginalDescription(String s)
+	{
+		originalDescription = s;
 	}
 	
 	

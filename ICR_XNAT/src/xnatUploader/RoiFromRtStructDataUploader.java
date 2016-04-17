@@ -59,11 +59,12 @@ public class RoiFromRtStructDataUploader extends DataUploader
 {
 	// Capture all the data from the class supervising the uploading.
 	private RtStructDataUploader rtdsu;
+   private int                  roiNOrig;
 	
 	public RoiFromRtStructDataUploader(XNATProfile xnprf, RtStructDataUploader rtsdu)
 	{
 		super(xnprf);
-		this.rtdsu = rtdsu;	
+		this.rtdsu = rtdsu;
 	}
 	
 @Override
@@ -83,6 +84,7 @@ public class RoiFromRtStructDataUploader extends DataUploader
 		roi.setOriginalUid(rtdsu.rts.sopCommon.sopInstanceUid);
 		roi.setOriginalDataType("RT-STRUCT");
 		roi.setOriginalLabel(rtdsu.rts.structureSet.structureSetLabel);
+      roi.setOriginalDescription(rtdsu.rts.structureSet.structureSetDescription);
 		roi.setOriginatingApplicationName(rtdsu.rts.generalEquipment.modelName);
 		
 		final String sep = " | ";
@@ -90,10 +92,17 @@ public class RoiFromRtStructDataUploader extends DataUploader
 		for (String s : rtdsu.rts.generalEquipment.softwareVersions) sb.append(s).append(sep);
 		roi.setOriginatingApplicationVersion(sb.toString());
 		
+      roi.setOriginalContainsMultipleRois((rtdsu.nRois > 1) ? "true" : "false");
+      roi.setRoiNumberInOriginal(Integer.toString(roiNOrig));
+     
+      
 		
 	}
 	
-	
+	public void setRoiNumberInOriginal(int n)
+   {
+      
+   }
 	
 	@Override
    public String getRootElement()

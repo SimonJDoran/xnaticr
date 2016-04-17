@@ -63,16 +63,13 @@ public class IcrRoiSetDataMdComplexType extends IcrGenericImageAssessmentDataMdC
 	protected String                           originalUid;
 	protected String                           originalDataType;
 	protected String                           originalLabel;
+   protected String                           originalDescription;
 	protected String                           originatingApplicationName;
 	protected String                           originatingApplicationVersion;
 	protected Integer                          nRois;
-	protected List<RoiDisplay>                 roiDisplayList;
-	protected String                           structureSetLabel;
+	protected List<String>                     roiIdList;
 	protected String                           structureSetName;
-	protected String                           structureSetDescription;
 	protected String                           instanceNumber;
-	protected String                           structureSetDate;
-	protected String                           structureSetTime;
 	protected List<ReferencedFrameOfReference> rforList;
 			  
 	@Override
@@ -84,24 +81,21 @@ public class IcrRoiSetDataMdComplexType extends IcrGenericImageAssessmentDataMdC
 				   .delayedWriteAttribute("originalUID",                   originalUid)
 				   .delayedWriteAttribute("originalDataType",              originalDataType)
 				   .delayedWriteAttribute("originalLabel",                 originalLabel)
+               .delayedWriteAttribute("originalDescription",           originalDescription)
 				   .delayedWriteAttribute("originatingApplicationName",    originatingApplicationName)
 				   .delayedWriteAttribute("originatingApplicationVersion", originatingApplicationVersion)
 				.delayedEndEntity()
 				.delayedWriteEntityWithText("nROIs", Integer.toString(nRois));
 
-		dppXML.delayedWriteEntity("roiDisplays");
-		         for (RoiDisplay rd : roiDisplayList)
+		dppXML.delayedWriteEntity("roiIds");
+		         for (String rId : roiIdList)
 					{
-						(new IcrRoiDisplayDataMdComplexType(rd, dppXML)).insertXmlAsElement("roiDisplay");
+                  dppXML.delayedWriteEntityWithText("roiId", rId);
 					}
 	   dppXML.delayedEndEntity();
 			
-		dppXML.delayedWriteEntityWithText("structureSetLabel",       structureSetLabel)
-				.delayedWriteEntityWithText("structureSetName",        structureSetName)
-				.delayedWriteEntityWithText("structureSetDescription", structureSetDescription)
-				.delayedWriteEntityWithText("instanceNumber",          instanceNumber)
-				.delayedWriteEntityWithText("structureSetDate",        structureSetDate)
-				.delayedWriteEntityWithText("structureSetTime",        structureSetTime);
+		dppXML.delayedWriteEntityWithText("structureSetName",        structureSetName)
+				.delayedWriteEntityWithText("instanceNumber",          instanceNumber);
 		
 		dppXML.delayedWriteEntity("referencedFramesOfReference");
 		      for (ReferencedFrameOfReference rfor : rforList)
@@ -135,7 +129,13 @@ public class IcrRoiSetDataMdComplexType extends IcrGenericImageAssessmentDataMdC
 	}
 	
 	
-	public void setOriginatingApplicationName(String s)
+	public void setOriginalDescription(String s)
+	{
+		originalDescription = s;
+	}
+	
+	
+   public void setOriginatingApplicationName(String s)
 	{
 		originatingApplicationName = s;
 	}
@@ -153,45 +153,21 @@ public class IcrRoiSetDataMdComplexType extends IcrGenericImageAssessmentDataMdC
 	}
 	
 	
-	public void setRoiDisplayList(List<RoiDisplay> rdList)
+	public void setRoiIdList(List<String> ril)
 	{
-		roiDisplayList = rdList;
+		roiIdList = ril;
 	}
 	
 	
-	public void setStructureSetLabel(String s)
-	{
-		structureSetLabel = s;
-	}
-	
-	
-	public void setStructureSetName(String s)
+public void setStructureSetName(String s)
 	{
 		structureSetName = s;
-	}
-	
-	
-	public void setStructureSetDescription(String s)
-	{
-		structureSetDescription = s;
 	}
 	
 	
 	public void setStructureInstanceNumber(String s)
 	{
 		instanceNumber = s;
-	}
-	
-	
-	public void setStructureSetDate(String s)
-	{
-		structureSetDate = s;
-	}
-	
-	
-	public void setStructureSetTime(String s)
-	{
-		structureSetTime = s;
 	}
 	
 	

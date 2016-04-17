@@ -913,6 +913,12 @@ public abstract class DataUploader
    }
    
    
+   public void setAccessionId(String id)
+   {
+      XNATAccessionID = id;
+   }
+   
+   
    /**
     * Transfer the software version from the GUI to the uploader, so that it
     * is only set in one place.
