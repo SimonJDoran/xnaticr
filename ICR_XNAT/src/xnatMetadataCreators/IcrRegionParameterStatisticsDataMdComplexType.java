@@ -55,14 +55,14 @@ import exceptions.XMLException;
 import java.io.IOException;
 import xmlUtilities.DelayedPrettyPrinterXmlWriter;
 
-public class IcrRoiParameterStatisticsDataMdComplexType extends MdComplexType
+public class IcrRegionParameterStatisticsDataMdComplexType extends MdComplexType
 {
 	protected String           Id;
 	protected String           label;
-	protected String           associatedRoiId;
+	protected String           associatedRegionId;
 	protected String           parameterName;
-	protected Statistics       roiParameterStats;
-	protected AbstractResource roiParameterHistoFile;
+	protected Statistics       regionParameterStats;
+	protected AbstractResource regionParameterHistoFile;
 	protected String           parameterMapId;
 	
 	@Override
@@ -70,12 +70,12 @@ public class IcrRoiParameterStatisticsDataMdComplexType extends MdComplexType
 	{
 		dppXML.delayedWriteAttribute("ID",    Id)
 			   .delayedWriteAttribute("label", label)
-			   .delayedWriteEntityWithText("associatedRoiID", associatedRoiId)
+			   .delayedWriteEntityWithText("associatedRoiID", associatedRegionId)
 			   .delayedWriteEntityWithText("parameterName",   parameterName);
 		
-		(new XnatStatisticsDataMdComplexType(roiParameterStats, dppXML)).insertXmlAsElement("roiParameterStats");
+		(new XnatStatisticsDataMdComplexType(regionParameterStats, dppXML)).insertXmlAsElement("roiParameterStats");
 		
-		(new XnatAbstractResourceMdComplexType(roiParameterHistoFile, dppXML)).insertXmlAsElement("roiParameterHistoFile");
+		(new XnatAbstractResourceMdComplexType(regionParameterHistoFile, dppXML)).insertXmlAsElement("roiParameterHistoFile");
 		
 		dppXML.delayedWriteEntityWithText("parameterMapID", parameterMapId);
 			

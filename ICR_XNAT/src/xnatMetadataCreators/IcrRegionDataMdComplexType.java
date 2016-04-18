@@ -78,7 +78,7 @@ public class IcrRegionDataMdComplexType extends IcrGenericImageAssessmentDataMdC
 	protected String                    roiGenerationAlgorithm;
 	protected String                    roiGenerationDescription;
 	protected String                    roiGeometricType;
-	protected String                    nDicomContours;
+	protected int                       nDicomContours;
 	protected String                    derivationCode;
 	protected List<RtRoiObservation>    rtRoiObservationList;
 	protected List<String>              associatedRegionParStatsIdList;
@@ -118,7 +118,7 @@ public class IcrRegionDataMdComplexType extends IcrGenericImageAssessmentDataMdC
 				.delayedWriteEntityWithText("roiGenerationAlgorithm",        roiGenerationAlgorithm)
 				.delayedWriteEntityWithText("roiGenerationDescription",      roiGenerationDescription)
 			   .delayedWriteEntityWithText("roiGeometricType",              roiGeometricType)
-				.delayedWriteEntityWithText("nDICOMContours",                nDicomContours)
+				.delayedWriteEntityWithText("nDicomContours",                nDicomContours)
 			   .delayedWriteEntityWithText("derivationCode",                derivationCode);
 			   	
 		dppXML.delayedWriteEntity("rtRoiObservations");
@@ -144,7 +144,7 @@ public class IcrRegionDataMdComplexType extends IcrGenericImageAssessmentDataMdC
 	}
 	
 	
-	public void setAssociatedRoiSetIdList(List<String> ls)
+	public void setAssociatedRegionSetIdList(List<String> ls)
 	{
 		associatedRegionSetIdList = ls;
 	}
@@ -265,9 +265,9 @@ public class IcrRegionDataMdComplexType extends IcrGenericImageAssessmentDataMdC
 	}
 	
 	
-	public void setNDicomContours(String s)
+	public void setNDicomContours(int n)
 	{
-		nDicomContours = s;
+		nDicomContours = n;
 	}
 	
 	
@@ -283,7 +283,7 @@ public class IcrRegionDataMdComplexType extends IcrGenericImageAssessmentDataMdC
 	}
 	
 	
-	public void setAssociatedRoiParameterStatisticsIdList(List<String> ls)
+	public void setAssociatedRegionParameterStatisticsIdList(List<String> ls)
 	{
 		associatedRegionParStatsIdList = ls;
 	}
