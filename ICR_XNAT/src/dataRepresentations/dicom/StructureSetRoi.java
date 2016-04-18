@@ -51,7 +51,6 @@ import org.dcm4che2.data.VR;
 public class StructureSetRoi extends DicomEntity
 {
 	public int         roiNumber;
-	public int         correspondingROIContour;
 	public int         correspondingROIObservation;
 	public String      referencedFrameOfReferenceUid;
 	public String      roiName;
@@ -75,11 +74,16 @@ public class StructureSetRoi extends DicomEntity
 	}
 	
 	
+	@Override
 	public void writeToDicom(DicomObject ssrDo)
 	{
-		writeInt(ssrDo,    Tag.ROINumber, VR.IS, 1, roiNumber);
-		writeString(ssrDo, Tag.ReferencedFrameOfReferenceUID, VR.UI, 1, referencedFrameOfReferenceUid);
-      writeString(ssrDo, Tag.ROIName,   VR.LO, 2, roiName);
-		
+		writeInt(ssrDo,      Tag.ROINumber, VR.IS, 1, roiNumber);
+		writeString(ssrDo,   Tag.ReferencedFrameOfReferenceUID, VR.UI, 1, referencedFrameOfReferenceUid);
+      writeString(ssrDo,   Tag.ROIName,   VR.LO, 2, roiName);
+		writeString(ssrDo,   Tag.ROIDescription, VR.ST, 3, roiDescription);
+		writeFloat(ssrDo,    Tag.ROIName,   VR.DS, 3, roiVolume);
+		writeString(ssrDo,   Tag.ROIGenerationAlgorithm, VR.CS, 3, roiGenerationAlgorithm);
+		writeString(ssrDo,   Tag.ROIGenerationDescription, VR.LO, 3, roiGenerationDescription);
+		writeSequence(ssrDo, Tag.DerivationCodeSequence, VR.SQ, 1, derivationCodeList);
 	}
 }

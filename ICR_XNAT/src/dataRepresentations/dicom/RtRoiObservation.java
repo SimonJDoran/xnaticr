@@ -60,7 +60,7 @@ public class RtRoiObservation extends DicomEntity
 	public String                        rtRoiInterpretedType;
 	public String                        roiInterpreter;
 	public String                        materialId;
-	public List<RoiPhysicalProperty>     roiPhysicalPropertiesList;
+	public List<RoiPhysicalProperty>     roiPhysicalPropertyList;
 	
 	
 	public RtRoiObservation(DicomObject rroDo)
@@ -81,7 +81,7 @@ public class RtRoiObservation extends DicomEntity
 		rtRoiInterpretedType      = readString(rroDo, Tag.RTROIInterpretedType, 2);
 		roiInterpreter            = readString(rroDo, Tag.ROIInterpreter, 2);
 		materialId                = readString(rroDo, Tag.MaterialID, 3);
-		roiPhysicalPropertiesList = readSequence(RoiPhysicalProperty.class,
+		roiPhysicalPropertyList = readSequence(RoiPhysicalProperty.class,
 				                               rroDo, Tag.ROIPhysicalPropertiesSequence, 3);		
 	}
 	
@@ -98,6 +98,6 @@ public class RtRoiObservation extends DicomEntity
 		writeString(rroDo,   Tag.RTROIInterpretedType,      VR.CS, 2, rtRoiInterpretedType);
 		writeString(rroDo,   Tag.ROIInterpreter,            VR.PN, 2, roiInterpreter);
 		writeString(rroDo,   Tag.MaterialID,                VR.SH, 3, materialId);
-		writeSequence(rroDo, Tag.ROIPhysicalPropertiesSequence,    VR.SQ, 3, roiPhysicalPropertiesList);
+		writeSequence(rroDo, Tag.ROIPhysicalPropertiesSequence,    VR.SQ, 3, roiPhysicalPropertyList);
 	}
 }

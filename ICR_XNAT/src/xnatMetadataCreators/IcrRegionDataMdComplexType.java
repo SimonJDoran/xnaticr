@@ -39,7 +39,7 @@
 * Java class: IcrRoiDataMDComplexType.java
 * First created on Jan 21, 2016 at 3:12:50 PM
 * 
-* Creation of metadata XML for icr:roiData
+* Creation of metadata XML for icr:regionData
 * 
 * Eventually, the plan for this whole package is to replace the
 * explicit writing of the XML files with a higher level interface,
@@ -51,14 +51,14 @@ package xnatMetadataCreators;
 
 import dataRepresentations.dicom.RtRelatedRoi;
 import dataRepresentations.dicom.RoiPhysicalProperty;
+import dataRepresentations.dicom.RtRoiObservation;
 import exceptions.XMLException;
 import java.io.IOException;
 import java.util.List;
-import xmlUtilities.DelayedPrettyPrinterXmlWriter;
 
-public class IcrRoiDataMdComplexType extends IcrGenericImageAssessmentDataMdComplexType
+public class IcrRegionDataMdComplexType extends IcrGenericImageAssessmentDataMdComplexType
 {
-	protected List<String>              associatedRoiSetIdList;
+	protected List<String>              associatedRegionSetIdList;
 	protected String                    originalUid;
 	protected String                    originalDataType;
 	protected String                    originalLabel;
@@ -67,8 +67,6 @@ public class IcrRoiDataMdComplexType extends IcrGenericImageAssessmentDataMdComp
 	protected String                    originatingApplicationVersion;
 	protected String                    originalContainsMultipleRois;
 	protected String                    roiNumberInOriginal;
-	protected String                    roiDisplayColorInStructureSet;
-	protected String                    referencedFrameOfReferenceUid;
 	protected String                    roiName;
    protected String                    roiDescription;
    protected String                    lineType;
@@ -82,15 +80,8 @@ public class IcrRoiDataMdComplexType extends IcrGenericImageAssessmentDataMdComp
 	protected String                    roiGeometricType;
 	protected String                    nDicomContours;
 	protected String                    derivationCode;
-	protected String                    observationNumber;
-	protected String                    roiObservationLabel;
-	protected String                    roiObservationDescription;
-	protected List<RtRelatedRoi>        rrrList;
-	protected String                    rtRoiInterpretedType;
-	protected String                    roiInterpreter;
-	protected String                    roiMaterialId;
-	protected List<RoiPhysicalProperty> rppList;
-	protected List<String>              associatedRoiParameterStatisticsIdList;
+	protected List<RtRoiObservation>    rtRoiObservationList;
+	protected List<String>              associatedRegionParStatsIdList;
 	
 			  
 	@Override
@@ -99,15 +90,15 @@ public class IcrRoiDataMdComplexType extends IcrGenericImageAssessmentDataMdComp
 	{
 		super.insertXml();
 		
-		dppXML.delayedWriteEntity("associatedRoiSetIDs");
-		for (String s : associatedRoiSetIdList)
+		dppXML.delayedWriteEntity("associatedRegionSetIDs");
+		for (String s : associatedRegionSetIdList)
 				{
-			dppXML.delayedWriteEntityWithText("assocRoiSetID", s);
+			dppXML.delayedWriteEntityWithText("assocRegionSetID", s);
 				}
 		dppXML.delayedEndEntity();
 		
-		dppXML.delayedWriteEntity("originatingRoiSource")
-			      .delayedWriteAttribute("originalUID",                     originalUid)
+		dppXML.delayedWriteEntity("originatingRegionSource")
+			      .delayedWriteAttribute("originalUid",                     originalUid)
 			      .delayedWriteAttribute("originalDataType",                originalDataType)
 					.delayedWriteAttribute("originalLabel",                   originalLabel)
 			      .delayedWriteAttribute("originalDescription",             originalDescription)
@@ -116,9 +107,7 @@ public class IcrRoiDataMdComplexType extends IcrGenericImageAssessmentDataMdComp
 		         .delayedWriteAttribute("originalContainsMultipleRois",    originalContainsMultipleRois)
 			      .delayedWriteAttribute("roiNumberInOriginal",             roiNumberInOriginal)
 			   .delayedEndEntity()
-			   .delayedWriteEntityWithText("roiDisplayColorInStructureSet", roiDisplayColorInStructureSet)
-			   .delayedWriteEntityWithText("referencedFrameOfReferenceUID", referencedFrameOfReferenceUid)
-				.delayedWriteEntityWithText("roiName",                       roiName)
+			   .delayedWriteEntityWithText("roiName",                       roiName)
 				.delayedWriteEntityWithText("roiDescription",                roiDescription)
 				.delayedWriteEntityWithText("lineType",                      lineType)
 				.delayedWriteEntityWithText("lineColour",                    lineColour)
@@ -130,34 +119,20 @@ public class IcrRoiDataMdComplexType extends IcrGenericImageAssessmentDataMdComp
 				.delayedWriteEntityWithText("roiGenerationDescription",      roiGenerationDescription)
 			   .delayedWriteEntityWithText("roiGeometricType",              roiGeometricType)
 				.delayedWriteEntityWithText("nDICOMContours",                nDicomContours)
-			   .delayedWriteEntityWithText("derivationCode",                derivationCode)
-			   .delayedWriteEntityWithText("observationNumber",             observationNumber)
-			   .delayedWriteEntityWithText("roiObservationLabel",           roiObservationLabel)
-			   .delayedWriteEntityWithText("roiObservationDescription",     roiObservationDescription);
-				
-		dppXML.delayedWriteEntity("rtRelatedRois");
-		      for (RtRelatedRoi rrr : rrrList)
-				{
-					(new IcrRtRelatedRoiMdComplexType(rrr, dppXML)).insertXmlAsElement("rtRelatedRoi");
-				}
-		dppXML.delayedEndEntity();
+			   .delayedWriteEntityWithText("derivationCode",                derivationCode);
+			   	
+		dppXML.delayedWriteEntity("rtRoiObservations");
+		for (RtRoiObservation rro : rtRoiObservationList)
+		{
+			(new IcrRtRoiObservationMdComplexType(rro, dppXML)).insertXmlAsElement("rtRoiObservation");
+		}
+		dppXML.delayedEndEntity();		
 		
-		dppXML.delayedWriteEntityWithText("rtRoiInterpretedType",          rtRoiInterpretedType)
-			   .delayedWriteEntityWithText("roiInterpreter",                roiInterpreter)
-			   .delayedWriteEntityWithText("roiMaterialID",                 roiMaterialId);
-		
-		dppXML.delayedWriteEntity("roiPhysicalProperties");
-		      for (RoiPhysicalProperty rpp : rppList)
-				{
-					(new IcrRoiPhysicalPropertyMdComplexType(rpp, dppXML)).insertXmlAsElement("roiPhysicalProperty");
-				}
-		dppXML.delayedEndEntity();
-		
-		dppXML.delayedWriteEntity("associatedRoiParameterStatisticsIDs");
-		for (String s : associatedRoiParameterStatisticsIdList)
-				{
-			dppXML.delayedWriteEntityWithText("assocRoiParStatsID", s);
-				}
+		dppXML.delayedWriteEntity("associatedRegionParStatsIds");
+		for (String s : associatedRegionParStatsIdList)
+		{
+			dppXML.delayedWriteEntityWithText("assocRegionParStatsId", s);
+		}
 		dppXML.delayedEndEntity();		
 	}
 	
@@ -165,13 +140,13 @@ public class IcrRoiDataMdComplexType extends IcrGenericImageAssessmentDataMdComp
 	@Override
 	public String getRootElementName()
 	{
-		return "ROI";
+		return "Region";
 	}
 	
 	
 	public void setAssociatedRoiSetIdList(List<String> ls)
 	{
-		associatedRoiSetIdList = ls;
+		associatedRegionSetIdList = ls;
 	}
 
 	
@@ -224,18 +199,6 @@ public class IcrRoiDataMdComplexType extends IcrGenericImageAssessmentDataMdComp
 	}
 	
 	
-	public void setRoiDisplayColorInStructureSet(String s)
-	{
-		roiDisplayColorInStructureSet = s;
-	}
-	
-	
-	public void setReferencedFrameOfReferenceUid(String s)
-	{
-		referencedFrameOfReferenceUid = s;
-	}
-	
-	
 	public void setRoiName(String s)
 	{
 		roiName = s;
@@ -245,6 +208,36 @@ public class IcrRoiDataMdComplexType extends IcrGenericImageAssessmentDataMdComp
 	public void setRoiDescription(String s)
 	{
 		roiDescription = s;
+	}
+	
+	
+	public void setLineColour(String s)
+	{
+		lineColour = s;
+	}
+	
+	
+	public void setLineType(String s)
+	{
+		lineType = s;
+	}
+	
+	
+	public void setShadingColour(String s)
+	{
+		shadingColour = s;
+	}
+	
+	
+	public void setShadingType(String s)
+	{
+		shadingType = s;
+	}
+	
+	
+	public void setShadingTransparency(String s)
+	{
+		shadingTransparency = s;
 	}
 	
 	
@@ -284,56 +277,14 @@ public class IcrRoiDataMdComplexType extends IcrGenericImageAssessmentDataMdComp
 	}
 	
 	
-	public void setObservationNumber(String s)
+	public void setRtRoiObservationList(List<RtRoiObservation> lrro)
 	{
-		observationNumber = s;
-	}
-	
-	
-	public void setRoiObservationLabel(String s)
-	{
-		roiObservationLabel = s;
-	}
-	
-	
-	public void setRoiObservationDescription(String s)
-	{
-		roiObservationDescription = s;
-	}
-	
-	
-	public void setRtRelatedRoiList(List<RtRelatedRoi> rrrl)
-	{
-		rrrList = rrrl;
-	}
-	
-	
-	public void setRtRoiInterpretedType(String s)
-	{
-		rtRoiInterpretedType = s;
-	}
-	
-	
-	public void setRoiInterpreter(String s)
-	{
-		roiInterpreter = s;
-	}
-	
-	
-	public void setRoiMaterialId(String s)
-	{
-		roiMaterialId = s;
-	}
-	
-	
-	public void setRoiPhysicalPropertyList(List<RoiPhysicalProperty> rppl)
-	{
-		rppList = rppl;
+		rtRoiObservationList = lrro;
 	}
 	
 	
 	public void setAssociatedRoiParameterStatisticsIdList(List<String> ls)
 	{
-		associatedRoiParameterStatisticsIdList = ls;
+		associatedRegionParStatsIdList = ls;
 	}
 }

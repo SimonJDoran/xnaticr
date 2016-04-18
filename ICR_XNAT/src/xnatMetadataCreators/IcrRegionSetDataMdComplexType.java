@@ -38,7 +38,7 @@
 * Java class: IcrRoiSetDataMDComplexType.java
 * First created on Jan 13, 2016 at 4:49:53 PM
 * 
-* Creation of metadata XML for icr:roiSetData
+* Creation of metadata XML for icr:regionSetData
 * 
 * Eventually, the plan for this whole package is to replace the
 * explicit writing of the XML files with a higher level interface,
@@ -58,7 +58,7 @@ import java.util.ArrayList;
 import java.util.List;
 import xmlUtilities.DelayedPrettyPrinterXmlWriter;
 
-public class IcrRoiSetDataMdComplexType extends IcrGenericImageAssessmentDataMdComplexType
+public class IcrRegionSetDataMdComplexType extends IcrGenericImageAssessmentDataMdComplexType
 {
 	protected String                           originalUid;
 	protected String                           originalDataType;
@@ -66,8 +66,8 @@ public class IcrRoiSetDataMdComplexType extends IcrGenericImageAssessmentDataMdC
    protected String                           originalDescription;
 	protected String                           originatingApplicationName;
 	protected String                           originatingApplicationVersion;
-	protected Integer                          nRois;
-	protected List<String>                     roiIdList;
+	protected Integer                          nRegions;
+	protected List<String>                     regionIdList;
 	protected String                           structureSetName;
 	protected String                           instanceNumber;
 	protected List<ReferencedFrameOfReference> rforList;
@@ -77,20 +77,20 @@ public class IcrRoiSetDataMdComplexType extends IcrGenericImageAssessmentDataMdC
 	{
 		super.insertXml();
 		
-		dppXML.delayedWriteEntity("originatingRoiSetSource")
-				   .delayedWriteAttribute("originalUID",                   originalUid)
+		dppXML.delayedWriteEntity("originatingRegionSetSource")
+				   .delayedWriteAttribute("originalUid",                   originalUid)
 				   .delayedWriteAttribute("originalDataType",              originalDataType)
 				   .delayedWriteAttribute("originalLabel",                 originalLabel)
                .delayedWriteAttribute("originalDescription",           originalDescription)
 				   .delayedWriteAttribute("originatingApplicationName",    originatingApplicationName)
 				   .delayedWriteAttribute("originatingApplicationVersion", originatingApplicationVersion)
 				.delayedEndEntity()
-				.delayedWriteEntityWithText("nROIs", Integer.toString(nRois));
+				.delayedWriteEntityWithText("nRegions", Integer.toString(nRegions));
 
-		dppXML.delayedWriteEntity("roiIds");
-		         for (String rId : roiIdList)
+		dppXML.delayedWriteEntity("regionIds");
+		         for (String rId : regionIdList)
 					{
-                  dppXML.delayedWriteEntityWithText("roiId", rId);
+                  dppXML.delayedWriteEntityWithText("regionId", rId);
 					}
 	   dppXML.delayedEndEntity();
 			
@@ -108,7 +108,7 @@ public class IcrRoiSetDataMdComplexType extends IcrGenericImageAssessmentDataMdC
 	@Override
 	public String getRootElementName()
 	{
-		return "ROISet";
+		return "RegionSet";
 	}
 	
 	public void setOriginalUid(String s)
@@ -147,15 +147,15 @@ public class IcrRoiSetDataMdComplexType extends IcrGenericImageAssessmentDataMdC
 	}
 	
 	
-	public void setNRois(Integer n)
+	public void setNRegions(Integer n)
 	{
-		nRois = n;
+		nRegions = n;
 	}
 	
 	
-	public void setRoiIdList(List<String> ril)
+	public void setRegionIdList(List<String> ril)
 	{
-		roiIdList = ril;
+		regionIdList = ril;
 	}
 	
 	

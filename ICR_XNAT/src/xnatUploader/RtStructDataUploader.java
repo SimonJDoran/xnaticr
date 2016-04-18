@@ -84,7 +84,7 @@ import org.dcm4che2.io.DicomInputStream;
 import org.w3c.dom.Document;
 import xmlUtilities.XMLUtilities;
 import xnatDAO.XNATProfile;
-import xnatMetadataCreators.IcrRoiSetDataMdComplexType;
+import xnatMetadataCreators.IcrRegionSetDataMdComplexType;
 import xnatRestToolkit.XnatResource;
 
 public class RtStructDataUploader extends DataUploader
@@ -92,14 +92,14 @@ public class RtStructDataUploader extends DataUploader
 	private DicomObject         bdo;
 	
 	// These instance variables are public because they need to be accessed by
-	// the RoiFromRtStructDataUploader class in the uploadMetadata method.
+	// the RegionFromRtStructDataUploader class in the uploadMetadata method.
 	public  RtStruct            rts;
   	public Set<String>         studyUidSet       = new LinkedHashSet<>();
 	public Set<String>         seriesUidSet      = new LinkedHashSet<>();
 	public Set<String>         sopInstanceUidSet = new LinkedHashSet<>();
 	public Map<String, String> fileSopMap        = new HashMap<>();
 	public Map<String, String> fileScanMap       = new HashMap<>();
-	public ArrayList<String>   assignedRoiIdList = new ArrayList<>();
+	public ArrayList<String>   assignedRegionIdList = new ArrayList<>();
 	public int                 nRois;
 	
 	public RtStructDataUploader(XNATProfile xnprf)
@@ -460,7 +460,7 @@ public class RtStructDataUploader extends DataUploader
 		
 		// Create separate accession IDs for all the individual ROI's.
 		nRois = rts.structureSet.structureSetRoiList.size();
-		for (int i=0; i<nRois; i++) assignedRoiIdList.add("ROI_" + UIDGenerator.createShortUnique());
+		for (int i=0; i<nRois; i++) assignedRegionIdList.add("ROI_" + UIDGenerator.createShortUnique());
 		 
       Document metaDoc = createMetadataXml();
       if (errorOccurred) throw new XNATException(XNATException.FILE_UPLOAD,
@@ -505,11 +505,11 @@ public class RtStructDataUploader extends DataUploader
       	
       for (int i=0; i<rts.structureSet.structureSetRoiList.size(); i++)
       {
-         RoiFromRtStructDataUploader ru = new RoiFromRtStructDataUploader(xnprf, this);
+         RegionFromRtStructDataUploader ru = new RegionFromRtStructDataUploader(xnprf, this);
          try
          {
-            ru.setAccessionId(assignedRoiIdList.get(i));
-            ru.setRoiNumberInOriginal(rts.structureSet.structureSetRoiList.get(i).roiNumber);
+            ru.setAccessionId(assignedRegionIdList.get(i));
+            ru.setRoiPositionInSSRoiSequence(i);
             ru.uploadFilesToRepository();
          }
          catch (Exception ex)
@@ -573,29 +573,29 @@ public class RtStructDataUploader extends DataUploader
 		// and calling its createXmlAsRootElement() method. The complexity
 		// in this method comes from the number of pieces of data that must
 		// be transferred from the RT-STRUCT to the metadata creator.
-		IcrRoiSetDataMdComplexType roiSet  = new IcrRoiSetDataMdComplexType();
+		IcrRegionSetDataMdComplexType regionSet  = new IcrRegionSetDataMdComplexType();
 		
-		roiSet.setOriginalUid(rts.sopCommon.sopInstanceUid);
-		roiSet.setOriginalDataType("RT-STRUCT");
-		roiSet.setOriginalLabel(rts.structureSet.structureSetLabel);
-		roiSet.setOriginatingApplicationName(rts.generalEquipment.modelName);
+		regionSet.setOriginalUid(rts.sopCommon.sopInstanceUid);
+		regionSet.setOriginalDataType("RT-STRUCT");
+		regionSet.setOriginalLabel(rts.structureSet.structureSetLabel);
+		regionSet.setOriginatingApplicationName(rts.generalEquipment.modelName);
 		
 		final String sep = " | ";
 		StringBuilder sb = new StringBuilder();
 		for (String s : rts.generalEquipment.softwareVersions) sb.append(s).append(sep);
-		roiSet.setOriginatingApplicationVersion(sb.toString());
+		regionSet.setOriginatingApplicationVersion(sb.toString());
 		
-		roiSet.setNRois(rts.structureSet.structureSetRoiList.size());
-		roiSet.setRoiIdList(assignedRoiIdList);
-		roiSet.setStructureSetName(rts.structureSet.structureSetName);
-		roiSet.setStructureInstanceNumber(rts.structureSet.instanceNumber);
-		roiSet.setReferencedFrameOfReferenceList(rts.structureSet.referencedFrameOfReferenceList);
+		regionSet.setNRegions(rts.structureSet.structureSetRoiList.size());
+		regionSet.setRegionIdList(assignedRegionIdList);
+		regionSet.setStructureSetName(rts.structureSet.structureSetName);
+		regionSet.setStructureInstanceNumber(rts.structureSet.instanceNumber);
+		regionSet.setReferencedFrameOfReferenceList(rts.structureSet.referencedFrameOfReferenceList);
 		
-		// IcrRoiSetDataMdComplexType inherits from IcrGenericImageAssessmentDataMdComplexType.
+		// IcrRegionSetDataMdComplexType inherits from IcrGenericImageAssessmentDataMdComplexType.
 		
-		// roiSet.setType();  Not currently sure what should go here.
-		roiSet.setXnatSubjId(XNATSubjectID);
-		roiSet.setDicomSubjName(rts.patient.patientName);
+		// regionSet.setType();  Not currently sure what should go here.
+		regionSet.setXnatSubjId(XNATSubjectID);
+		regionSet.setDicomSubjName(rts.patient.patientName);
 		
 		// Although the full version of Scan, including scan and slice image
 		// statistics is implemented, this is overkill for the RT-STRUCT and
@@ -608,7 +608,7 @@ public class RtStructDataUploader extends DataUploader
 			sc.id = id;
 			lsc.add(sc);
 		}
-		roiSet.setScanList(lsc);
+		regionSet.setScanList(lsc);
 		
 		// IcrGenericImageAssessmentDataMdComplexType inherits from XnatImageAssessorDataMdComplexType.
 		
@@ -639,26 +639,26 @@ public class RtStructDataUploader extends DataUploader
 		ar.tagList = mfl;
 		outList.add(ar);
 		
-		roiSet.setInList(inList);
-		roiSet.setOutList(outList);
+		regionSet.setInList(inList);
+		regionSet.setOutList(outList);
 		
-		roiSet.setImageSessionId(XNATExperimentID);
+		regionSet.setImageSessionId(XNATExperimentID);
 		
 		// For this object, there are no additional fields. This entry is
 		// empty, but still needs to be set.
-		roiSet.setParamList(new ArrayList<AdditionalField>());
+		regionSet.setParamList(new ArrayList<AdditionalField>());
 		
 		
 		// XnatImageAssessorDataMdComplexType inherits from XnatDerivedDataMdComplexType.
 		
  
-		roiSet.setProvenance(retrieveProvenance());
+		regionSet.setProvenance(retrieveProvenance());
 				                                 
 		
 		// XnatDerivedDataMdComplexType inherits from XnatExperimentData.
 		
-      roiSet.setId(XNATAccessionID);
-      roiSet.setProject(XNATProject);
+      regionSet.setId(XNATAccessionID);
+      regionSet.setProject(XNATProject);
       
       //StringBuilder versions = new StringBuilder();
 		//for (String s : rts.generalEquipment.softwareVersions) versions.append(s);
@@ -666,25 +666,25 @@ public class RtStructDataUploader extends DataUploader
       
 		// Apparently the version XML element has to be an integer, so my ideal
 		// version above is no use.
-		roiSet.setVersion("1");
+		regionSet.setVersion("1");
 		
       String labelSuffix = "_" + uploadFile.getName() + "_" + UIDGenerator.createShortUnique();
 		label = isBatchMode ? labelPrefix + labelSuffix : labelPrefix;
-		roiSet.setLabel(label);
+		regionSet.setLabel(label);
       
-		roiSet.setDate(date);
-      roiSet.setTime(time);
-      roiSet.setNote(note);
+		regionSet.setDate(date);
+      regionSet.setTime(time);
+      regionSet.setNote(note);
 		
       // No correlates in the structure set read in for visit, visitId,
       // original, protocol and investigator.
-		roiSet.setInvestigator(new Investigator());      
+		regionSet.setInvestigator(new Investigator());      
       
       // Finally write the metadata XML document.
 		Document metaDoc = null;
 		try
 		{
-			metaDoc = roiSet.createXmlAsRootElement();
+			metaDoc = regionSet.createXmlAsRootElement();
 		}
 		catch (IOException | XMLException ex)
 		{

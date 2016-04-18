@@ -35,57 +35,70 @@
 
 /********************************************************************
 * @author Simon J Doran
-* Java class: IcrRoiDisplayDataMDComplexType.java
-* First created on Jan 20, 2016 at 4:06:56 PM
+* Java class: IcrRtRoiObservationMdComplexType.java
+* First created on Apr 18, 2016 at 11:24:21 AM
 * 
-* Creation of metadata XML for icr:roiDisplayData
+* Creation of metadata XML for icr:rtRoiObservation
 * 
 * Eventually, the plan for this whole package is to replace the
 * explicit writing of the XML files with a higher level interface,
-* e.g., JAXB. However, this is for a later refactoring. In addition
-* note that, at present, only a subset of xnat:experimentData is
-* implemented.
+* e.g., JAXB. However, this is for a later refactoring.
 *********************************************************************/
-
 
 package xnatMetadataCreators;
 
-import dataRepresentations.xnatSchema.RoiDisplay;
+import dataRepresentations.dicom.RoiPhysicalProperty;
+import dataRepresentations.dicom.RtRelatedRoi;
+import dataRepresentations.dicom.RtRoiObservation;
 import exceptions.XMLException;
 import java.io.IOException;
+import java.util.List;
 import xmlUtilities.DelayedPrettyPrinterXmlWriter;
 
-public class IcrRoiDisplayDataMdComplexType extends MdComplexType
+public class IcrRtRoiObservationMdComplexType extends MdComplexType
 {
-	protected RoiDisplay rd;
-	
-	public IcrRoiDisplayDataMdComplexType(RoiDisplay rd,
-			                                DelayedPrettyPrinterXmlWriter dppXML)
+	protected RtRoiObservation rro;	
+
+
+	public IcrRtRoiObservationMdComplexType(RtRoiObservation rro,
+			                                  DelayedPrettyPrinterXmlWriter dppXML)
 	{
-		this.rd     = rd;
+		this.rro    = rro;
 		this.dppXML = dppXML;
-	}
-	
-	public IcrRoiDisplayDataMdComplexType() {}
-	
-	
-	public void setRoiDisplay(RoiDisplay rd)
-	{
-		this.rd = rd;
 	}
 	
 	
 	@Override
 	public void insertXml() throws IOException, XMLException
 	{
-		dppXML.delayedWriteEntityWithText("roiID",               rd.roiId)
-		      .delayedWriteEntityWithText("lineType",            rd.lineType)
-				.delayedWriteEntityWithText("lineColour",          rd.lineColour)
-				.delayedWriteEntityWithText("shadingType",         rd.shadingType)
-				.delayedWriteEntityWithText("shadingColour",       rd.shadingColour)
-				.delayedWriteEntityWithText("shadingTransparency", rd.shadingTransparency);
+		dppXML.delayedWriteEntityWithText("observationNumber",         rro.observationNumber)
+				.delayedWriteEntityWithText("roiObservationLabel",       rro.roiObservationLabel)
+				.delayedWriteEntityWithText("roiObservationDescription", rro.roiObservationDescription);
+	
+      dppXML.delayedWriteEntity("rtRelatedRois");
+		      for (RtRelatedRoi rrr : rro.rtRelatedRoiList)
+				{
+					(new IcrRtRelatedRoiMdComplexType(rrr, dppXML)).insertXmlAsElement("rtRelatedRoi");
+				}
+		dppXML.delayedEndEntity();
+
+		dppXML.delayedWriteEntityWithText("rtRoiInterpretedType",      rro.rtRoiInterpretedType)
+			   .delayedWriteEntityWithText("roiInterpreter",            rro.roiInterpreter)
+			   .delayedWriteEntityWithText("roiMaterialId",             rro.materialId);
+		
+		dppXML.delayedWriteEntity("roiPhysicalProperties");
+		      for (RoiPhysicalProperty rpp : rro.roiPhysicalPropertyList)
+				{
+					(new IcrRoiPhysicalPropertyMdComplexType(rpp, dppXML)).insertXmlAsElement("roiPhysicalProperty");
+				}
+		dppXML.delayedEndEntity();
+	}
+
+	
+	public void setRtRoiObservation(RtRoiObservation rro)
+	{
+		this.rro = rro;
 	}
 	
-	
-	
 }
+	

@@ -48,20 +48,23 @@
 
 package xnatUploader;
 
+import dataRepresentations.dicom.RoiContour;
 import dataRepresentations.dicom.RtStruct;
+import dataRepresentations.dicom.StructureSet;
+import dataRepresentations.dicom.StructureSetRoi;
 import java.util.ArrayList;
 import java.util.List;
 import org.w3c.dom.Document;
 import xnatDAO.XNATProfile;
-import xnatMetadataCreators.IcrRoiDataMdComplexType;
+import xnatMetadataCreators.IcrRegionDataMdComplexType;
 
-public class RoiFromRtStructDataUploader extends DataUploader
+public class RegionFromRtStructDataUploader extends DataUploader
 {
 	// Capture all the data from the class supervising the uploading.
 	private RtStructDataUploader rtdsu;
-   private int                  roiNOrig;
+   private int                  roiPos;
 	
-	public RoiFromRtStructDataUploader(XNATProfile xnprf, RtStructDataUploader rtsdu)
+	public RegionFromRtStructDataUploader(XNATProfile xnprf, RtStructDataUploader rtsdu)
 	{
 		super(xnprf);
 		this.rtdsu = rtdsu;
@@ -75,33 +78,51 @@ public class RoiFromRtStructDataUploader extends DataUploader
 		// and calling its createXmlAsRootElement() method. The complexity
 		// in this method comes from the number of pieces of data that must
 		// be transferred from the RT-STRUCT to the metadata creator.
-		IcrRoiDataMdComplexType roi = new IcrRoiDataMdComplexType();
+		IcrRegionDataMdComplexType region = new IcrRegionDataMdComplexType();
 		
 		List<String> arsl = new ArrayList<>();
 		arsl.add(rtdsu.XNATAccessionID);
-		roi.setAssociatedRoiSetIdList(arsl);
+		region.setAssociatedRoiSetIdList(arsl);
 		
-		roi.setOriginalUid(rtdsu.rts.sopCommon.sopInstanceUid);
-		roi.setOriginalDataType("RT-STRUCT");
-		roi.setOriginalLabel(rtdsu.rts.structureSet.structureSetLabel);
-      roi.setOriginalDescription(rtdsu.rts.structureSet.structureSetDescription);
-		roi.setOriginatingApplicationName(rtdsu.rts.generalEquipment.modelName);
+		region.setOriginalUid(rtdsu.rts.sopCommon.sopInstanceUid);
+		region.setOriginalDataType("RT-STRUCT");
+		
+		StructureSet    ss  = rtdsu.rts.structureSet;
+		StructureSetRoi ssr = ss.structureSetRoiList.get(roiPos);
+		
+		region.setOriginalLabel(ss.structureSetLabel);
+      region.setOriginalDescription(ss.structureSetDescription);
+		region.setOriginatingApplicationName(rtdsu.rts.generalEquipment.modelName);
 		
 		final String sep = " | ";
 		StringBuilder sb = new StringBuilder();
 		for (String s : rtdsu.rts.generalEquipment.softwareVersions) sb.append(s).append(sep);
-		roi.setOriginatingApplicationVersion(sb.toString());
+		region.setOriginatingApplicationVersion(sb.toString());
 		
-      roi.setOriginalContainsMultipleRois((rtdsu.nRois > 1) ? "true" : "false");
-      roi.setRoiNumberInOriginal(Integer.toString(roiNOrig));
-     
-      
+      region.setOriginalContainsMultipleRois((rtdsu.nRois > 1) ? "true" : "false");
+      region.setRoiNumberInOriginal(Integer.toString(ssr.roiNumber));
+		
+		region.setRoiName(ssr.roiName);
+		region.setRoiDescription(ssr.roiDescription);
+		
+		// In order to get to the ROI colour, we need to iterate through the contents
+		// of roiContour.
+      for (RoiContour rc : rtdsu.rts.roiContourList)
+		{
+			if (rc.referencedRoiNumber == ssr.roiNumber)
+			{
+				int[] col = rc.roiDisplayColour;
+				StringBuilder sb = new StringBuilder();
+				for (int i=0; i<col.length; i++)
+				region.setLineColour(Integer.toString(rc.roiDisplayColour);
+			}
+		}
 		
 	}
 	
-	public void setRoiNumberInOriginal(int n)
+	public void setRoiPositionInSSRoiSequence(int n)
    {
-      
+      roiPos = n; 
    }
 	
 	@Override
