@@ -94,7 +94,7 @@ public class ContourRendererHelper
    // Contour class in RTStruct_old.java.
    public static class RenderContour
    {
-      public String              baseImageUid;
+      public String              baseImageFilename;
 		public int                 baseFrameNumber;
       public int                 nContourPoints;
       public float[][]           contourPoints;
@@ -102,7 +102,7 @@ public class ContourRendererHelper
    
    static Logger                   logger = Logger.getLogger(ContourRendererHelper.class);
    public static final int         THUMBNAIL_SIZE = 128;
-	public Map<String, File>        cachedImageFiles;
+   public Map<String, File>        filenameCacheFileMap;
    public float[]                  pixelSpacing;
    public float[]                  dirCosines;
    public float[]                  topLeftPos;
@@ -196,11 +196,10 @@ public class ContourRendererHelper
 //   }
 	
 	
-	private Map<String, File> retrieveBaseImagesToCache()
-			  throws XNATException
+	public void retrieveBaseImagesToCache() throws XNATException
 	{
-		Set<String>           filenames = caller.getFilenameSet();
-		HashMap<String, File> fileMap   = new HashMap<>();
+		Set<String> filenames = caller.getFilenameSet();
+		filenameCacheFileMap = new HashMap<>();
 		
 		String homeDir   = System.getProperty("user.home");
       String fileSep   = System.getProperty("file.separator");
@@ -283,7 +282,7 @@ public class ContourRendererHelper
 						}
 					}
 					
-					if (success) fileMap.put(name, cacheFile);
+					if (success) filenameCacheFileMap.put(name, cacheFile);
 				}				
 			}
 		}
@@ -293,11 +292,10 @@ public class ContourRendererHelper
 			                        "Problem retrieving " + nDownloadFailures +
 								          "base images from XNAT to generate required thumbnails");
 		}
-      return fileMap;
 	}
 	
 		
-	public ArrayList<BufferedImage> createImages() throws Exception
+	public ArrayList<BufferedImage> createImages() throws ImageUtilitiesException
    {
 
       ArrayList<BufferedImage> result = new ArrayList<BufferedImage>();
@@ -306,15 +304,15 @@ public class ContourRendererHelper
       {         
          try
          {
-            BufferedImage bi = getBaseImage(rc.baseImageUid, rc.baseFrameNumber);
+            BufferedImage bi = getBaseImage(rc.baseImageFilename, rc.baseFrameNumber);
             overlayContour(bi, rc);
             result.add(ImageUtilities.scaleColourImageByFFT(bi,
                                               THUMBNAIL_SIZE, THUMBNAIL_SIZE));
          }
-         catch (ImageUtilitiesException exIUE)
+         catch (ImageUtilitiesException | XNATException ex)
          {
             String msg  = "There was an error in the image scaling process: "
-                            + exIUE.getMessage();
+                            + ex.getMessage();
             logger.error(msg);
             throw new ImageUtilitiesException(ImageUtilitiesException.THUMBNAIL_CREATION, msg);
          }
@@ -326,16 +324,15 @@ public class ContourRendererHelper
       
       
       
-   private BufferedImage getBaseImage(String imageUid, String frameNumber)
+   private BufferedImage getBaseImage(String imageFilename, int frameNumber)
                          throws XNATException, ImageUtilitiesException
    {
       DicomObject bdo	= new BasicDicomObject();
       
-
+      File cacheFile = filenameCacheFileMap.get(imageFilename);
 		try
       {
-         String imageFilename = dr.fileSOPMap.get(imageUid);
-         DicomInputStream dis = new DicomInputStream(cachedImageFiles.get(imageFilename));
+         DicomInputStream dis = new DicomInputStream(cacheFile);
          dis.readDicomObject(bdo, -1);
       }
       catch(Exception ex)

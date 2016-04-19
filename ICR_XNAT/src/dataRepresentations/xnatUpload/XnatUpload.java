@@ -45,6 +45,7 @@
 package dataRepresentations.xnatUpload;
 
 import java.util.ArrayList;
+import java.util.Set;
 import java.util.SortedMap;
 import xnatDAO.XNATProfile;
 
@@ -55,7 +56,7 @@ public abstract class XnatUpload
    public String                       XNATRefExperimentID;
    public String                       XNATSubjectID;
    public String                       XNATSubjectLabel;
-   public ArrayList<String>            XNATScanID;
+   public Set<String>                  XNATScanID;
    public SortedMap<String, String>    fileSOPMap;
    public SortedMap<String, String>    fileScanMap;
    public XNATProfile                  xnprf;

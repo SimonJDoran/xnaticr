@@ -66,15 +66,20 @@ import dataRepresentations.xnatSchema.MetaField;
 import dataRepresentations.xnatSchema.Provenance;
 import dataRepresentations.xnatSchema.Scan;
 import exceptions.DataFormatException;
+import exceptions.ImageUtilitiesException;
 import exceptions.XMLException;
 import exceptions.XNATException;
 import generalUtilities.UIDGenerator;
 import generalUtilities.Vector2D;
+import java.awt.image.BufferedImage;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -83,10 +88,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.Vector;
+import javax.imageio.ImageIO;
 import org.w3c.dom.Document;
 import xnatDAO.XNATProfile;
 import xnatMetadataCreators.IcrRegionDataMdComplexType;
 import xnatRestToolkit.XNATRESTToolkit;
+import xnatRestToolkit.XnatResource;
 import xnatUploader.ContourRendererHelper.RenderContour;
 
 public class RegionFromRtStructDataUploader extends DataUploader implements ContourRenderer
@@ -387,56 +394,69 @@ public class RegionFromRtStructDataUploader extends DataUploader implements Cont
    protected void createAuxiliaryResources()
    {
       //createInputCatalogueFile("DICOM", "RAW", "referenced contour image");
-		Map<String, File> cachedImages = retrieveBaseImagesToCache();
+		
+      ContourRendererHelper crh;
+      Map<String, File>     fileMap;
+      try
+      {
+         crh     = createContourRendererHelper();
+         crh.retrieveBaseImagesToCache();
+      }
+      catch (DataFormatException | XNATException ex)
+      {
+          reportError(ex, "create thumbnail images");
+          return;
+      }   
+      
 		try
       {
-         ContourRendererHelper cr = new ContourRendererHelper(rtsSingle, ssRoi.correspondingROIContour, cachedImages);
-         ArrayList<BufferedImage> thumbnails = cr.createImages();
-      
-         String          homeDir        = System.getProperty("user.home");
-         String          fileSep        = System.getProperty("file.separator");
-         String          XNAT_DAO_HOME  = homeDir + fileSep + ".XNAT_DAO" + fileSep;
-         String          filePrefix     = XNAT_DAO_HOME + "temp" + fileSep 
-                                          + XNATAccessionID + "_ROI_thumbnail_";
+         ArrayList<BufferedImage> thumbnails = crh.createImages();
+         String filePrefix = XNATAccessionID + "_ROI_thumbnail_";
          
          for (int i=0; i<thumbnails.size(); i++)
          {
-            File outputFile = new File(filePrefix + i + ".png");
-            ImageIO.write(thumbnails.get(i), "png", outputFile);
+            StringBuilder description = new StringBuilder();
+            description.append("ROI thumbnail rendered by ICR DataUploader ")
+                       .append(version)
+                       .append("extracted from original RT-STRUCT file ")
+                       .append(rtdsu.uploadFile.getName());
+            
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            ImageIO.write(thumbnails.get(i), "png", baos);
+            InputStream bais = new ByteArrayInputStream(baos.toByteArray());
+            
+            XnatResource xr = new XnatResource(bais,
+		                                         "out",
+		                                         filePrefix + "_" + i,
+				                                   "PNG",
+		                                         "ROI_THUMBNAIL",
+		                                         description.toString(),
+				                                   filePrefix + "_" + i + ".png");
 				
-				XNATResourceFile rf	= new XNATResourceFile();
-				rf.content				= "GENERATED";
-				rf.description			= "thumbnail image containing ROI contour";
-				rf.format				= "PNG";
-				rf.file					= outputFile;
-				rf.name					= "RT_THUMBNAIL";
-				rf.inOut					= "out";
-            auxiliaryFiles.add(rf);
+            auxiliaryResources.add(xr);
          }
       }
-      catch (Exception ex)
+      catch (IOException | ImageUtilitiesException ex)
       {
          reportError(ex, "create RT thumbnail file");
       }      
    }
 	
-	
-	protected ContourRendererHelper createContourRendererHelper(RtStruct rts,
-			                                                      Map<String, File> cachedImageFiles)
-                                   throws DataFormatException
+	@Override
+	public ContourRendererHelper createContourRendererHelper()
+                                throws DataFormatException
 	{
 		ContourRendererHelper crh = new ContourRendererHelper();
-		crh.cachedImageFiles = cachedImageFiles;
 		
 		// An RtStruct object corresponding to a single ROI has only one element
 		// in its roiContourList.
-		assert (rts.roiContourList.size() == 1);
-		RoiContour rc     = rts.roiContourList.get(0);
+		assert (rtsSingle.roiContourList.size() == 1);
+		RoiContour rc     = rtsSingle.roiContourList.get(0);
 		crh.displayColour = rc.roiDisplayColour;
 		
 		// The frame of reference in which the ROI is defined is in a separate DICOM
 		// IOD from the contour list!
-		for (StructureSetRoi ssr : rts.structureSet.structureSetRoiList)
+		for (StructureSetRoi ssr : rtsSingle.structureSet.structureSetRoiList)
 		{
 			if (ssr.roiNumber == rc.referencedRoiNumber) crh.frameOfReferenceUid = ssr.referencedFrameOfReferenceUid;
 		}
@@ -451,14 +471,15 @@ public class RegionFromRtStructDataUploader extends DataUploader implements Cont
             String msg = "This type of contour cannot yet be rendered."
                          + "More than one base image for a single contour.";
             logger.error(msg);
-            throw new DataFormatException(DataFormatException.RTSTRUCT);
+            throw new DataFormatException(DataFormatException.RTSTRUCT, msg);
          }
          
          RenderContour rndC   = new RenderContour();
-         rndC.baseImageUid    = c.contourImageList.get(0).referencedSopInstanceUid;
-			rndC.baseFrameNumber = c.contourImageList.get(0).referencedFrameNumber[0];
-         rndC.nContourPoints  = c.nContourPoints;
-         rndC.contourPoints   = new float[c.nContourPoints][3];
+         String baseSop         = c.contourImageList.get(0).referencedSopInstanceUid;
+         rndC.baseImageFilename = rtdsu.sopFileMap.get(baseSop);
+			rndC.baseFrameNumber   = c.contourImageList.get(0).referencedFrameNumber[0];
+         rndC.nContourPoints    = c.nContourPoints;
+         rndC.contourPoints     = new float[c.nContourPoints][3];
 
          for (int j=0; j<c.nContourPoints; j++)
             for (int i=0; i<3; i++)

@@ -251,7 +251,7 @@ public class AdeptDataUploader extends QCAssessmentDataUploader
       String filePrefix = XNATGUI.getHomeDir() + "temp" + fileSep + XNATAccessionID;
       try
       {
-			ContourRendererHelper cr = new ContourRendererHelper(adept);
+			ContourRendererHelper cr = new ContourRendererHelper();
          ArrayList<BufferedImage> thumbnails = cr.createImages();
 			String thumbnailFile = filePrefix + "_ADEPT_ROI_thumbnail_";
 

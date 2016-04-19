@@ -757,7 +757,7 @@ public final class RTStruct_old extends XnatUpload implements RtStructWriter
       Document              resultDoc;
       XNATNamespaceContext  XNATns = new XNATNamespaceContext();
       
-      XNATScanID = new ArrayList<>();
+      XNATScanID = new HashSet<>();
       
       try
       {
@@ -820,7 +820,7 @@ public final class RTStruct_old extends XnatUpload implements RtStructWriter
             RESTCommand = "/data/archive/projects/"    + XNATProjectID
                              + "/subjects/"            + XNATSubjectID
                              + "/experiments/"         + XNATExperimentID
-                             + "/scans/"               + XNATScanID.get(i)
+                             + "/scans/"               + XNATScanID
                              + "/resources/DICOM?format=xml";
             resultDoc   = xnrt.RESTGetDoc(RESTCommand);
             parseResult = XMLUtilities.getAttributes(resultDoc, XNATns, "cat:entry",
@@ -845,9 +845,10 @@ public final class RTStruct_old extends XnatUpload implements RtStructWriter
 
          for (int j=0; j<parseResult.length; j++)
          {
+             
             if (SOPInstanceUIDs.contains(parseResult[j][1]))
                fileSOPMap.put(parseResult[j][1], parseResult[j][0]);
-               fileScanMap.put(parseResult[j][1], XNATScanID.get(i));
+            //   fileScanMap.put(parseResult[j][1], (new ArrayList(XNATScanID)).get(0));
          }
       }
       

@@ -457,7 +457,7 @@ public class MRIWDataUploader extends QCAssessmentDataUploader
       String filePrefix = XNATGUI.getHomeDir() + "temp" + fileSep + XNATAccessionID;
       try
       {
-         ContourRendererHelper cr = new ContourRendererHelper(mriw);
+         ContourRendererHelper cr = new ContourRendererHelper();
          ArrayList<BufferedImage> thumbnails = cr.createImages();
 			String thumbnailFile = filePrefix + "_MRIW_ROI_thumbnail_";
 

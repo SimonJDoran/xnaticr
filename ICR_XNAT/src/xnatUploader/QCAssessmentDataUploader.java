@@ -523,8 +523,8 @@ public abstract class QCAssessmentDataUploader extends DataUploader
       return (!getStringField("Label").equals("")) &&
              (!getStringField("Note").equals(""))  &&
              (!XNATSubjectID.equals(""))           &&
-             (!XNATExperimentID.equals(""))        &&
-             (!XNATScanIdSet.get(0).equals(""));
+             (!XNATExperimentID.equals(""));
+           //  (!XNATScanIdSet.get(0).equals(""));
    }
    
 	

@@ -43,6 +43,7 @@
 *********************************************************************/
 package xnatUploader;
 
+import exceptions.DataFormatException;
 import java.util.Set;
 import xnatDAO.XNATProfile;
 
@@ -52,7 +53,7 @@ import xnatDAO.XNATProfile;
  */
 public interface ContourRenderer
 {
-	public ContourRendererHelper createContourHelper();
+	public ContourRendererHelper createContourRendererHelper() throws DataFormatException;
 	
 	public Set<String>           getFilenameSet();
 	

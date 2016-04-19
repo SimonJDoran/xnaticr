@@ -648,7 +648,7 @@ public abstract class DataUploader
       
       errorOccurred = true;
       errorMessage  = "Unable to create XML document required for uploading the data.\n";
-      errorMessage  = "Error during operation " + operation + "\n\n";
+      errorMessage  += "Error during operation " + operation + "\n";
       
       if (ex == null) return;
       if (ex.getMessage() != null) errorMessage += "The detailed error message was:\n"

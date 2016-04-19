@@ -67,6 +67,7 @@ public class XnatResource
 		this.file             = file;
 		this.inOut            = inOut;
 		this.name             = name;
+      this.format           = format;
 		this.content          = content;
 		this.description      = description;
 		this.fileNameOnServer = fileNameOnServer;
@@ -79,6 +80,7 @@ public class XnatResource
 		this.doc              = doc;
 		this.inOut            = inOut;
 		this.name             = name;
+      this.format           = format;
 		this.content          = content;
 		this.description      = description;
 		this.fileNameOnServer = fileNameOnServer;
@@ -91,6 +93,7 @@ public class XnatResource
 		this.is               = is;
 		this.inOut            = inOut;
 		this.name             = name;
+      this.format           = format;
 		this.content          = content;
 		this.description      = description;
 		this.fileNameOnServer = fileNameOnServer;

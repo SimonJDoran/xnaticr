@@ -583,7 +583,7 @@ public final class MRIWOutput extends XnatUpload implements RtStructWriter
       for (String s : inp.dynSeriesInstanceUIDs) uniqueSeries.add(s);
       
       HashSet<String> absentSeries = new HashSet<>();
-      XNATScanID = new ArrayList<>();
+      XNATScanID = new LinkedHashSet<>();
       
       for (String series : uniqueSeries)
       {
@@ -656,7 +656,7 @@ public final class MRIWOutput extends XnatUpload implements RtStructWriter
             RESTCommand = "/data/archive/projects/"    + XNATProjectID
                              + "/subjects/"            + XNATSubjectID
                              + "/experiments/"         + XNATExperimentID
-                             + "/scans/"               + XNATScanID.get(i)
+                             + "/scans/"               + XNATScanID
                              + "/resources/DICOM?format=xml";
             resultDoc   = xnrt.RESTGetDoc(RESTCommand);
             parseResult = XMLUtilities.getAttributes(resultDoc, XNATns, "cat:entry",
@@ -681,7 +681,7 @@ public final class MRIWOutput extends XnatUpload implements RtStructWriter
                            inp.refSOPInstanceUID.equals(parseResult[j][1]))
 				{
                fileSOPMap.put(parseResult[j][1], parseResult[j][0]);
-               fileScanMap.put(parseResult[j][1], XNATScanID.get(i));
+      //         fileScanMap.put(parseResult[j][1], XNATScanID.get(i));
 				}
          }
       }
@@ -1020,7 +1020,7 @@ public final class MRIWOutput extends XnatUpload implements RtStructWriter
       XNATRESTToolkit  xnrt = new XNATRESTToolkit(xnprf);
       String           RESTCommand;
       Vector2D<String> result;
-      String           dynScanID = XNATScanID.get(0);
+      String           dynScanID = new ArrayList<String>(XNATScanID).get(0);
       
       try
       {
@@ -1033,7 +1033,7 @@ public final class MRIWOutput extends XnatUpload implements RtStructWriter
       }
       catch (XNATException exXNAT)
       {
-         logger.warn("Couldn't get a file list for scan " + XNATScanID.get(0)
+         logger.warn("Couldn't get a file list for scan " + dynScanID
                  + " while trying to extract required DICOM header information.\n"
                  + exXNAT.getMessage());
          return;

@@ -155,7 +155,7 @@ public class AIMDataUploader extends QCAssessmentDataUploader
          XNATProject      = aim.XNATProjectID; 
          XNATSubjectID    = aim.XNATSubjectID;
          XNATExperimentID = aim.XNATExperimentID;
-         XNATScanIdSet       = aim.XNATScanID;
+         XNATScanIdSet    = aim.XNATScanID;
          
          populateStringFields();
          
@@ -484,7 +484,7 @@ public class AIMDataUploader extends QCAssessmentDataUploader
       String filePrefix = XNATGUI.getHomeDir() + "temp" + fileSep + XNATAccessionID;
       try
       {
-         ContourRendererHelper cr = new ContourRendererHelper(aim);
+         ContourRendererHelper cr = new ContourRendererHelper();
          ArrayList<BufferedImage> thumbnails = cr.createImages();
 			String thumbnailFile = filePrefix + "_AIM_ROI_thumbnail_";
 
@@ -596,7 +596,7 @@ public class AIMDataUploader extends QCAssessmentDataUploader
    protected void debugContourOutput() throws Exception
    {
 
-      ContourRendererHelper cr = new ContourRendererHelper(aim);
+      ContourRendererHelper cr = new ContourRendererHelper();
       ArrayList<BufferedImage> bi = cr.createImages();
       for (int j=0; j<bi.size(); j++)
       {
