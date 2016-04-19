@@ -93,7 +93,7 @@ public class RtStructDataUploader extends DataUploader
 	
 	// These instance variables are public because they need to be accessed by
 	// the RegionFromRtStructDataUploader class in the uploadMetadata method.
-	public  RtStruct            rts;
+	public RtStruct            rts;
   	public Set<String>         studyUidSet       = new LinkedHashSet<>();
 	public Set<String>         seriesUidSet      = new LinkedHashSet<>();
 	public Set<String>         sopInstanceUidSet = new LinkedHashSet<>();
@@ -359,7 +359,7 @@ public class RtStructDataUploader extends DataUploader
       }
       
       // We need a list of the actual data files in the repository
-      // that are referenced, to go in the "in" section of qcAssessmentData.
+      // that are referenced, to go in the "in" section of the assessor.
       // See the Class DICOMFileListWorker for an example of how to do this
       // both if the files are local or remote. Here, for simplicity, I don't
       // assume anything and use the REST method whether the files are local
@@ -884,5 +884,9 @@ public class RtStructDataUploader extends DataUploader
              + "/assessors/"           + uploadItem;
    }
 
-
+   @Override
+   protected ArrayList<String> getInputCatEntries()
+   {
+      return new ArrayList<String>();
+   }
 }

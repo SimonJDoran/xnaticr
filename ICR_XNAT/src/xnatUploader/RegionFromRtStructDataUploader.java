@@ -49,7 +49,11 @@
 package xnatUploader;
 
 import dataRepresentations.dicom.Code;
+import dataRepresentations.dicom.ContourImage;
+import dataRepresentations.dicom.ReferencedFrameOfReference;
 import dataRepresentations.dicom.RoiContour;
+import dataRepresentations.dicom.RtReferencedSeries;
+import dataRepresentations.dicom.RtReferencedStudy;
 import dataRepresentations.dicom.RtRoiObservation;
 import dataRepresentations.dicom.RtStruct;
 import dataRepresentations.dicom.StructureSet;
@@ -58,12 +62,17 @@ import dataRepresentations.xnatSchema.AbstractResource;
 import dataRepresentations.xnatSchema.AdditionalField;
 import dataRepresentations.xnatSchema.InvestigatorList;
 import dataRepresentations.xnatSchema.MetaField;
+import dataRepresentations.xnatSchema.Provenance;
 import dataRepresentations.xnatSchema.Scan;
 import exceptions.XMLException;
 import generalUtilities.UIDGenerator;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import org.w3c.dom.Document;
 import xnatDAO.XNATProfile;
 import xnatMetadataCreators.IcrRegionDataMdComplexType;
@@ -97,10 +106,15 @@ public class RegionFromRtStructDataUploader extends DataUploader
 		region.setOriginalUid(rtdsu.rts.sopCommon.sopInstanceUid);
 		region.setOriginalDataType("RT-STRUCT");
 		
-		StructureSet    ss  = rtdsu.rts.structureSet;
-		StructureSetRoi ssr = ss.structureSetRoiList.get(roiPos);
+      Set<Integer>    singleRoi = new HashSet<>();
+      singleRoi.add(rtdsu.rts.structureSet.structureSetRoiList.get(roiPos).roiNumber);
+      RtStruct        rtsSingle = new RtStruct(rtdsu.rts, singleRoi);
 		
-		region.setOriginalLabel(ss.structureSetLabel);
+		StructureSet    ss  = rtsSingle.structureSet;
+      assert (ss.structureSetRoiList.size() == 1);
+      StructureSetRoi ssr = ss.structureSetRoiList.get(0);
+      
+      region.setOriginalLabel(ss.structureSetLabel);
       region.setOriginalDescription(ss.structureSetDescription);
 		region.setOriginatingApplicationName(rtdsu.rts.generalEquipment.modelName);
 		
@@ -157,12 +171,34 @@ public class RegionFromRtStructDataUploader extends DataUploader
 		
 		// regionSet.setType();  Not currently sure what should go here.
 		region.setXnatSubjId(rtdsu.XNATSubjectID);
-		region.setDicomSubjName(rtdsu.rts.patient.patientName);
+		region.setDicomSubjName(rtsSingle.patient.patientName);
 		
 		// Although the full version of Scan, including scan and slice image
 		// statistics is implemented, this is overkill for the RT-STRUCT and
 		// the only part of scan for which information is available is the
-		// list of scan IDs.
+		// list of scan IDs. Generate this list for the individual region. Note
+      // that what is passed into the object is the complete set for all the ROIs
+      // in the structure set.
+      // Generate a single Set of all studies referenced for later use
+		// and similarly for all series and SOPInstances referenced.
+      Set<String> studyUidSet       = new LinkedHashSet<>();
+      Set<String> seriesUidSet      = new LinkedHashSet<>();
+      Set<String> sopInstanceUidSet = new LinkedHashSet<>();
+		for (ReferencedFrameOfReference rfor : rtsSingle.structureSet.referencedFrameOfReferenceList)
+		{
+			for (RtReferencedStudy rrs : rfor.rtReferencedStudyList)
+			{
+				studyUidSet.add(rrs.referencedSopInstanceUid);
+				for (RtReferencedSeries rrse : rrs.rtReferencedSeriesList)
+				{
+					seriesUidSet.add(rrse.seriesInstanceUid);
+					for (ContourImage ci : rrse.contourImageList)
+					{
+						sopInstanceUidSet.add(ci.referencedSopInstanceUid);
+					}
+				}
+			}
+		}
 		List<Scan> lsc = new ArrayList<>();
 		for (String id : rtdsu.seriesUidSet)
 		{
@@ -170,7 +206,7 @@ public class RegionFromRtStructDataUploader extends DataUploader
 			sc.id = id;
 			lsc.add(sc);
 		}
-		regionSet.setScanList(lsc);
+		region.setScanList(lsc);
 		
 		// IcrGenericImageAssessmentDataMdComplexType inherits from XnatImageAssessorDataMdComplexType.
 		
@@ -182,13 +218,26 @@ public class RegionFromRtStructDataUploader extends DataUploader
 		// metadata files and need not be duplicated here.
 		List<AbstractResource> inList = new ArrayList<>();
 		
-		for (String filename : fileSopMap.keySet())
+      // Because Java maps are not one-to-one mappings, i.e., many keys may
+      // have the same attached value, one cannot work backwards from a given
+      // value to get a unique key. This means that while the map.keyset() call
+      // exists, a similar map.valueSet() is (presumable) not seen to be useful
+      // and hence not provided. However, in our case, we *do* have a one-to-one
+      // mapping between files and SOPInstances.
+		List<String> fileList = new ArrayList<>();
+      for (String filename : rtdsu.fileSopMap.keySet())
+      {
+         if (sopInstanceUidSet.contains(rtdsu.fileSopMap.get(filename)))
+            fileList.add(filename);
+      }
+      
+      for (String filename : fileList)
 		{
 			AbstractResource ar  = new AbstractResource();
 			List<MetaField>  mfl = new ArrayList<>();
 			mfl.add(new MetaField("filename",       filename));
 			mfl.add(new MetaField("format",         "DICOM"));
-			mfl.add(new MetaField("SOPInstanceUID", fileSopMap.get(filename)));
+			mfl.add(new MetaField("SOPInstanceUID", rtdsu.fileSopMap.get(filename)));
 			ar.tagList = mfl;
 			inList.add(ar);
 		}
@@ -196,31 +245,32 @@ public class RegionFromRtStructDataUploader extends DataUploader
 		List<AbstractResource> outList = new ArrayList<>();
 		AbstractResource       ar      = new AbstractResource();
 		List<MetaField>        mfl     = new ArrayList<>();
-		mfl.add(new MetaField("filename", uploadFile.getName()));
+		mfl.add(new MetaField("filename", rtdsu.uploadFile.getName()));
 		mfl.add(new MetaField("format",   "RT-STRUCT"));
 		ar.tagList = mfl;
 		outList.add(ar);
 		
-		regionSet.setInList(inList);
-		regionSet.setOutList(outList);
+		region.setInList(inList);
+		region.setOutList(outList);
 		
-		regionSet.setImageSessionId(XNATExperimentID);
+		region.setImageSessionId(rtdsu.XNATExperimentID);
 		
 		// For this object, there are no additional fields. This entry is
 		// empty, but still needs to be set.
-		regionSet.setParamList(new ArrayList<AdditionalField>());
+		region.setParamList(new ArrayList<AdditionalField>());
 		
 		
 		// XnatImageAssessorDataMdComplexType inherits from XnatDerivedDataMdComplexType.
 		
  
-		regionSet.setProvenance(retrieveProvenance());
+		Provenance prov = (rtdsu.retrieveProvenance());
+      prov.stepList.get(1).program.name = "Auto-extracted from RT-STRUCT file by ICR XNAT DataUploader";
 				                                 
 		
 		// XnatDerivedDataMdComplexType inherits from XnatExperimentData.
 		
-      regionSet.setId(XNATAccessionID);
-      regionSet.setProject(XNATProject);
+      region.setId(XNATAccessionID);
+      region.setProject(rtdsu.XNATProject);
       
       //StringBuilder versions = new StringBuilder();
 		//for (String s : rts.generalEquipment.softwareVersions) versions.append(s);
@@ -228,25 +278,25 @@ public class RegionFromRtStructDataUploader extends DataUploader
       
 		// Apparently the version XML element has to be an integer, so my ideal
 		// version above is no use.
-		regionSet.setVersion("1");
+		region.setVersion("1");
 		
-      String labelSuffix = "_" + uploadFile.getName() + "_" + UIDGenerator.createShortUnique();
-		label = isBatchMode ? labelPrefix + labelSuffix : labelPrefix;
-		regionSet.setLabel(label);
+      label = rtdsu.label + " " + getRootElement() + "_" + ssr.roiNumber;
+		region.setLabel(label);
       
-		regionSet.setDate(date);
-      regionSet.setTime(time);
-      regionSet.setNote(note);
+		region.setDate(rtdsu.date);
+      region.setTime(rtdsu.time);
+      region.setNote(rtdsu.note);
 		
       // No correlates in the structure set read in for visit, visitId,
-      // original, protocol and investigator.
-		regionSet.setInvestigator(new InvestigatorList.Investigator());      
+      // original, protocol and investigator. However, we need to set an
+      // empty Investigator object, rather than null.
+		region.setInvestigator(new InvestigatorList.Investigator());      
       
       // Finally write the metadata XML document.
 		Document metaDoc = null;
 		try
 		{
-			metaDoc = regionSet.createXmlAsRootElement();
+			metaDoc = region.createXmlAsRootElement();
 		}
 		catch (IOException | XMLException ex)
 		{
@@ -268,13 +318,87 @@ public class RegionFromRtStructDataUploader extends DataUploader
 	@Override
    public String getRootElement()
    {
-      return "ROI";
+      return "Region";
    }
    
    
    @Override
    public String getRootComplexType()
    {
-      return "icr:roiData";
+      return "icr:regionData";
+   }
+
+   // All abstract methods need to be implemented.
+   
+   @Override
+   public boolean parseFile()
+   {
+      // Method never called.
+      return true;
+   }
+
+   @Override
+   public void updateParseFile()
+   {
+      // Method never called.
+   }
+
+   @Override
+   protected ArrayList<String> getInputCatEntries()
+   {
+      return new ArrayList<String>();
+   }
+   
+
+   @Override
+   public void clearFields(MetadataPanel mdsp)
+   {
+      // This routine is never called as Region entities are not loaded as individual files
+      // but created dynamically from RegionSets.
+   }
+   
+   
+   @Override
+   protected void createPrimaryResource()
+   {
+      // There is no primary resource associated with a Region entity.
+   }
+
+   @Override
+   protected void createAuxiliaryResources()
+   {  throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+   }
+
+   @Override
+   public void updateVariablesForEditableFields(MetadataPanel mdsp)
+   {
+      throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+   }
+
+   @Override
+   public List<String> getEditableFields()
+   {
+      return new ArrayList<String>();
+   }
+
+   @Override
+   public List<String> getRequiredFields()
+   {
+      return new ArrayList<String>();
+   }
+
+   @Override
+   public boolean rightMetadataPresent()
+   {
+      return true;
+   }
+
+   @Override
+   public String getUploadRootCommand(String uploadItem)
+   {
+		return "/data/archive/projects/" + XNATProject
+             + "/subjects/"            + XNATSubjectID
+             + "/experiments/"         + XNATExperimentID
+             + "/assessors/"           + uploadItem;
    }
 }
