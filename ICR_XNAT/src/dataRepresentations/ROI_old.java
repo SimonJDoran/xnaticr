@@ -58,7 +58,7 @@
 
 package dataRepresentations;
 
-import dataRepresentations.ContourRenderer;
+import xnatUploader.ContourRendererHelper;
 import com.generationjava.io.xml.SimpleXmlWriter;
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -237,7 +237,7 @@ public class ROI_old
 //		Map<String, File> cachedImages = retrieveBaseImagesToCache();
 //		try
 //      {
-//         ContourRenderer cr = new ContourRenderer(rts, ssRoi.correspondingROIContour, cachedImages);
+//         ContourRendererHelper cr = new ContourRendererHelper(rts, ssRoi.correspondingROIContour, cachedImages);
 //         ArrayList<BufferedImage> thumbnails = cr.createImages();
 //      
 //         String          homeDir        = System.getProperty("user.home");

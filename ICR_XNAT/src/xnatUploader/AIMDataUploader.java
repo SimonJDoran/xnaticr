@@ -56,7 +56,6 @@ package xnatUploader;
 import xnatUploader.RTStructureSetUploader;
 import com.generationjava.io.xml.SimpleXmlWriter;
 import dataRepresentations.xnatUpload.AIMOutput;
-import dataRepresentations.ContourRenderer;
 import dataRepresentations.xnatUpload.MRIWOutput;
 import dataRepresentations.RTStruct_old;
 import etherj.XmlException;
@@ -156,7 +155,7 @@ public class AIMDataUploader extends QCAssessmentDataUploader
          XNATProject      = aim.XNATProjectID; 
          XNATSubjectID    = aim.XNATSubjectID;
          XNATExperimentID = aim.XNATExperimentID;
-         XNATScanIdList       = aim.XNATScanID;
+         XNATScanIdSet       = aim.XNATScanID;
          
          populateStringFields();
          
@@ -312,18 +311,18 @@ public class AIMDataUploader extends QCAssessmentDataUploader
    
       
    /**
-    * Uploading data to XNAT is a two-stage process. First the data file
- is placed in the repository, then the metadata are placed in the SQL
- tables of the PostgreSQL database. This method attempts the repository
- upload.
- 
- Note that we have to override the method in the parent class DataUploader.
- Loading an MRIW_RECORD output file is special because not only do we create an
- MRIW_RECORD element in the database (icr:roiSetData), but we also turn the ROI
- information into an RT-STRUCT file and upload that and deal with the
- calculated maps.
-    * @throws Exception
-    */
+	 * Uploading data to XNAT is a two-stage process. First the data file
+	 * is placed in the repository, then the metadata are placed in the SQL
+	 * tables of the PostgreSQL database. This method attempts the repository
+    * upload.
+    *
+	 * Note that we have to override the method in the parent class DataUploader.
+	 * Loading an MRIW_RECORD output file is special because not only do we create an
+	 * MRIW_RECORD element in the database (icr:regionSetData), but we also turn the ROI
+	 * information into an RT-STRUCT file and upload that and deal with the
+	 * calculated maps.
+	 * @throws Exception 
+	 */
    @Override
    public void uploadMetadata() throws Exception
    {
@@ -485,7 +484,7 @@ public class AIMDataUploader extends QCAssessmentDataUploader
       String filePrefix = XNATGUI.getHomeDir() + "temp" + fileSep + XNATAccessionID;
       try
       {
-         ContourRenderer cr = new ContourRenderer(aim);
+         ContourRendererHelper cr = new ContourRendererHelper(aim);
          ArrayList<BufferedImage> thumbnails = cr.createImages();
 			String thumbnailFile = filePrefix + "_AIM_ROI_thumbnail_";
 
@@ -597,7 +596,7 @@ public class AIMDataUploader extends QCAssessmentDataUploader
    protected void debugContourOutput() throws Exception
    {
 
-      ContourRenderer cr = new ContourRenderer(aim);
+      ContourRendererHelper cr = new ContourRendererHelper(aim);
       ArrayList<BufferedImage> bi = cr.createImages();
       for (int j=0; j<bi.size(); j++)
       {

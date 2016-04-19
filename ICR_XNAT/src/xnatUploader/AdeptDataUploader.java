@@ -46,7 +46,6 @@ package xnatUploader;
 
 import com.generationjava.io.xml.SimpleXmlWriter;
 import dataRepresentations.xnatUpload.ADEPTOutput;
-import dataRepresentations.ContourRenderer;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileWriter;
@@ -146,7 +145,7 @@ public class AdeptDataUploader extends QCAssessmentDataUploader
 //               uniqueSeries.add(seriesUIDs.get(i));
 //
 //         allPresent = true;
-//         XNATScanIdList = new ArrayList<String>();
+//         XNATScanIdSet = new ArrayList<String>();
 //         for (String seriesUID : uniqueSeries)
 //         {
 //            boolean seriesPresent = false;
@@ -155,7 +154,7 @@ public class AdeptDataUploader extends QCAssessmentDataUploader
 //               if (parseResult[i][1].equals(seriesUID))
 //               {
 //                  seriesPresent = true;
-//                  XNATScanIdList.add(parseResult[i][0]);
+//                  XNATScanIdSet.add(parseResult[i][0]);
 //               }
 //            }
 //            allPresent = allPresent && seriesPresent;
@@ -252,7 +251,7 @@ public class AdeptDataUploader extends QCAssessmentDataUploader
       String filePrefix = XNATGUI.getHomeDir() + "temp" + fileSep + XNATAccessionID;
       try
       {
-			ContourRenderer cr = new ContourRenderer(adept);
+			ContourRendererHelper cr = new ContourRendererHelper(adept);
          ArrayList<BufferedImage> thumbnails = cr.createImages();
 			String thumbnailFile = filePrefix + "_ADEPT_ROI_thumbnail_";
 

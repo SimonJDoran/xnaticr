@@ -35,10 +35,10 @@
 
 /********************************************************************
 * @author Simon J Doran
-* Java class: IcrRoiSetDataMDComplexType.java
+* Java class: IcrRegionParameterStatisticsDataMdComplexType.java
 * First created on Jan 21, 2016 at 23:45:00 PM
 * 
-* Creation of metadata XML for icr:roiParameterStatisticsData
+* Creation of metadata XML for icr:regionParameterStatisticsData
 * 
 * Eventually, the plan for this whole package is to replace the
 * explicit writing of the XML files with a higher level interface,

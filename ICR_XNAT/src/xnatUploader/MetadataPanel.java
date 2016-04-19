@@ -120,7 +120,7 @@ public class MetadataPanel extends JPanel
    private void initialiseUI()
    {      
       // The actual data go in this component.
-      String defaultRootElement = "icr:roiSetData";
+      String defaultRootElement = "icr:regionSetData";
       JPanel contentPanel = initialiseContentPanel(defaultRootElement);
       pane = new JScrollPane(contentPanel);
       

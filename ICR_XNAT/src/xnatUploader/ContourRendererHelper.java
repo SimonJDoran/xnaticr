@@ -44,7 +44,7 @@
 *********************************************************************/
 
 
-package dataRepresentations;
+package xnatUploader;
 
 import dataRepresentations.xnatUpload.MRIWOutput;
 import dataRepresentations.xnatUpload.AIMOutput;
@@ -69,175 +69,244 @@ import org.dcm4che2.io.DicomInputStream;
 import org.dcm4che2.iod.module.composite.ImagePixel;
 import dataRepresentations.RTStruct_old.ROIContour;
 import dataRepresentations.dicom.Contour;
+import dataRepresentations.dicom.RtStruct;
 import exceptions.XNATException;
+import generalUtilities.Vector2D;
 import java.awt.BasicStroke;
 import java.awt.geom.GeneralPath;
+import java.io.BufferedOutputStream;
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Map;
+import java.util.Set;
+import java.util.Vector;
 import java.util.zip.DataFormatException;
 import org.dcm4che2.data.DicomObject;
 import xnatDAO.XNATProfile;
+import xnatRestToolkit.XNATRESTToolkit;
+import static xnatUploader.DataUploader.logger;
 
-public class ContourRenderer
+public class ContourRendererHelper
 {
    // The "R" in this auxilliary class name is to distinguish it from the 
    // Contour class in RTStruct_old.java.
-   public class RContour
+   public static class RenderContour
    {
-      public String              baseImageUID;
+      public String              baseImageUid;
+		public int                 baseFrameNumber;
       public int                 nContourPoints;
       public float[][]           contourPoints;
    }
    
-   static    Logger              logger = Logger.getLogger(ContourRenderer.class);
-   private   static final int    THUMBNAIL_SIZE = 128;
-   protected XnatUpload  dr;
-	protected Map<String, File>   cachedImageFiles;
-   protected float[]             pixelSpacing;
-   protected float[]             dirCosines;
-   protected float[]             topLeftPos;
-   protected int[]               displayColour;
-   protected String              frameOfReferenceUID;
-   protected boolean             coordsAsPixel;
-   protected ArrayList<RContour> rcList;   
+   static Logger                   logger = Logger.getLogger(ContourRendererHelper.class);
+   public static final int         THUMBNAIL_SIZE = 128;
+	public Map<String, File>        cachedImageFiles;
+   public float[]                  pixelSpacing;
+   public float[]                  dirCosines;
+   public float[]                  topLeftPos;
+   public int[]                    displayColour;
+   public String                   frameOfReferenceUid;
+   public boolean                  coordsAsPixel;
+   public ArrayList<RenderContour> rndCList;
+	public ContourRenderer          caller;
      
    
-   /**
-    * Constructor creates a new renderer of a given RTStruct_old object.
-    * @param rts RTStruct_old that contains all the
- information necessary for rendering the set of contours.
-    * @param contourNumber integer value containing the number of the contour
-    * to be rendered in list of contours represented by rts.
-    */
-   public ContourRenderer(RTStruct_old rts, int contourNumber,
-			                 Map<String, File> cachedImageFiles)
-                         throws DataFormatException
-   {
-      this.dr               = rts;
-		this.cachedImageFiles = cachedImageFiles;
-		
-		ROIContour roiContour = rts.roiContourList[contourNumber];
-      displayColour         = roiContour.roiDisplayColour;
-      frameOfReferenceUID   = roiContour.frameOfReferenceUID;
-      coordsAsPixel         = false;
-      rcList                = new ArrayList<RContour>();
-      
-      for (Contour c : roiContour.contourList)
-      {
-//         if (c.imageList.length != 1)
-//         {
-//            String msg = "This type of contour cannot yet be rendered."
-//                         + "More than one base image for a single contour.";
-//            logger.error(msg);
-//            throw new DataFormatException(msg);
-//         }
-//         
-//         RContour rc = new RContour();
-//         rc.baseImageUID   = c.imageList[0].SOPInstanceUID;
-//         rc.nContourPoints = c.nContourPoints;
-//         rc.contourPoints  = new float[c.nContourPoints][3];
+   public ContourRendererHelper() {}
+	   
+//   /**
+//    * Constructor creates a new renderer of a given MRIWOutput object.
+//    * @param mriw MRIWOutput that contains most of the
+//    * information necessary for rendering a contour. Note that the MRIW format
+//    * does not have a number of the contour-related features of DICOM-RT on
+//    * which these developments were originally based, so various default
+//    * values need to be supplied and in addition, the data that are present
+//    * need to be manipulated to get the correct format.
+//    */
+//   public ContourRendererHelper(MRIWOutput mriw)
+//   {
+//      this.dr = mriw;
 //
-//         for (int j=0; j<c.nContourPoints; j++)
-//            for (int i=0; i<3; i++)
-//               rc.contourPoints[j][i] = c.contourPoints[j][i];
-//         
-//         rcList.add(rc);
-      }
-   }
-   
-   
-   /**
-    * Constructor creates a new renderer of a given MRIWOutput object.
-    * @param mriw MRIWOutput that contains most of the
-    * information necessary for rendering a contour. Note that the MRIW format
-    * does not have a number of the contour-related features of DICOM-RT on
-    * which these developments were originally based, so various default
-    * values need to be supplied and in addition, the data that are present
-    * need to be manipulated to get the correct format.
-    */
-   public ContourRenderer(MRIWOutput mriw)
-   {
-      this.dr = mriw;
+//      displayColour         = new int[]{255, 0, 0};
+//      frameOfReferenceUid   = mriw.frameOfReferenceUID;
+//      coordsAsPixel         = true;
+//      rndCList                = new ArrayList<RenderContour>();
+//      
+//      RenderContour rc           = new RenderContour();
+//      rc.baseImageUid       = mriw.inp.dynSOPInstanceUIDs.get(0);
+//      rc.nContourPoints     = mriw.con.roiX.size();
+//      rc.contourPoints      = new float[rc.nContourPoints][3];
+//      rndCList.add(rc);
+//      for (int i=0; i<rc.nContourPoints; i++)
+//      {
+//         rc.contourPoints[i][0] = mriw.con.roiX.get(i).floatValue();
+//         rc.contourPoints[i][1] = mriw.con.roiY.get(i).floatValue();
+//         rc.contourPoints[i][2] = -999.9f; // dummy value
+//      }           
+//   }
+//   
+//   
+//	/**
+//    * Constructor creates a new renderer of a given MRIWOutput object.
+//    * @param mriw MRIWOutput that contains most of the
+//    * information necessary for rendering a contour. Note that the MRIW format
+//    * does not have a number of the contour-related features of DICOM-RT on
+//    * which these developments were originally based, so various default
+//    * values need to be supplied and in addition, the data that are present
+//    * need to be manipulated to get the correct format.
+//    */
+//   public ContourRendererHelper(AIMOutput aim)
+//   {
+//      this.dr = aim;
+//
+//      /*
+//		]displayColour         = new int[]{255, 0, 0};
+//      frameOfReferenceUid   = mriw.frameOfReferenceUid;
+//      coordsAsPixel         = true;
+//      rndCList                = new ArrayList<RContour>();
+//      
+//      RenderContour rc           = new RenderContour();
+//      rc.baseImageUid       = mriw.inp.dynSOPInstanceUIDs.get(0);
+//      rc.nContourPoints     = mriw.con.roiX.size();
+//      rc.contourPoints      = new float[rc.nContourPoints][3];
+//      rndCList.add(rc);
+//      for (int i=0; i<rc.nContourPoints; i++)
+//      {
+//         rc.contourPoints[i][0] = mriw.con.roiX.get(i).floatValue();
+//         rc.contourPoints[i][1] = mriw.con.roiY.get(i).floatValue();
+//         rc.contourPoints[i][2] = -999.9f; // dummy value
+//      } 
+//		*/
+//   }
+//	
+//	
+//   /**
+//    * Constructor creates a new renderer of a given MRIWOutput object.
+//    * @param adept ADEPTOutput that contains most of the
+//    * information necessary for rendering a contour. Note that the ADEPT format
+//    * does not have a number of the contour-related features of DICOM-RT on
+//    * which these developments were originally based, so various default
+//    * values need to be supplied and in addition, the data that are present
+//    * need to be manipulated to get the correct format.
+//    */
+//   public ContourRendererHelper(ADEPTOutput adept)
+//   {
+//      this.dr = adept;          
+//   }
+	
+	
+	private Map<String, File> retrieveBaseImagesToCache()
+			  throws XNATException
+	{
+		Set<String>           filenames = caller.getFilenameSet();
+		HashMap<String, File> fileMap   = new HashMap<>();
+		
+		String homeDir   = System.getProperty("user.home");
+      String fileSep   = System.getProperty("file.separator");
+		String cacheDir  = homeDir + fileSep + ".XNAT_DAO";
 
-      displayColour         = new int[]{255, 0, 0};
-      frameOfReferenceUID   = mriw.frameOfReferenceUID;
-      coordsAsPixel         = true;
-      rcList                = new ArrayList<RContour>();
-      
-      RContour rc           = new RContour();
-      rc.baseImageUID       = mriw.inp.dynSOPInstanceUIDs.get(0);
-      rc.nContourPoints     = mriw.con.roiX.size();
-      rc.contourPoints      = new float[rc.nContourPoints][3];
-      rcList.add(rc);
-      for (int i=0; i<rc.nContourPoints; i++)
-      {
-         rc.contourPoints[i][0] = mriw.con.roiX.get(i).floatValue();
-         rc.contourPoints[i][1] = mriw.con.roiY.get(i).floatValue();
-         rc.contourPoints[i][2] = -999.9f; // dummy value
-      }           
-   }
-   
-   
-	/**
-    * Constructor creates a new renderer of a given MRIWOutput object.
-    * @param mriw MRIWOutput that contains most of the
-    * information necessary for rendering a contour. Note that the MRIW format
-    * does not have a number of the contour-related features of DICOM-RT on
-    * which these developments were originally based, so various default
-    * values need to be supplied and in addition, the data that are present
-    * need to be manipulated to get the correct format.
-    */
-   public ContourRenderer(AIMOutput aim)
-   {
-      this.dr = aim;
+		// Notice that we need to cater explicitly for the allowed possibility
+		// that a single structure set can reference base data from more than
+		// one scan.
+		int nDownloadFailures = 0;
+		for (String scanId : caller.getXnatScanIdSet())
+		{
+			String RESTCommand = "/data/archive/experiments/" + caller.getXnatExperimentId()
+						                + "/scans/"              + scanId
+						                + "/resources/DICOM"
+						                + "/files"
+						                + "?format=xml";
 
-      /*
-		]displayColour         = new int[]{255, 0, 0};
-      frameOfReferenceUID   = mriw.frameOfReferenceUID;
-      coordsAsPixel         = true;
-      rcList                = new ArrayList<RContour>();
-      
-      RContour rc           = new RContour();
-      rc.baseImageUID       = mriw.inp.dynSOPInstanceUIDs.get(0);
-      rc.nContourPoints     = mriw.con.roiX.size();
-      rc.contourPoints      = new float[rc.nContourPoints][3];
-      rcList.add(rc);
-      for (int i=0; i<rc.nContourPoints; i++)
-      {
-         rc.contourPoints[i][0] = mriw.con.roiX.get(i).floatValue();
-         rc.contourPoints[i][1] = mriw.con.roiY.get(i).floatValue();
-         rc.contourPoints[i][2] = -999.9f; // dummy value
-      } 
-		*/
-   }
+			Vector2D  resultSet;
+			try
+			{
+				XNATRESTToolkit xnrt = new XNATRESTToolkit(caller.getXnatProfile());
+				resultSet = xnrt.RESTGetResultSet(RESTCommand);
+			}
+			catch(XNATException exXNAT)
+			{
+				throw new XNATException(XNATException.RETRIEVING_LIST);
+			}
+			
+			Vector<String> URI  = resultSet.getColumn(2);
+			for (int i=0; i<URI.size(); i++)
+			{
+				int pos     = URI.elementAt(i).lastIndexOf(fileSep);
+				String name = URI.elementAt(i).substring(pos+1);
+				if (filenames.contains(name))
+				{
+					// Build the local cache filename where the data will be stored.
+					// The directory structure is a bit long-winded, but should be
+					// easy to manage.
+					StringBuilder sb = new StringBuilder(cacheDir);
+					sb.append(URI.elementAt(i));
+					File cacheFile = new File(sb.toString());
+					File parent    = new File(cacheFile.getParent());
+
+					boolean success = true;
+					if (!(cacheFile.exists()))
+					{
+						// Retrieve the actual data and store it in the cache.
+						try
+						{
+							parent.mkdirs();
+							BufferedOutputStream bos
+								= new BufferedOutputStream(new FileOutputStream(cacheFile, true));
+
+							BufferedInputStream  bis
+								= new BufferedInputStream(caller.getXnatProfile().doRESTGet(URI.elementAt(i)));
+
+							byte[] buf = new byte[8192];
+
+							while (true)
+							{
+								int length = bis.read(buf);
+								if (length < 0) break;
+								bos.write(buf, 0, length);
+							}
+
+							logger.debug("Worker ID = " + this.toString() + " Downloaded " + cacheFile.toString());
+
+							try{bis.close();}
+							catch (IOException ignore) {;}
+
+							try{bos.close();}
+							catch (IOException ignore) {;}                                 
+
+						}
+						catch (Exception ex)
+						{
+							logger.warn("Failed to download " + cacheFile.getName());
+							nDownloadFailures++;
+							success = false;
+						}
+					}
+					
+					if (success) fileMap.put(name, cacheFile);
+				}				
+			}
+		}
+		if (nDownloadFailures != 0)
+		{
+			throw new XNATException(XNATException.DATA_NOT_PRESENT,
+			                        "Problem retrieving " + nDownloadFailures +
+								          "base images from XNAT to generate required thumbnails");
+		}
+      return fileMap;
+	}
 	
-	
-   /**
-    * Constructor creates a new renderer of a given MRIWOutput object.
-    * @param adept ADEPTOutput that contains most of the
-    * information necessary for rendering a contour. Note that the ADEPT format
-    * does not have a number of the contour-related features of DICOM-RT on
-    * which these developments were originally based, so various default
-    * values need to be supplied and in addition, the data that are present
-    * need to be manipulated to get the correct format.
-    */
-   public ContourRenderer(ADEPTOutput adept)
-   {
-      this.dr = adept;          
-   }
-	
-	
+		
 	public ArrayList<BufferedImage> createImages() throws Exception
    {
 
       ArrayList<BufferedImage> result = new ArrayList<BufferedImage>();
       
-      for (RContour rc : rcList)
+      for (RenderContour rc : rndCList)
       {         
          try
          {
-            BufferedImage bi = getBaseImage(rc.baseImageUID);
+            BufferedImage bi = getBaseImage(rc.baseImageUid, rc.baseFrameNumber);
             overlayContour(bi, rc);
             result.add(ImageUtilities.scaleColourImageByFFT(bi,
                                               THUMBNAIL_SIZE, THUMBNAIL_SIZE));
@@ -257,7 +326,7 @@ public class ContourRenderer
       
       
       
-   private BufferedImage getBaseImage(String imageUID)
+   private BufferedImage getBaseImage(String imageUid, String frameNumber)
                          throws XNATException, ImageUtilitiesException
    {
       DicomObject bdo	= new BasicDicomObject();
@@ -265,7 +334,7 @@ public class ContourRenderer
 
 		try
       {
-         String imageFilename = dr.fileSOPMap.get(imageUID);
+         String imageFilename = dr.fileSOPMap.get(imageUid);
          DicomInputStream dis = new DicomInputStream(cachedImageFiles.get(imageFilename));
          dis.readDicomObject(bdo, -1);
       }
@@ -308,7 +377,7 @@ public class ContourRenderer
       
       // Start with a sanity check!
       String fOR = bdo.getString(Tag.FrameOfReferenceUID);
-      if (!fOR.equals(frameOfReferenceUID))
+      if (!fOR.equals(frameOfReferenceUid))
       {
          String msg = "Frame of reference UID's don't match - this shouldn't happen!";
          logger.error(msg);
@@ -324,7 +393,7 @@ public class ContourRenderer
    
    
    
-   private void overlayContour(BufferedImage bi, RContour rc)
+   private void overlayContour(BufferedImage bi, RenderContour rc)
    {
       Graphics2D g2d = bi.createGraphics();
       g2d.setPaint(new Color(displayColour[0], displayColour[1], displayColour[2]));

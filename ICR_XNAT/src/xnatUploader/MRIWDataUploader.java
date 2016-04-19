@@ -54,7 +54,6 @@ package xnatUploader;
  *
  */
 import xnatUploader.RTStructureSetUploader;
-import dataRepresentations.ContourRenderer;
 import dataRepresentations.xnatUpload.MRIWOutput;
 import exceptions.DataFormatException;
 import exceptions.XMLException;
@@ -134,7 +133,7 @@ public class MRIWDataUploader extends QCAssessmentDataUploader
          XNATProject      = mriw.XNATProjectID; 
          XNATSubjectID    = mriw.XNATSubjectID;
          XNATExperimentID = mriw.XNATExperimentID;
-         XNATScanIdList       = mriw.XNATScanID;
+         XNATScanIdSet       = mriw.XNATScanID;
          
          populateStringFields();
          
@@ -292,7 +291,7 @@ public class MRIWDataUploader extends QCAssessmentDataUploader
     * 
     * Note that we have to override the method in the parent class DataUploader.
     * Loading an MRIW output file is special because not only do we create an
-    * MRIW element in the database (icr:roiSetData), but we also turn the ROI
+    * MRIW element in the database (icr:regionSetData), but we also turn the ROI
     * information into an RT-STRUCT file and upload that and deal with the
     * calculated maps.
     * @throws Exception
@@ -458,7 +457,7 @@ public class MRIWDataUploader extends QCAssessmentDataUploader
       String filePrefix = XNATGUI.getHomeDir() + "temp" + fileSep + XNATAccessionID;
       try
       {
-         ContourRenderer cr = new ContourRenderer(mriw);
+         ContourRendererHelper cr = new ContourRendererHelper(mriw);
          ArrayList<BufferedImage> thumbnails = cr.createImages();
 			String thumbnailFile = filePrefix + "_MRIW_ROI_thumbnail_";
 

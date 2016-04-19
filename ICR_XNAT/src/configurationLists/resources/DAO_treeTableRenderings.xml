@@ -1015,85 +1015,85 @@
 
 <!-- roiSet properties -->
 
-   <renderProperties element="icr:roiSetData/dicomSubjName">
+   <renderProperties element="icr:regionSetData/dicomSubjName">
       <property name="Letter">D</property>
       <property name="Colour">orange</property>
       <property name="tooltip">Subject demographics/administration: name</property>
    </renderProperties>
    
-   <renderProperties element="icr:roiSetData/label">
+   <renderProperties element="icr:regionSetData/label">
       <property name="Letter">X</property>
       <property name="Colour">XNAT green</property>
       <property name="tooltip">XNAT assessment label</property>
    </renderProperties>
    
-   <renderProperties element="icr:roiSetData/note">
+   <renderProperties element="icr:regionSetData/note">
       <property name="Letter">X</property>
       <property name="Colour">XNAT green</property>
       <property name="tooltip">XNAT assessment note</property>
    </renderProperties>
    
-   <renderProperties element="icr:roiSetData/nROIs">
+   <renderProperties element="icr:regionSetData/nROIs">
       <property name="Letter">O</property>
       <property name="Colour">light blue</property>
       <property name="tooltip">Application output: number of ROIs contained in this set</property>
    </renderProperties>
    
-   <renderProperties element="icr:roiSetData/originatingRoiSetSource/originalDataType">
+   <renderProperties element="icr:regionSetData/originatingRoiSetSource/originalDataType">
       <property name="Letter">T</property>
       <property name="Colour">light blue</property>
       <property name="tooltip">Application output: original data type</property>
    </renderProperties>
    
-   <renderProperties element="icr:roiSetData/originatingRoiSetSource/originalLabel">
+   <renderProperties element="icr:regionSetData/originatingRoiSetSource/originalLabel">
       <property name="Letter">L</property>
       <property name="Colour">light blue</property>
       <property name="tooltip">Application output: original label</property>
    </renderProperties>
    
-   <renderProperties element="icr:roiSetData/originatingRoiSetSource/originatingApplicationName">
+   <renderProperties element="icr:regionSetData/originatingRoiSetSource/originatingApplicationName">
       <property name="Letter">N</property>
       <property name="Colour">light blue</property>
       <property name="tooltip">Application output: originating application name</property>
    </renderProperties>
    
-   <renderProperties element="icr:roiSetData/originatingRoiSetSource/originatingApplicationVersion">
+   <renderProperties element="icr:regionSetData/originatingRoiSetSource/originatingApplicationVersion">
       <property name="Letter">V</property>
       <property name="Colour">light blue</property>
       <property name="tooltip">Application output: originating application version</property>
    </renderProperties>
    
-   <renderProperties element="icr:roiSetData/originatingRoiSetSource/originalUID">
+   <renderProperties element="icr:regionSetData/originatingRoiSetSource/originalUID">
       <property name="Letter">U</property>
       <property name="Colour">light blue</property>
       <property name="tooltip">Application output: original UID</property>
    </renderProperties>
    
-   <renderProperties element="icr:roiSetData/date">
+   <renderProperties element="icr:regionSetData/date">
       <property name="Letter">D</property>
       <property name="Colour">light blue</property>
       <property name="tooltip">Application output: creation date</property>
    </renderProperties>
 	
-	<renderProperties element="icr:roiSetData/time">
+	<renderProperties element="icr:regionSetData/time">
       <property name="Letter">T</property>
       <property name="Colour">light blue</property>
       <property name="tooltip">Application output: creation time</property>
    </renderProperties>
    
-   <renderProperties element="icr:roiSetData/xnatSubjID">
+   <renderProperties element="icr:regionSetData/xnatSubjID">
       <property name="Letter">X</property>
       <property name="Colour">XNAT green</property>
       <property name="tooltip">ID of the XNAT subject for which this ROI is stored</property>
    </renderProperties>
    
-   <renderProperties element="icr:roiSetData/ID">
+   <renderProperties element="icr:regionSetData/ID">
       <property name="Letter">X</property>
       <property name="Colour">XNAT green</property>
       <property name="tooltip">XNAT assessment ID</property>
    </renderProperties>
    
-   <renderProperties element="icr:roiSetData/project">
+   <renderProperties element="icr:regionSetData/project">
       <property name="Letter">X</property>
       <property name="Colour">XNAT green</property>
       <property name="tooltip">Associated XNAT project</property>
@@ -1101,91 +1101,91 @@
    
    <!-- roi properties -->
 
-   <renderProperties element="icr:roiData/dcmPatientName">
+   <renderProperties element="icr:regionData/dcmPatientName">
       <property name="Letter">D</property>
       <property name="Colour">orange</property>
       <property name="tooltip">Subject demographics/administration: name</property>
    </renderProperties>
    
-   <renderProperties element="icr:roiData/label">
+   <renderProperties element="icr:regionData/label">
       <property name="Letter">X</property>
       <property name="Colour">XNAT green</property>
       <property name="tooltip">XNAT assessment label</property>
    </renderProperties>
    
-   <renderProperties element="icr:roiData/note">
+   <renderProperties element="icr:regionData/note">
       <property name="Letter">X</property>
       <property name="Colour">XNAT green</property>
       <property name="tooltip">XNAT assessment label</property>
    </renderProperties>
    
-   <renderProperties element="icr:roiData/roiName">
+   <renderProperties element="icr:regionData/roiName">
       <property name="Letter">O</property>
       <property name="Colour">light blue</property>
       <property name="tooltip">Application output: ROI name</property>
    </renderProperties>
    
-   <renderProperties element="icr:roiData/roiDescription">
+   <renderProperties element="icr:regionData/roiDescription">
       <property name="Letter">O</property>
       <property name="Colour">light blue</property>
       <property name="tooltip">Application output: ROI description</property>
    </renderProperties>
    
-   <renderProperties element="icr:roiData/roiVolume">
+   <renderProperties element="icr:regionData/roiVolume">
       <property name="Letter">O</property>
       <property name="Colour">light blue</property>
       <property name="tooltip">Application output: ROI volume</property>
    </renderProperties>
    
-   <renderProperties element="icr:roiData/roiGenerationAlgorithm">
+   <renderProperties element="icr:regionData/roiGenerationAlgorithm">
       <property name="Letter">O</property>
       <property name="Colour">light blue</property>
       <property name="tooltip">Application output: algorithm used to generate ROI</property>
    </renderProperties>
    
-   <renderProperties element="icr:roiData/roiGenerationDescription">
+   <renderProperties element="icr:regionData/roiGenerationDescription">
       <property name="Letter">O</property>
       <property name="Colour">light blue</property>
       <property name="tooltip">Application output: description of algorithm used to generate ROI</property>
    </renderProperties>
    
-   <renderProperties element="icr:roiData/contourGeometricType">
+   <renderProperties element="icr:regionData/contourGeometricType">
       <property name="Letter">O</property>
       <property name="Colour">light blue</property>
       <property name="tooltip">Application output: type of DICOM contour</property>
    </renderProperties>
    
-   <renderProperties element="icr:roiData/nDICOMContours">
+   <renderProperties element="icr:regionData/nDICOMContours">
       <property name="Letter">O</property>
       <property name="Colour">light blue</property>
       <property name="tooltip">Application output: number of DICOM contours</property>
    </renderProperties>
    
-   <renderProperties element="icr:roiData/subjectID">
+   <renderProperties element="icr:regionData/subjectID">
       <property name="Letter">X</property>
       <property name="Colour">XNAT green</property>
       <property name="tooltip">ID of the XNAT subject for which this ROI is stored</property>
    </renderProperties>
    
-   <renderProperties element="icr:roiData/ID">
+   <renderProperties element="icr:regionData/ID">
       <property name="Letter">X</property>
       <property name="Colour">XNAT green</property>
       <property name="tooltip">XNAT assessment ID</property>
    </renderProperties>
    
-   <renderProperties element="icr:roiData/icr:roiData/definingDICOMStructureSetLabel">
+   <renderProperties element="icr:regionData/icr:regionData/definingDICOMStructureSetLabel">
       <property name="Letter">X</property>
       <property name="Colour">XNAT green</property>
       <property name="tooltip">Label of definining structure set within XNAT</property>
    </renderProperties>
      
-   <renderProperties element="icr:roiData/project">
+   <renderProperties element="icr:regionData/project">
       <property name="Letter">X</property>
       <property name="Colour">XNAT green</property>
       <property name="tooltip">Associated XNAT project</property>
    </renderProperties>
 	
-	<renderProperties element="icr:roiData/roiNumberInStructureSet">
+	<renderProperties element="icr:regionData/roiNumberInStructureSet">
       <property name="Letter">O</property>
       <property name="Colour">light blue</property>
       <property name="tooltip">No. in structure set</property>

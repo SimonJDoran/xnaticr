@@ -131,7 +131,7 @@ public class RTStructureSetUploader extends QCAssessmentDataUploader
          XNATProject          = rts.XNATProjectID;
          XNATSubjectID        = rts.XNATSubjectID;
          XNATExperimentID     = rts.XNATExperimentID;
-         XNATScanIdList           = rts.XNATScanID;
+         XNATScanIdSet           = rts.XNATScanID;
          ambiguousSubjExp     = rts.ambiguousSubjExp;
                 
          // Note that only a small minority of the fields in the structure set
@@ -591,7 +591,7 @@ public class RTStructureSetUploader extends QCAssessmentDataUploader
              (!getStringField("Note").equals(""))  &&
              (!XNATSubjectID.equals(""))           &&
              (!XNATExperimentID.equals(""))        &&
-             (!XNATScanIdList.equals(""));
+             (!XNATScanIdSet.equals(""));
    }
    
    

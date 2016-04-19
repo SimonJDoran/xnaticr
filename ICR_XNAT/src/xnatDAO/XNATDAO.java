@@ -1524,8 +1524,8 @@ public final class XNATDAO extends XNATGUI
       leafDef.put("xnat:ctScanData",     "xnat:ctScanData/UID");
       leafDef.put("xnat:imageScanData",  "xnat:imageScanData/UID");
       leafDef.put("icr:mriwOutputData",  "icr:mriwOutputData/ID");
-      leafDef.put("icr:roiSetData",      "icr:roiSetData/ID");
-      leafDef.put("icr:roiData",         "icr:roiData/ID");
+      leafDef.put("icr:regionSetData",   "icr:regionSetData/ID");
+      leafDef.put("icr:regionData",      "icr:regionData/ID");
       
       String leaf = leafDef.get(rootElement);
       if (leaf == null)  throw new UnsupportedOperationException("Don't know the leaf type for " + rootElement);

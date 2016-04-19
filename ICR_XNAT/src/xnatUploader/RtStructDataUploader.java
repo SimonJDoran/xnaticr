@@ -98,6 +98,7 @@ public class RtStructDataUploader extends DataUploader
 	public Set<String>         seriesUidSet      = new LinkedHashSet<>();
 	public Set<String>         sopInstanceUidSet = new LinkedHashSet<>();
 	public Map<String, String> fileSopMap        = new HashMap<>();
+	public Map<String, String> sopFileMap        = new HashMap<>();
 	public Map<String, String> fileScanMap       = new HashMap<>();
 	public ArrayList<String>   assignedRegionIdList = new ArrayList<>();
 	public int                 nRois;
@@ -309,7 +310,7 @@ public class RtStructDataUploader extends DataUploader
    
    public void checkForScansInDatabase()
    {      
-      XNATScanIdList = new ArrayList<>(); 
+      XNATScanIdSet = new LinkedHashSet<>(); 
       String[][] parseResult;
 		
 		try
@@ -342,7 +343,7 @@ public class RtStructDataUploader extends DataUploader
                if (parseResult[j][1].equals(seriesUid))
                {
                   present = true;
-                  XNATScanIdList.add(parseResult[j][0]);
+                  XNATScanIdSet.add(parseResult[j][0]);
                }
             }
          }
@@ -364,7 +365,7 @@ public class RtStructDataUploader extends DataUploader
       // both if the files are local or remote. Here, for simplicity, I don't
       // assume anything and use the REST method whether the files are local
       // or remote.       
-      for (String scanId : XNATScanIdList)
+      for (String scanId : XNATScanIdSet)
       {
          try
          {
@@ -397,7 +398,20 @@ public class RtStructDataUploader extends DataUploader
          for (int j=0; j<parseResult.length; j++)
          {
             if (sopInstanceUidSet.contains(parseResult[j][1]))
+				{
+					// Since there is a one-to-one relationship between SOPInstanceUIDs
+					// and filenames, it is useful to be able to use either filename
+					// or SOPInstanceUID as a key to access the other. Note: This is
+					// only true because we have already specified both the project and
+					// subject. In general, there is nothing to stop the same SOPInstanceUID
+					// appearing in two different projects, or conceivably for two
+					// different subjects within the same project - the latter being
+					// possible if someone is perverse enough to upload the file twice
+					// manually choosing different subject names, rather than letting
+					// XNAT's automatic mechanism route the files to the correct place.
                fileSopMap.put(parseResult[j][0], parseResult[j][1]);
+					sopFileMap.put(parseResult[j][1], parseResult[j][0]);
+				}
             fileScanMap.put(parseResult[j][0], scanId);
          }
       }
@@ -442,8 +456,8 @@ public class RtStructDataUploader extends DataUploader
     * 
     * Note that we have to override the method in the parent class DataUploader.
     * Loading an RT-STRUCT file is special because not only do we create a
-    * set-of-ROIs element in the database (icr:roiSetData), but we also create
-    * all the individual ROIs as separate icr:roiData objects.
+    * set-of-ROIs element in the database (icr:regionSetData), but we also create
+    * all the individual ROIs as separate icr:regionData objects.
     * @throws Exception
     */
    @Override
@@ -452,7 +466,7 @@ public class RtStructDataUploader extends DataUploader
       errorOccurred = false;
 		
 		// -------------------------------------------
-      // Step 1: Upload the icr:roiSetData metadata.
+      // Step 1: Upload the icr:regionSetData metadata.
       // -------------------------------------------
       
       if (XNATAccessionID == null)
@@ -469,37 +483,37 @@ public class RtStructDataUploader extends DataUploader
                           + "structure set file.\n"
                           + errorMessage);
             
-      try
-      {
-         RESTCommand = getMetadataUploadCommand();
-         
-         InputStream is = xnprf.doRESTPut(RESTCommand, metaDoc);
-         int         n  = is.available();
-         byte[]      b  = new byte[n];
-         is.read(b, 0, n);
-         String XNATUploadMessage = new String(b);
-         
-         if ((xnrt.XNATRespondsWithError(XNATUploadMessage)) ||
-             (!XNATUploadMessage.equals(XNATAccessionID)))
-         {
-            errorOccurred = true;
-            errorMessage  = XNATUploadMessage;
-            throw new XNATException(XNATException.FILE_UPLOAD,
-                          "XNAT generated the message:\n" + XNATUploadMessage);
-         }
-      }
-      catch (Exception ex)
-      {
-         // Here we cater both for reporting the error by throwing an exception
-         // and by setting the error variables. When performing the upload via
-         // a SwingWorker, it is not easy to retrieve an Exception.
-         errorOccurred = true;
-         errorMessage = ex.getMessage();
-         throw new XNATException(XNATException.FILE_UPLOAD, ex.getMessage());
-      }
+//      try
+//      {
+//         RESTCommand = getMetadataUploadCommand();
+//         
+//         InputStream is = xnprf.doRESTPut(RESTCommand, metaDoc);
+//         int         n  = is.available();
+//         byte[]      b  = new byte[n];
+//         is.read(b, 0, n);
+//         String XNATUploadMessage = new String(b);
+//         
+//         if ((xnrt.XNATRespondsWithError(XNATUploadMessage)) ||
+//             (!XNATUploadMessage.equals(XNATAccessionID)))
+//         {
+//            errorOccurred = true;
+//            errorMessage  = XNATUploadMessage;
+//            throw new XNATException(XNATException.FILE_UPLOAD,
+//                          "XNAT generated the message:\n" + XNATUploadMessage);
+//         }
+//      }
+//      catch (Exception ex)
+//      {
+//         // Here we cater both for reporting the error by throwing an exception
+//         // and by setting the error variables. When performing the upload via
+//         // a SwingWorker, it is not easy to retrieve an Exception.
+//         errorOccurred = true;
+//         errorMessage = ex.getMessage();
+//         throw new XNATException(XNATException.FILE_UPLOAD, ex.getMessage());
+//      }
  
       // ----------------------------------------------------------
-      // Step 2: Upload the icr:roiData metadata and data files for
+      // Step 2: Upload the icr:regionData metadata and data files for
       //         each ROI_old referred to by the structure set.
       // ----------------------------------------------------------    
       	
@@ -600,12 +614,12 @@ public class RtStructDataUploader extends DataUploader
 		// Although the full version of Scan, including scan and slice image
 		// statistics is implemented, this is overkill for the RT-STRUCT and
 		// the only part of scan for which information is available is the
-		// list of scan IDs.
+		// list of scan IDs. 
 		List<Scan> lsc = new ArrayList<>();
-		for (String id : seriesUidSet)
+		for (String filename : fileSopMap.keySet())
 		{
 			Scan sc = new Scan();
-			sc.id = id;
+			sc.id = fileScanMap.get(filename);
 			lsc.add(sc);
 		}
 		regionSet.setScanList(lsc);
@@ -857,21 +871,21 @@ public class RtStructDataUploader extends DataUploader
       return (!labelPrefix.equals("")) &&
              (!XNATSubjectID.equals(""))           &&
              (!XNATExperimentID.equals(""))        &&
-             (!XNATScanIdList.equals(""));
+             (!XNATScanIdSet.equals(""));
    }
    
    
    @Override
    public String getRootElement()
    {
-      return "ROISet";
+      return "RegionSet";
    }
    
    
    @Override
    public String getRootComplexType()
    {
-      return "icr:roiSetData";
+      return "icr:regionSetData";
    }
 	
 	

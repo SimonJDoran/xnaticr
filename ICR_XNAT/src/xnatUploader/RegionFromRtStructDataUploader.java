@@ -49,6 +49,7 @@
 package xnatUploader;
 
 import dataRepresentations.dicom.Code;
+import dataRepresentations.dicom.Contour;
 import dataRepresentations.dicom.ContourImage;
 import dataRepresentations.dicom.ReferencedFrameOfReference;
 import dataRepresentations.dicom.RoiContour;
@@ -64,24 +65,39 @@ import dataRepresentations.xnatSchema.InvestigatorList;
 import dataRepresentations.xnatSchema.MetaField;
 import dataRepresentations.xnatSchema.Provenance;
 import dataRepresentations.xnatSchema.Scan;
+import exceptions.DataFormatException;
 import exceptions.XMLException;
+import exceptions.XNATException;
 import generalUtilities.UIDGenerator;
+import generalUtilities.Vector2D;
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.Vector;
 import org.w3c.dom.Document;
 import xnatDAO.XNATProfile;
 import xnatMetadataCreators.IcrRegionDataMdComplexType;
+import xnatRestToolkit.XNATRESTToolkit;
+import xnatUploader.ContourRendererHelper.RenderContour;
 
-public class RegionFromRtStructDataUploader extends DataUploader
+public class RegionFromRtStructDataUploader extends DataUploader implements ContourRenderer
 {
+	public  RtStruct             rtsSingle;
+	
 	// Capture all the data from the class supervising the uploading.
 	private RtStructDataUploader rtdsu;
    private int                  roiPos;
+	public Set<String>           sopInstanceUidSet;
+	public Set<String>           filenameSet;
 	
 	public RegionFromRtStructDataUploader(XNATProfile xnprf, RtStructDataUploader rtsdu)
 	{
@@ -106,9 +122,9 @@ public class RegionFromRtStructDataUploader extends DataUploader
 		region.setOriginalUid(rtdsu.rts.sopCommon.sopInstanceUid);
 		region.setOriginalDataType("RT-STRUCT");
 		
-      Set<Integer>    singleRoi = new HashSet<>();
+      Set<Integer> singleRoi = new HashSet<>();
       singleRoi.add(rtdsu.rts.structureSet.structureSetRoiList.get(roiPos).roiNumber);
-      RtStruct        rtsSingle = new RtStruct(rtdsu.rts, singleRoi);
+      rtsSingle = new RtStruct(rtdsu.rts, singleRoi);
 		
 		StructureSet    ss  = rtsSingle.structureSet;
       assert (ss.structureSetRoiList.size() == 1);
@@ -183,7 +199,7 @@ public class RegionFromRtStructDataUploader extends DataUploader
 		// and similarly for all series and SOPInstances referenced.
       Set<String> studyUidSet       = new LinkedHashSet<>();
       Set<String> seriesUidSet      = new LinkedHashSet<>();
-      Set<String> sopInstanceUidSet = new LinkedHashSet<>();
+		sopInstanceUidSet = new LinkedHashSet<>();
 		for (ReferencedFrameOfReference rfor : rtsSingle.structureSet.referencedFrameOfReferenceList)
 		{
 			for (RtReferencedStudy rrs : rfor.rtReferencedStudyList)
@@ -199,12 +215,26 @@ public class RegionFromRtStructDataUploader extends DataUploader
 				}
 			}
 		}
-		List<Scan> lsc = new ArrayList<>();
-		for (String id : rtdsu.seriesUidSet)
+		
+		filenameSet   = new LinkedHashSet<>();
+		XNATScanIdSet = new LinkedHashSet<>();
+		for (String sopUid : sopInstanceUidSet )
 		{
-			Scan sc = new Scan();
-			sc.id = id;
-			lsc.add(sc);
+			// Does the ROI-specific set of SOP Instances contain the SOP Instance
+			// corresponding to the file name. If yes, add the scan ID corresponding
+			// to this filename. Of course, many files will have the same scan number
+			// (unless we are dealing with multi-frame DICOM), hence the use of a Set.
+			String filename = rtdsu.sopFileMap.get(sopUid);
+			filenameSet.add(filename);
+			XNATScanIdSet.add(rtdsu.fileScanMap.get(filename));
+		}
+		
+		List<Scan> lsc = new ArrayList<>();
+		for (String scId : XNATScanIdSet)
+		{
+				Scan sc = new Scan();
+				sc.id = scId;
+				lsc.add(sc);
 		}
 		region.setScanList(lsc);
 		
@@ -217,21 +247,8 @@ public class RegionFromRtStructDataUploader extends DataUploader
 		// this information is already included in the separately uploaded ROI
 		// metadata files and need not be duplicated here.
 		List<AbstractResource> inList = new ArrayList<>();
-		
-      // Because Java maps are not one-to-one mappings, i.e., many keys may
-      // have the same attached value, one cannot work backwards from a given
-      // value to get a unique key. This means that while the map.keyset() call
-      // exists, a similar map.valueSet() is (presumable) not seen to be useful
-      // and hence not provided. However, in our case, we *do* have a one-to-one
-      // mapping between files and SOPInstances.
-		List<String> fileList = new ArrayList<>();
-      for (String filename : rtdsu.fileSopMap.keySet())
-      {
-         if (sopInstanceUidSet.contains(rtdsu.fileSopMap.get(filename)))
-            fileList.add(filename);
-      }
       
-      for (String filename : fileList)
+      for (String filename : filenameSet)
 		{
 			AbstractResource ar  = new AbstractResource();
 			List<MetaField>  mfl = new ArrayList<>();
@@ -333,14 +350,16 @@ public class RegionFromRtStructDataUploader extends DataUploader
    @Override
    public boolean parseFile()
    {
-      // Method never called.
+      // This routine is never called as Region entities are not loaded as individual
+      // files via the UI but created dynamically from RegionSets.
       return true;
    }
 
    @Override
    public void updateParseFile()
    {
-      // Method never called.
+      // This routine is never called as Region entities are not loaded as individual
+      // files via the UI but created dynamically from RegionSets.
    }
 
    @Override
@@ -353,8 +372,8 @@ public class RegionFromRtStructDataUploader extends DataUploader
    @Override
    public void clearFields(MetadataPanel mdsp)
    {
-      // This routine is never called as Region entities are not loaded as individual files
-      // but created dynamically from RegionSets.
+      // This routine is never called as Region entities are not loaded as individual
+      // files via the UI but created dynamically from RegionSets.
    }
    
    
@@ -366,24 +385,144 @@ public class RegionFromRtStructDataUploader extends DataUploader
 
    @Override
    protected void createAuxiliaryResources()
-   {  throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+   {
+      //createInputCatalogueFile("DICOM", "RAW", "referenced contour image");
+		Map<String, File> cachedImages = retrieveBaseImagesToCache();
+		try
+      {
+         ContourRendererHelper cr = new ContourRendererHelper(rtsSingle, ssRoi.correspondingROIContour, cachedImages);
+         ArrayList<BufferedImage> thumbnails = cr.createImages();
+      
+         String          homeDir        = System.getProperty("user.home");
+         String          fileSep        = System.getProperty("file.separator");
+         String          XNAT_DAO_HOME  = homeDir + fileSep + ".XNAT_DAO" + fileSep;
+         String          filePrefix     = XNAT_DAO_HOME + "temp" + fileSep 
+                                          + XNATAccessionID + "_ROI_thumbnail_";
+         
+         for (int i=0; i<thumbnails.size(); i++)
+         {
+            File outputFile = new File(filePrefix + i + ".png");
+            ImageIO.write(thumbnails.get(i), "png", outputFile);
+				
+				XNATResourceFile rf	= new XNATResourceFile();
+				rf.content				= "GENERATED";
+				rf.description			= "thumbnail image containing ROI contour";
+				rf.format				= "PNG";
+				rf.file					= outputFile;
+				rf.name					= "RT_THUMBNAIL";
+				rf.inOut					= "out";
+            auxiliaryFiles.add(rf);
+         }
+      }
+      catch (Exception ex)
+      {
+         reportError(ex, "create RT thumbnail file");
+      }      
    }
+	
+	
+	protected ContourRendererHelper createContourRendererHelper(RtStruct rts,
+			                                                      Map<String, File> cachedImageFiles)
+                                   throws DataFormatException
+	{
+		ContourRendererHelper crh = new ContourRendererHelper();
+		crh.cachedImageFiles = cachedImageFiles;
+		
+		// An RtStruct object corresponding to a single ROI has only one element
+		// in its roiContourList.
+		assert (rts.roiContourList.size() == 1);
+		RoiContour rc     = rts.roiContourList.get(0);
+		crh.displayColour = rc.roiDisplayColour;
+		
+		// The frame of reference in which the ROI is defined is in a separate DICOM
+		// IOD from the contour list!
+		for (StructureSetRoi ssr : rts.structureSet.structureSetRoiList)
+		{
+			if (ssr.roiNumber == rc.referencedRoiNumber) crh.frameOfReferenceUid = ssr.referencedFrameOfReferenceUid;
+		}
+		
+		crh.coordsAsPixel = false;
+      crh.rndCList      = new ArrayList<>();
+      
+		for (Contour c : rc.contourList)
+      {
+         if (c.contourImageList.size() != 1)
+         {
+            String msg = "This type of contour cannot yet be rendered."
+                         + "More than one base image for a single contour.";
+            logger.error(msg);
+            throw new DataFormatException(DataFormatException.RTSTRUCT);
+         }
+         
+         RenderContour rndC   = new RenderContour();
+         rndC.baseImageUid    = c.contourImageList.get(0).referencedSopInstanceUid;
+			rndC.baseFrameNumber = c.contourImageList.get(0).referencedFrameNumber[0];
+         rndC.nContourPoints  = c.nContourPoints;
+         rndC.contourPoints   = new float[c.nContourPoints][3];
+
+         for (int j=0; j<c.nContourPoints; j++)
+            for (int i=0; i<3; i++)
+               rndC.contourPoints[j][i] = (c.contourData.get(j))[i];
+         
+         crh.rndCList.add(rndC);
+			
+			crh.caller = this;
+      }
+			
+		return crh;
+	}
+	
+	
+	@Override
+	public Set<String> getFilenameSet()
+	{
+		return filenameSet;
+	}
+	
+	
+	@Override
+	public Set<String> getXnatScanIdSet()
+	{
+		return XNATScanIdSet;
+	}
+	
+	
+	@Override
+	public String getXnatExperimentId()
+	{
+		return XNATExperimentID;
+	}
+	
+	
+	@Override
+	public XNATProfile getXnatProfile()
+	{
+		return xnprf;
+	}
+	
+	
+ 
 
    @Override
    public void updateVariablesForEditableFields(MetadataPanel mdsp)
    {
-      throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+      // This routine is never called as Region entities are not loaded as individual
+      // files via the UI but created dynamically from RegionSets.
    }
 
    @Override
    public List<String> getEditableFields()
    {
+		// This routine is never called as Region entities are not loaded as individual
+      // files via the UI but created dynamically from RegionSets.
       return new ArrayList<String>();
    }
 
    @Override
    public List<String> getRequiredFields()
    {
+		// This routine is never called as Region entities are not loaded as individual
+      // files via the UI but created dynamically from RegionSets.
       return new ArrayList<String>();
    }
 

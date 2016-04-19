@@ -44,7 +44,7 @@
 
 package dataRepresentations.xnatUpload;
 
-import dataRepresentations.ContourRenderer;
+import xnatUploader.ContourRendererHelper;
 import dataRepresentations.RtStructWriter;
 import dataRepresentations.xnatUpload.XnatUpload;
 import exceptions.XMLException;
@@ -974,7 +974,7 @@ public final class MRIWOutput extends XnatUpload implements RtStructWriter
          float[] contPoints = new float[n*3];
          for (int i=0; i<n; i++)
          {
-            float[] c = ContourRenderer.convertFromImageToPatientCoords(
+            float[] c = ContourRendererHelper.convertFromImageToPatientCoords(
                  con.roiX.get(i), con.roiY.get(i), topLeftPos, dirCosines, pixelSpacing);
             for (int j=0; j<3; j++)
                contPoints[i*3 + j] = c[j];

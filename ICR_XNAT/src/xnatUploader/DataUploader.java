@@ -104,7 +104,7 @@ public abstract class DataUploader
    protected String                        protocol;
    protected String                        XNATExperimentID;
    protected String                        XNATProject;
-   protected ArrayList<String>             XNATScanIdList;
+   protected Set<String>                   XNATScanIdSet;
    protected String                        XNATSubjectID;
 	protected String                        XNATSubjectLabel;
 	protected String                        XNATGender;
