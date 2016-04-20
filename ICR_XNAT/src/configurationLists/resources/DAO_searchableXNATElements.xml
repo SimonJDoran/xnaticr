@@ -292,15 +292,15 @@
       <searchableXNATElement alias="Patient name">icr:regionSetData/dicomSubjName</searchableXNATElement>
       <searchableXNATElement alias="Label">icr:regionSetData/label</searchableXNATElement>
       <searchableXNATElement alias="Note">icr:regionSetData/note</searchableXNATElement>
-      <searchableXNATElement alias="Number of ROIs contained">icr:regionSetData/nROIs</searchableXNATElement>
-      <searchableXNATElement alias="Original data type">icr:regionSetData/originatingRoiSetSource/originalDataType</searchableXNATElement>
-      <searchableXNATElement alias="Original label">icr:regionSetData/originatingRoiSetSource/originalLabel</searchableXNATElement>
-      <searchableXNATElement alias="Originating application name">icr:regionSetData/originatingRoiSetSource/originatingApplicationName</searchableXNATElement>
-      <searchableXNATElement alias="Originating application version">icr:regionSetData/originatingRoiSetSource/originatingApplicationVersion</searchableXNATElement>
-      <searchableXNATElement alias="Original UID">icr:regionSetData/originatingRoiSetSource/originalUID</searchableXNATElement>
+      <searchableXNATElement alias="Number of ROIs contained">icr:regionSetData/nRegions</searchableXNATElement>
+      <searchableXNATElement alias="Original data type">icr:regionSetData/originatingRegionSetSource/originalDataType</searchableXNATElement>
+      <searchableXNATElement alias="Original label">icr:regionSetData/originatingRegionSetSource/originalLabel</searchableXNATElement>
+      <searchableXNATElement alias="Originating application name">icr:regionSetData/originatingRegionSetSource/originatingApplicationName</searchableXNATElement>
+      <searchableXNATElement alias="Originating application version">icr:regionSetData/originatingRegionSetSource/originatingApplicationVersion</searchableXNATElement>
+      <searchableXNATElement alias="Original UID">icr:regionSetData/originatingRegionSetSource/originalUid</searchableXNATElement>
       <searchableXNATElement alias="Creation date">icr:regionSetData/date</searchableXNATElement>
       <searchableXNATElement alias="Creation time">icr:regionSetData/time</searchableXNATElement>
-      <searchableXNATElement alias="XNAT subject ID">icr:regionSetData/xnatSubjID</searchableXNATElement>
+      <searchableXNATElement alias="XNAT subject ID">icr:regionSetData/xnatSubjId</searchableXNATElement>
       <searchableXNATElement alias="XNAT assessment ID">icr:regionSetData/ID</searchableXNATElement>
       <searchableXNATElement alias="Associated XNAT project">icr:regionSetData/project</searchableXNATElement>
    </XNATSearchRootElement>

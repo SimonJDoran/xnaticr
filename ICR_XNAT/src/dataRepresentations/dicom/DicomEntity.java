@@ -581,14 +581,22 @@ public abstract class DicomEntity implements TextRepresentation
 
 				else if (a instanceof List)
 				{
-					List<DicomEntity> b = (List) a;
-					try
+					// Code for the special case where we have a list of primitives.
+					if (((List) a).get(0) instanceof DicomEntity)
 					{
-						fld.set(dest, deepCopyList(b));
+						List<DicomEntity> b = (List) a;
+						try
+						{
+							fld.set(dest, deepCopyList(b));
+						}
+						catch (IllegalAccessException exIA)
+						{
+							throw new RuntimeException("Programming issue: " + exIA.getMessage());
+						}
 					}
-					catch (IllegalAccessException exIA)
+					else
 					{
-						throw new RuntimeException("Programming issue: " + exIA.getMessage());
+						fld		  
 					}
 				}
 				
@@ -614,10 +622,17 @@ public abstract class DicomEntity implements TextRepresentation
 	public <T extends DicomEntity> List<T> deepCopyList(List<T> srcList)
 	{
 		List<T> destList = new ArrayList<>();
-		for (T srcD : srcList)
+		try
 		{
-			T destD = (T) srcD.deepCopy();
-			destList.add(destD);
+			for (T srcD : srcList)
+			{
+				T destD = (T) srcD.deepCopy();
+				destList.add(destD);
+			}
+		}
+		catch (Exception ex)
+		{
+			System.out.println("At problem");
 		}
 		
 		return destList;

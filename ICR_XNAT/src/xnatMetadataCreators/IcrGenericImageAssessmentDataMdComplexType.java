@@ -96,7 +96,7 @@ public class IcrGenericImageAssessmentDataMdComplexType extends XnatImageAssesso
 		super.insertXml();
 		
 		dppXML.delayedWriteAttribute("type", type)
-				.delayedWriteEntityWithText("xnatSubjID",    xnatSubjId)
+				.delayedWriteEntityWithText("xnatSubjId",    xnatSubjId)
 				.delayedWriteEntityWithText("dicomSubjName", dicomSubjName);
 		
 		dppXML.delayedWriteEntity("scans");	

@@ -54,6 +54,12 @@ public class RoiElementalComposition extends DicomEntity
 	public int   atomicNumber;
 	public float atomicMassFraction;
 	
+	protected RoiElementalComposition()
+	{
+		// The empty constructor is necessary as part of the process for the
+		// deepCopy() method.
+	}
+	
 	public RoiElementalComposition(int an, float amf)
 	{
 		atomicNumber       = an;

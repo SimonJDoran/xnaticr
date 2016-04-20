@@ -63,7 +63,7 @@ public class UploadToXNATWorker extends SwingWorker<Void, Void>
       // a metadata XML document using REST. Then the data file itself is
       // uploaded, together with any auxiliary files.
       uploader.uploadMetadata();
-      uploader.uploadFilesToRepository();
+      uploader.uploadResourcesToRepository();
       
       
       // Note that we have no need to return anything from this function,

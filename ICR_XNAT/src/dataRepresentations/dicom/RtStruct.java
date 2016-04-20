@@ -94,7 +94,11 @@ public class RtStruct extends DicomEntity
 	public List<RtRoiObservation> rtRoiObservationList;
 
 	
-	
+	protected RtStruct()
+	{
+		// The empty constructor is necessary as part of the process for the
+		// deepCopy() method.
+	}
 	
 	/**
     * Constructor with data from an RT-STRUCT DICOM.

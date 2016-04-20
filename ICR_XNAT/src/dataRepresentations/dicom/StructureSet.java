@@ -64,6 +64,12 @@ public class StructureSet extends DicomEntity
    public List<StructureSetRoi>            structureSetRoiList;
    public List<StructureSet>               predecessorStructureSetList;
 	
+	protected StructureSet()
+	{
+		// The empty constructor is necessary as part of the process for the
+		// deepCopy() method.
+	}
+	
 	public StructureSet(DicomObject ssDo)
 	{
 		structureSetLabel       = readString(ssDo, Tag.StructureSetLabel, 1);

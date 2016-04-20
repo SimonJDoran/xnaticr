@@ -119,13 +119,13 @@ public class XnatExperimentDataMdComplexType extends MdComplexType
 	
 	public void setOriginal(String s)
 	{
-		project = s;
+		original = s;
 	}
 	
 	
 	public void setProject(String s)
 	{
-		original = s;
+		project = s;
 	}
 	
 	

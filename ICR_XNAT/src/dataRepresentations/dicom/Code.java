@@ -78,6 +78,12 @@ public class Code extends DicomEntity
 	public String contextGroupLocalVersion;
 	public String contextGroupExtensionCreatorUid;
 	
+	protected Code()
+	{
+		// The empty constructor is necessary as part of the process for the
+		// deepCopy() method.
+	}
+	
 	public Code(DicomObject cDo)
 	{
 		

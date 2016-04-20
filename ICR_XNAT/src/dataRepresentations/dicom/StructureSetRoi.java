@@ -59,6 +59,12 @@ public class StructureSetRoi extends DicomEntity
 	public String      roiGenerationAlgorithm;
 	public String      roiGenerationDescription;
 	public List<Code>  derivationCodeList;
+	
+	protected StructureSetRoi()
+	{
+		// The empty constructor is necessary as part of the process for the
+		// deepCopy() method.
+	}
 
 	public StructureSetRoi(DicomObject ssrDo)
 	{

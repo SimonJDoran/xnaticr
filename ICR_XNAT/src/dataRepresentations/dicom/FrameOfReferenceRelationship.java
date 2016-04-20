@@ -55,6 +55,11 @@ public class FrameOfReferenceRelationship extends DicomEntity
 	public String frameOfReferenceTransformationMatrix;
 	public String frameOfReferenceTransformationComment;
 	
+	protected FrameOfReferenceRelationship()
+	{
+		// The empty constructor is necessary as part of the process for the
+		// deepCopy() method.
+	}
 	
 	public FrameOfReferenceRelationship(String uid, String matrix, String comment)
 	{

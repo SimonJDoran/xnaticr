@@ -54,6 +54,12 @@ public class RoiContour extends DicomEntity
    public int           referencedRoiNumber;
    public int[]         roiDisplayColour;
    public List<Contour> contourList;
+	
+	protected RoiContour()
+	{
+		// The empty constructor is necessary as part of the process for the
+		// deepCopy() method.
+	}
 		
 	public RoiContour(DicomObject rcDo)
 	{

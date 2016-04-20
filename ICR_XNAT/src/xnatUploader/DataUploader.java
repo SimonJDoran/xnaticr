@@ -249,7 +249,7 @@ public abstract class DataUploader
    
    
    
-   public void uploadResourceToRepository(XnatResource xr) throws XNATException
+   public void uploadXnatResource(XnatResource xr) throws XNATException
    {
       try
       {
@@ -293,7 +293,7 @@ public abstract class DataUploader
 	 * being uploaded and then a separate resource for each of the
 	 * auxiliary data formats. 
 	 */
-	public void createXNATResources() throws XNATException
+	public void createXnatResources() throws XNATException
    {
 		ArrayList<XnatResource> xrList = new ArrayList<>();	
 		if (primaryResource != null) xrList.add(primaryResource);		
@@ -347,24 +347,24 @@ public abstract class DataUploader
     * This is the method called by the upload worker thread.
     * @throws XNATException 
     */
-   public void uploadFilesToRepository() throws Exception
+   public void uploadResourcesToRepository() throws Exception
    {
       try
       {
 			if (uploadFile != null) createPrimaryResource();
 			createAuxiliaryResources();
-			createXNATResources();
+			createXnatResources();
 			
 			
          if (uploadFile != null)
          {
-            uploadResourceToRepository(primaryResource);
+            uploadXnatResource(primaryResource);
             if (errorOccurred)
                throw new XNATException(XNATException.FILE_UPLOAD, errorMessage);
          }
 			
 			for (XnatResource ar : auxiliaryResources) {
-				uploadResourceToRepository(ar);
+				uploadXnatResource(ar);
 				if (errorOccurred)
 					throw new XNATException(XNATException.FILE_UPLOAD, errorMessage);
 			}

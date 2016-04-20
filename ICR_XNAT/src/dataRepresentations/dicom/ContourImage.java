@@ -50,18 +50,24 @@ import org.dcm4che2.data.VR;
 
 public class ContourImage extends DicomEntity
 {
-	public String referencedSopInstanceUid;
-	public String referencedSopClassUid;
-	public int[]  referencedFrameNumber;
-	public int    referencedSegmentNumber;
+	public String              referencedSopInstanceUid;
+	public String              referencedSopClassUid;
+	public ArrayList<Integer>  referencedFrameNumber;
+	public int                 referencedSegmentNumber;
 	
+	
+	protected ContourImage()
+	{
+		// The empty constructor is necessary as part of the process for the
+		// deepCopy() method.
+	}
 	
 	public ContourImage(DicomObject ciDo)
 	{
 		referencedSopInstanceUid = readString(ciDo, Tag.ReferencedSOPInstanceUID, 1);
 		referencedSopClassUid    = readString(ciDo, Tag.ReferencedSOPClassUID,    1);
 		
-		// Frame number and segment number areclass 1C tags. Ideally, I would check
+		// Frame number and segment number are class 1C tags. Ideally, I would check
 		// whether the images being referred to are multiframe before reading
 		// these, but at this point in the process, I don't have easy access
 		// easy access to the relevant DICOM file to check whether it is multiframe.
@@ -69,7 +75,10 @@ public class ContourImage extends DicomEntity
 		// comes back.
 		ArrayList<String> tempErrors = new ArrayList<>();
 		tempErrors.addAll(errors);
-		referencedFrameNumber   = readInts(ciDo, Tag.ReferencedFrameNumber, "1C");
+		int[] a = readInts(ciDo, Tag.ReferencedFrameNumber, "1C");
+		referencedFrameNumber   = new ArrayList<>();
+		for (int i=0; i<a.length; i++) referencedFrameNumber.add(a[i]);
+		
 		referencedSegmentNumber = readInt(ciDo, Tag.ReferencedFrameNumber,  "1C");
 		errors = new ArrayList<>();
 		errors.addAll(tempErrors);

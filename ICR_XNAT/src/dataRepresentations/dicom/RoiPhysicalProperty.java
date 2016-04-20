@@ -55,6 +55,12 @@ public class RoiPhysicalProperty extends DicomEntity
 	public String                        roiPhysicalPropertyValue;
 	public List<RoiElementalComposition> roiElementalCompositionList;
 	
+	protected RoiPhysicalProperty()
+	{
+		// The empty constructor is necessary as part of the process for the
+		// deepCopy() method.
+	}
+	
 	public RoiPhysicalProperty(String name, String value, List<RoiElementalComposition> ecl)
 	{
 		roiPhysicalProperty         = name;

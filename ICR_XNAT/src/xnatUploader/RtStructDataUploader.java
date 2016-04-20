@@ -74,6 +74,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
@@ -524,7 +525,8 @@ public class RtStructDataUploader extends DataUploader
          {
             ru.setAccessionId(assignedRegionIdList.get(i));
             ru.setRoiPositionInSSRoiSequence(i);
-            ru.uploadFilesToRepository();
+				ru.uploadMetadata();
+            ru.uploadResourcesToRepository();
          }
          catch (Exception ex)
          {
@@ -615,11 +617,14 @@ public class RtStructDataUploader extends DataUploader
 		// statistics is implemented, this is overkill for the RT-STRUCT and
 		// the only part of scan for which information is available is the
 		// list of scan IDs. 
+		Set<String> idSet = new HashSet<>();
+		for (String filename : fileSopMap.keySet()) idSet.add(fileScanMap.get(filename));
+		
 		List<Scan> lsc = new ArrayList<>();
-		for (String filename : fileSopMap.keySet())
+		for (String id : idSet)
 		{
 			Scan sc = new Scan();
-			sc.id = fileScanMap.get(filename);
+			sc.id = id;
 			lsc.add(sc);
 		}
 		regionSet.setScanList(lsc);

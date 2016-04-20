@@ -52,6 +52,12 @@ public class RelatedRtRoiObservation extends DicomEntity
 {
 	public int observationNumber;
 	
+	protected RelatedRtRoiObservation()
+	{
+		// The empty constructor is necessary as part of the process for the
+		// deepCopy() method.
+	}
+	
 	public RelatedRtRoiObservation(int n)
 	{
 		observationNumber = n;

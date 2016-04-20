@@ -403,7 +403,7 @@ public class AIMDataUploader extends QCAssessmentDataUploader
       try
       {
          rtsu.uploadMetadata();
-         rtsu.uploadFilesToRepository();
+         rtsu.uploadResourcesToRepository();
       }
       catch (Exception ex)
       {

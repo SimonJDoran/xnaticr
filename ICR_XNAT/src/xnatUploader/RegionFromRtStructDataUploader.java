@@ -106,10 +106,10 @@ public class RegionFromRtStructDataUploader extends DataUploader implements Cont
 	public Set<String>           sopInstanceUidSet;
 	public Set<String>           filenameSet;
 	
-	public RegionFromRtStructDataUploader(XNATProfile xnprf, RtStructDataUploader rtsdu)
+	public RegionFromRtStructDataUploader(XNATProfile xnprf, RtStructDataUploader rtdsu)
 	{
 		super(xnprf);
-		this.rtdsu = rtdsu;
+	   this.rtdsu = rtdsu;
 	}
 	
 @Override

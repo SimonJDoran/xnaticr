@@ -53,6 +53,12 @@ public class RtRelatedRoi extends DicomEntity
 	public int    referencedRoiNumber;
 	public String rtRoiRelationship;
 
+	protected RtRelatedRoi()
+	{
+		// The empty constructor is necessary as part of the process for the
+		// deepCopy() method.
+	}
+	
 	public RtRelatedRoi(int roiNumber, String relationship)
 	{
 		referencedRoiNumber = roiNumber;

@@ -360,7 +360,7 @@ public class RTStructureSetUploader extends QCAssessmentDataUploader
 //            ru.associatedRoiSetIDs = new ArrayList<String>();
 //            ru.associatedRoiSetIDs.add(XNATAccessionID);
 //            ru.uploadMetadata();
-//            ru.uploadFilesToRepository();
+//            ru.uploadResourcesToRepository();
 //         }
 //         catch (Exception ex)
 //         {

@@ -62,7 +62,12 @@ public class Contour extends DicomEntity
 	public int                       nContourPoints;
 	public List<float[]>             contourData;
 
-
+	protected Contour()
+	{
+		// The empty constructor is necessary as part of the process for the
+		// deepCopy() method.
+	}
+	
 	public Contour(DicomObject cDo)
 	{
 		contourNumber        = readInt(cDo,    Tag.ContourNumber,         3);

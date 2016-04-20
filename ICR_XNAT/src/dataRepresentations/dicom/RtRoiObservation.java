@@ -62,6 +62,11 @@ public class RtRoiObservation extends DicomEntity
 	public String                        materialId;
 	public List<RoiPhysicalProperty>     roiPhysicalPropertyList;
 	
+	protected RtRoiObservation()
+	{
+		// The empty constructor is necessary as part of the process for the
+		// deepCopy() method.
+	}
 	
 	public RtRoiObservation(DicomObject rroDo)
 	{
