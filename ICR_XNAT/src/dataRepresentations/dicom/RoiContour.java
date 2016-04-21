@@ -44,6 +44,7 @@
 
 package dataRepresentations.dicom;
 
+import java.util.ArrayList;
 import java.util.List;
 import org.dcm4che2.data.DicomObject;
 import org.dcm4che2.data.Tag;
@@ -51,8 +52,8 @@ import org.dcm4che2.data.VR;
 
 public class RoiContour extends DicomEntity
 {
-   public int           referencedRoiNumber;
-   public int[]         roiDisplayColour;
+   public Integer       referencedRoiNumber;
+   public List<Integer> roiDisplayColour;
    public List<Contour> contourList;
 	
 	protected RoiContour()
@@ -64,7 +65,11 @@ public class RoiContour extends DicomEntity
 	public RoiContour(DicomObject rcDo)
 	{
 		referencedRoiNumber = readInt(rcDo,  Tag.ReferencedROINumber, 1);
-		roiDisplayColour    = readInts(rcDo, Tag.ROIDisplayColor,     3);
+		
+		int[] a             = readInts(rcDo, Tag.ROIDisplayColor,     3);
+		roiDisplayColour    = new ArrayList<>();
+		if (a != null) for (int i=0; i<a.length; i++) roiDisplayColour.add(a[i]);
+			
 		contourList         = readSequence(Contour.class, rcDo, Tag.ContourSequence, 3);		
 	}
 	
@@ -72,8 +77,12 @@ public class RoiContour extends DicomEntity
 	@Override
 	public void writeToDicom(DicomObject rcDo)
 	{
-		writeInt(rcDo,      Tag.ReferencedROINumber, VR.IS, 1, referencedRoiNumber);
-		writeInts(rcDo,     Tag.ROIDisplayColor,     VR.IS, 3, roiDisplayColour);
-		writeSequence(rcDo, Tag.ContourSequence,     VR.SQ, 3, contourList);
+		writeInt(rcDo, Tag.ReferencedROINumber, VR.IS, 1, referencedRoiNumber);
+		
+		int[] a = new int[roiDisplayColour.size()];
+		for (int i=0; i<a.length; i++) a[i] = roiDisplayColour.get(i);
+		writeInts(rcDo, Tag.ROIDisplayColor, VR.IS, 3, a);
+		
+		writeSequence(rcDo, Tag.ContourSequence, VR.SQ, 3, contourList);
 	}
 }

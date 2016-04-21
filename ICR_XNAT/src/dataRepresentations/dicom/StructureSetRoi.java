@@ -50,12 +50,12 @@ import org.dcm4che2.data.VR;
 
 public class StructureSetRoi extends DicomEntity
 {
-	public int         roiNumber;
-	public int         correspondingROIObservation;
+	public Integer     roiNumber;
+	public Integer     correspondingROIObservation;
 	public String      referencedFrameOfReferenceUid;
 	public String      roiName;
 	public String      roiDescription;
-	public float       roiVolume;
+	public Float       roiVolume;
 	public String      roiGenerationAlgorithm;
 	public String      roiGenerationDescription;
 	public List<Code>  derivationCodeList;

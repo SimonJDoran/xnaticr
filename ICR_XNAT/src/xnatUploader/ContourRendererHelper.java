@@ -79,6 +79,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.Vector;
@@ -106,7 +107,7 @@ public class ContourRendererHelper
    public float[]                  pixelSpacing;
    public float[]                  dirCosines;
    public float[]                  topLeftPos;
-   public int[]                    displayColour;
+   public List<Integer>            displayColour;
    public String                   frameOfReferenceUid;
    public boolean                  coordsAsPixel;
    public ArrayList<RenderContour> rndCList;
@@ -393,7 +394,7 @@ public class ContourRendererHelper
    private void overlayContour(BufferedImage bi, RenderContour rc)
    {
       Graphics2D g2d = bi.createGraphics();
-      g2d.setPaint(new Color(displayColour[0], displayColour[1], displayColour[2]));
+      g2d.setPaint(new Color(displayColour.get(0), displayColour.get(1), displayColour.get(2)));
 //      g2d.setStroke(new BasicStroke(1.0f)); // Need to experiment with some values here.
 //      for (int j=0; j<rc.nContourPoints-1; j++)
 //      {

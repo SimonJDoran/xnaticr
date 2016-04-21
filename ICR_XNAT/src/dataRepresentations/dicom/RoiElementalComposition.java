@@ -51,8 +51,8 @@ import org.dcm4che2.data.VR;
 
 public class RoiElementalComposition extends DicomEntity
 {
-	public int   atomicNumber;
-	public float atomicMassFraction;
+	public Integer  atomicNumber;
+	public Float    atomicMassFraction;
 	
 	protected RoiElementalComposition()
 	{

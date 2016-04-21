@@ -50,8 +50,8 @@ import org.dcm4che2.data.VR;
 
 public class RtRelatedRoi extends DicomEntity
 {
-	public int    referencedRoiNumber;
-	public String rtRoiRelationship;
+	public Integer referencedRoiNumber;
+	public String  rtRoiRelationship;
 
 	protected RtRelatedRoi()
 	{

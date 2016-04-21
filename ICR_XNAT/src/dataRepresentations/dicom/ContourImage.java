@@ -53,7 +53,7 @@ public class ContourImage extends DicomEntity
 	public String              referencedSopInstanceUid;
 	public String              referencedSopClassUid;
 	public ArrayList<Integer>  referencedFrameNumber;
-	public int                 referencedSegmentNumber;
+	public Integer             referencedSegmentNumber;
 	
 	
 	protected ContourImage()
@@ -75,9 +75,10 @@ public class ContourImage extends DicomEntity
 		// comes back.
 		ArrayList<String> tempErrors = new ArrayList<>();
 		tempErrors.addAll(errors);
+		
 		int[] a = readInts(ciDo, Tag.ReferencedFrameNumber, "1C");
 		referencedFrameNumber   = new ArrayList<>();
-		for (int i=0; i<a.length; i++) referencedFrameNumber.add(a[i]);
+		if (a != null) for (int i=0; i<a.length; i++) referencedFrameNumber.add(a[i]);
 		
 		referencedSegmentNumber = readInt(ciDo, Tag.ReferencedFrameNumber,  "1C");
 		errors = new ArrayList<>();
@@ -91,7 +92,11 @@ public class ContourImage extends DicomEntity
 		writeString(cdDo, Tag.ReferencedSOPClassUID,    VR.UI, 1, referencedSopClassUid);
 		
 		if (referencedFrameNumber != null)
-			writeInts(cdDo, Tag.ReferencedFrameNumber, VR.IS, "1C", referencedFrameNumber);
+		{
+			int[] a = new int[referencedFrameNumber.size()];
+			for (int i=0; i<a.length; i++) a[i] = referencedFrameNumber.get(i);
+			writeInts(cdDo, Tag.ReferencedFrameNumber, VR.IS, "1C", a);
+		}
 		
 		if (referencedSegmentNumber != DUMMY_INT)
 			writeInt(cdDo, Tag.ReferencedSegmentNumber, VR.IS, "1C", referencedSegmentNumber);

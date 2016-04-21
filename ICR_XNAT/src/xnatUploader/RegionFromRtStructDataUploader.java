@@ -163,8 +163,8 @@ public class RegionFromRtStructDataUploader extends DataUploader implements Cont
 		{
 			if (rc.referencedRoiNumber == ssr.roiNumber)
 			{
-				int[] col = rc.roiDisplayColour;
-				String s = "[" + col[0] + ", " + col[1] + ", " + col[2] + "]";
+				List<Integer> col = rc.roiDisplayColour;
+				String s = "[" + col.get(0) + ", " + col.get(1) + ", " + col.get(2) + "]";
 				region.setLineColour(s);
             region.setRoiGeometricType(rc.contourList.get(0).contourGeometricType);
             region.setNDicomContours(rc.contourList.size());
@@ -399,7 +399,7 @@ public class RegionFromRtStructDataUploader extends DataUploader implements Cont
       Map<String, File>     fileMap;
       try
       {
-         crh     = createContourRendererHelper();
+         crh = createContourRendererHelper();
          crh.retrieveBaseImagesToCache();
       }
       catch (DataFormatException | XNATException ex)
@@ -477,13 +477,13 @@ public class RegionFromRtStructDataUploader extends DataUploader implements Cont
          RenderContour rndC   = new RenderContour();
          String baseSop         = c.contourImageList.get(0).referencedSopInstanceUid;
          rndC.baseImageFilename = rtdsu.sopFileMap.get(baseSop);
-			rndC.baseFrameNumber   = c.contourImageList.get(0).referencedFrameNumber[0];
+			rndC.baseFrameNumber   = c.contourImageList.get(0).referencedFrameNumber.get(0);
          rndC.nContourPoints    = c.nContourPoints;
          rndC.contourPoints     = new float[c.nContourPoints][3];
 
          for (int j=0; j<c.nContourPoints; j++)
             for (int i=0; i<3; i++)
-               rndC.contourPoints[j][i] = (c.contourData.get(j))[i];
+               rndC.contourPoints[j][i] = (c.contourData.get(j)).get(i);
          
          crh.rndCList.add(rndC);
 			

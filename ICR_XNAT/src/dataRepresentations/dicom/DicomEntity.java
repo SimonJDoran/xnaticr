@@ -546,76 +546,185 @@ public abstract class DicomEntity implements TextRepresentation
 		Field[] fields = cls.getDeclaredFields();
 		for (Field fld : fields)
 		{
-			Object a;
 			try
 			{
-				a = fld.get(this);
+				Object a = fld.get(this);
+				fld.set(dest, deepCopyField(a));
 			}
 			catch (IllegalAccessException exIA)
 			{
 				throw new RuntimeException("Programming issue: " + exIA.getMessage());
 			}
-			
+		}
+		return dest;
+	}	
+		
+	private Object deepCopyField(Object a)
+		{	
 			// For all objects that are subtypes of DicomEntity
 			// (i.e., the only ones that can call this method) the only types
 			// of field present are:
 			// (1) other DicomEntityRepresentations, which are copied by a
 			//     call to their own deepCopy method;
-			// (2) Lists of DicomEntityRepresentations;
-			// (3) primitive types or String, which can be cloned.
-			if (a != null)
+			//
+		   // (2) primitive wrapper types or String, which can be cloned.
+			//
+			// (3) Lists of the allowable types 1-3;
+			//
+			// Any other types present will generate an error.
+			
+			if (a == null) return null;
+			
+			try
 			{
+				Class cla = a.getClass();
 				if (a instanceof DicomEntity)
 				{
 					DicomEntity b = (DicomEntity) a;
-
-					try
-					{
-						fld.set(dest, b.deepCopy());
-					}
-					catch (IllegalAccessException exIA)
-					{
-						throw new RuntimeException("Programming issue: " + exIA.getMessage());
-					}
+					return b.deepCopy();
 				}
-
+				
+				else if (cla == Byte.class)      return new Byte((Byte) a);
+				else if (cla == Short.class)     return new Short((Short) a);
+				else if (cla == Integer.class)   return new Integer((Integer) a);
+				else if (cla == Long.class)      return new Long((Long) a);
+				else if (cla == Float.class)     return new Float((Float) a);
+				else if (cla == Double.class)    return new Double((Double) a);
+				else if (cla == Character.class) return new Character((Character) a);
+				else if (cla == Boolean.class)   return new Boolean((Boolean) a);
+				else if (cla == String.class)    return new String((String) a);
+				
+				// Primitive wrapper types
+				// The commented out version is actually longer than the explicit,
+				// but also didn't work because the first test didn't seem to do
+				// what I wanted!
+				
+//				else if ((cla.isPrimitive()) || (a instanceof String))
+//				{
+//					Class[] parameterTypes = new Class[]{cla};
+//					try
+//					{
+//						Constructor con = cla.getConstructor(parameterTypes);
+//						return con.newInstance(a);
+//					}
+//					catch (NoSuchMethodException | InstantiationException ex)
+//					{
+//						throw new RuntimeException("Programming issue: " + ex.getMessage());
+//					}
+//				}
+				
+				// Lists
 				else if (a instanceof List)
 				{
-					// Code for the special case where we have a list of primitives.
-					if (((List) a).get(0) instanceof DicomEntity)
+					Object a0;
+					try
+					{
+						// Check whether a is a List of primitives, which are not handled.
+						if (((List) a).isEmpty()) return null;
+						a0 = ((List) a).get(0);
+					}
+					catch (Exception ex)
+					{
+						throw new UnsupportedOperationException("deepCopy() is not configured to clone objects containing primitives.");
+					}
+					
+					// List of other DicomEntities - each needs to be deep copied separately.
+					if (a0 instanceof DicomEntity)
 					{
 						List<DicomEntity> b = (List) a;
-						try
-						{
-							fld.set(dest, deepCopyList(b));
-						}
-						catch (IllegalAccessException exIA)
-						{
-							throw new RuntimeException("Programming issue: " + exIA.getMessage());
-						}
+						return deepCopyList(b);
 					}
-					else
+					
+					// List of primitives - these can be copied directly.
+					// It's frustrating that there doesn't seem to be a clever way
+					// for doing this with generics, using something along the 
+					// lines of List<? extends primitive> b.
+
+					if (a0 instanceof Byte)
 					{
-						fld		  
+						List<Byte> lb = (List<Byte>) a;
+						List<Byte> b  = new ArrayList<>();
+						for (Byte bb : lb) b.add(bb);
+						return b;
 					}
+
+					if (a0 instanceof Short)
+					{
+						List<Short> ls = (List<Short>) a;
+						List<Short> b  = new ArrayList<>();
+						for (Short s : ls) b.add(s);
+						return b;
+					}
+
+					if (a0 instanceof Integer)
+					{
+						List<Integer> li = (List<Integer>) a;
+						List<Integer> b  = new ArrayList<>();
+						for (Integer i : li) b.add(i);
+						return b;
+					}
+
+					if (a0 instanceof Long)
+					{
+						List<Long> ll = (List<Long>) a;
+						List<Long> b  = new ArrayList<>();
+						for (Long l : ll) b.add(l);
+						return b;
+					}
+
+					if (a0 instanceof Float)
+					{
+						List<Float> lf = (List<Float>) a;
+						List<Float> b  = new ArrayList<>();
+						for (Float f : lf) b.add(f);
+						return b;
+					}
+
+					if (a0 instanceof Double)
+					{
+						List<Double> ld = (List<Double>) a;
+						List<Double> b  = new ArrayList<>();
+						for (Double d : ld) b.add(d);
+						return b;
+					}
+
+					if (a0 instanceof Character)
+					{
+						List<Character> lc = (List<Character>) a;
+						List<Character> b  = new ArrayList<>();
+						for (Character c : lc) b.add(c);
+						return b;
+					}
+
+					if (a0 instanceof Boolean)
+					{
+						List<Boolean> lb = (List<Boolean>) a;
+						List<Boolean> b  = new ArrayList<>();
+						for (Boolean bo : lb) b.add(bo);
+						return b;
+					}
+
+					if (a0 instanceof String)
+					{
+						List<String> ls = (List<String>) a;
+						List<String> b  = new ArrayList<>();
+						for (String s : ls) b.add(s);
+						return b;
+					}
+
 				}
 				
 				else
 				{
-					try
-					{
-						fld.set(dest, a);
-					}
-					catch (IllegalAccessException exIA)
-					{
-						throw new RuntimeException("Programming issue: " + exIA.getMessage());
-					}
+					throw new UnsupportedOperationException("Programming issue: deepCopy() may not be used with objects that do not inherit from DicomEntity.");
 				}
-				
 			}
-		}
+			catch (Exception ex)
+			{
+				System.out.println("Primitive types drop out here.");
+			}
 		
-		return dest;
+		return null; // This statement should be unreachable.
 	}
 	
 	
@@ -750,10 +859,15 @@ public abstract class DicomEntity implements TextRepresentation
 		{
 			sb.append("\n").append(indent).append("Item ").append(++count);
 			Object item = list.get(i);
+			
+			if (item instanceof List) sb.append(getObjectListTextRepresentation((List<Object>) item, indent));
+			
 			if (item.getClass().isArray())
 			{
 				// There doesn't seem to be any clever way of boxing the output here into
-				// an object of the right type.
+				// an object of the right type. This bit is now redundant, as I have
+				// changed all subclasses of DicomEntity to avoid this situation. The
+				// code is left here for information.
 				if (item instanceof boolean[]) sb.append(indent).append(Arrays.toString((boolean[]) item));
 				if (item instanceof byte[])    sb.append(indent).append(Arrays.toString((byte[])    item));
 				if (item instanceof short[])   sb.append(indent).append(Arrays.toString((short[])   item));

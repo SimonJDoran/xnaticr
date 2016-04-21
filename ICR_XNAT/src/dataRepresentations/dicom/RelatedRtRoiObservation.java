@@ -50,7 +50,7 @@ import org.dcm4che2.data.VR;
 
 public class RelatedRtRoiObservation extends DicomEntity
 {
-	public int observationNumber;
+	public Integer observationNumber;
 	
 	protected RelatedRtRoiObservation()
 	{

@@ -44,18 +44,20 @@
 
 package dataRepresentations.dicom;
 
+import java.util.ArrayList;
+import java.util.List;
 import org.dcm4che2.data.DicomObject;
 import org.dcm4che2.data.Tag;
 import org.dcm4che2.data.VR;
 
 public class GeneralEquipment extends DicomEntity
 {
-	public String   manufacturer;
-	public String   institutionName;
-	public String   institutionAddress;
-	public String   stationName;
-	public String   modelName;
-	public String[] softwareVersions;
+	public String       manufacturer;
+	public String       institutionName;
+	public String       institutionAddress;
+	public String       stationName;
+	public String       modelName;
+	public List<String> softwareVersions;
 	
 	public GeneralEquipment() {}
 	
@@ -66,7 +68,10 @@ public class GeneralEquipment extends DicomEntity
 		institutionAddress = readString(geDo,  Tag.InstitutionAddress,    3);
 		stationName        = readString(geDo,  Tag.StationName,           3);
 		modelName          = readString(geDo,  Tag.ManufacturerModelName, 3);
-		softwareVersions   = readStrings(geDo, Tag.SoftwareVersions,      3);
+		
+		String s[]         = readStrings(geDo, Tag.SoftwareVersions,      3);
+		softwareVersions   = new ArrayList<>();
+		if (s != null) for (int i=0; i<s.length; i++) softwareVersions.add(s[i]);
 	}
 	
 	@Override
@@ -77,6 +82,9 @@ public class GeneralEquipment extends DicomEntity
 		writeString(geDo, Tag.InstitutionAddress,    VR.ST, 3, institutionAddress);
 		writeString(geDo, Tag.StationName,           VR.SH, 3, stationName);
 		writeString(geDo, Tag.ManufacturerModelName, VR.LO, 3, modelName);
-		writeStrings(geDo, Tag.SoftwareVersions,     VR.LO, 3, softwareVersions);
+		
+		String s[] = new String[softwareVersions.size()];
+		for (int i=0; i<s.length; i++) s[i] = softwareVersions.get(i);
+		writeStrings(geDo, Tag.SoftwareVersions,     VR.LO, 3, s);
 	}
 }

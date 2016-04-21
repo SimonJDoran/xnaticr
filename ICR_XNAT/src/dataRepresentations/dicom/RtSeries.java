@@ -54,7 +54,7 @@ public class RtSeries extends DicomEntity
 {
 	public String     modality;
 	public String     seriesInstanceUid;
-	public int        seriesNumber;
+	public Integer    seriesNumber;
 	public String     seriesDate;
 	public String     seriesTime;
 	public String     seriesDescription;

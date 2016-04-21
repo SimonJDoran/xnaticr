@@ -51,8 +51,8 @@ import org.dcm4che2.data.VR;
 
 public class RtRoiObservation extends DicomEntity
 {
-   public int                           observationNumber;
-   public int                           referencedRoiNumber;
+   public Integer                       observationNumber;
+   public Integer                       referencedRoiNumber;
 	public String                        roiObservationLabel;
 	public String                        roiObservationDescription;
 	public List<RtRelatedRoi>            rtRelatedRoiList;
