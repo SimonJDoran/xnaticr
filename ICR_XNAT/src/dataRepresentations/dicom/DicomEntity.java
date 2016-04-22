@@ -546,59 +546,62 @@ public abstract class DicomEntity implements TextRepresentation
 		Field[] fields = cls.getDeclaredFields();
 		for (Field fld : fields)
 		{
+         if (fld.getName().equals("contourData"))
+            System.out.println("Here");
 			try
 			{
 				Object a = fld.get(this);
-				fld.set(dest, deepCopyField(a));
+            Object b = deepCopyField(a);
+				fld.set(dest, b);
 			}
-			catch (IllegalAccessException exIA)
+			catch (IllegalAccessException | IllegalArgumentException | NullPointerException | ExceptionInInitializerError ex)
 			{
-				throw new RuntimeException("Programming issue: " + exIA.getMessage());
+				throw new RuntimeException("Programming issue: " + ex.getMessage());
 			}
 		}
 		return dest;
 	}	
 		
 	private Object deepCopyField(Object a)
-		{	
-			// For all objects that are subtypes of DicomEntity
-			// (i.e., the only ones that can call this method) the only types
-			// of field present are:
-			// (1) other DicomEntityRepresentations, which are copied by a
-			//     call to their own deepCopy method;
-			//
-		   // (2) primitive wrapper types or String, which can be cloned.
-			//
-			// (3) Lists of the allowable types 1-3;
-			//
-			// Any other types present will generate an error.
-			
-			if (a == null) return null;
-			
-			try
-			{
-				Class cla = a.getClass();
-				if (a instanceof DicomEntity)
-				{
-					DicomEntity b = (DicomEntity) a;
-					return b.deepCopy();
-				}
-				
-				else if (cla == Byte.class)      return new Byte((Byte) a);
-				else if (cla == Short.class)     return new Short((Short) a);
-				else if (cla == Integer.class)   return new Integer((Integer) a);
-				else if (cla == Long.class)      return new Long((Long) a);
-				else if (cla == Float.class)     return new Float((Float) a);
-				else if (cla == Double.class)    return new Double((Double) a);
-				else if (cla == Character.class) return new Character((Character) a);
-				else if (cla == Boolean.class)   return new Boolean((Boolean) a);
-				else if (cla == String.class)    return new String((String) a);
-				
-				// Primitive wrapper types
-				// The commented out version is actually longer than the explicit,
-				// but also didn't work because the first test didn't seem to do
-				// what I wanted!
-				
+   {	
+      // For all objects that are subtypes of DicomEntity
+      // (i.e., the only ones that can call this method) the only types
+      // of field present are:
+      // (1) other DicomEntityRepresentations, which are copied by a
+      //     call to their own deepCopy method;
+      //
+      // (2) primitive wrapper types or String, which can be cloned.
+      //
+      // (3) Lists of the allowable types 1-3;
+      //
+      // Any other types present will generate an error.
+
+      if (a == null) return null;
+
+      try
+      {
+         Class cla = a.getClass();
+         if (a instanceof DicomEntity)
+         {
+            DicomEntity b = (DicomEntity) a;
+            return b.deepCopy();
+         }
+
+         else if (cla == Byte.class)      return new Byte((Byte) a);
+         else if (cla == Short.class)     return new Short((Short) a);
+         else if (cla == Integer.class)   return new Integer((Integer) a);
+         else if (cla == Long.class)      return new Long((Long) a);
+         else if (cla == Float.class)     return new Float((Float) a);
+         else if (cla == Double.class)    return new Double((Double) a);
+         else if (cla == Character.class) return new Character((Character) a);
+         else if (cla == Boolean.class)   return new Boolean((Boolean) a);
+         else if (cla == String.class)    return new String((String) a);
+
+         // Primitive wrapper types
+         // The commented out version is actually longer than the explicit,
+         // but also didn't work because the first test didn't seem to do
+         // what I wanted!
+
 //				else if ((cla.isPrimitive()) || (a instanceof String))
 //				{
 //					Class[] parameterTypes = new Class[]{cla};
@@ -612,121 +615,156 @@ public abstract class DicomEntity implements TextRepresentation
 //						throw new RuntimeException("Programming issue: " + ex.getMessage());
 //					}
 //				}
-				
-				// Lists
-				else if (a instanceof List)
-				{
-					Object a0;
-					try
-					{
-						// Check whether a is a List of primitives, which are not handled.
-						if (((List) a).isEmpty()) return null;
-						a0 = ((List) a).get(0);
-					}
-					catch (Exception ex)
-					{
-						throw new UnsupportedOperationException("deepCopy() is not configured to clone objects containing primitives.");
-					}
-					
-					// List of other DicomEntities - each needs to be deep copied separately.
-					if (a0 instanceof DicomEntity)
-					{
-						List<DicomEntity> b = (List) a;
-						return deepCopyList(b);
-					}
-					
-					// List of primitives - these can be copied directly.
-					// It's frustrating that there doesn't seem to be a clever way
-					// for doing this with generics, using something along the 
-					// lines of List<? extends primitive> b.
 
-					if (a0 instanceof Byte)
-					{
-						List<Byte> lb = (List<Byte>) a;
-						List<Byte> b  = new ArrayList<>();
-						for (Byte bb : lb) b.add(bb);
-						return b;
-					}
-
-					if (a0 instanceof Short)
-					{
-						List<Short> ls = (List<Short>) a;
-						List<Short> b  = new ArrayList<>();
-						for (Short s : ls) b.add(s);
-						return b;
-					}
-
-					if (a0 instanceof Integer)
-					{
-						List<Integer> li = (List<Integer>) a;
-						List<Integer> b  = new ArrayList<>();
-						for (Integer i : li) b.add(i);
-						return b;
-					}
-
-					if (a0 instanceof Long)
-					{
-						List<Long> ll = (List<Long>) a;
-						List<Long> b  = new ArrayList<>();
-						for (Long l : ll) b.add(l);
-						return b;
-					}
-
-					if (a0 instanceof Float)
-					{
-						List<Float> lf = (List<Float>) a;
-						List<Float> b  = new ArrayList<>();
-						for (Float f : lf) b.add(f);
-						return b;
-					}
-
-					if (a0 instanceof Double)
-					{
-						List<Double> ld = (List<Double>) a;
-						List<Double> b  = new ArrayList<>();
-						for (Double d : ld) b.add(d);
-						return b;
-					}
-
-					if (a0 instanceof Character)
-					{
-						List<Character> lc = (List<Character>) a;
-						List<Character> b  = new ArrayList<>();
-						for (Character c : lc) b.add(c);
-						return b;
-					}
-
-					if (a0 instanceof Boolean)
-					{
-						List<Boolean> lb = (List<Boolean>) a;
-						List<Boolean> b  = new ArrayList<>();
-						for (Boolean bo : lb) b.add(bo);
-						return b;
-					}
-
-					if (a0 instanceof String)
-					{
-						List<String> ls = (List<String>) a;
-						List<String> b  = new ArrayList<>();
-						for (String s : ls) b.add(s);
-						return b;
-					}
-
-				}
-				
-				else
-				{
-					throw new UnsupportedOperationException("Programming issue: deepCopy() may not be used with objects that do not inherit from DicomEntity.");
-				}
-			}
-			catch (Exception ex)
-			{
-				System.out.println("Primitive types drop out here.");
-			}
+         // Lists
+         else if (a instanceof List)
+         {
+            Object a0;
+            try
+            {
+               // Check whether a is a List of primitives, which are not handled.
+               if (((List) a).isEmpty()) return null;
+               a0 = ((List) a).get(0);
+            }
+            catch (Exception ex)
+            {
+               throw new RuntimeException("deepCopy() is not configured to clone objects containing primitives.");
+            }
+            
+            return getGeneralList(a, a0);
+         }
+               
+         else
+         {
+            throw new RuntimeException("Programming issue: deepCopy() may not be used with objects that do not inherit from DicomEntity.");
+         }
+      }
+      catch (Exception ex)
+      {
+         System.out.println("Primitive types drop out here.");
+      }
 		
 		return null; // This statement should be unreachable.
 	}
-	
+         
+   
+	private List getGeneralList(Object a, Object a0)
+   {
+      // List of Lists
+      if (a0 instanceof List)
+      {
+         Object aa0;
+         try
+         {
+            // Check whether a is a List of primitives, which are not handled.
+            if (((List) a0).isEmpty()) return null;
+            aa0 = ((List) a0).get(0);
+         }
+         catch (Exception ex)
+         {
+            throw new RuntimeException("deepCopy() is not configured to clone objects containing primitives.");
+         }
+            
+         List o   = new ArrayList();
+         List la0 = (List) a0;
+         for (int i=0; i<la0.size(); i++)
+         {
+            o.add(getGeneralList(a0, la0.get(i)));
+         }
+         
+         return o;
+      }
+      
+      // List of other DicomEntities - each needs to be deep copied separately.
+      if (a0 instanceof DicomEntity)
+      {
+         List<DicomEntity> b = (List) a;
+         return deepCopyList(b);
+      }
+
+      // List of primitives - these can be copied directly.
+      // It's frustrating that there doesn't seem to be a clever way
+      // for doing this with generics, using something along the 
+      // lines of List<? extends primitive> b.
+
+      if (a0 instanceof Byte)
+      {
+         List<Byte> lb = (List<Byte>) a;
+         List<Byte> b  = new ArrayList<>();
+         for (Byte bb : lb) b.add(bb);
+         return b;
+      }
+
+      if (a0 instanceof Short)
+      {
+         List<Short> ls = (List<Short>) a;
+         List<Short> b  = new ArrayList<>();
+         for (Short s : ls) b.add(s);
+         return b;
+      }
+
+      if (a0 instanceof Integer)
+      {
+         List<Integer> li = (List<Integer>) a;
+         List<Integer> b  = new ArrayList<>();
+         for (Integer i : li) b.add(i);
+         return b;
+      }
+
+      if (a0 instanceof Long)
+      {
+         List<Long> ll = (List<Long>) a;
+         List<Long> b  = new ArrayList<>();
+         for (Long l : ll) b.add(l);
+         return b;
+      }
+
+      if (a0 instanceof Float)
+      {
+         List<Float> lf = (List<Float>) a;
+         List<Float> b  = new ArrayList<>();
+         for (Float f : lf) b.add(f);
+         return b;
+      }
+
+      if (a0 instanceof Double)
+      {
+         List<Double> ld = (List<Double>) a;
+         List<Double> b  = new ArrayList<>();
+         for (Double d : ld) b.add(d);
+         return b;
+      }
+
+      if (a0 instanceof Character)
+      {
+         List<Character> lc = (List<Character>) a;
+         List<Character> b  = new ArrayList<>();
+         for (Character c : lc) b.add(c);
+         return b;
+      }
+
+      if (a0 instanceof Boolean)
+      {
+         List<Boolean> lb = (List<Boolean>) a;
+         List<Boolean> b  = new ArrayList<>();
+         for (Boolean bo : lb) b.add(bo);
+         return b;
+      }
+
+      if (a0 instanceof String)
+      {
+         List<String> ls = (List<String>) a;
+         List<String> b  = new ArrayList<>();
+         for (String s : ls) b.add(s);
+         return b;
+      }
+      
+      else
+      {
+         throw new RuntimeException("deepCopy() is not configured to clone objects not descended from DicomEntity.");
+      }
+   }
+   
 	
 	public <T extends DicomEntity> List<T> deepCopyList(List<T> srcList)
 	{
