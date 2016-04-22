@@ -112,6 +112,7 @@ public class UIDGenerator
       String      uid;
       try
       {
+         // Note: This doesn't work when connected to work via the VPN.
          ip = InetAddress.getLocalHost();
          
          NetworkInterface network = NetworkInterface.getByInetAddress(ip);

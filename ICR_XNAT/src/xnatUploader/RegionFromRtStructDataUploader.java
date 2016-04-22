@@ -289,7 +289,7 @@ public class RegionFromRtStructDataUploader extends DataUploader implements Cont
  
 		Provenance prov = (rtdsu.retrieveProvenance());
       prov.stepList.get(1).program.name = "Auto-extracted from RT-STRUCT file by ICR XNAT DataUploader";
-				                                 
+      region.setProvenance(prov);
 		
 		// XnatDerivedDataMdComplexType inherits from XnatExperimentData.
 		
