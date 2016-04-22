@@ -546,7 +546,7 @@ public abstract class DicomEntity implements TextRepresentation
 		Field[] fields = cls.getDeclaredFields();
 		for (Field fld : fields)
 		{
-         if (fld.getName().equals("contourData"))
+         if (!fld.getName().equals("contourImage"))
             System.out.println("Here");
 			try
 			{
@@ -665,11 +665,11 @@ public abstract class DicomEntity implements TextRepresentation
             throw new RuntimeException("deepCopy() is not configured to clone objects containing primitives.");
          }
             
-         List o   = new ArrayList();
-         List la0 = (List) a0;
-         for (int i=0; i<la0.size(); i++)
+         List o  = new ArrayList();
+         List la = (List) a;
+         for (int i=0; i<la.size(); i++)
          {
-            o.add(getGeneralList(a0, la0.get(i)));
+            o.add(getGeneralList(la.get(i), aa0));
          }
          
          return o;
