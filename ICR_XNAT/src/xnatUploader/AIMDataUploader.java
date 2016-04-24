@@ -59,6 +59,7 @@ import dataRepresentations.xnatUpload.AIMOutput;
 import dataRepresentations.xnatUpload.MRIWOutput;
 import dataRepresentations.RTStruct_old;
 import etherj.XmlException;
+import etherj.aim.DefaultXmlParser;
 import etherj.aim.ImageAnnotationCollection;
 import etherj.aim.XmlParser;
 import exceptions.DataFormatException;
@@ -83,7 +84,7 @@ import xnatDAO.XNATProfile;
 import xnatRestToolkit.XnatResource;
 
 
-public class AIMDataUploader extends QCAssessmentDataUploader
+public class AIMDataUploader extends DataUploader
 {
    static    Logger                        logger = Logger.getLogger(AIMDataUploader.class);
    protected ImageAnnotationCollection     iac;
@@ -116,21 +117,8 @@ public class AIMDataUploader extends QCAssessmentDataUploader
 	@Override
    public boolean readFile()
    {
-		ImageAnnotationCollection iac;
-		try
-		{
-			iac = XmlParser.parse(uploadFile);
-		}
-		catch (XmlException | IOException ex)
-		{
-			String msg = "Problem reading AIM instance file: " + ex.getMessage();
-			logger.error(msg);
-			errorOccurred = true;
-         errorMessage  = msg;
-			return false;
-		}
-
-      return true;				
+		// James d'Arcy's Etherj package opens and reads AIM files as a single
+      // method call, so nothing is needed here.
    }
 	
 	/**
@@ -145,19 +133,31 @@ public class AIMDataUploader extends QCAssessmentDataUploader
 	@Override
    public boolean parseFile()
    {     
-      try
-      {
-         aim = new AIMOutput(iac, xnprf);
-         
- //        date = convertToXNATDate(aim.prov.creationDateTime);
- //        time = convertToXNATTime(aim.prov.creationDateTime);
-         
-         XNATProject      = aim.XNATProjectID; 
-         XNATSubjectID    = aim.XNATSubjectID;
-         XNATExperimentID = aim.XNATExperimentID;
-         XNATScanIdSet    = aim.XNATScanID;
-         
-         populateStringFields();
+		try
+		{
+			iac = (new DefaultXmlParser()).parse(uploadFile);
+		}
+		catch (XmlException | IOException ex)
+		{
+			String msg = "Problem reading AIM instance file: " + ex.getMessage();
+			logger.error(msg);
+			errorOccurred = true;
+         errorMessage  = msg;
+			return false;
+		}
+
+ 
+      aim = new AIMOutput(iac, xnprf);
+
+//        date = convertToXNATDate(aim.prov.creationDateTime);
+//        time = convertToXNATTime(aim.prov.creationDateTime);
+
+      XNATProject      = aim.XNATProjectID; 
+      XNATSubjectID    = aim.XNATSubjectID;
+      XNATExperimentID = aim.XNATExperimentID;
+      XNATScanIdSet    = aim.XNATScanID;
+
+      populateStringFields();
          
       }
       catch (XNATException exXNAT)

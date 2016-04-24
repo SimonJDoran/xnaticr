@@ -525,6 +525,8 @@ public class RtStructDataUploader extends DataUploader
          {
             ru.setAccessionId(assignedRegionIdList.get(i));
             ru.setRoiPositionInSSRoiSequence(i);
+            ru.setSubjectId(XNATSubjectID);
+            ru.setExperimentId(XNATExperimentID);
 				ru.uploadMetadata();
             ru.uploadResourcesToRepository();
          }

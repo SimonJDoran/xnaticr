@@ -92,7 +92,7 @@ public abstract class MdComplexType
 		dppXML.delayedEndEntity();
 		dppXML.close();
 		
-//		String s = new String(baos.toByteArray()); // for diagnostics
+		String s = new String(baos.toByteArray()); // for diagnostics
       ByteArrayInputStream bis = new ByteArrayInputStream(baos.toByteArray());     
       
 		return XMLUtilities.getDOMDocument(bis);

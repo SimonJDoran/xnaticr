@@ -546,8 +546,6 @@ public abstract class DicomEntity implements TextRepresentation
 		Field[] fields = cls.getDeclaredFields();
 		for (Field fld : fields)
 		{
-         if (!fld.getName().equals("contourImage"))
-            System.out.println("Here");
 			try
 			{
 				Object a = fld.get(this);
