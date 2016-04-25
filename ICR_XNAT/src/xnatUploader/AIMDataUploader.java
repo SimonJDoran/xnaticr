@@ -59,6 +59,7 @@ import dataRepresentations.xnatUpload.AIMOutput;
 import dataRepresentations.xnatUpload.MRIWOutput;
 import dataRepresentations.RTStruct_old;
 import etherj.XmlException;
+import etherj.aim.DefaultXmlParser;
 import etherj.aim.ImageAnnotationCollection;
 import etherj.aim.XmlParser;
 import exceptions.DataFormatException;
@@ -119,7 +120,7 @@ public class AIMDataUploader extends QCAssessmentDataUploader
 		ImageAnnotationCollection iac;
 		try
 		{
-			iac = XmlParser.parse(uploadFile);
+			iac = (new DefaultXmlParser()).parse(uploadFile);
 		}
 		catch (XmlException | IOException ex)
 		{
