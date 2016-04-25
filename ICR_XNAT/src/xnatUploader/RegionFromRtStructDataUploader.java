@@ -190,6 +190,10 @@ public class RegionFromRtStructDataUploader extends DataUploader implements Cont
       }
       region.setRtRoiObservationList(rrol);
       
+      // The RT-STRUCT does noit provide any statistics, but we still need to
+      // set the variable to an empty list.
+      region.setAssociatedRegionParStatsIdList(new ArrayList<String>());
+      
       // IcrRegionDataMdComplexType inherits from IcrGenericImageAssessmentDataMdComplexType.
 		
 		// regionSet.setType();  Not currently sure what should go here.
@@ -289,7 +293,7 @@ public class RegionFromRtStructDataUploader extends DataUploader implements Cont
  
 		Provenance prov = (rtdsu.retrieveProvenance());
       prov.stepList.get(1).program.name = "Auto-extracted from RT-STRUCT file by ICR XNAT DataUploader";
-				                                 
+      region.setProvenance(prov);
 		
 		// XnatDerivedDataMdComplexType inherits from XnatExperimentData.
 		
@@ -427,11 +431,11 @@ public class RegionFromRtStructDataUploader extends DataUploader implements Cont
             
             XnatResource xr = new XnatResource(bais,
 		                                         "out",
-		                                         filePrefix + "_" + i,
+		                                         filePrefix + i,
 				                                   "PNG",
 		                                         "ROI_THUMBNAIL",
 		                                         description.toString(),
-				                                   filePrefix + "_" + i + ".png");
+				                                   filePrefix + i + ".png");
 				
             auxiliaryResources.add(xr);
          }
@@ -474,12 +478,12 @@ public class RegionFromRtStructDataUploader extends DataUploader implements Cont
             throw new DataFormatException(DataFormatException.RTSTRUCT, msg);
          }
          
-         RenderContour rndC   = new RenderContour();
-         String baseSop         = c.contourImageList.get(0).referencedSopInstanceUid;
-         rndC.baseImageFilename = rtdsu.sopFileMap.get(baseSop);
-			rndC.baseFrameNumber   = c.contourImageList.get(0).referencedFrameNumber.get(0);
-         rndC.nContourPoints    = c.nContourPoints;
-         rndC.contourPoints     = new float[c.nContourPoints][3];
+         RenderContour rndC       = new RenderContour();
+         String baseSop           = c.contourImageList.get(0).referencedSopInstanceUid;
+         rndC.baseImageFilename   = rtdsu.sopFileMap.get(baseSop);
+			rndC.baseFrameNumberList = c.contourImageList.get(0).referencedFrameNumber;
+         rndC.nContourPoints      = c.nContourPoints;
+         rndC.contourPoints       = new float[c.nContourPoints][3];
 
          for (int j=0; j<c.nContourPoints; j++)
             for (int i=0; i<3; i++)

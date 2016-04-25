@@ -84,14 +84,14 @@ import xnatDAO.XNATProfile;
 import xnatRestToolkit.XnatResource;
 
 
-public class AIMDataUploader extends QCAssessmentDataUploader
+public class AIMDataUploader_rename extends DataUploader
 {
-   static    Logger                        logger = Logger.getLogger(AIMDataUploader.class);
+   static    Logger                        logger = Logger.getLogger(AIMDataUploader_rename.class);
    protected ImageAnnotationCollection     iac;
 	protected AIMOutput                     aim;
    protected LinkedHashMap<String, String> simpleEntries;
 
-   public AIMDataUploader(XNATProfile xnprf)
+   public AIMDataUploader_rename(XNATProfile xnprf)
    {
       super(xnprf);
       
@@ -117,19 +117,8 @@ public class AIMDataUploader extends QCAssessmentDataUploader
 	@Override
    public boolean readFile()
    {
-		ImageAnnotationCollection iac;
-		try
-		{
-			iac = (new DefaultXmlParser()).parse(uploadFile);
-		}
-		catch (XmlException | IOException ex)
-		{
-			String msg = "Problem reading AIM instance file: " + ex.getMessage();
-			logger.error(msg);
-			errorOccurred = true;
-         errorMessage  = msg;
-			return false;
-		}
+		// James d'Arcy's Etherj package opens and reads AIM files as a single
+      // method call, so nothing is needed here.
 
       return true;				
    }
@@ -146,19 +135,31 @@ public class AIMDataUploader extends QCAssessmentDataUploader
 	@Override
    public boolean parseFile()
    {     
-      try
-      {
-         aim = new AIMOutput(iac, xnprf);
-         
- //        date = convertToXNATDate(aim.prov.creationDateTime);
- //        time = convertToXNATTime(aim.prov.creationDateTime);
-         
-         XNATProject      = aim.XNATProjectID; 
-         XNATSubjectID    = aim.XNATSubjectID;
-         XNATExperimentID = aim.XNATExperimentID;
-         XNATScanIdSet    = aim.XNATScanID;
-         
-         populateStringFields();
+		try
+		{
+			iac = (new DefaultXmlParser()).parse(uploadFile);
+		}
+		catch (XmlException | IOException ex)
+		{
+			String msg = "Problem reading AIM instance file: " + ex.getMessage();
+			logger.error(msg);
+			errorOccurred = true;
+         errorMessage  = msg;
+			return false;
+		}
+
+ 
+      aim = new AIMOutput(iac, xnprf);
+
+//        date = convertToXNATDate(aim.prov.creationDateTime);
+//        time = convertToXNATTime(aim.prov.creationDateTime);
+
+      XNATProject      = aim.XNATProjectID; 
+      XNATSubjectID    = aim.XNATSubjectID;
+      XNATExperimentID = aim.XNATExperimentID;
+      XNATScanIdSet    = aim.XNATScanID;
+
+      populateStringFields();
          
       }
       catch (XNATException exXNAT)

@@ -218,33 +218,33 @@ public abstract class DataUploader
                           + errorMessage);
       
       
-      try
-      {
-         RESTCommand    = getMetadataUploadCommand();
-         InputStream is = xnprf.doRESTPut(RESTCommand, metaDoc);
-         int         n  = is.available();
-         byte[]      b  = new byte[n];
-         is.read(b, 0, n);
-         String XNATUploadMessage = new String(b);
-         
-         if ((xnrt.XNATRespondsWithError(XNATUploadMessage)) ||
-             (!XNATUploadMessage.equals(XNATAccessionID)))
-         {
-            errorOccurred = true;
-            errorMessage  = XNATUploadMessage;
-            throw new XNATException(XNATException.FILE_UPLOAD,
-                          "XNAT generated the message:\n" + XNATUploadMessage);
-         }
-      }
-      catch (Exception ex)
-      {
-         // Here we cater both for reporting the error by throwing an exception
-         // and by setting the error variables. When performing the upload via
-         // a SwingWorker, it is not easy to retrieve an Exception.
-         errorOccurred = true;
-         errorMessage = ex.getMessage();
-         throw new XNATException(XNATException.FILE_UPLOAD, ex.getMessage());
-      }             
+//      try
+//      {
+//         RESTCommand    = getMetadataUploadCommand();
+//         InputStream is = xnprf.doRESTPut(RESTCommand, metaDoc);
+//         int         n  = is.available();
+//         byte[]      b  = new byte[n];
+//         is.read(b, 0, n);
+//         String XNATUploadMessage = new String(b);
+//         
+//         if ((xnrt.XNATRespondsWithError(XNATUploadMessage)) ||
+//             (!XNATUploadMessage.equals(XNATAccessionID)))
+//         {
+//            errorOccurred = true;
+//            errorMessage  = XNATUploadMessage;
+//            throw new XNATException(XNATException.FILE_UPLOAD,
+//                          "XNAT generated the message:\n" + XNATUploadMessage);
+//         }
+//      }
+//      catch (Exception ex)
+//      {
+//         // Here we cater both for reporting the error by throwing an exception
+//         // and by setting the error variables. When performing the upload via
+//         // a SwingWorker, it is not easy to retrieve an Exception.
+//         errorOccurred = true;
+//         errorMessage = ex.getMessage();
+//         throw new XNATException(XNATException.FILE_UPLOAD, ex.getMessage());
+//      }             
    }
    
    
@@ -916,6 +916,18 @@ public abstract class DataUploader
    public void setAccessionId(String id)
    {
       XNATAccessionID = id;
+   }
+   
+   
+ public void setSubjectId(String id)
+   {
+      XNATSubjectID = id;
+   }
+   
+   
+public void setExperimentId(String id)
+   {
+      XNATExperimentID = id;
    }
    
    

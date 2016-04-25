@@ -96,7 +96,7 @@ public class ContourRendererHelper
    public static class RenderContour
    {
       public String              baseImageFilename;
-		public int                 baseFrameNumber;
+		public ArrayList<Integer>  baseFrameNumberList;
       public int                 nContourPoints;
       public float[][]           contourPoints;
    }
@@ -305,7 +305,7 @@ public class ContourRendererHelper
       {         
          try
          {
-            BufferedImage bi = getBaseImage(rc.baseImageFilename, rc.baseFrameNumber);
+            BufferedImage bi = getBaseImage(rc.baseImageFilename, rc.baseFrameNumberList);
             overlayContour(bi, rc);
             result.add(ImageUtilities.scaleColourImageByFFT(bi,
                                               THUMBNAIL_SIZE, THUMBNAIL_SIZE));
@@ -325,7 +325,7 @@ public class ContourRendererHelper
       
       
       
-   private BufferedImage getBaseImage(String imageFilename, int frameNumber)
+   private BufferedImage getBaseImage(String imageFilename, ArrayList<Integer> frameNumber)
                          throws XNATException, ImageUtilitiesException
    {
       DicomObject bdo	= new BasicDicomObject();

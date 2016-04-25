@@ -283,7 +283,7 @@ public class IcrRegionDataMdComplexType extends IcrGenericImageAssessmentDataMdC
 	}
 	
 	
-	public void setAssociatedRegionParameterStatisticsIdList(List<String> ls)
+	public void setAssociatedRegionParStatsIdList(List<String> ls)
 	{
 		associatedRegionParStatsIdList = ls;
 	}
