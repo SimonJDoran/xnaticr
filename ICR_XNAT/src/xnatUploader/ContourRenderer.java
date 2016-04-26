@@ -54,12 +54,4 @@ import xnatDAO.XNATProfile;
 public interface ContourRenderer
 {
 	public ContourRendererHelper createContourRendererHelper() throws DataFormatException;
-	
-	public Set<String>           getFilenameSet();
-	
-	public Set<String>           getXnatScanIdSet();
-	
-	public String                getXnatExperimentId();
-	
-	public XNATProfile           getXnatProfile();
 }

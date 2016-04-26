@@ -96,7 +96,7 @@ import xnatRestToolkit.XNATRESTToolkit;
 import xnatRestToolkit.XnatResource;
 import xnatUploader.ContourRendererHelper.RenderContour;
 
-public class RegionFromRtStructDataUploader extends DataUploader implements ContourRenderer
+class RegionFromRtStructDataUploader extends DataUploader implements ContourRenderer
 {
 	public  RtStruct             rtsSingle;
 	
@@ -105,15 +105,20 @@ public class RegionFromRtStructDataUploader extends DataUploader implements Cont
    private int                  roiPos;
 	public Set<String>           sopInstanceUidSet;
 	public Set<String>           filenameSet;
+	private RtStruct             rtsParent;
+	private Provenance           provParent;
+	private String               accessionIdParent;
+	private Map<String, String>  sopFileMap;
+	private Map<String, String>  fileScanMap;
 	
-	public RegionFromRtStructDataUploader(XNATProfile xnprf, RtStructDataUploader rtdsu)
+	RegionFromRtStructDataUploader(XNATProfile xnprf, RtStructDataUploader rtdsu)
 	{
 		super(xnprf);
 	   this.rtdsu = rtdsu;
 	}
 	
-@Override
-	public Document createMetadataXml()
+	@Override
+	protected Document createMetadataXml()
 	{
 		// Metadata are created simply by instantiating the metadata creator
 		// object for the required complex type, filling it with the correct
@@ -123,15 +128,15 @@ public class RegionFromRtStructDataUploader extends DataUploader implements Cont
 		IcrRegionDataMdComplexType region = new IcrRegionDataMdComplexType();
 		
 		List<String> arsl = new ArrayList<>();
-		arsl.add(rtdsu.XNATAccessionID);
+		arsl.add(accessionIdParent);
 		region.setAssociatedRegionSetIdList(arsl);
 		
-		region.setOriginalUid(rtdsu.rts.sopCommon.sopInstanceUid);
+		region.setOriginalUid(rtsParent.sopCommon.sopInstanceUid);
 		region.setOriginalDataType("RT-STRUCT");
 		
       Set<Integer> singleRoi = new HashSet<>();
-      singleRoi.add(rtdsu.rts.structureSet.structureSetRoiList.get(roiPos).roiNumber);
-      rtsSingle = new RtStruct(rtdsu.rts, singleRoi);
+      singleRoi.add(rtsParent.structureSet.structureSetRoiList.get(roiPos).roiNumber);
+      rtsSingle = new RtStruct(rtsParent, singleRoi);
 		
 		StructureSet    ss  = rtsSingle.structureSet;
       assert (ss.structureSetRoiList.size() == 1);
@@ -139,11 +144,11 @@ public class RegionFromRtStructDataUploader extends DataUploader implements Cont
       
       region.setOriginalLabel(ss.structureSetLabel);
       region.setOriginalDescription(ss.structureSetDescription);
-		region.setOriginatingApplicationName(rtdsu.rts.generalEquipment.modelName);
+		region.setOriginatingApplicationName(rtsParent.generalEquipment.modelName);
 		
 		final String sep = " | ";
 		StringBuilder sb = new StringBuilder();
-		for (String s : rtdsu.rts.generalEquipment.softwareVersions) sb.append(s).append(sep);
+		for (String s : rtsParent.generalEquipment.softwareVersions) sb.append(s).append(sep);
 		region.setOriginatingApplicationVersion(sb.toString());
 		
       region.setOriginalContainsMultipleRois((rtdsu.nRois > 1) ? "true" : "false");
@@ -159,7 +164,7 @@ public class RegionFromRtStructDataUploader extends DataUploader implements Cont
       // different RoiContour (with different colour) for any given ROI.
       // Similarly, there could be many different Contours composing each
       // RoiContour, each of which might have a different geometric type.
-      for (RoiContour rc : rtdsu.rts.roiContourList)
+      for (RoiContour rc : rtsParent.roiContourList)
 		{
 			if (rc.referencedRoiNumber == ssr.roiNumber)
 			{
@@ -184,7 +189,7 @@ public class RegionFromRtStructDataUploader extends DataUploader implements Cont
       region.setDerivationCode(dcsb.toString());
       
       List<RtRoiObservation> rrol = new ArrayList<>();
-      for (RtRoiObservation rro : rtdsu.rts.rtRoiObservationList)
+      for (RtRoiObservation rro : rtsParent.rtRoiObservationList)
       {
          if (rro.referencedRoiNumber == ssr.roiNumber) rrol.add(rro);
       }
@@ -197,7 +202,7 @@ public class RegionFromRtStructDataUploader extends DataUploader implements Cont
       // IcrRegionDataMdComplexType inherits from IcrGenericImageAssessmentDataMdComplexType.
 		
 		// regionSet.setType();  Not currently sure what should go here.
-		region.setXnatSubjId(rtdsu.XNATSubjectID);
+		region.setXnatSubjId(XNATSubjectID);
 		region.setDicomSubjName(rtsSingle.patient.patientName);
 		
 		// Although the full version of Scan, including scan and slice image
@@ -290,8 +295,9 @@ public class RegionFromRtStructDataUploader extends DataUploader implements Cont
 		
 		// XnatImageAssessorDataMdComplexType inherits from XnatDerivedDataMdComplexType.
 		
- 
-		Provenance prov = (rtdsu.retrieveProvenance());
+		// If this function is genuinely being called from an RT-STRUCT file upload
+		// created by this package, then provenance should have two entries.
+		assert (prov.stepList.size() == 2);
       prov.stepList.get(1).program.name = "Auto-extracted from RT-STRUCT file by ICR XNAT DataUploader";
       region.setProvenance(prov);
 		
@@ -355,44 +361,14 @@ public class RegionFromRtStructDataUploader extends DataUploader implements Cont
    {
       return "icr:regionData";
    }
-
-   // All abstract methods need to be implemented.
-   
-   @Override
-   public boolean parseFile()
-   {
-      // This routine is never called as Region entities are not loaded as individual
-      // files via the UI but created dynamically from RegionSets.
-      return true;
-   }
-
-   @Override
-   public void updateParseFile()
-   {
-      // This routine is never called as Region entities are not loaded as individual
-      // files via the UI but created dynamically from RegionSets.
-   }
-
-   @Override
-   protected ArrayList<String> getInputCatEntries()
-   {
-      return new ArrayList<String>();
-   }
    
 
-   @Override
-   public void clearFields(MetadataPanel mdsp)
-   {
-      // This routine is never called as Region entities are not loaded as individual
-      // files via the UI but created dynamically from RegionSets.
-   }
-   
-   
    @Override
    protected void createPrimaryResource()
    {
       // There is no primary resource associated with a Region entity.
    }
+	
 
    @Override
    protected void createAuxiliaryResources()
@@ -455,19 +431,20 @@ public class RegionFromRtStructDataUploader extends DataUploader implements Cont
 		// An RtStruct object corresponding to a single ROI has only one element
 		// in its roiContourList.
 		assert (rtsSingle.roiContourList.size() == 1);
-		RoiContour rc     = rtsSingle.roiContourList.get(0);
-		crh.displayColour = rc.roiDisplayColour;
+		RoiContour rc = rtsSingle.roiContourList.get(0);
+		crh.setDisplayColour(rc.roiDisplayColour);
 		
 		// The frame of reference in which the ROI is defined is in a separate DICOM
 		// IOD from the contour list!
 		for (StructureSetRoi ssr : rtsSingle.structureSet.structureSetRoiList)
 		{
-			if (ssr.roiNumber == rc.referencedRoiNumber) crh.frameOfReferenceUid = ssr.referencedFrameOfReferenceUid;
+			if (ssr.roiNumber == rc.referencedRoiNumber)
+				crh.setFrameOfReference(ssr.referencedFrameOfReferenceUid);
 		}
 		
-		crh.coordsAsPixel = false;
-      crh.rndCList      = new ArrayList<>();
-      
+		crh.setCoordsAsPixel(false);
+		
+      List<RenderContour> rcl = new ArrayList<>();
 		for (Contour c : rc.contourList)
       {
          if (c.contourImageList.size() != 1)
@@ -489,73 +466,17 @@ public class RegionFromRtStructDataUploader extends DataUploader implements Cont
             for (int i=0; i<3; i++)
                rndC.contourPoints[j][i] = (c.contourData.get(j)).get(i);
          
-         crh.rndCList.add(rndC);
-			
-			crh.caller = this;
+         rcl.add(rndC);
       }
-			
+		crh.setRenderContourList(rcl);
+		crh.setFilenameSet(filenameSet);
+		crh.setXnatExperimentId(XNATExperimentID);
+		crh.setXnatProfile(xnprf);
+		crh.setXnatScanIdSet(XNATScanIdSet);
+		
 		return crh;
 	}
 	
-	
-	@Override
-	public Set<String> getFilenameSet()
-	{
-		return filenameSet;
-	}
-	
-	
-	@Override
-	public Set<String> getXnatScanIdSet()
-	{
-		return XNATScanIdSet;
-	}
-	
-	
-	@Override
-	public String getXnatExperimentId()
-	{
-		return XNATExperimentID;
-	}
-	
-	
-	@Override
-	public XNATProfile getXnatProfile()
-	{
-		return xnprf;
-	}
-	
-	
- 
-
-   @Override
-   public void updateVariablesForEditableFields(MetadataPanel mdsp)
-   {
-      // This routine is never called as Region entities are not loaded as individual
-      // files via the UI but created dynamically from RegionSets.
-   }
-
-   @Override
-   public List<String> getEditableFields()
-   {
-		// This routine is never called as Region entities are not loaded as individual
-      // files via the UI but created dynamically from RegionSets.
-      return new ArrayList<String>();
-   }
-
-   @Override
-   public List<String> getRequiredFields()
-   {
-		// This routine is never called as Region entities are not loaded as individual
-      // files via the UI but created dynamically from RegionSets.
-      return new ArrayList<String>();
-   }
-
-   @Override
-   public boolean rightMetadataPresent()
-   {
-      return true;
-   }
 
    @Override
    public String getUploadRootCommand(String uploadItem)
@@ -565,4 +486,25 @@ public class RegionFromRtStructDataUploader extends DataUploader implements Cont
              + "/experiments/"         + XNATExperimentID
              + "/assessors/"           + uploadItem;
    }
+	
+	
+	void setParentRtStruct(RtStruct r)
+	{
+		rtsParent = r;
+	}
+	
+	
+	void setParentProvenance(Provenance p)
+	{
+		provParent = p;
+	}
+	
+	
+	void setParentAccessionId(String s)
+	{
+		accessionIdParent = s;
+	}
+	
+	
+	void setSopFileMap
 }

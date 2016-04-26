@@ -1,5 +1,5 @@
 /********************************************************************
-* Copyright (c) 2012, Institute of Cancer Research
+* Copyright (c) 2016, Institute of Cancer Research
 * All rights reserved.
 * 
 * Redistribution and use in source and binary forms, with or without
@@ -37,6 +37,7 @@
 * @author Simon J Doran
 * Java class: ContourRenderer.java
 * First created on Dec 1, 2011 at 17:18 PM
+* Heavily modified since!
 * 
 * Take the specifications of a contour enclosing an image region-of-
 * interest and create visual representations of it, e.g., thumbnail
@@ -79,6 +80,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -95,26 +97,36 @@ public class ContourRendererHelper
    // Contour class in RTStruct_old.java.
    public static class RenderContour
    {
-      public String              baseImageFilename;
-		public ArrayList<Integer>  baseFrameNumberList;
-      public int                 nContourPoints;
-      public float[][]           contourPoints;
+      public String            baseImageFilename;
+		public List<Integer>     baseFrameNumberList;
+      public int               nContourPoints;
+      public float[][]         contourPoints;
    }
    
-   static Logger                   logger = Logger.getLogger(ContourRendererHelper.class);
-   public static final int         THUMBNAIL_SIZE = 128;
-   public Map<String, File>        filenameCacheFileMap;
-   public float[]                  pixelSpacing;
-   public float[]                  dirCosines;
-   public float[]                  topLeftPos;
-   public List<Integer>            displayColour;
-   public String                   frameOfReferenceUid;
-   public boolean                  coordsAsPixel;
-   public ArrayList<RenderContour> rndCList;
-	public ContourRenderer          caller;
+   static Logger               logger = Logger.getLogger(ContourRendererHelper.class);
+   private static final int    DEFAULT_THUMBNAIL_SIZE = 128;
+	private int                 thumbnailSize;
+   private Map<String, File>   filenameCacheFileMap;
+   private float[]             pixelSpacing;
+   private float[]             dirCosines;
+   private float[]             topLeftPos;
+   private List<Integer>       displayColour;
+   private String              frameOfReferenceUid;
+   private boolean             coordsAsPixel;
+   private List<RenderContour> renderContourList;
+	private Set<String>         filenameSet;
+	private Set<String>         xnatScanIdSet;
+	private String              xnatExperimentId;
+	private XNATProfile         xnatProfile;
      
    
-   public ContourRendererHelper() {}
+	public ContourRendererHelper()
+	{
+		filenameSet   = null;
+		xnatScanIdSet = null;
+		xnatProfile   = null;
+		thumbnailSize = DEFAULT_THUMBNAIL_SIZE;
+	}
 	   
 //   /**
 //    * Constructor creates a new renderer of a given MRIWOutput object.
@@ -132,13 +144,13 @@ public class ContourRendererHelper
 //      displayColour         = new int[]{255, 0, 0};
 //      frameOfReferenceUid   = mriw.frameOfReferenceUID;
 //      coordsAsPixel         = true;
-//      rndCList                = new ArrayList<RenderContour>();
+//      renderContourList                = new ArrayList<RenderContour>();
 //      
 //      RenderContour rc           = new RenderContour();
 //      rc.baseImageUid       = mriw.inp.dynSOPInstanceUIDs.get(0);
 //      rc.nContourPoints     = mriw.con.roiX.size();
 //      rc.contourPoints      = new float[rc.nContourPoints][3];
-//      rndCList.add(rc);
+//      renderContourList.add(rc);
 //      for (int i=0; i<rc.nContourPoints; i++)
 //      {
 //         rc.contourPoints[i][0] = mriw.con.roiX.get(i).floatValue();
@@ -165,13 +177,13 @@ public class ContourRendererHelper
 //		]displayColour         = new int[]{255, 0, 0};
 //      frameOfReferenceUid   = mriw.frameOfReferenceUid;
 //      coordsAsPixel         = true;
-//      rndCList                = new ArrayList<RContour>();
+//      renderContourList                = new ArrayList<RContour>();
 //      
 //      RenderContour rc           = new RenderContour();
 //      rc.baseImageUid       = mriw.inp.dynSOPInstanceUIDs.get(0);
 //      rc.nContourPoints     = mriw.con.roiX.size();
 //      rc.contourPoints      = new float[rc.nContourPoints][3];
-//      rndCList.add(rc);
+//      renderContourList.add(rc);
 //      for (int i=0; i<rc.nContourPoints; i++)
 //      {
 //         rc.contourPoints[i][0] = mriw.con.roiX.get(i).floatValue();
@@ -199,7 +211,13 @@ public class ContourRendererHelper
 	
 	public void retrieveBaseImagesToCache() throws XNATException
 	{
-		Set<String> filenames = caller.getFilenameSet();
+		// If the calling class doesn't set the XNAT Experiment, or there are
+		// no scans to process then don't do anything. Similarly, if no
+		// authentication information is given, there is no point in trying
+		// to retrieve any images.
+		if ((xnatExperimentId == null) || (xnatScanIdSet == null) ||
+			 (xnatProfile == null)) return;
+		
 		filenameCacheFileMap = new HashMap<>();
 		
 		String homeDir   = System.getProperty("user.home");
@@ -210,31 +228,29 @@ public class ContourRendererHelper
 		// that a single structure set can reference base data from more than
 		// one scan.
 		int nDownloadFailures = 0;
-		for (String scanId : caller.getXnatScanIdSet())
+		for (String scanId : xnatScanIdSet)
 		{
-			String RESTCommand = "/data/archive/experiments/" + caller.getXnatExperimentId()
-						                + "/scans/"              + scanId
-						                + "/resources/DICOM"
-						                + "/files"
-						                + "?format=xml";
-
+			String RESTCommand = "/data/archive/experiments/" + xnatExperimentId
+					  + "/scans/"              + scanId
+					  + "/resources/DICOM"
+					  + "/files"
+					  + "?format=xml";
 			Vector2D  resultSet;
 			try
 			{
-				XNATRESTToolkit xnrt = new XNATRESTToolkit(caller.getXnatProfile());
+				XNATRESTToolkit xnrt = new XNATRESTToolkit(xnatProfile);
 				resultSet = xnrt.RESTGetResultSet(RESTCommand);
 			}
 			catch(XNATException exXNAT)
 			{
 				throw new XNATException(XNATException.RETRIEVING_LIST);
 			}
-			
 			Vector<String> URI  = resultSet.getColumn(2);
 			for (int i=0; i<URI.size(); i++)
 			{
 				int pos     = URI.elementAt(i).lastIndexOf(fileSep);
 				String name = URI.elementAt(i).substring(pos+1);
-				if (filenames.contains(name))
+				if (filenameSet.contains(name))
 				{
 					// Build the local cache filename where the data will be stored.
 					// The directory structure is a bit long-winded, but should be
@@ -252,11 +268,11 @@ public class ContourRendererHelper
 						{
 							parent.mkdirs();
 							BufferedOutputStream bos
-								= new BufferedOutputStream(new FileOutputStream(cacheFile, true));
-
+									  = new BufferedOutputStream(new FileOutputStream(cacheFile, true));
+							
 							BufferedInputStream  bis
-								= new BufferedInputStream(caller.getXnatProfile().doRESTGet(URI.elementAt(i)));
-
+									  = new BufferedInputStream(xnatProfile.doRESTGet(URI.elementAt(i)));
+							
 							byte[] buf = new byte[8192];
 
 							while (true)
@@ -272,8 +288,8 @@ public class ContourRendererHelper
 							catch (IOException ignore) {;}
 
 							try{bos.close();}
-							catch (IOException ignore) {;}                                 
-
+							catch (IOException ignore) {;}
+							
 						}
 						catch (Exception ex)
 						{
@@ -301,14 +317,13 @@ public class ContourRendererHelper
 
       ArrayList<BufferedImage> result = new ArrayList<BufferedImage>();
       
-      for (RenderContour rc : rndCList)
+      for (RenderContour rc : renderContourList)
       {         
          try
          {
             BufferedImage bi = getBaseImage(rc.baseImageFilename, rc.baseFrameNumberList);
             overlayContour(bi, rc);
-            result.add(ImageUtilities.scaleColourImageByFFT(bi,
-                                              THUMBNAIL_SIZE, THUMBNAIL_SIZE));
+            result.add(ImageUtilities.scaleColourImageByFFT(bi, thumbnailSize, thumbnailSize));
          }
          catch (ImageUtilitiesException | XNATException ex)
          {
@@ -325,7 +340,7 @@ public class ContourRendererHelper
       
       
       
-   private BufferedImage getBaseImage(String imageFilename, ArrayList<Integer> frameNumber)
+   private BufferedImage getBaseImage(String imageFilename, List<Integer> frameNumberList)
                          throws XNATException, ImageUtilitiesException
    {
       DicomObject bdo	= new BasicDicomObject();
@@ -605,4 +620,53 @@ public class ContourRendererHelper
       
       return result;
    }
+	
+	
+	public void setDisplayColour(List<Integer> col)
+	{
+		displayColour = col;
+	}
+	
+	
+	public void setFrameOfReference(String uid)
+	{
+		frameOfReferenceUid = uid;
+	}
+	
+	
+	public void setCoordsAsPixel(boolean b)
+	{
+		coordsAsPixel = b;
+	}
+	
+	
+	public void setRenderContourList(List<RenderContour> rcl)
+	{
+		renderContourList = rcl;
+	}
+	
+	
+	public void setFilenameSet(Set<String> fs)
+	{
+		filenameSet = fs;
+	}
+	
+	
+	public void setXnatExperimentId(String s)
+	{
+		xnatExperimentId = s;
+	}
+	
+	
+	public void setXnatProfile(XNATProfile xnprf)
+	{
+		xnatProfile = xnprf;
+	}
+	
+	
+	public void setXnatScanIdSet(Set<String> ss)
+	{
+		xnatScanIdSet = ss;
+	}
+	
 }

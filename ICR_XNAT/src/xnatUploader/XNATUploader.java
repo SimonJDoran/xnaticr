@@ -545,6 +545,9 @@ public final class XNATUploader extends XNATGUI
       
       uploaderClassMap.put(new TypeSubtype("Regions-of-interest", "Set of ROIs"),
                            RtStructDataUploader.class);
+	
+		uploaderClassMap.put(new TypeSubtype("Regions-of-interest", "AIM instance files"),
+                           AimImageAnnotationCollectionDataUploader.class);
 //      uploaderClassMap.put(new TypeSubtype("Application outputs", "Adept output"),
 //                           AdeptDataUploader.class);
 //      uploaderClassMap.put(new TypeSubtype("Application outputs", "MRIW output"),

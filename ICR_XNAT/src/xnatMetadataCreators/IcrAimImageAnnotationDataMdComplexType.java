@@ -63,22 +63,28 @@ public class IcrAimImageAnnotationDataMdComplexType extends IcrGenericImageAsses
 {
 	protected String       comment;
 	protected String       description;
-	protected String       associatedRoiSetId;
+	protected String       associatedRegionSetId;
 	protected List<String> aimEntitySubclassIdList;
+	protected Integer      nTaskContextEntity;
+	protected Integer      nInferenceEntity;
+	protected Integer      nAnnotationRoleEntity;
+	protected Integer      nCalculationEntity;
+	protected Integer      nImagingObservationEntity;
+	protected Integer      nImagingPhysicalEntity;
 	
 	@Override
 	public void insertXml() throws IOException, XMLException
 	{
 		super.insertXml();
 		
-		dppXML.delayedWriteEntityWithText("comment",     comment)
-				.delayedWriteEntityWithText("description", description)
-				.delayedWriteEntityWithText("roiSetID",    associatedRoiSetId);
+		dppXML.delayedWriteEntityWithText("comment",        comment)
+				.delayedWriteEntityWithText("description",    description)
+				.delayedWriteEntityWithText("regionSetId",    associatedRegionSetId);
 		
-		dppXML.delayedWriteEntity("aimEntitySubclassIDs");
+		dppXML.delayedWriteEntity("aimEntitySubclassIds");
 		for (String s : aimEntitySubclassIdList)
 		{
-			dppXML.delayedWriteEntityWithText("aimEntitySubclassID", s);
+			dppXML.delayedWriteEntityWithText("aimEntitySubclassId", s);
 		}
 		dppXML.delayedEndEntity();
 	}
@@ -97,12 +103,42 @@ public class IcrAimImageAnnotationDataMdComplexType extends IcrGenericImageAsses
 	
 	public void setAssociatedRoiSetId(String s)
 	{
-		associatedRoiSetId = s;
+		associatedRegionSetId = s;
 	}
 	
 	
 	public void setAimEntitySubclassIdList(List<String> ls)
 	{
 		aimEntitySubclassIdList = ls;
+	}
+	
+	public void setNTaskContextEntity(Integer n)
+	{
+		nTaskContextEntity = n;
+	}
+	
+	public void setNInferenceEntity(Integer n)
+	{
+		nInferenceEntity = n;
+	}
+	
+	public void setNAnnotationRoleEntity(Integer n)
+	{
+		nAnnotationRoleEntity = n;
+	}
+	
+	public void setNCalculationEntity(Integer n)
+	{
+		nCalculationEntity = n;
+	}
+	
+	public void setNImagingObservationEntity(Integer n)
+	{
+		nImagingObservationEntity = n;
+	}
+	
+	public void setNImagingPhysicalEntity(Integer n)
+	{
+		nImagingPhysicalEntity = n;
 	}
 }

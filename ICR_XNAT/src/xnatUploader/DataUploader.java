@@ -166,7 +166,40 @@ public abstract class DataUploader
    }
 
 
-   public boolean isPreparedForUpload()
+      /**
+    * This method interprets the file just opened. It is implemented differently
+    * by each concrete class, as each type of data has different requirements.
+	 * The default implementation applies to subclasses that have the relevant
+	 * data pre-computed by another part of the uploader and never need to read
+	 * an actual data file.
+    * 
+    * @return a boolean indicating whether the file was parsed correctly
+    */
+   protected boolean parseFile()
+	{
+		return true;
+	}
+   
+   
+	 /**
+    * Open and read the specified file.
+    * It is implemented differently
+    * by each concrete class, as each type of data has different requirements.
+	 * The default implementation applies to subclasses that have the relevant
+	 * data pre-computed by another part of the uploader and never need to read
+	 * an actual data file.
+	 * 
+    * @return a boolean variable with true if the file was opened successfully
+    *         and false otherwise.
+    */
+   public boolean readFile()
+   {
+      return true;
+   }
+	
+	
+	
+	public boolean isPreparedForUpload()
    {
       return isPrepared;
    }
@@ -377,32 +410,6 @@ public abstract class DataUploader
    }
 	
 	
-	
-   /**
-    * Open and read the specified file.
-    * Note that the default type of file is XML, but this method will be over-
-    * ridden in subclasses to allow us to open arbitrary file types, such as
-    * DICOM.
-    * @return a boolean variable with true if the file was opened successfully
-    *         and false otherwise.
-    */
-   public boolean readFile()
-   {
-      try
-      {
-         FileInputStream fis = new FileInputStream(uploadFile);
-         doc = XMLUtilities.getDOMDocument(fis);
-      }
-      catch (IOException | XMLException ex)
-      {
-         errorOccurred = true;
-         errorMessage  = "Unable to open selected file. \n\n" + ex.getMessage();
-         return false;
-      }
-
-      return true;
-   }
-   
    
 	// Retrieve some demographic information so that it is available
    // for output where necessary.
@@ -471,24 +478,18 @@ public abstract class DataUploader
       return new Provenance();
    }
    
-   /**
-    * This method interprets the file just opened. It is implemented differently
-    * by each concrete class, as each type of data has different requirements.
-    * 
-    * @return a boolean indicating whether the file was parsed correctly
-    */
-   public abstract boolean parseFile();
-   
-   
-   
+
+	
    /**
     * This method updates the parsing of the file to take into account the
     * most recent selection of either subject or experiment labels from the
-    * JCombo boxes in the user interface.
+    * JCombo boxes in the user interface. The default implementation (i.e.,
+	 * do nothing) is applicable to data types that are uploaded without the UI.
     */
-   public abstract void updateParseFile();
+   public void updateParseFile() {}
    
    
+	
    /** While updateParseFile() is running, it is useful to set a busy cursor
     *  to show the user that something is happening. This is a fairly crude
     *  implementation at present.
@@ -656,20 +657,12 @@ public abstract class DataUploader
    }
    
 
-	
-	/**
-	 * Get the list of files containing the input data used in the creation of this
-	 * XNAT assessor. Each subclass implements its own method for populating the
-	 * list returned.
-	 * @return 
-	 */
-   protected abstract ArrayList<String> getInputCatEntries();
-   
-   
+	 
    /**
     * After uploading a file, we need to clear all the fields in the UI.
+	 * @param mdsp the MetadataPanel in which the fields and titles are displayed
     */
-   public abstract void clearFields(MetadataPanel mdsp);
+   protected void clearFields(MetadataPanel mdsp) {}
 
    
    /**
@@ -690,16 +683,23 @@ public abstract class DataUploader
     */
    protected abstract void createAuxiliaryResources();
 	
+	
 	/**
-	 * Change appropriate data variables to reflect any edits made by users.
+	 * Change appropriate data variables to reflect any edits made in the UI.
+	 * @param mdsp MetadataPanel in the UI where the fields are edited
 	 */
-   public abstract void updateVariablesForEditableFields(MetadataPanel mdsp);
+   protected void updateVariablesForEditableFields(MetadataPanel mdsp) {}
+	
 	
 	/**
     * Return a list of the fields that may be edited.
 	 * Allow the flexibility for each concrete class to define its own.
+	 * @return a List containing the aliases of all the fields that can be edited
     */
-   public abstract List<String> getEditableFields();
+   protected List<String> getEditableFields()
+	{
+		return new ArrayList<>();
+	}
 	
 	
 	/**
@@ -707,21 +707,24 @@ public abstract class DataUploader
 	 * that force a value to be entered. Allow the flexibility for each
     * concrete class to define its own fields to watch.
     */
-   public abstract List<String> getRequiredFields();
+   protected List<String> getRequiredFields()
+	{
+		return new ArrayList<>();
+	}
 
 
    /**
     * Get the XNAT root element corresponding to the relevant concrete class.
     * @return a String containing the root element name
     */
-   public abstract String getRootElement();
+   protected abstract String getRootElement();
    
    
    /**
     * Get the XNAT complexType of the root element corresponding to the relevant concrete class.
     * @return a String containing the root element name
     */
-   public abstract String getRootComplexType();
+   protected abstract String getRootComplexType();
    
   
    /**
@@ -730,7 +733,7 @@ public abstract class DataUploader
     * @param uploadItem the name of the item being processed
     * @return a String containing the root of the REST URL to which upload will occur
     */
-   public abstract String getUploadRootCommand(String uploadItem);
+   protected abstract String getUploadRootCommand(String uploadItem);
 	
   
    
@@ -739,11 +742,9 @@ public abstract class DataUploader
     * that will go into the PostgreSQL database.
     * 
     * @return an XNAT-compatible metadata XML Document
-	 * @throws java.util.zip.DataFormatException
     */
-   public abstract Document createMetadataXml();
+   protected abstract Document createMetadataXml();
    
-  
 
 
    /**
@@ -753,7 +754,10 @@ public abstract class DataUploader
     * @return boolean informing the caller whether the correct metadata
     * have been entered
     */
-   public abstract boolean rightMetadataPresent();
+   protected boolean rightMetadataPresent()
+	{
+		return true;
+	}
 
 
    /**
@@ -947,7 +951,7 @@ public void setExperimentId(String id)
     * not need to be called by users.
     * @param xnprf an appropriate XNATProfile object
     */
-   public void setProfile(XNATProfile xnprf)
+   void setProfile(XNATProfile xnprf)
    {
       this.xnprf  = xnprf;
       xnrt        = new XNATRESTToolkit(this.xnprf);
@@ -959,7 +963,7 @@ public void setExperimentId(String id)
     * Get the File currently being uploaded.
     * @return the required file
     */
-   public File getUploadFile()
+   protected File getUploadFile()
    {
       return uploadFile;
    }

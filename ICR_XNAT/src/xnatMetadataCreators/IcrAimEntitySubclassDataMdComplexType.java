@@ -69,7 +69,7 @@ public class IcrAimEntitySubclassDataMdComplexType extends IcrGenericImageAssess
 	protected String       subtypeName;
 	protected String       isPresent;
 	protected String       annotatorConfidence;
-	protected String       associatedRoiSetId;
+	protected String       associatedRegionSetId;
 	protected List<String> associatedAimEntitySubclassIdList;
 	
 	@Override
@@ -88,17 +88,17 @@ public class IcrAimEntitySubclassDataMdComplexType extends IcrGenericImageAssess
 				.delayedWriteEntityWithText("questionTypeCodeSystemName",    questionTypeCodeSystemName)
 				.delayedWriteEntityWithText("questionTypeCodeSystemVersion", questionTypeCodeSystemVersion)
 				.delayedWriteEntityWithText("questionIndex",                 questionIndex)
-				.delayedWriteEntityWithText("templateUID",                   templateUid)
+				.delayedWriteEntityWithText("templateUid",                   templateUid)
 				.delayedWriteEntityWithText("subtypeName",                   subtypeName)
 				.delayedWriteEntityWithText("isPresent",                     isPresent)
 				.delayedWriteEntityWithText("annotatorConfidence",           annotatorConfidence)
-				.delayedWriteEntityWithText("associatedRoiSetID",            associatedRoiSetId);
+				.delayedWriteEntityWithText("associatedRegionSetId",         associatedRegionSetId);
 			
 		
-		dppXML.delayedWriteEntity("asociatedAimEntitySubclassIDs");
+		dppXML.delayedWriteEntity("asociatedAimEntitySubclassIds");
 		for (String s : associatedAimEntitySubclassIdList)
 		{
-			dppXML.delayedWriteEntityWithText("asocEntSubID", s);
+			dppXML.delayedWriteEntityWithText("asocEntSubId", s);
 		}
 		dppXML.delayedEndEntity();
 	}
@@ -195,9 +195,9 @@ public class IcrAimEntitySubclassDataMdComplexType extends IcrGenericImageAssess
 	}
 	
 	
-	public void setAssociatedRoiSetId(String s)
+	public void setAssociatedRegionSetId(String s)
 	{
-		associatedRoiSetId = s;
+		associatedRegionSetId = s;
 	}
 	
 	public void setAssociatedAimEntitySubclassIdList(List<String> ls)

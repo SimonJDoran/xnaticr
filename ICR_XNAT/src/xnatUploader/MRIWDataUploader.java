@@ -71,6 +71,7 @@ import org.dcm4che2.data.DicomObject;
 import org.dcm4che2.data.TransferSyntax;
 import org.dcm4che2.io.DicomOutputStream;
 import org.w3c.dom.Document;
+import xmlUtilities.XMLUtilities;
 import xnatDAO.XNATGUI;
 import xnatDAO.XNATProfile;
 import xnatRestToolkit.XnatResource;
@@ -120,7 +121,28 @@ public class MRIWDataUploader extends QCAssessmentDataUploader
       simpleEntries.put("Aggregate values",      "aggregateValues");
    }
 
-   @Override
+   
+	@Override
+	public boolean readFile()
+   {
+      try
+      {
+         FileInputStream fis = new FileInputStream(uploadFile);
+         doc = XMLUtilities.getDOMDocument(fis);
+      }
+      catch (IOException | XMLException ex)
+      {
+         errorOccurred = true;
+         errorMessage  = "Unable to open selected file. \n\n" + ex.getMessage();
+         return false;
+      }
+
+      return true;
+   }
+	
+	
+	
+	@Override
    public boolean parseFile()
    {     
       try

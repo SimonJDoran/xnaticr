@@ -88,7 +88,7 @@ import xnatDAO.XNATProfile;
 import xnatMetadataCreators.IcrRegionSetDataMdComplexType;
 import xnatRestToolkit.XnatResource;
 
-public class RtStructDataUploader extends DataUploader
+class RtStructDataUploader extends DataUploader
 {
 	private DicomObject         bdo;
 	
@@ -104,7 +104,7 @@ public class RtStructDataUploader extends DataUploader
 	public ArrayList<String>   assignedRegionIdList = new ArrayList<>();
 	public int                 nRois;
 	
-	public RtStructDataUploader(XNATProfile xnprf)
+	RtStructDataUploader(XNATProfile xnprf)
 	{
 		super(xnprf);
 	}
@@ -466,9 +466,9 @@ public class RtStructDataUploader extends DataUploader
    {
       errorOccurred = false;
 		
-		// -------------------------------------------
+		// ----------------------------------------------
       // Step 1: Upload the icr:regionSetData metadata.
-      // -------------------------------------------
+      // ----------------------------------------------
       
       if (XNATAccessionID == null)
          XNATAccessionID = getRootElement() + "_" + UIDGenerator.createShortUnique();
@@ -524,9 +524,13 @@ public class RtStructDataUploader extends DataUploader
          try
          {
             ru.setAccessionId(assignedRegionIdList.get(i));
+				ru.setParentAccessionId(XNATAccessionID);
             ru.setRoiPositionInSSRoiSequence(i);
             ru.setSubjectId(XNATSubjectID);
             ru.setExperimentId(XNATExperimentID);
+				ru.setParentProvenance(prov);
+				ru.setParentRtStruct(rts);
+				
 				ru.uploadMetadata();
             ru.uploadResourcesToRepository();
          }
@@ -672,8 +676,8 @@ public class RtStructDataUploader extends DataUploader
 		
 		// XnatImageAssessorDataMdComplexType inherits from XnatDerivedDataMdComplexType.
 		
- 
-		regionSet.setProvenance(retrieveProvenance());
+		prov = retrieveProvenance();  // Used later, too.
+		regionSet.setProvenance(prov);
 				                                 
 		
 		// XnatDerivedDataMdComplexType inherits from XnatExperimentData.
@@ -878,7 +882,7 @@ public class RtStructDataUploader extends DataUploader
       return (!labelPrefix.equals("")) &&
              (!XNATSubjectID.equals(""))           &&
              (!XNATExperimentID.equals(""))        &&
-             (!XNATScanIdSet.equals(""));
+             (!XNATScanIdSet.isEmpty());
    }
    
    
@@ -905,9 +909,4 @@ public class RtStructDataUploader extends DataUploader
              + "/assessors/"           + uploadItem;
    }
 
-   @Override
-   protected ArrayList<String> getInputCatEntries()
-   {
-      return new ArrayList<String>();
-   }
 }

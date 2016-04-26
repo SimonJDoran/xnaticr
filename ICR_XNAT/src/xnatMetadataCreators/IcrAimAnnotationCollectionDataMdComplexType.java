@@ -53,9 +53,9 @@ import xmlUtilities.DelayedPrettyPrinterXmlWriter;
 
 public class IcrAimAnnotationCollectionDataMdComplexType extends IcrGenericImageAssessmentDataMdComplexType
 {
-	protected String aimVersion;
-	protected String numImageAnnotations;
-	protected String associatedRoiSetId;
+	protected String  aimVersion;
+	protected Integer numImageAnnotations;
+	protected String  associatedRegionSetId;
 	
 	@Override
 	public void insertXml() throws IOException, XMLException
@@ -64,7 +64,7 @@ public class IcrAimAnnotationCollectionDataMdComplexType extends IcrGenericImage
 		
 		dppXML.delayedWriteEntityWithText("aimVersion",          aimVersion)
 				.delayedWriteEntityWithText("numImageAnnotations", numImageAnnotations)
-				.delayedWriteEntityWithText("associatedRoiSetID",  associatedRoiSetId);
+				.delayedWriteEntityWithText("associatedRoiSetId",  associatedRegionSetId);
 	}
 	
 	
@@ -74,15 +74,15 @@ public class IcrAimAnnotationCollectionDataMdComplexType extends IcrGenericImage
 	}
 	
 	
-	public void setnumImageAnnotations(String s)
+	public void setnumImageAnnotations(Integer n)
 	{
-		numImageAnnotations = s;
+		numImageAnnotations = n;
 	}
 	
 	
-	public void setAssociatedRoiSetId(String s)
+	public void setAssociatedRegionSetId(String s)
 	{
-		associatedRoiSetId = s;
+		associatedRegionSetId = s;
 	}
 	
 	
