@@ -165,58 +165,7 @@ public class AimImageAnnotationCollectionDataUploader extends DataUploader
 		XNATAccessionID = "1";
 	}   
       
-   @Override
-   public void createAuxiliaryResources()
-   {	
-		String fileSep    = System.getProperty("file.separator");
-      String filePrefix = XNATGUI.getHomeDir() + "temp" + fileSep + XNATAccessionID;
-      try
-      {
-         ContourRendererHelper cr = new ContourRendererHelper();
-         ArrayList<BufferedImage> thumbnails = cr.createImages();
-			String thumbnailFile = filePrefix + "_AIM_ROI_thumbnail_";
-
-         for (int i=0; i<thumbnails.size(); i++)
-         {
-            File outputFile = new File(thumbnailFile + i);
-            ImageIO.write(thumbnails.get(i), "png", outputFile);
-            
-				XnatResource xr = new XnatResource(outputFile,
-		                                         "out",
-		                                         "AIM_ROI_THUMBNAIL",
-				                                   "PNG",
-		                                         "GENERATED",
-		                                         "thumbnail image containing ROI contour",
-				                                   outputFile.getName());
-				auxiliaryResources.add(xr);
-         }
-      }
-      catch (Exception ex)
-      {
-         reportError(ex, "create AIM thumbnail file");
-      }
-		
-		DicomOutputStream dos = null;
-		DicomObject       rts;
-		try
-		{
-			dos = new DicomOutputStream(
-						new FileOutputStream(
-							new File(filePrefix + "AIM_RT-STRUCT.dcm")));
-			rts = aim.createDICOM();
-			dos.writeItem(rts, TransferSyntax.ExplicitVRLittleEndian);
-		}
-		catch (Exception ex)
-		{
-			reportError(ex, "create RT-STRUCT from AIM document");
-		}
-		finally
-		{
-			try {if (dos != null) dos.close();} catch (IOException exIO) {}
-		}
-   }
-      
-   
+     
 	@Override
 	public Document createMetadataXml()
 	{
@@ -264,17 +213,13 @@ public class AimImageAnnotationCollectionDataUploader extends DataUploader
    
    
    
-   /**
-    * Create additional thumbnail files for upload with the DICOM-RT structure set.
-    */
    @Override
    public void createAuxiliaryResources()
    {
-      // In the first instance, the only auxiliary file needed is the
-		// input catalogue, since the referenced ROI objects already contain
-		// the required thumbnails.
-      // TODO: Consider whether some composite visualisation is needed to
-      // summarise all the ROI's making up the AIM file object.
+      // There are no auxiliary resources associated with an
+      // AimImageAnnotationCollection. uploadMetadata() above kicks off a
+      // separate upload of an RT-STRUCT, which, in turn archives the ROI objects.
+      // Hence, nothing needs to be done here.
    }
    
    

@@ -101,20 +101,23 @@ class RegionFromRtStructDataUploader extends DataUploader implements ContourRend
 	public  RtStruct             rtsSingle;
 	
 	// Capture all the data from the class supervising the uploading.
-	private RtStructDataUploader rtdsu;
-   private int                  roiPos;
+	private int                  roiPos;
 	public Set<String>           sopInstanceUidSet;
 	public Set<String>           filenameSet;
 	private RtStruct             rtsParent;
 	private Provenance           provParent;
+   private Integer              nRoisParent;
 	private String               accessionIdParent;
+   private String               labelParent;
+   private File                 uploadFileParent;
 	private Map<String, String>  sopFileMap;
+   private Map<String, String>  fileSopMap;
 	private Map<String, String>  fileScanMap;
+   
 	
-	RegionFromRtStructDataUploader(XNATProfile xnprf, RtStructDataUploader rtdsu)
+	RegionFromRtStructDataUploader(XNATProfile xnprf)
 	{
 		super(xnprf);
-	   this.rtdsu = rtdsu;
 	}
 	
 	@Override
@@ -151,7 +154,7 @@ class RegionFromRtStructDataUploader extends DataUploader implements ContourRend
 		for (String s : rtsParent.generalEquipment.softwareVersions) sb.append(s).append(sep);
 		region.setOriginatingApplicationVersion(sb.toString());
 		
-      region.setOriginalContainsMultipleRois((rtdsu.nRois > 1) ? "true" : "false");
+      region.setOriginalContainsMultipleRois((nRoisParent > 1) ? "true" : "false");
       region.setRoiNumberInOriginal(Integer.toString(ssr.roiNumber));
 		
 		region.setRoiName(ssr.roiName);
@@ -240,9 +243,9 @@ class RegionFromRtStructDataUploader extends DataUploader implements ContourRend
 			// corresponding to the file name. If yes, add the scan ID corresponding
 			// to this filename. Of course, many files will have the same scan number
 			// (unless we are dealing with multi-frame DICOM), hence the use of a Set.
-			String filename = rtdsu.sopFileMap.get(sopUid);
+			String filename = sopFileMap.get(sopUid);
 			filenameSet.add(filename);
-			XNATScanIdSet.add(rtdsu.fileScanMap.get(filename));
+			XNATScanIdSet.add(fileScanMap.get(filename));
 		}
 		
 		List<Scan> lsc = new ArrayList<>();
@@ -270,7 +273,7 @@ class RegionFromRtStructDataUploader extends DataUploader implements ContourRend
 			List<MetaField>  mfl = new ArrayList<>();
 			mfl.add(new MetaField("filename",       filename));
 			mfl.add(new MetaField("format",         "DICOM"));
-			mfl.add(new MetaField("SOPInstanceUID", rtdsu.fileSopMap.get(filename)));
+			mfl.add(new MetaField("SOPInstanceUID", fileSopMap.get(filename)));
 			ar.tagList = mfl;
 			inList.add(ar);
 		}
@@ -278,7 +281,7 @@ class RegionFromRtStructDataUploader extends DataUploader implements ContourRend
 		List<AbstractResource> outList = new ArrayList<>();
 		AbstractResource       ar      = new AbstractResource();
 		List<MetaField>        mfl     = new ArrayList<>();
-		mfl.add(new MetaField("filename", rtdsu.uploadFile.getName()));
+		mfl.add(new MetaField("filename", uploadFile.getName()));
 		mfl.add(new MetaField("format",   "RT-STRUCT"));
 		ar.tagList = mfl;
 		outList.add(ar);
@@ -286,7 +289,7 @@ class RegionFromRtStructDataUploader extends DataUploader implements ContourRend
 		region.setInList(inList);
 		region.setOutList(outList);
 		
-		region.setImageSessionId(rtdsu.XNATExperimentID);
+		region.setImageSessionId(XNATExperimentID);
 		
 		// For this object, there are no additional fields. This entry is
 		// empty, but still needs to be set.
@@ -304,7 +307,7 @@ class RegionFromRtStructDataUploader extends DataUploader implements ContourRend
 		// XnatDerivedDataMdComplexType inherits from XnatExperimentData.
 		
       region.setId(XNATAccessionID);
-      region.setProject(rtdsu.XNATProject);
+      region.setProject(XNATProject);
       
       //StringBuilder versions = new StringBuilder();
 		//for (String s : rts.generalEquipment.softwareVersions) versions.append(s);
@@ -314,12 +317,12 @@ class RegionFromRtStructDataUploader extends DataUploader implements ContourRend
 		// version above is no use.
 		region.setVersion("1");
 		
-      label = rtdsu.label + " " + getRootElement() + "_" + ssr.roiNumber;
+      label = labelParent + " " + getRootElement() + "_" + ssr.roiNumber;
 		region.setLabel(label);
       
-		region.setDate(rtdsu.date);
-      region.setTime(rtdsu.time);
-      region.setNote(rtdsu.note);
+		region.setDate(date);
+      region.setTime(time);
+      region.setNote(note);
 		
       // No correlates in the structure set read in for visit, visitId,
       // original, protocol and investigator. However, we need to set an
@@ -399,7 +402,7 @@ class RegionFromRtStructDataUploader extends DataUploader implements ContourRend
             description.append("ROI thumbnail rendered by ICR DataUploader ")
                        .append(version)
                        .append("extracted from original RT-STRUCT file ")
-                       .append(rtdsu.uploadFile.getName());
+                       .append(uploadFile.getName());
             
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
             ImageIO.write(thumbnails.get(i), "png", baos);
@@ -457,7 +460,7 @@ class RegionFromRtStructDataUploader extends DataUploader implements ContourRend
          
          RenderContour rndC       = new RenderContour();
          String baseSop           = c.contourImageList.get(0).referencedSopInstanceUid;
-         rndC.baseImageFilename   = rtdsu.sopFileMap.get(baseSop);
+         rndC.baseImageFilename   = sopFileMap.get(baseSop);
 			rndC.baseFrameNumberList = c.contourImageList.get(0).referencedFrameNumber;
          rndC.nContourPoints      = c.nContourPoints;
          rndC.contourPoints       = new float[c.nContourPoints][3];
@@ -504,7 +507,40 @@ class RegionFromRtStructDataUploader extends DataUploader implements ContourRend
 	{
 		accessionIdParent = s;
 	}
+   
+   
+   void setParentLabel(String s)
+	{
+      labelParent = s;
+	}
+   
+   
+   void setParentNRois(Integer n)
+	{
+      nRoisParent = n;
+	}
 	
 	
-	void setSopFileMap
+	void setSopFileMap(Map<String, String> m)
+   {
+      sopFileMap = m;
+   }
+   
+   
+   void setFileSopMap(Map<String, String> m)
+   {
+      fileSopMap = m;
+   }
+   
+   
+   void setFileScanMap(Map<String, String> m)
+   {
+      fileScanMap = m;
+   }
+   
+   
+   void setParentUploadFile(File f)
+   {
+      uploadFileParent = f;
+   }
 }

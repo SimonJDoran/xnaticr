@@ -923,15 +923,33 @@ public abstract class DataUploader
    }
    
    
- public void setSubjectId(String id)
+   public void setSubjectId(String id)
    {
       XNATSubjectID = id;
    }
    
    
-public void setExperimentId(String id)
+   public void setExperimentId(String id)
    {
       XNATExperimentID = id;
+   }
+   
+   
+   public void setDate(String s)
+   {
+      date = s;
+   }
+   
+   
+   public void setTime(String s)
+   {
+      time = s;
+   }
+   
+   
+   public void setNote(String s)
+   {
+      note = s;
    }
    
    

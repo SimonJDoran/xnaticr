@@ -46,6 +46,7 @@
 
 package dataRepresentations.dicom;
 
+import etherj.aim.ImageAnnotationCollection;
 import exceptions.DataFormatException;
 import exceptions.DataRepresentationException;
 import generalUtilities.UIDGenerator;
@@ -128,7 +129,23 @@ public class RtStruct extends DicomEntity
 				                                  Tag.RTROIObservationsSequence, 1);
    }
 	
-
+   
+   
+   /**
+    * Constructor with data from an AIM image annotation collection (normally
+    * derived from an AIM XML instance file..
+    * @param iac an AIM ImageAnnotationCollection parsed from the source XML
+    * by James d'Arcy's Etherj package.
+	 * @throws exceptions.DataFormatException 
+    */
+   public RtStruct(ImageAnnotationCollection iac) throws DataFormatException
+   {
+      // Note that most of the data needed for the RT-STRUCT is not contained
+      // within the AIM source file and we have to seek it out from the
+      // original image source DICOM files, which is tedious.
+   }
+   
+   
 	/**
 	 * Constructor with data from a previously constructed RtStruct object,
 	 * and choosing a subset of the existing regions-of-interest

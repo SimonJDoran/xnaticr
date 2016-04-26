@@ -520,7 +520,7 @@ class RtStructDataUploader extends DataUploader
       	
       for (int i=0; i<rts.structureSet.structureSetRoiList.size(); i++)
       {
-         RegionFromRtStructDataUploader ru = new RegionFromRtStructDataUploader(xnprf, this);
+         RegionFromRtStructDataUploader ru = new RegionFromRtStructDataUploader(xnprf);
          try
          {
             ru.setAccessionId(assignedRegionIdList.get(i));
@@ -530,7 +530,16 @@ class RtStructDataUploader extends DataUploader
             ru.setExperimentId(XNATExperimentID);
 				ru.setParentProvenance(prov);
 				ru.setParentRtStruct(rts);
-				
+            ru.setParentUploadFile(uploadFile);
+            ru.setParentLabel(label);
+            ru.setParentNRois(nRois);
+            ru.setSopFileMap(sopFileMap);
+            ru.setFileSopMap(fileSopMap);
+            ru.setFileScanMap(fileScanMap);
+            ru.setDate(date);
+            ru.setTime(time);
+            ru.setNote(note);
+                    
 				ru.uploadMetadata();
             ru.uploadResourcesToRepository();
          }

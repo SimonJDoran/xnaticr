@@ -71,12 +71,11 @@ import xnatMetadataCreators.IcrAimImageAnnotationDataMdComplexType;
 import xnatRestToolkit.XnatResource;
 
 public class AimImageAnnotationDataUploader extends DataUploader
-                                            implements ContourRenderer
 {
 	protected ImageAnnotation ia;
 
 	
-	public AimImageAnnotationDataUploader(XNATProfile xnprf, RtStructDataUploader rtdsu)
+	public AimImageAnnotationDataUploader(XNATProfile xnprf)
 	{
 		super(xnprf);  
 	}
@@ -129,60 +128,19 @@ public class AimImageAnnotationDataUploader extends DataUploader
    @Override
    protected void createPrimaryResource()
    {
-      // There is no primary resource associated with a Region entity.
+      // There is no primary resource associated with an AIM ImageAnnotation
+      // entity. The AimImageAnnotationCollectionDataUploader does the upload
+      // of the AIM instance XML file. 
    }
 	
 
    @Override
    protected void createAuxiliaryResources()
    {
-      //createInputCatalogueFile("DICOM", "RAW", "referenced contour image");
-		
-      ContourRendererHelper crh;
-      Map<String, File>     fileMap;
-      try
-      {
-         crh = createContourRendererHelper();
-         crh.retrieveBaseImagesToCache();
-      }
-      catch (DataFormatException | XNATException ex)
-      {
-          reportError(ex, "create thumbnail images");
-          return;
-      }   
-      
-		try
-      {
-         ArrayList<BufferedImage> thumbnails = crh.createImages();
-         String filePrefix = XNATAccessionID + "_ROI_thumbnail_";
-         
-         for (int i=0; i<thumbnails.size(); i++)
-         {
-            StringBuilder description = new StringBuilder();
-            description.append("ROI thumbnail rendered by ICR DataUploader ")
-                       .append(version)
-                       .append("extracted from original RT-STRUCT file ")
-                       .append(rtdsu.uploadFile.getName());
-            
-            ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            ImageIO.write(thumbnails.get(i), "png", baos);
-            InputStream bais = new ByteArrayInputStream(baos.toByteArray());
-            
-            XnatResource xr = new XnatResource(bais,
-		                                         "out",
-		                                         filePrefix + i,
-				                                   "PNG",
-		                                         "ROI_THUMBNAIL",
-		                                         description.toString(),
-				                                   filePrefix + i + ".png");
-				
-            auxiliaryResources.add(xr);
-         }
-      }
-      catch (IOException | ImageUtilitiesException ex)
-      {
-         reportError(ex, "create RT thumbnail file");
-      }      
+      // There are no auxiliary resources associated with an AIM ImageAnnotation.
+      // The AimImageAnnotationCollectionDataUploader kicks off a separate upload
+      // of an RT-STRUCT file, which, in turn archives the ROI objects. Hence,
+      // nothing needs to be done here.
    }
 	
 	@Override
