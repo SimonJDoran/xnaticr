@@ -143,6 +143,7 @@ public class RtStruct extends DicomEntity
       // Note that most of the data needed for the RT-STRUCT is not contained
       // within the AIM source file and we have to seek it out from the
       // original image source DICOM files, which is tedious.
+      
    }
    
    

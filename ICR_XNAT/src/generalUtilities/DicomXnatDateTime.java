@@ -163,11 +163,47 @@ public class DicomXnatDateTime
     */
    public static String convertMriwToXnatTime(String dateTime) throws DataFormatException
    {
+		if (dateTime.length() < 9) throw new DataFormatException(DataFormatException.TIME);
+      //TODO Better input checking: will currently return non-valid dates
+		//     if input is not a bona fide MRIW time.
+		
+		return dateTime.substring(1, 9);
+   }
+   
+   
+   
+   /**
+    * Take a String variable in the form that is used by the AIM XML file and
+    * convert it to the XNAT date format yyyy-mm-dd.
+    * @param dateTime
+    * @return A String containing the date
+    * @throws DataFormatException
+    */
+   public static String convertAimToXnatDate(String dateTime) throws DataFormatException
+   {
 		if (dateTime.length() < 19) throw new DataFormatException(DataFormatException.TIME);
       //TODO Better input checking: will currently return non-valid dates
 		//     if input is not a bona fide MRIW time.
 		
-		return dateTime.substring(11, 19);
+		return dateTime.substring(0, 9);
+   }
+   
+   
+   
+   /**
+    * Take a String variable in the form that is used by the AIM XML file and
+    * convert it to the XNAT date format hh:MM:ss.
+    * @param dateTime
+    * @return A String containing the time 
+    * @throws DataFormatException
+    */
+   public static String convertAimToXnatTime(String dateTime) throws DataFormatException
+   {
+		if (dateTime.length() < 19) throw new DataFormatException(DataFormatException.TIME);
+      //TODO Better input checking: will currently return non-valid dates
+		//     if input is not a bona fide MRIW time.
+		
+		return dateTime.substring(11, 18);
    }
      
 }

@@ -44,34 +44,35 @@
 
 package xnatUploader;
 
-import dataRepresentations.xnatUpload.AIMOutput;
 import etherj.XmlException;
 import etherj.aim.AimToolkit;
+import etherj.aim.DicomImageReference;
+import etherj.aim.Image;
+import etherj.aim.ImageAnnotation;
 import etherj.aim.ImageAnnotationCollection;
+import etherj.aim.ImageReference;
+import etherj.aim.ImageSeries;
+import etherj.aim.ImageStudy;
 import exceptions.DataFormatException;
 import exceptions.XMLException;
-import exceptions.XNATException;
-import generalUtilities.UIDGenerator;
-import java.awt.image.BufferedImage;
+import generalUtilities.DicomXnatDateTime;
 import java.io.*;
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
-import javax.imageio.ImageIO;
-import org.apache.log4j.Logger;
-import org.dcm4che2.data.DicomObject;
-import org.dcm4che2.data.TransferSyntax;
-import org.dcm4che2.io.DicomOutputStream;
+import java.util.Set;
 import org.w3c.dom.Document;
-import xnatDAO.XNATGUI;
 import xnatDAO.XNATProfile;
-import xnatMetadataCreators.IcrAimAnnotationCollectionDataMdComplexType;
+import xnatMetadataCreators.IcrAimImageAnnotationCollectionDataMdComplexType;
 import xnatRestToolkit.XnatResource;
 
 
 public class AimImageAnnotationCollectionDataUploader extends DataUploader
 {
-   protected ImageAnnotationCollection iac;
+   private ImageAnnotationCollection iac;
+   private Set<String> studyUidSet       = new LinkedHashSet<>();
+	private Set<String> seriesUidSet      = new LinkedHashSet<>();
+	private Set<String> sopInstanceUidSet = new LinkedHashSet<>();
 
    public AimImageAnnotationCollectionDataUploader(XNATProfile xnprf)
    {
@@ -109,12 +110,44 @@ public class AimImageAnnotationCollectionDataUploader extends DataUploader
 		}
 		catch (XmlException | IOException ex)
 		{
-			String msg = "Problem reading AIM instance file: " + ex.getMessage();
-			logger.error(msg);
+			errorMessage = "Problem reading AIM instance file: " + ex.getMessage();
+			logger.error(errorMessage);
 			errorOccurred = true;
-         errorMessage  = msg;
 			return false;
 		}
+      
+      try
+      {
+         date = DicomXnatDateTime.convertAimToXnatDate(iac.getDateTime());
+         time = DicomXnatDateTime.convertAimToXnatTime(iac.getDateTime());
+      }
+      catch (DataFormatException exDF)
+      {
+         errorMessage = "Incorrect date-time format in AIM metadata." + exDF.getMessage();
+         logger.error(errorMessage);
+         errorOccurred = true;
+         return false;
+      }
+      
+      // Extract the image reference data from the AIM structure.
+      for (ImageAnnotation ia : iac.getAnnotationList())
+      {
+         for (ImageReference ir : ia.getReferenceList())
+         {
+            if (ir instanceof DicomImageReference)
+            {
+               DicomImageReference dir    = (DicomImageReference) ir;
+               ImageStudy          study  = dir.getStudy();
+               studyUidSet.add(study.getInstanceUid());
+               ImageSeries         series = study.getSeries();
+               seriesUidSet.add(series.getInstanceUid());
+               for (Image im : series.getImageList())
+               {
+                  sopInstanceUidSet.add(im.getInstanceUid());
+               }    
+            }
+         }
+      }
 
 		return true;
    }
@@ -158,11 +191,14 @@ public class AimImageAnnotationCollectionDataUploader extends DataUploader
    {
       errorOccurred = false;
           
-      // -----------------------------------------------
-      // Step 1: Upload the icr:mriwOutputData metadata.
-      // -----------------------------------------------
+      // -----------------------------------------------------------------
+      // Step 1: Upload the icr:aimImageAnnotationCollectionData metadata.
+      // -----------------------------------------------------------------
 		
-		XNATAccessionID = "1";
+		XNATAccessionID = iac.getUid();
+      
+      // Pre-calculate the associated RT-STRUCT id.
+      
 	}   
       
      
@@ -174,17 +210,36 @@ public class AimImageAnnotationCollectionDataUploader extends DataUploader
 		// and calling its createXmlAsRootElement() method. The complexity
 		// in this method comes from the number of pieces of data that must
 		// be transferred from the RT-STRUCT to the metadata creator.
-		IcrAimAnnotationCollectionDataMdComplexType
-				  aimCollection  = new IcrAimAnnotationCollectionDataMdComplexType();
+		IcrAimImageAnnotationCollectionDataMdComplexType
+				    iacd = new IcrAimImageAnnotationCollectionDataMdComplexType();
 		
-		
-		
+		iacd.setVersion(iac.getAimVersion());
+      
+      iacd.setAimUserName(          iac.getUser().getName());
+      iacd.setAimUserLoginName(     iac.getUser().getLoginName());
+      iacd.setAimUserRole(          iac.getUser().getRoleInTrial());
+      iacd.setAimUserNumberInRole(  iac.getUser().getNumberWithinRoleOfClinicalTrial());
+      
+      iacd.setManufacturerName(     iac.getEquipment().getManufacturerName());
+      iacd.setManufacturerModelName(iac.getEquipment().getManufacturerModelName());
+      iacd.setDeviceSerialNumber(   iac.getEquipment().getDeviceSerialNumber());
+      iacd.setSoftwareVersion(      iac.getEquipment().getSoftwareVersion());
+      
+      iacd.setPersonName(           iac.getPerson().getName());
+      iacd.setPersonId(             iac.getPerson().getId());
+      iacd.setPersonBirthDate(      iac.getPerson().getBirthDate());
+      iacd.setPersonSex(            iac.getPerson().getSex());
+      iacd.setPersonEthnicGroup(    iac.getPerson().getEthnicGroup());
+      
+		iacd.setnumImageAnnotations(iac.getAnnotationCount());
+      
+     
 		
 		// Finally write the metadata XML document.
 		Document metaDoc = null;
 		try
 		{
-			metaDoc = aimCollection.createXmlAsRootElement();
+			metaDoc = iacd.createXmlAsRootElement();
 		}
 		catch (IOException | XMLException ex)
 		{

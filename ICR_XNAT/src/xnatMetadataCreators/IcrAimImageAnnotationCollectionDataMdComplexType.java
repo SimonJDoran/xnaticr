@@ -35,10 +35,10 @@
 
 /********************************************************************
 * @author Simon J Doran
-* Java class: IcrAimAnnotationCollectionDataMDComplexType.java
+* Java class: IcrAimImageAnnotationCollectionDataMDComplexType.java
 * First created on Jan 25, 2016 at 12:16:54 PM
 * 
-* Creation of metadata XML for icr:aimAnnotationCollectionData
+* Creation of metadata XML for icr:aimImageAnnotationCollectionData
 * 
 * Eventually, the plan for this whole package is to replace the
 * explicit writing of the XML files with a higher level interface,
@@ -51,13 +51,13 @@ import exceptions.XMLException;
 import java.io.IOException;
 import xmlUtilities.DelayedPrettyPrinterXmlWriter;
 
-public class IcrAimAnnotationCollectionDataMdComplexType extends IcrGenericImageAssessmentDataMdComplexType
+public class IcrAimImageAnnotationCollectionDataMdComplexType extends IcrGenericImageAssessmentDataMdComplexType
 {
 	protected String  aimVersion;
 	protected String  aimUserName;
 	protected String  aimUserLoginName;
 	protected String  aimUserRole;
-	protected String  aimUserNumberInRole;
+	protected Integer aimUserNumberInRole;
 	protected String  manufacturerName;
 	protected String  manufacturerModelName;
 	protected String  deviceSerialNumber;
@@ -124,9 +124,9 @@ public class IcrAimAnnotationCollectionDataMdComplexType extends IcrGenericImage
 	}
 	
 	
-	public void setAimUserNumberInRole(String s)
+	public void setAimUserNumberInRole(Integer n)
 	{
-		aimUserNumberInRole = s;
+		aimUserNumberInRole = n;
 	}
 	
 	
