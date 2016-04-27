@@ -45,10 +45,17 @@ package xnatUploader;
 
 import exceptions.XMLException;
 import exceptions.XNATException;
+import generalUtilities.Vector2D;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.Map;
+import java.util.Set;
 import org.w3c.dom.Document;
 import xmlUtilities.XMLUtilities;
+import xnatDAO.XNATProfile;
+import xnatRestToolkit.XNATNamespaceContext;
+import xnatRestToolkit.XNATRESTToolkit;
 
 /**
  *
@@ -56,10 +63,37 @@ import xmlUtilities.XMLUtilities;
  */
 public class XnatDependencyChecker
 {
-   protected Map<String, AmbiguousSubjectAndExperiment> ambiguousSubjExp;
+   private String      errorMessage;
+	private XNATProfile xnprf;
+	private String      XNATProject;
+	private String      XNATSubjectID;
+	private String      XNATExperimentID;
+	private Map<String, AmbiguousSubjectAndExperiment> ambiguousSubjExp;
+	private Set<String> studyUidSet;
+	private Set<String> seriesUidSet;
+	private Set<String> sopInstanceUidSet;
+	private Set<String> XNATScanIdSet;
+	private Map<String, String> filenameSopMap  = new HashMap<>();
+	private Map<String, String> sopFilenameMap  = new HashMap<>();
+	private Map<String, String> filenameScanMap = new HashMap<>();
    
    
-   protected boolean areDependenciesInDatabase()
+	XnatDependencyChecker(XNATProfile xnprf,
+								 String      project,
+								 Set<String> studyUidSet,
+								 Set<String> seriesUidSet,
+								 Set<String> sopInstanceUidSet)
+	{
+		this.xnprf             = xnprf;
+		XNATProject            = project;
+		this.studyUidSet       = studyUidSet;
+		this.seriesUidSet      = seriesUidSet;
+		this.sopInstanceUidSet = sopInstanceUidSet;
+
+		ambiguousSubjExp = new HashMap<>();
+	}
+   
+	protected boolean areDependenciesInDatabase()
    {
       /* This operation is complicated by the facts that:
          - a structure set can reference more than one DICOM study;
@@ -97,21 +131,26 @@ public class XnatDependencyChecker
 		if (!errorMessage.isEmpty()) return false;
       
 		checkForScansInDatabase();
-		return (errorMessage.isEmpty()); 
+		return !errorMessage.isEmpty(); 
    }
 	
    
    protected void checkForSubjectSessionAmbiguities()
    {
+		String               restCommand;
+		Vector2D<String>     result;
+		XNATRESTToolkit      xnrt   = new XNATRESTToolkit(xnprf);
+		XNATNamespaceContext xnatNs = new XNATNamespaceContext();
+		
       try
       {         
          // Find information on all the studies in the project.
          // This could be time-consuming for a large database.
-         RESTCommand = "/data/archive/projects/" + XNATProject + "/experiments"
+         restCommand = "/data/archive/projects/" + XNATProject + "/experiments"
                        + "?xsiType=xnat:imageSessionData"
                        + "&columns=xnat:imageSessionData/UID,xnat:imageSessionData/label,xnat:imageSessionData/subject_ID"
                        + "&format=xml";
-         result      = xnrt.RESTGetResultSet(RESTCommand);
+         result      = xnrt.RESTGetResultSet(restCommand);
       }
       catch (XNATException exXNAT)
       {
@@ -147,11 +186,11 @@ public class XnatDependencyChecker
                try
                {
                   // Retrieve the subject label for a given subject ID.
-                  RESTCommand    = "/data/archive/projects/" + XNATProject
+                  restCommand    = "/data/archive/projects/" + XNATProject
                                    + "/subjects/"            + subjID
                                    + "?format=xml";
-                  Document resultDoc = xnrt.RESTGetDoc(RESTCommand);                 
-                  String[] attrs = XMLUtilities.getAttribute(resultDoc, XnatNs, "xnat:Subject", "label");
+                  Document resultDoc = xnrt.RESTGetDoc(restCommand);                 
+                  String[] attrs = XMLUtilities.getAttribute(resultDoc, xnatNs, "xnat:Subject", "label");
                   subjLabel      = attrs[0];
                }
                catch (XMLException | XNATException ex)
@@ -184,16 +223,21 @@ public class XnatDependencyChecker
    public void checkForScansInDatabase()
    {      
       XNATScanIdSet = new LinkedHashSet<>(); 
-      String[][] parseResult;
+      
+		String               restCommand;
+		Vector2D<String>     result;
+		XNATRESTToolkit      xnrt   = new XNATRESTToolkit(xnprf);
+		XNATNamespaceContext xnatNs = new XNATNamespaceContext();
+		String[][]           parseResult;
 		
 		try
       {
-         RESTCommand = "/data/archive/projects/" + XNATProject
+         restCommand = "/data/archive/projects/" + XNATProject
                        + "/subjects/"            + XNATSubjectID
                        + "/experiments/"         + XNATExperimentID
                        + "?format=xml";
-         Document resultDoc   = xnrt.RESTGetDoc(RESTCommand);
-         parseResult = XMLUtilities.getAttributes(resultDoc, XnatNs, "xnat:scan",
+         Document resultDoc   = xnrt.RESTGetDoc(restCommand);
+         parseResult = XMLUtilities.getAttributes(resultDoc, xnatNs, "xnat:scan",
                                              new String[] {"ID", "UID"});
       }
       catch (XMLException | XNATException ex)
@@ -242,13 +286,13 @@ public class XnatDependencyChecker
       {
          try
          {
-            RESTCommand = "/data/archive/projects/"    + XNATProject
+            restCommand = "/data/archive/projects/"    + XNATProject
                              + "/subjects/"            + XNATSubjectID
                              + "/experiments/"         + XNATExperimentID
                              + "/scans/"               + scanId
                              + "/resources/DICOM?format=xml";
-            Document resultDoc   = xnrt.RESTGetDoc(RESTCommand);
-            parseResult = XMLUtilities.getAttributes(resultDoc, XnatNs, "cat:entry",
+            Document resultDoc   = xnrt.RESTGetDoc(restCommand);
+            parseResult = XMLUtilities.getAttributes(resultDoc, xnatNs, "cat:entry",
                                                      new String[] {"URI", "UID"});
          }
          catch(XNATException | XMLException ex)
@@ -282,16 +326,58 @@ public class XnatDependencyChecker
 					// possible if someone is perverse enough to upload the file twice
 					// manually choosing different subject names, rather than letting
 					// XNAT's automatic mechanism route the files to the correct place.
-               fileSopMap.put(parseResult[j][0], parseResult[j][1]);
-					sopFileMap.put(parseResult[j][1], parseResult[j][0]);
+               filenameSopMap.put(parseResult[j][0], parseResult[j][1]);
+					sopFilenameMap.put(parseResult[j][1], parseResult[j][0]);
 				}
-            fileScanMap.put(parseResult[j][0], scanId);
+            filenameScanMap.put(parseResult[j][0], scanId);
          }
-      }
-      
-      
-      
- 
+      }   
    }
-
+	
+	public String getSubjectId()
+	{
+		return XNATSubjectID;
+	}
+	
+	
+	public String getExperimentId()
+	{
+		return XNATExperimentID;
+	}
+	
+	
+	public Set<String> getScanIdSet()
+	{
+		return XNATScanIdSet;
+	}
+	
+	
+	public Map<String, String> getFilenameSopMap()
+	{
+		return filenameSopMap;
+	}
+	
+	
+	public Map<String, String> getSopFilenameMap()
+	{
+		return sopFilenameMap;
+	}
+	
+	
+	public Map<String, String> getFilenameScanMap()
+	{
+		return filenameScanMap;
+	}
+	
+	
+	public Map<String, AmbiguousSubjectAndExperiment> getAmbiguousSubjectExperiement()
+	{
+		return ambiguousSubjExp;
+	}
+	
+	
+	public String getErrorMessage()
+	{
+		return errorMessage;
+	}
 }

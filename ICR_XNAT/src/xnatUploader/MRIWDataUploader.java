@@ -53,7 +53,6 @@ package xnatUploader;
  * First created on Nov 15, 2010 at 3:00:38 PM
  *
  */
-import xnatUploader.RTStructureSetUploader;
 import dataRepresentations.xnatUpload.MRIWOutput;
 import exceptions.DataFormatException;
 import exceptions.XMLException;
@@ -64,7 +63,6 @@ import java.awt.image.BufferedImage;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
-import java.util.Map;
 import javax.imageio.ImageIO;
 import org.apache.log4j.Logger;
 import org.dcm4che2.data.DicomObject;
@@ -378,9 +376,9 @@ public class MRIWDataUploader extends QCAssessmentDataUploader
       //         database to add icr:roiData and icr:roiSetData objects.
       // ---------------------------------------------------------------
       
-      RTStructureSetUploader rtsu = new RTStructureSetUploader(xnprf);
-      rtsu.createTempRtStructFile(mriw);
-      rtsu.setUploadFile(new File(rtsu.getTempRtStructFilename()));
+      RtStructDataUploader rtsu = new RtStructDataUploader(xnprf);
+   //   rtsu.createTempRtStructFile(mriw);
+   //   rtsu.setUploadFile(new File(rtsu.getTempRtStructFilename()));
       
       // Note that this step duplicates some of the parsing work that has
       // just been performed on the MRIW result set file, but the overhead is

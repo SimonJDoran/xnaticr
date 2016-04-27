@@ -162,6 +162,18 @@
 		<DAO_outputFormat alias="MRIW format">MRIW</DAO_outputFormat>
 		<DAO_outputFormat alias="Volume mask">mask</DAO_outputFormat>
 	</DAO_subtype>
+	
+	<DAO_subtype alias="AIM image annotation collection">
+      <DAO_outputFormat alias="XNAT assessor XML">XNATassessorXML</DAO_outputFormat>
+		<DAO_outputFormat alias="DICOM-RT structure set (one per ROI selected)">sRtStruct</DAO_outputFormat>
+		<DAO_outputFormat alias="DICOM-RT structure set (all ROIs in single RT-STRUCT)">mRT-STRUCT</DAO_outputFormat>
+	</DAO_subtype>
+	
+	<DAO_subtype alias="AIM image annotation">
+      <DAO_outputFormat alias="XNAT assessor XML">XNATassessorXML</DAO_outputFormat>
+		<DAO_outputFormat alias="DICOM-RT structure set (one per ROI selected)">sRtStruct</DAO_outputFormat>
+		<DAO_outputFormat alias="DICOM-RT structure set (all ROIs in single RT-STRUCT)">mRT-STRUCT</DAO_outputFormat>
+	</DAO_subtype>
 
 </XNAT_DAO_outputDataFormats>
 

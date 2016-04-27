@@ -546,7 +546,7 @@ public final class XNATUploader extends XNATGUI
       uploaderClassMap.put(new TypeSubtype("Regions-of-interest", "Set of ROIs"),
                            RtStructDataUploader.class);
 	
-		uploaderClassMap.put(new TypeSubtype("Regions-of-interest", "AIM instance files"),
+		uploaderClassMap.put(new TypeSubtype("Image annotations", "AIM image annotation collection"),
                            AimImageAnnotationCollectionDataUploader.class);
 //      uploaderClassMap.put(new TypeSubtype("Application outputs", "Adept output"),
 //                           AdeptDataUploader.class);
@@ -1161,7 +1161,7 @@ public final class XNATUploader extends XNATGUI
       {
          if (ts.subtype.equals(subtypeAlias))
          {
-            con = (uploaderClassMap.get(ts).getConstructors())[0];
+            con = (uploaderClassMap.get(ts).getDeclaredConstructors())[0];
             try
             {
                uploader = (DataUploader) con.newInstance(profileList.getCurrentProfile());

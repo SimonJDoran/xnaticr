@@ -47,10 +47,6 @@
 
 package xnatUploader;
 
-import dataRepresentations.xnatUpload.MRIWOutput;
-import dataRepresentations.xnatUpload.AIMOutput;
-import dataRepresentations.xnatUpload.ADEPTOutput;
-import dataRepresentations.xnatUpload.XnatUpload;
 import exceptions.ImageUtilitiesException;
 import imageUtilities.ImageUtilities;
 import java.awt.Color;
@@ -68,28 +64,21 @@ import org.dcm4che2.data.BasicDicomObject;
 import org.dcm4che2.data.Tag;
 import org.dcm4che2.io.DicomInputStream;
 import org.dcm4che2.iod.module.composite.ImagePixel;
-import dataRepresentations.RTStruct_old.ROIContour;
-import dataRepresentations.dicom.Contour;
-import dataRepresentations.dicom.RtStruct;
 import exceptions.XNATException;
 import generalUtilities.Vector2D;
-import java.awt.BasicStroke;
 import java.awt.geom.GeneralPath;
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.Vector;
-import java.util.zip.DataFormatException;
 import org.dcm4che2.data.DicomObject;
 import xnatDAO.XNATProfile;
 import xnatRestToolkit.XNATRESTToolkit;
-import static xnatUploader.DataUploader.logger;
 
 public class ContourRendererHelper
 {

@@ -53,5 +53,10 @@
       <DAO_subtype alias="Set of ROIs">icr:regionSetData</DAO_subtype>
       <DAO_subtype alias="Single ROI">icr:regionData</DAO_subtype>
    </DAO_datatype>
+	
+	<DAO_datatype alias="Image annotations">
+      <DAO_subtype alias="AIM image annotation collection">icr:aimImageAnnotationCollectionData</DAO_subtype>
+      <DAO_subtype alias="AIM image annotation">icr:aimImageAnnotationData</DAO_subtype>
+   </DAO_datatype>
 
 </XNAT_DAO_returnDataTypes>

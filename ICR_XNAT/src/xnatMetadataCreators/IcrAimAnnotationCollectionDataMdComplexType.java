@@ -54,6 +54,10 @@ import xmlUtilities.DelayedPrettyPrinterXmlWriter;
 public class IcrAimAnnotationCollectionDataMdComplexType extends IcrGenericImageAssessmentDataMdComplexType
 {
 	protected String  aimVersion;
+	protected String  aimUserName;
+	protected String  aimUserLoginName;
+	protected String  aimUserRole;
+	protected String  aimUserNumberInRole;
 	protected Integer numImageAnnotations;
 	protected String  associatedRegionSetId;
 	
@@ -63,6 +67,11 @@ public class IcrAimAnnotationCollectionDataMdComplexType extends IcrGenericImage
 		super.insertXml();
 		
 		dppXML.delayedWriteEntityWithText("aimVersion",          aimVersion)
+				.delayedWriteEntity("aimUser")
+				   .delayedWriteAttribute("name",                  aimUserName)
+				   .delayedWriteAttribute("loginName",             aimUserLoginName)
+				   .delayedWriteAttribute("roleInClinicalTrial",   aimUserRole)
+				   .delayedWriteAttribute("numberWithinRoleOfClinicalTrial", aimUserNumberInRole)
 				.delayedWriteEntityWithText("numImageAnnotations", numImageAnnotations)
 				.delayedWriteEntityWithText("associatedRoiSetId",  associatedRegionSetId);
 	}
@@ -71,6 +80,30 @@ public class IcrAimAnnotationCollectionDataMdComplexType extends IcrGenericImage
 	public void setAimVersion(String s)
 	{
 		aimVersion = s;
+	}
+	
+	
+	public void setAimUserName(String s)
+	{
+		aimUserName = s;
+	}
+	
+	
+	public void setAimUserLoginName(String s)
+	{
+		aimUserLoginName = s;
+	}
+	
+	
+	public void setAimUserRole(String s)
+	{
+		aimUserRole = s;
+	}
+	
+	
+	public void setAimUserNumberInRole(String s)
+	{
+		aimUserNumberInRole = s;
 	}
 	
 	

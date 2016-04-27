@@ -159,14 +159,6 @@ public class ParametricImageUploader extends DataUploader
       
    }
 	
-	
-	@Override
-   protected ArrayList<String> getInputCatEntries()
-	{
-		return new ArrayList<String>();
-	}
-	
-
 
    @Override
    public boolean rightMetadataPresent()

@@ -217,7 +217,6 @@
       <searchableXNATElement alias="Investigator last name">xnat:qcAssessmentData/investigator/lastname</searchableXNATElement>
       <searchableXNATElement alias="Investigator institution">xnat:qcAssessmentData/investigator/institution</searchableXNATElement>
       <searchableXNATElement alias="Investigator department">xnat:qcAssessmentData/investigator/department</searchableXNATElement>
-
    </XNATSearchRootElement>
 
    <XNATSearchRootElement element="xnat:qcAssessmentData">
@@ -319,22 +318,49 @@
       <searchableXNATElement alias="nContours">icr:regionData/nDICOMContours</searchableXNATElement>
       <searchableXNATElement alias="Data acquisition date">icr:regionData/date</searchableXNATElement>
       <searchableXNATElement alias="Data acquisition time">icr:regionData/time</searchableXNATElement>
-      <searchableXNATElement alias="Investigator first name">icr:regionData/investigator/firstname</searchableXNATElement>
-      <searchableXNATElement alias="Investigator last name">icr:regionData/investigator/lastname</searchableXNATElement>
-      <searchableXNATElement alias="Investigator institution">icr:regionData/investigator/institution</searchableXNATElement>
-      <searchableXNATElement alias="Investigator department">icr:regionData/investigator/department</searchableXNATElement>
       <searchableXNATElement alias="Associated XNAT image session ID">icr:regionData/imageSession_ID</searchableXNATElement>
-      <searchableXNATElement alias="Provenance: program">icr:regionData/provenance/processStep/program</searchableXNATElement>
-      <searchableXNATElement alias="Provenance: version">icr:regionData/provenance/processStep/program/version</searchableXNATElement>
-      <searchableXNATElement alias="Provenance: arguments">icr:regionData/provenance/processStep/program/arguments</searchableXNATElement>
-      <searchableXNATElement alias="Provenance: timestamp">icr:regionData/provenance/processStep/timestamp</searchableXNATElement>
-      <searchableXNATElement alias="Provenance: user">icr:regionData/provenance/processStep/user</searchableXNATElement>
-      <searchableXNATElement alias="Provenance: machine">icr:regionData/provenance/processStep/machine</searchableXNATElement>
-      <searchableXNATElement alias="Provenance: platform">icr:regionData/provenance/processStep/platform</searchableXNATElement>
       <searchableXNATElement alias="XNAT subject ID">icr:regionData/subjectID</searchableXNATElement>
       <searchableXNATElement alias="XNAT assessment ID">icr:regionData/ID</searchableXNATElement>
       <searchableXNATElement alias="Defining structure set label">icr:regionData/definingDICOMStructureSetLabel</searchableXNATElement>
       <searchableXNATElement alias="Associated project">icr:regionData/project</searchableXNATElement>
    </XNATSearchRootElement>
+	
+	<XNATSearchRootElement element="icr:aimImageAnnotationCollectionData">
+      <searchableXNATElement alias="Patient name">icr:imageAnnotationCollectionData/dcmPatientName</searchableXNATElement>
+      <searchableXNATElement alias="Number of annotations">icr:imageAnnotationCollectionData/nImageAnnotation</searchableXNATElement>
+		<searchableXNATElement alias="Label">icr:imageAnnotationCollectionData/label</searchableXNATElement>
+      <searchableXNATElement alias="Note">icr:imageAnnotationCollectionData/note</searchableXNATElement>
+		<searchableXNATElement alias="AIM user name">icr:imageAnnotationCollectionData/aimUser/name</searchableXNATElement>
+		<searchableXNATElement alias="AIM user login name">icr:imageAnnotationCollectionData/aimUser/loginName</searchableXNATElement>
+		<searchableXNATElement alias="AIM user role">icr:imageAnnotationCollectionData/aimUser/roleInClinicalTrial</searchableXNATElement>
+		<searchableXNATElement alias="AIM user number within role">icr:imageAnnotationCollectionData/aimUser/numberWithinRoleOfClinicalTrial</searchableXNATElement>
+		<searchableXNATElement alias="XNAT subject ID">icr:imageAnnotationCollectionData/subjectID</searchableXNATElement>
+      <searchableXNATElement alias="XNAT assessment ID">icr:imageAnnotationCollectionData/ID</searchableXNATElement>
+      <searchableXNATElement alias="Defining structure set label">icr:imageAnnotationCollectionData/definingDICOMStructureSetLabel</searchableXNATElement>
+      <searchableXNATElement alias="Associated project">icr:imageAnnotationCollectionData/project</searchableXNATElement>
+	</XNATSearchRootElement>
+	
+	<XNATSearchRootElement element="icr:aimImageAnnotationData">
+      <searchableXNATElement alias="Patient name">icr:imageAnnotationData/dcmPatientName</searchableXNATElement>
+      <searchableXNATElement alias="Number of image markups">icr:imageAnnotationData/nMarkupEntity</searchableXNATElement>
+		<searchableXNATElement alias="Number of image segmentations">icr:imageAnnotationData/nSegmentationEntity</searchableXNATElement>
+		<searchableXNATElement alias="Number of task contexts">icr:imageAnnotationData/nTaskContextEntity</searchableXNATElement>
+		<searchableXNATElement alias="Number of inferences">icr:imageAnnotationData/nInferenceEntity</searchableXNATElement>
+		<searchableXNATElement alias="Number of annotation roles">icr:imageAnnotationData/nAnnotationRoleEntity</searchableXNATElement>
+		<searchableXNATElement alias="Number of calculations">icr:imageAnnotationData/nCalculationEntity</searchableXNATElement>
+		<searchableXNATElement alias="Number of imaging observations">icr:imageAnnotationData/nImagingObservationEntity</searchableXNATElement>
+		<searchableXNATElement alias="Number of imaging physical entities">icr:imageAnnotationData/nImagingPhysicalEntity</searchableXNATElement>
+		<searchableXNATElement alias="Label">icr:imageAnnotationData/label</searchableXNATElement>
+		<searchableXNATElement alias="Description">icr:imageAnnotationData/description</searchableXNATElement>
+      <searchableXNATElement alias="Note">icr:imageAnnotationData/note</searchableXNATElement>
+		<searchableXNATElement alias="AIM user name">icr:imageAnnotationData/aimUser/name</searchableXNATElement>
+		<searchableXNATElement alias="AIM user login name">icr:imageAnnotationData/aimUser/loginName</searchableXNATElement>
+		<searchableXNATElement alias="AIM user role">icr:imageAnnotationData/aimUser/roleInClinicalTrial</searchableXNATElement>
+		<searchableXNATElement alias="AIM user number within role">icr:imageAnnotationData/aimUser/numberWithinRoleOfClinicalTrial</searchableXNATElement>
+		<searchableXNATElement alias="XNAT subject ID">icr:imageAnnotationData/subjectID</searchableXNATElement>
+      <searchableXNATElement alias="XNAT assessment ID">icr:imageAnnotationData/ID</searchableXNATElement>
+      <searchableXNATElement alias="Defining structure set label">icr:imageAnnotationData/definingDICOMStructureSetLabel</searchableXNATElement>
+      <searchableXNATElement alias="Associated project">icr:imageAnnotationCollectionData/project</searchableXNATElement>
+	</XNATSearchRootElement>
 
 </XNATSearchRootElements>

@@ -143,60 +143,7 @@ public class AimImageAnnotationDataUploader extends DataUploader
       // nothing needs to be done here.
    }
 	
-	@Override
-	public ContourRendererHelper createContourRendererHelper()
-                                throws DataFormatException
-	{
-		ContourRendererHelper crh = new ContourRendererHelper();
-		
-//		// An RtStruct object corresponding to a single ROI has only one element
-//		// in its roiContourList.
-//		assert (rtsSingle.roiContourList.size() == 1);
-//		RoiContour rc = rtsSingle.roiContourList.get(0);
-//		crh.setDisplayColour(rc.roiDisplayColour);
-//		
-//		// The frame of reference in which the ROI is defined is in a separate DICOM
-//		// IOD from the contour list!
-//		for (StructureSetRoi ssr : rtsSingle.structureSet.structureSetRoiList)
-//		{
-//			if (ssr.roiNumber == rc.referencedRoiNumber)
-//				crh.setFrameOfReference(ssr.referencedFrameOfReferenceUid);
-//		}
-//		
-//		crh.setCoordsAsPixel(false);
-//		
-//      List<RenderContour> rcl = new ArrayList<>();
-//		for (Contour c : rc.contourList)
-//      {
-//         if (c.contourImageList.size() != 1)
-//         {
-//            String msg = "This type of contour cannot yet be rendered."
-//                         + "More than one base image for a single contour.";
-//            logger.error(msg);
-//            throw new DataFormatException(DataFormatException.RTSTRUCT, msg);
-//         }
-//         
-//         RenderContour rndC       = new RenderContour();
-//         String baseSop           = c.contourImageList.get(0).referencedSopInstanceUid;
-//         rndC.baseImageFilename   = rtdsu.sopFileMap.get(baseSop);
-//			rndC.baseFrameNumberList = c.contourImageList.get(0).referencedFrameNumber;
-//         rndC.nContourPoints      = c.nContourPoints;
-//         rndC.contourPoints       = new float[c.nContourPoints][3];
-//
-//         for (int j=0; j<c.nContourPoints; j++)
-//            for (int i=0; i<3; i++)
-//               rndC.contourPoints[j][i] = (c.contourData.get(j)).get(i);
-//         
-//         rcl.add(rndC);
-//      }
-//		crh.setRenderContourList(rcl);
-//		crh.setFilenameSet(filenameSet);
-		crh.setXnatExperimentId(XNATExperimentID);
-		crh.setXnatProfile(xnprf);
-		crh.setXnatScanIdSet(XNATScanIdSet);
-		
-		return crh;
-	}
+	
 	
 	@Override
    public String getUploadRootCommand(String uploadItem)

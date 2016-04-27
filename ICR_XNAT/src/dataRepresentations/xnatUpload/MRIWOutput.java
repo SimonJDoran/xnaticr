@@ -45,7 +45,6 @@
 package dataRepresentations.xnatUpload;
 
 import xnatUploader.ContourRendererHelper;
-import dataRepresentations.RtStructWriter;
 import dataRepresentations.xnatUpload.XnatUpload;
 import exceptions.XMLException;
 import exceptions.XNATException;
@@ -73,7 +72,7 @@ import xnatDAO.XNATProfile;
 import xnatRestToolkit.XNATNamespaceContext;
 import xnatRestToolkit.XNATRESTToolkit;
 
-public final class MRIWOutput extends XnatUpload implements RtStructWriter
+public final class MRIWOutput extends XnatUpload
 {
    static  Logger logger = Logger.getLogger(MRIWOutput.class);
    
@@ -718,7 +717,6 @@ public final class MRIWOutput extends XnatUpload implements RtStructWriter
 	 * @return
 	 * @throws Exception 
 	 */
-	@Override
 	public DicomObject createDICOM() throws Exception
    {
       DicomObject odo = new BasicDicomObject();
