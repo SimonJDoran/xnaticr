@@ -334,9 +334,17 @@
 		<searchableXNATElement alias="AIM user login name">icr:imageAnnotationCollectionData/aimUser/loginName</searchableXNATElement>
 		<searchableXNATElement alias="AIM user role">icr:imageAnnotationCollectionData/aimUser/roleInClinicalTrial</searchableXNATElement>
 		<searchableXNATElement alias="AIM user number within role">icr:imageAnnotationCollectionData/aimUser/numberWithinRoleOfClinicalTrial</searchableXNATElement>
+		<searchableXNATElement alias="Manufacturer">icr:imageAnnotationCollectionData/equipment/manufacturerName</searchableXNATElement>
+		<searchableXNATElement alias="Manufacturer model">icr:imageAnnotationCollectionData/equipment/manufacturerModelName</searchableXNATElement>
+		<searchableXNATElement alias="Device serial number">icr:imageAnnotationCollectionData/equipment/deviceSerialNumber</searchableXNATElement>
+		<searchableXNATElement alias="Device software version">icr:imageAnnotationCollectionData/equipment/softwareVersion</searchableXNATElement>
+		<searchableXNATElement alias="AIM person name">icr:imageAnnotationCollectionData/person/name</searchableXNATElement>
+		<searchableXNATElement alias="AIM person id">icr:imageAnnotationCollectionData/person/id</searchableXNATElement>
+		<searchableXNATElement alias="AIM person DOB">icr:imageAnnotationCollectionData/person/birthDate</searchableXNATElement>
+		<searchableXNATElement alias="AIM person sex">icr:imageAnnotationCollectionData/person/sex</searchableXNATElement>
+		<searchableXNATElement alias="AIM person ethnic group">icr:imageAnnotationCollectionData/person/ethnicGroup</searchableXNATElement>
 		<searchableXNATElement alias="XNAT subject ID">icr:imageAnnotationCollectionData/subjectID</searchableXNATElement>
       <searchableXNATElement alias="XNAT assessment ID">icr:imageAnnotationCollectionData/ID</searchableXNATElement>
-      <searchableXNATElement alias="Defining structure set label">icr:imageAnnotationCollectionData/definingDICOMStructureSetLabel</searchableXNATElement>
       <searchableXNATElement alias="Associated project">icr:imageAnnotationCollectionData/project</searchableXNATElement>
 	</XNATSearchRootElement>
 	
@@ -359,7 +367,6 @@
 		<searchableXNATElement alias="AIM user number within role">icr:imageAnnotationData/aimUser/numberWithinRoleOfClinicalTrial</searchableXNATElement>
 		<searchableXNATElement alias="XNAT subject ID">icr:imageAnnotationData/subjectID</searchableXNATElement>
       <searchableXNATElement alias="XNAT assessment ID">icr:imageAnnotationData/ID</searchableXNATElement>
-      <searchableXNATElement alias="Defining structure set label">icr:imageAnnotationData/definingDICOMStructureSetLabel</searchableXNATElement>
       <searchableXNATElement alias="Associated project">icr:imageAnnotationCollectionData/project</searchableXNATElement>
 	</XNATSearchRootElement>
 

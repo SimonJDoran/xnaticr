@@ -178,6 +178,8 @@ public class AimImageAnnotationCollectionDataUploader extends DataUploader
 				  aimCollection  = new IcrAimAnnotationCollectionDataMdComplexType();
 		
 		
+		
+		
 		// Finally write the metadata XML document.
 		Document metaDoc = null;
 		try
