@@ -185,7 +185,7 @@ public class DicomXnatDateTime
       //TODO Better input checking: will currently return non-valid dates
 		//     if input is not a bona fide MRIW time.
 		
-		return dateTime.substring(0, 9);
+		return dateTime.substring(0, 10);
    }
    
    
@@ -203,7 +203,7 @@ public class DicomXnatDateTime
       //TODO Better input checking: will currently return non-valid dates
 		//     if input is not a bona fide MRIW time.
 		
-		return dateTime.substring(11, 18);
+		return dateTime.substring(11, 19);
    }
      
 }

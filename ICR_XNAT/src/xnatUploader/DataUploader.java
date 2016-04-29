@@ -132,6 +132,8 @@ public abstract class DataUploader
       // incarnation, this comes about by uploading to a profile that consists
       // of only one project, but this will change.
       XNATProject        = xnprf.getProjectList().get(0);
+      errorOccurred      = false;
+      errorMessage       = "";
       XMLUtil            = new XMLUtilities();
       XnatNs             = new XNATNamespaceContext();
       xnrt               = new XNATRESTToolkit(this.xnprf);
@@ -153,8 +155,6 @@ public abstract class DataUploader
       if (uploadFile.equals(mostRecentSuccessfulPrep)) return;
 
       isPrepared    = false;
-      errorOccurred = false;
-      errorMessage  = "";
       mostRecentSuccessfulPrep = null;
       
       if (!readFile())                return;

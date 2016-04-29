@@ -98,6 +98,13 @@ public class IcrAimImageAnnotationCollectionDataMdComplexType extends IcrGeneric
 				.delayedWriteEntityWithText("numImageAnnotations", numImageAnnotations)
 				.delayedWriteEntityWithText("associatedRoiSetId",  associatedRegionSetId);
 	}
+   
+   
+   @Override
+   public String getRootElementName()
+   {
+      return "AimAnnotationCollection";
+   }
 	
 	
 	public void setAimVersion(String s)

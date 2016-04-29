@@ -90,7 +90,8 @@ public class XnatDependencyChecker
 		this.seriesUidSet      = seriesUidSet;
 		this.sopInstanceUidSet = sopInstanceUidSet;
 
-		ambiguousSubjExp = new HashMap<>();
+		ambiguousSubjExp       = new HashMap<>();
+      errorMessage           = "";
 	}
    
 	protected boolean areDependenciesInDatabase()
@@ -131,7 +132,7 @@ public class XnatDependencyChecker
 		if (!errorMessage.isEmpty()) return false;
       
 		checkForScansInDatabase();
-		return !errorMessage.isEmpty(); 
+		return errorMessage.isEmpty(); 
    }
 	
    

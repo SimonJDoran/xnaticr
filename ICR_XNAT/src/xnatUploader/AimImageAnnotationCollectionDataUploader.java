@@ -60,6 +60,7 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import org.w3c.dom.Document;
 import xnatDAO.XNATProfile;
@@ -70,13 +71,20 @@ import xnatRestToolkit.XnatResource;
 public class AimImageAnnotationCollectionDataUploader extends DataUploader
 {
    private ImageAnnotationCollection iac;
-   private Set<String> studyUidSet       = new LinkedHashSet<>();
-	private Set<String> seriesUidSet      = new LinkedHashSet<>();
-	private Set<String> sopInstanceUidSet = new LinkedHashSet<>();
+   private Set<String> studyUidSet;
+	private Set<String> seriesUidSet;
+	private Set<String> sopInstanceUidSet;
+   private Map<String, String> filenameSopMap;
+	private Map<String, String> sopFilenameMap;
+	private Map<String, String> filenameScanMap;
 
    public AimImageAnnotationCollectionDataUploader(XNATProfile xnprf)
    {
       super(xnprf);
+      
+      studyUidSet       = new LinkedHashSet<>();
+      seriesUidSet      = new LinkedHashSet<>();
+      sopInstanceUidSet = new LinkedHashSet<>();
    }
 
   /**
@@ -149,7 +157,19 @@ public class AimImageAnnotationCollectionDataUploader extends DataUploader
          }
       }
 
-		return true;
+		XnatDependencyChecker xnd = new XnatDependencyChecker(xnprf, XNATProject,
+		                                                      studyUidSet, seriesUidSet, sopInstanceUidSet);
+		boolean  isOk    = xnd.areDependenciesInDatabase();
+		XNATSubjectID    = xnd.getSubjectId();
+		XNATExperimentID = xnd.getExperimentId();
+		XNATScanIdSet    = xnd.getScanIdSet();
+		filenameSopMap   = xnd.getFilenameSopMap();
+		sopFilenameMap   = xnd.getSopFilenameMap();
+		filenameScanMap  = xnd.getFilenameScanMap();
+		ambiguousSubjExp = xnd.getAmbiguousSubjectExperiement();
+		errorMessage     = xnd.getErrorMessage();
+		
+		return isOk;
    }
   
    
