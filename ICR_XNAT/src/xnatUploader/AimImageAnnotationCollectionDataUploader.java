@@ -44,6 +44,10 @@
 
 package xnatUploader;
 
+import dataRepresentations.xnatSchema.AbstractResource;
+import dataRepresentations.xnatSchema.AdditionalField;
+import dataRepresentations.xnatSchema.MetaField;
+import dataRepresentations.xnatSchema.Scan;
 import etherj.XmlException;
 import etherj.aim.AimToolkit;
 import etherj.aim.DicomImageReference;
@@ -55,16 +59,23 @@ import etherj.aim.ImageSeries;
 import etherj.aim.ImageStudy;
 import exceptions.DataFormatException;
 import exceptions.XMLException;
+import exceptions.XNATException;
 import generalUtilities.DicomXnatDateTime;
+import generalUtilities.Vector2D;
 import java.io.*;
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.Vector;
+import org.dcm4che2.data.DicomObject;
 import org.w3c.dom.Document;
 import xnatDAO.XNATProfile;
 import xnatMetadataCreators.IcrAimImageAnnotationCollectionDataMdComplexType;
+import xnatRestToolkit.XNATRESTToolkit;
 import xnatRestToolkit.XnatResource;
 
 
@@ -77,6 +88,7 @@ public class AimImageAnnotationCollectionDataUploader extends DataUploader
    private Map<String, String> filenameSopMap;
 	private Map<String, String> sopFilenameMap;
 	private Map<String, String> filenameScanMap;
+   private DicomObject bdo;
 
    public AimImageAnnotationCollectionDataUploader(XNATProfile xnprf)
    {
@@ -169,9 +181,131 @@ public class AimImageAnnotationCollectionDataUploader extends DataUploader
 		ambiguousSubjExp = xnd.getAmbiguousSubjectExperiement();
 		errorMessage     = xnd.getErrorMessage();
 		
-		return isOk;
+		if (!isOk) return false;
+      
+      // In order to convert the ROI part of the AIM file to an RT-STRUCT file,
+      // we need to create a number of DICOM structures. Much of the information
+      // required can be obtained from any of the files referenced by the AIM
+      // document.
+      if (!downloadDicomFile()) return false;
+      
+
+            
+      return true;
    }
   
+   
+   private boolean downloadDicomFile()
+   {
+      Set ks = filenameSopMap.keySet();
+      if (ks.isEmpty())
+      {
+         errorMessage  = "No matching files found.";
+         errorOccurred = true;
+         return false;
+      }
+      
+      Iterator<String> ksi          = ks.iterator();
+      String           testFilename = ksi.next();
+      String           testScan     = filenameScanMap.get(testFilename);
+      String           restCommand  = "/data/archive/experiments/" + XNATExperimentID
+                                      + "/scans/" + testScan + "/files?format=xml";
+      Vector2D<String> resultSet;
+      try
+      {
+         resultSet = (new XNATRESTToolkit(xnprf)).RESTGetResultSet(restCommand);
+      }
+      catch(XNATException exXNAT)
+      {
+         errorMessage  = exXNAT.getMessage();
+         errorOccurred = true;
+         return false;
+      }
+      Vector<String> URI  = resultSet.getColumn(2);
+      Vector<String> type = resultSet.getColumn(3);
+      
+       for (int i=0; i<URI.size(); i++)
+      {
+         if (type.elementAt(i).equals("DICOM"))
+         {
+            // Build the local cache filename where the data will be stored.
+            // The directory structure is a bit long-winded, but should be
+            // easy to manage.
+            StringBuilder sb = new StringBuilder(cacheDirName);
+            sb.append(URI.elementAt(i));
+            File cacheFile = new File(sb.toString());
+            File parent    = new File(cacheFile.getParent());
+
+            // If the cache file does exist, but doesn't open correctly,
+            // have another go at downloading it, on the basis that it
+            // could have either become corrupted or a previous download
+            // might have been interrupted, leaving an incomplete file.
+            boolean success = true;
+            if (!(cacheFile.exists() && preview.addFile(cacheFile, "DICOM")))
+            {
+               // Retrieve the actual data and store it in the cache.
+               try
+               {
+                  parent.mkdirs();
+                  BufferedOutputStream bos
+                     = new BufferedOutputStream(new FileOutputStream(cacheFile, true));
+
+                  BufferedInputStream  bis
+                     = new BufferedInputStream(xnsc.doRESTGet(URI.elementAt(i)));
+
+                  byte[] buf = new byte[8192];
+
+                  while (true)
+                  {
+                     int length = bis.read(buf);
+                     if (length < 0) break;
+                     bos.write(buf, 0, length);
+                  }
+                  
+                  logger.debug("Worker ID = " + this.toString() + " Downloaded " + cacheFile.toString());
+
+                  try{bis.close();}
+                  catch (IOException ignore) {;}
+
+                  try{bos.close();}
+                  catch (IOException ignore) {;}                  
+                                    
+                  if (!preview.addFile(cacheFile, "DICOM"))
+                  {
+                     success = false;
+                     nFileFailures++;
+                  }                  
+
+               }
+               catch (Exception ex)
+               {
+                  logger.warn("Failed to download " + cacheFile.getName());
+                  success = false;
+                  nFileFailures++;
+               }
+            }
+
+            if (success) scanFileList.add(cacheFile);
+            nFilesDownloaded++;
+            
+            // Note: this is (DAOOutput.STOP_ICON - 1) not 100 because the values
+            // 100 and 99 = DAOOutput.STOP_ICON is reserved for signalling
+            // the START_ICON and STOP_ICON conditions.
+            logger.debug("nFilesDownloaded " + nFilesDownloaded
+                               + "  nFilesToDownload " + nFilesToDownload
+                               + "  nFileFailures " + nFileFailures
+                               + " progress: " + (DAOOutput.STOP_ICON - 1) * nFilesDownloaded / nFilesToDownload);
+            setProgress((DAOOutput.STOP_ICON - 1) * nFilesDownloaded / nFilesToDownload);
+            publishDownloadProgress(cacheFile.getName());
+            
+            if (isCancelled())
+            {
+               break;
+            }            
+         }
+      }
+      return scanFileList;
+   }
    
    @Override
    public void updateParseFile()
@@ -254,6 +388,67 @@ public class AimImageAnnotationCollectionDataUploader extends DataUploader
 		iacd.setnumImageAnnotations(iac.getAnnotationCount());
       
      
+      // IcrRegionSetDataMdComplexType inherits from IcrGenericImageAssessmentDataMdComplexType.
+		
+		// iacd.setType();  Not currently sure what should go here.
+		iacd.setXnatSubjId(XNATSubjectID);
+	//	iacd.setDicomSubjName(rts.patient.patientName);
+		
+		// Although the full version of Scan, including scan and slice image
+		// statistics is implemented, this is overkill for the RT-STRUCT and
+		// the only part of scan for which information is available is the
+		// list of scan IDs. 
+		Set<String> idSet = new HashSet<>();
+		for (String filename : filenameSopMap.keySet()) idSet.add(filenameScanMap.get(filename));
+		
+		List<Scan> lsc = new ArrayList<>();
+		for (String id : idSet)
+		{
+			Scan sc = new Scan();
+			sc.id = id;
+			lsc.add(sc);
+		}
+		iacd.setScanList(lsc);
+      
+      
+      // IcrGenericImageAssessmentDataMdComplexType inherits from XnatImageAssessorDataMdComplexType.
+		
+		// The "in" section of the assessor XML contains all files that were already
+		// in the database at the time of upload, whilst the "out" section lists
+		// the files that added at the time of upload, including those generated
+		// automatically. In this, the only generated files are the snapshots, but
+		// this information is already included in the separately uploaded ROI
+		// metadata files and need not be duplicated here.
+		List<AbstractResource> inList = new ArrayList<>();
+		
+		for (String filename : filenameSopMap.keySet())
+		{
+			AbstractResource ar  = new AbstractResource();
+			List<MetaField>  mfl = new ArrayList<>();
+			mfl.add(new MetaField("filename",       filename));
+			mfl.add(new MetaField("format",         "DICOM"));
+			mfl.add(new MetaField("SOPInstanceUID", filenameSopMap.get(filename)));
+			ar.tagList = mfl;
+			inList.add(ar);
+		}
+		
+		List<AbstractResource> outList = new ArrayList<>();
+		AbstractResource       ar      = new AbstractResource();
+		List<MetaField>        mfl     = new ArrayList<>();
+		mfl.add(new MetaField("filename", uploadFile.getName()));
+		mfl.add(new MetaField("format",   "RT-STRUCT"));
+		ar.tagList = mfl;
+		outList.add(ar);
+		
+		iacd.setInList(inList);
+		iacd.setOutList(outList);
+		
+		iacd.setImageSessionId(XNATExperimentID);
+		
+		// For this object, there are no additional fields. This entry is
+		// empty, but still needs to be set.
+		iacd.setParamList(new ArrayList<AdditionalField>());
+		
 		
 		// Finally write the metadata XML document.
 		Document metaDoc = null;

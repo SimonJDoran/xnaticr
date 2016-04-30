@@ -103,7 +103,7 @@ public class IcrAimImageAnnotationCollectionDataMdComplexType extends IcrGeneric
    @Override
    public String getRootElementName()
    {
-      return "AimAnnotationCollection";
+      return "AimImageAnnotationCollection";
    }
 	
 	
