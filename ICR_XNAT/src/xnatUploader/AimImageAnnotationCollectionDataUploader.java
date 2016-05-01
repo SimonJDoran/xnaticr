@@ -72,11 +72,13 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Vector;
 import org.dcm4che2.data.DicomObject;
+import org.dcm4che2.io.DicomInputStream;
 import org.w3c.dom.Document;
 import xnatDAO.XNATProfile;
 import xnatMetadataCreators.IcrAimImageAnnotationCollectionDataMdComplexType;
 import xnatRestToolkit.XNATRESTToolkit;
 import xnatRestToolkit.XnatResource;
+import static xnatUploader.ContourRendererHelper.logger;
 
 
 public class AimImageAnnotationCollectionDataUploader extends DataUploader
@@ -205,6 +207,9 @@ public class AimImageAnnotationCollectionDataUploader extends DataUploader
          return false;
       }
       
+      String           homeDir      = System.getProperty("user.home");
+      String           fileSep      = System.getProperty("file.separator");
+		String           cacheDirName = homeDir + fileSep + ".XNAT_DAO";
       Iterator<String> ksi          = ks.iterator();
       String           testFilename = ksi.next();
       String           testScan     = filenameScanMap.get(testFilename);
@@ -217,14 +222,14 @@ public class AimImageAnnotationCollectionDataUploader extends DataUploader
       }
       catch(XNATException exXNAT)
       {
-         errorMessage  = exXNAT.getMessage();
+         errorMessage  = "Error retrieving file list: " + exXNAT.getMessage();
          errorOccurred = true;
          return false;
       }
       Vector<String> URI  = resultSet.getColumn(2);
       Vector<String> type = resultSet.getColumn(3);
       
-       for (int i=0; i<URI.size(); i++)
+      for (int i=0; i<URI.size(); i++)
       {
          if (type.elementAt(i).equals("DICOM"))
          {
@@ -235,76 +240,65 @@ public class AimImageAnnotationCollectionDataUploader extends DataUploader
             sb.append(URI.elementAt(i));
             File cacheFile = new File(sb.toString());
             File parent    = new File(cacheFile.getParent());
-
-            // If the cache file does exist, but doesn't open correctly,
-            // have another go at downloading it, on the basis that it
-            // could have either become corrupted or a previous download
-            // might have been interrupted, leaving an incomplete file.
-            boolean success = true;
-            if (!(cacheFile.exists() && preview.addFile(cacheFile, "DICOM")))
+            
+            if (cacheFile.getName().equals(testFilename))
             {
-               // Retrieve the actual data and store it in the cache.
+
+               boolean success = true;
+               if (!cacheFile.exists())
+               {
+                  // Retrieve the actual data and store it in the cache.
+                  try
+                  {
+                     parent.mkdirs();
+                     BufferedOutputStream bos
+                        = new BufferedOutputStream(new FileOutputStream(cacheFile, true));
+
+                     BufferedInputStream  bis
+                        = new BufferedInputStream(xnprf.doRESTGet(URI.elementAt(i)));
+
+                     byte[] buf = new byte[8192];
+
+                     while (true)
+                     {
+                        int length = bis.read(buf);
+                        if (length < 0) break;
+                        bos.write(buf, 0, length);
+                     }
+
+                     logger.debug("Worker ID = " + this.toString() + " Downloaded " + cacheFile.toString());
+
+                     try{bis.close();}
+                     catch (IOException ignore) {;}
+
+                     try{bos.close();}
+                     catch (IOException ignore) {;}                                  
+                  }
+                  catch (Exception ex)
+                  {
+                     errorOccurred = true;
+                     errorMessage = "Failed to download " + cacheFile.getName();
+                     logger.error(errorMessage);
+                     return false;
+                  }
+               }
+               
+               // Now try to open the DICOM file just downloaded.
                try
                {
-                  parent.mkdirs();
-                  BufferedOutputStream bos
-                     = new BufferedOutputStream(new FileOutputStream(cacheFile, true));
-
-                  BufferedInputStream  bis
-                     = new BufferedInputStream(xnsc.doRESTGet(URI.elementAt(i)));
-
-                  byte[] buf = new byte[8192];
-
-                  while (true)
-                  {
-                     int length = bis.read(buf);
-                     if (length < 0) break;
-                     bos.write(buf, 0, length);
-                  }
-                  
-                  logger.debug("Worker ID = " + this.toString() + " Downloaded " + cacheFile.toString());
-
-                  try{bis.close();}
-                  catch (IOException ignore) {;}
-
-                  try{bos.close();}
-                  catch (IOException ignore) {;}                  
-                                    
-                  if (!preview.addFile(cacheFile, "DICOM"))
-                  {
-                     success = false;
-                     nFileFailures++;
-                  }                  
-
+                  DicomInputStream dis = new DicomInputStream(cacheFile);
+                  dis.readDicomObject(bdo, -1);
                }
-               catch (Exception ex)
+               catch(Exception ex)
                {
-                  logger.warn("Failed to download " + cacheFile.getName());
-                  success = false;
-                  nFileFailures++;
-               }
+                  errorOccurred = true;
+                  errorMessage  = "Incorrect image format" + ex.getMessage();
+                  logger.error(errorMessage);
+                  return false;               }
             }
-
-            if (success) scanFileList.add(cacheFile);
-            nFilesDownloaded++;
-            
-            // Note: this is (DAOOutput.STOP_ICON - 1) not 100 because the values
-            // 100 and 99 = DAOOutput.STOP_ICON is reserved for signalling
-            // the START_ICON and STOP_ICON conditions.
-            logger.debug("nFilesDownloaded " + nFilesDownloaded
-                               + "  nFilesToDownload " + nFilesToDownload
-                               + "  nFileFailures " + nFileFailures
-                               + " progress: " + (DAOOutput.STOP_ICON - 1) * nFilesDownloaded / nFilesToDownload);
-            setProgress((DAOOutput.STOP_ICON - 1) * nFilesDownloaded / nFilesToDownload);
-            publishDownloadProgress(cacheFile.getName());
-            
-            if (isCancelled())
-            {
-               break;
-            }            
+           
          }
       }
-      return scanFileList;
    }
    
    @Override
