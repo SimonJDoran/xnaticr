@@ -44,6 +44,7 @@
 
 package xnatUploader;
 
+import dataRepresentations.dicom.RtStruct;
 import dataRepresentations.xnatSchema.AbstractResource;
 import dataRepresentations.xnatSchema.AdditionalField;
 import dataRepresentations.xnatSchema.MetaField;
@@ -61,6 +62,7 @@ import exceptions.DataFormatException;
 import exceptions.XMLException;
 import exceptions.XNATException;
 import generalUtilities.DicomXnatDateTime;
+import generalUtilities.UIDGenerator;
 import generalUtilities.Vector2D;
 import java.io.*;
 import java.util.ArrayList;
@@ -71,6 +73,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.Vector;
+import org.dcm4che2.data.BasicDicomObject;
 import org.dcm4che2.data.DicomObject;
 import org.dcm4che2.io.DicomInputStream;
 import org.w3c.dom.Document;
@@ -286,6 +289,7 @@ public class AimImageAnnotationCollectionDataUploader extends DataUploader
                // Now try to open the DICOM file just downloaded.
                try
                {
+                  bdo = new BasicDicomObject();
                   DicomInputStream dis = new DicomInputStream(cacheFile);
                   dis.readDicomObject(bdo, -1);
                }
@@ -299,6 +303,7 @@ public class AimImageAnnotationCollectionDataUploader extends DataUploader
            
          }
       }
+      return true;
    }
    
    @Override
@@ -339,13 +344,38 @@ public class AimImageAnnotationCollectionDataUploader extends DataUploader
    {
       errorOccurred = false;
           
+      // ------------------------------------------------------
+      // Step 1: Create and upload the corresponding RT-STRUCT.
+      // ------------------------------------------------------
+      RtStructDataUploader ru = new RtStructDataUploader(xnprf);
+      //try
+      //{
+         String rtsId = ru.getRootElement() + "_" + UIDGenerator.createShortUnique(); 
+         ru.setAccessionId(rtsId);
+         ru.setSubjectId(XNATSubjectID);
+         ru.setExperimentId(XNATExperimentID);
+         ru.setProvenance(createProvenance());
+         ru.setRtStruct(new RtStruct(iac, bdo));
+         ru.setSopFilenameMap(sopFilenameMap);
+         ru.setFilenameSopMap(filenameSopMap);
+         ru.setFilenameScanMap(filenameScanMap);
+         
+         ru.uploadMetadata();
+         ru.uploadResourcesToRepository();
+      //}
+      //catch
+      
       // -----------------------------------------------------------------
       // Step 1: Upload the icr:aimImageAnnotationCollectionData metadata.
       // -----------------------------------------------------------------
 		
 		XNATAccessionID = iac.getUid();
       
-      // Pre-calculate the associated RT-STRUCT id.
+
+      
+      
+
+      
       
 	}   
       

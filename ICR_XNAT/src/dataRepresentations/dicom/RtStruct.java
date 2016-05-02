@@ -133,16 +133,22 @@ public class RtStruct extends DicomEntity
    
    /**
     * Constructor with data from an AIM image annotation collection (normally
-    * derived from an AIM XML instance file..
+    * derived from an AIM XML instance file). Note that most of the data needed
+    * for the RT-STRUCT is not contained within the AIM source file and we have
+    * to seek it out from on of the original image source DICOM files.
     * @param iac an AIM ImageAnnotationCollection parsed from the source XML
     * by James d'Arcy's Etherj package.
+    * @param iacDo a DicomObject allowing access to one of the DICOM files
+    * referenced by the image annotation collection.
 	 * @throws exceptions.DataFormatException 
     */
-   public RtStruct(ImageAnnotationCollection iac) throws DataFormatException
+   public RtStruct(ImageAnnotationCollection iac, DicomObject iacDo)
+                  throws DataFormatException
    {
-      // Note that most of the data needed for the RT-STRUCT is not contained
-      // within the AIM source file and we have to seek it out from the
-      // original image source DICOM files, which is tedious.
+      sopCommon        = new SopCommon(iacDo);
+		patient          = new Patient(iacDo);
+		generalStudy     = new GeneralStudy(iacDo);
+      generalEquipment = new GeneralEquipment(iacDo);
       
    }
    

@@ -308,9 +308,9 @@ class RtStructDataUploader extends DataUploader
             ru.setParentUploadFile(uploadFile);
             ru.setParentLabel(label);
             ru.setParentNRois(nRois);
-            ru.setSopFileMap(sopFilenameMap);
-            ru.setFileSopMap(filenameSopMap);
-            ru.setFileScanMap(filenameScanMap);
+            ru.setSopFilenameMap(sopFilenameMap);
+            ru.setFilenameSopMap(filenameSopMap);
+            ru.setFilenameScanMap(filenameScanMap);
             ru.setDate(date);
             ru.setTime(time);
             ru.setNote(note);
@@ -692,5 +692,44 @@ class RtStructDataUploader extends DataUploader
              + "/experiments/"         + XNATExperimentID
              + "/assessors/"           + uploadItem;
    }
+   
+   
+   // One application of this uploader is to upload RtStruct objects created
+   // dynamically from other file formats. In that case, many of the instance
+   // variables have to be set from outside, rather than being parsed from an
+   // initial RT-STRUCT file.
+   void setSubject(String s)
+   {
+      XNATSubjectID = s;
+   }
+   
+   
+   void setExperiment(String s)
+   {
+      XNATExperimentID = s;
+   }
+   
+   
+   void setSopFilenameMap(Map<String, String> m)
+   {
+      sopFilenameMap = m;
+   }
+   
+   
+   void setFilenameSopMap(Map<String, String> m)
+   {
+      filenameSopMap = m;
+   }
+   
+   
+   void setFilenameScanMap(Map<String, String> m)
+   {
+      filenameScanMap = m;
+   }
 
+      
+   void setRtStruct(RtStruct r)
+	{
+		rts = r;
+	}
 }

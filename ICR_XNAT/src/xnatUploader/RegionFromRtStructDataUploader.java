@@ -64,6 +64,8 @@ import dataRepresentations.xnatSchema.AdditionalField;
 import dataRepresentations.xnatSchema.InvestigatorList;
 import dataRepresentations.xnatSchema.MetaField;
 import dataRepresentations.xnatSchema.Provenance;
+import dataRepresentations.xnatSchema.Provenance.ProcessStep;
+import dataRepresentations.xnatSchema.Provenance.ProcessStep.Program;
 import dataRepresentations.xnatSchema.Scan;
 import exceptions.DataFormatException;
 import exceptions.ImageUtilitiesException;
@@ -110,9 +112,9 @@ class RegionFromRtStructDataUploader extends DataUploader implements ContourRend
 	private String               accessionIdParent;
    private String               labelParent;
    private File                 uploadFileParent;
-	private Map<String, String>  sopFileMap;
-   private Map<String, String>  fileSopMap;
-	private Map<String, String>  fileScanMap;
+	private Map<String, String>  sopFilenameMap;
+   private Map<String, String>  filenameSopMap;
+	private Map<String, String>  filenameScanMap;
    
 	
 	RegionFromRtStructDataUploader(XNATProfile xnprf)
@@ -243,9 +245,9 @@ class RegionFromRtStructDataUploader extends DataUploader implements ContourRend
 			// corresponding to the file name. If yes, add the scan ID corresponding
 			// to this filename. Of course, many files will have the same scan number
 			// (unless we are dealing with multi-frame DICOM), hence the use of a Set.
-			String filename = sopFileMap.get(sopUid);
+			String filename = sopFilenameMap.get(sopUid);
 			filenameSet.add(filename);
-			XNATScanIdSet.add(fileScanMap.get(filename));
+			XNATScanIdSet.add(filenameScanMap.get(filename));
 		}
 		
 		List<Scan> lsc = new ArrayList<>();
@@ -273,7 +275,7 @@ class RegionFromRtStructDataUploader extends DataUploader implements ContourRend
 			List<MetaField>  mfl = new ArrayList<>();
 			mfl.add(new MetaField("filename",       filename));
 			mfl.add(new MetaField("format",         "DICOM"));
-			mfl.add(new MetaField("SOPInstanceUID", fileSopMap.get(filename)));
+			mfl.add(new MetaField("SOPInstanceUID", filenameSopMap.get(filename)));
 			ar.tagList = mfl;
 			inList.add(ar);
 		}
@@ -299,9 +301,25 @@ class RegionFromRtStructDataUploader extends DataUploader implements ContourRend
 		// XnatImageAssessorDataMdComplexType inherits from XnatDerivedDataMdComplexType.
 		
 		// If this function is genuinely being called from an RT-STRUCT file upload
-		// created by this package, then provenance should have two entries.
-		assert (prov.stepList.size() == 2);
-      prov.stepList.get(1).program.name = "Auto-extracted from RT-STRUCT file by ICR XNAT DataUploader";
+		// created by this package, then provenance should have two entries. Note
+      // that changing an entry in the provenance object is complicated by the
+      // fact that it is not easy to take a "deep copy". Objects in the
+      // dataRepresentations.dicom package have this built-in, but not in
+      // dataRepresentations.xnatSchema. Just changing one single entry would
+      // alter the parent provenance entry.
+		assert (provParent.stepList.size() == 2);
+      prov = new Provenance();
+      prov.stepList = new ArrayList<>();
+      prov.stepList.add(provParent.stepList.get(0));
+      Program p = new Program("Auto-extracted from RT-STRUCT file by ICR XNAT DataUploader", version, "None");
+      prov.stepList.add(new ProcessStep(p,
+                                        provParent.stepList.get(1).timestamp,
+                                        provParent.stepList.get(1).cvs,
+                                        provParent.stepList.get(1).user,
+                                        provParent.stepList.get(1).machine,
+                                        provParent.stepList.get(1).platform,
+                                        provParent.stepList.get(1).compiler,
+                                        provParent.stepList.get(1).libraryList));
       region.setProvenance(prov);
 		
 		// XnatDerivedDataMdComplexType inherits from XnatExperimentData.
@@ -460,7 +478,7 @@ class RegionFromRtStructDataUploader extends DataUploader implements ContourRend
          
          RenderContour rndC       = new RenderContour();
          String baseSop           = c.contourImageList.get(0).referencedSopInstanceUid;
-         rndC.baseImageFilename   = sopFileMap.get(baseSop);
+         rndC.baseImageFilename   = sopFilenameMap.get(baseSop);
 			rndC.baseFrameNumberList = c.contourImageList.get(0).referencedFrameNumber;
          rndC.nContourPoints      = c.nContourPoints;
          rndC.contourPoints       = new float[c.nContourPoints][3];
@@ -521,21 +539,21 @@ class RegionFromRtStructDataUploader extends DataUploader implements ContourRend
 	}
 	
 	
-	void setSopFileMap(Map<String, String> m)
+	void setSopFilenameMap(Map<String, String> m)
    {
-      sopFileMap = m;
+      sopFilenameMap = m;
    }
    
    
-   void setFileSopMap(Map<String, String> m)
+   void setFilenameSopMap(Map<String, String> m)
    {
-      fileSopMap = m;
+      filenameSopMap = m;
    }
    
    
-   void setFileScanMap(Map<String, String> m)
+   void setFilenameScanMap(Map<String, String> m)
    {
-      fileScanMap = m;
+      filenameScanMap = m;
    }
    
    
