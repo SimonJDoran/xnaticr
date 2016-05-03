@@ -52,27 +52,18 @@
 package xnatUploader;
 
 import etherj.aim.ImageAnnotation;
-import exceptions.DataFormatException;
-import exceptions.ImageUtilitiesException;
+import etherj.aim.User;
 import exceptions.XMLException;
-import exceptions.XNATException;
-import java.awt.image.BufferedImage;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.Map;
-import javax.imageio.ImageIO;
 import org.w3c.dom.Document;
 import xnatDAO.XNATProfile;
 import xnatMetadataCreators.IcrAimImageAnnotationDataMdComplexType;
-import xnatRestToolkit.XnatResource;
 
 public class AimImageAnnotationDataUploader extends DataUploader
 {
 	protected ImageAnnotation ia;
+	protected User            userParent;
+	protected String          associatedRegionSetId;
 
 	
 	public AimImageAnnotationDataUploader(XNATProfile xnprf)
@@ -88,15 +79,23 @@ public class AimImageAnnotationDataUploader extends DataUploader
 		// and calling its createXmlAsRootElement() method. The complexity
 		// in this method comes from the number of pieces of data that must
 		// be transferred from the RT-STRUCT to the metadata creator.
-		IcrAimImageAnnotationDataMdComplexType annotation
+		IcrAimImageAnnotationDataMdComplexType iad
 				                    = new IcrAimImageAnnotationDataMdComplexType();
+				  
+		iad.setComment(ia.getComment());
 		
+		iad.setAimUserName(userParent.getName());
+      iad.setAimUserLoginName(userParent.getLoginName());
+      iad.setAimUserRole(userParent.getRoleInTrial());
+      iad.setAimUserNumberInRole(userParent.getNumberWithinRoleOfClinicalTrial());
+		
+		iad.setAssociatedRegionSetId()
       
       // Finally write the metadata XML document.
 		Document metaDoc = null;
 		try
 		{
-			metaDoc = annotation.createXmlAsRootElement();
+			metaDoc = iad.createXmlAsRootElement();
 		}
 		catch (IOException | XMLException ex)
 		{
@@ -153,5 +152,17 @@ public class AimImageAnnotationDataUploader extends DataUploader
              + "/experiments/"         + XNATExperimentID
              + "/assessors/"           + uploadItem;
    }
+	
+	
+	void setImageAnnotation(ImageAnnotation ia)
+	{
+		this.ia = ia;
+	}
+	
+	
+	void setUserParent(User u)
+	{
+		userParent = u;
+	}
 	
 }

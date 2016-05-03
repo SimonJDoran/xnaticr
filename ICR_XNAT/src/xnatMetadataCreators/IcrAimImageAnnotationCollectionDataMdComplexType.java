@@ -49,26 +49,28 @@ package xnatMetadataCreators;
 
 import exceptions.XMLException;
 import java.io.IOException;
+import java.util.List;
 import xmlUtilities.DelayedPrettyPrinterXmlWriter;
 
 public class IcrAimImageAnnotationCollectionDataMdComplexType extends IcrGenericImageAssessmentDataMdComplexType
 {
-	protected String  aimVersion;
-	protected String  aimUserName;
-	protected String  aimUserLoginName;
-	protected String  aimUserRole;
-	protected Integer aimUserNumberInRole;
-	protected String  manufacturerName;
-	protected String  manufacturerModelName;
-	protected String  deviceSerialNumber;
-	protected String  softwareVersion;
-	protected String  personName;
-	protected String  personId;
-	protected String  personBirthDate;
-	protected String  personSex;
-	protected String  personEthnicGroup;
-	protected Integer numImageAnnotations;
-	protected String  associatedRegionSetId;
+	protected String       aimVersion;
+	protected String       aimUserName;
+	protected String       aimUserLoginName;
+	protected String       aimUserRole;
+	protected Integer      aimUserNumberInRole;
+	protected String       manufacturerName;
+	protected String       manufacturerModelName;
+	protected String       deviceSerialNumber;
+	protected String       softwareVersion;
+	protected String       personName;
+	protected String       personId;
+	protected String       personBirthDate;
+	protected String       personSex;
+	protected String       personEthnicGroup;
+	protected Integer      numImageAnnotations;
+	protected String       associatedRegionSetId;
+	protected List<String> imageAnnotationIdList;
 	
 	@Override
 	public void insertXml() throws IOException, XMLException
@@ -97,6 +99,13 @@ public class IcrAimImageAnnotationCollectionDataMdComplexType extends IcrGeneric
 				.delayedEndEntity()
 				.delayedWriteEntityWithText("numImageAnnotations", numImageAnnotations)
 				.delayedWriteEntityWithText("associatedRoiSetId",  associatedRegionSetId);
+		      
+		dppXML.delayedWriteEntity("imageAnnotationIds");
+			for (String id : imageAnnotationIdList)
+			{
+				dppXML.delayedWriteEntityWithText("imageAnnotationId", id);
+			}
+		dppXML.delayedEndEntity();
 	}
    
    
@@ -194,6 +203,12 @@ public class IcrAimImageAnnotationCollectionDataMdComplexType extends IcrGeneric
 	public void setnumImageAnnotations(Integer n)
 	{
 		numImageAnnotations = n;
+	}
+	
+	
+	public void setImageAnnotationIdList(List<String> ls)
+	{
+		imageAnnotationIdList = ls;
 	}
 	
 	

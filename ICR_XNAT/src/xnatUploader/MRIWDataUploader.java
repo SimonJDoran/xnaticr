@@ -317,7 +317,7 @@ public class MRIWDataUploader extends QCAssessmentDataUploader
     * @throws Exception
     */
    @Override
-   public void uploadMetadata() throws Exception
+   public void uploadMetadataAndDependencies() throws Exception
    {
       errorOccurred = false;
           
@@ -395,7 +395,7 @@ public class MRIWDataUploader extends QCAssessmentDataUploader
       
       try
       {
-         rtsu.uploadMetadata();
+         rtsu.uploadMetadataAndDependencies();
          rtsu.uploadResourcesToRepository();
       }
       catch (Exception ex)

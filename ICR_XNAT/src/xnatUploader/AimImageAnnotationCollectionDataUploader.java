@@ -47,6 +47,7 @@ package xnatUploader;
 import dataRepresentations.dicom.RtStruct;
 import dataRepresentations.xnatSchema.AbstractResource;
 import dataRepresentations.xnatSchema.AdditionalField;
+import dataRepresentations.xnatSchema.InvestigatorList;
 import dataRepresentations.xnatSchema.MetaField;
 import dataRepresentations.xnatSchema.Provenance;
 import dataRepresentations.xnatSchema.Provenance.ProcessStep;
@@ -101,7 +102,10 @@ public class AimImageAnnotationCollectionDataUploader extends DataUploader
 	private Map<String, String> sopFilenameMap;
 	private Map<String, String> filenameScanMap;
    private DicomObject bdo;
-
+	private String      assocRegionSetId;
+	private RtStruct    iacRts;
+	
+	
    public AimImageAnnotationCollectionDataUploader(XNATProfile xnprf)
    {
       super(xnprf);
@@ -330,7 +334,7 @@ public class AimImageAnnotationCollectionDataUploader extends DataUploader
 	 * Uploading data for an assessor to XNAT is a two-stage process. First the data file
 	 * is placed in the repository, then the metadata are placed in the SQL
 	 * tables of the PostgreSQL database. This method attempts the repository
-    * upload.
+    * upload. See also the comment for this method in the superclass.
     *
 	 * The AIM upload is particularly complicated, because a single AIM file
 	 * can describe multiple ROIs. In this sense, the situation is a little like
@@ -345,7 +349,7 @@ public class AimImageAnnotationCollectionDataUploader extends DataUploader
 	 * @throws java.io.IOException
 	 */
    @Override
-   public void uploadMetadata() throws XNATException, DataFormatException,IOException
+   public void uploadMetadataAndDependencies() throws XNATException, DataFormatException, IOException
    {
       errorOccurred = false;
           
@@ -355,18 +359,18 @@ public class AimImageAnnotationCollectionDataUploader extends DataUploader
       RtStructDataUploader ru = new RtStructDataUploader(xnprf);
       try
       {
-         String rtsId = ru.getRootElement() + "_" + UIDGenerator.createShortUnique(); 
-         ru.setAccessionId(rtsId);
+         assocRegionSetId = ru.getRootElement() + "_" + UIDGenerator.createShortUnique(); 
+         ru.setAccessionId(assocRegionSetId);
          ru.setSubjectId(XNATSubjectID);
          ru.setExperimentId(XNATExperimentID);
-			RtStruct iacRts = new RtStruct(iac, bdo);
+			iacRts = new RtStruct(iac, bdo);
 			ru.setRtStruct(iacRts);
          ru.setProvenance(createProvenance(iacRts));
          ru.setSopFilenameMap(sopFilenameMap);
          ru.setFilenameSopMap(filenameSopMap);
          ru.setFilenameScanMap(filenameScanMap);
          
-         ru.uploadMetadata();
+         ru.uploadMetadataAndDependencies();
 			
 			String description = "DICOM RT-STRUCT file auto-created by ICR XNAT uploader from AIM instance file";
 			DicomObject iacDo  = new BasicDicomObject();
@@ -395,16 +399,38 @@ public class AimImageAnnotationCollectionDataUploader extends DataUploader
 			errorMessage  = ex.getMessage();
 			throw ex;
 		}
-      
-      // -----------------------------------------------------------------
-      // Step 1: Upload the icr:aimImageAnnotationCollectionData metadata.
-      // -----------------------------------------------------------------
-		
-		XNATAccessionID = iac.getUid();
-      
 
+		
+      // -----------------------------------------------------------------
+      // Step 2: Upload the icr:aimImageAnnotationCollectionData metadata.
+      // -----------------------------------------------------------------		
+		XNATAccessionID = iac.getUid();
+      super.uploadMetadataAndDependencies();
       
-      
+		
+		// -----------------------------------------------------------------------
+		// Step 3: Each AIM image annotation collection includes a number of
+		//         individual image annotations. Upload each of these in the form
+		//         of an icr:aimImageAnnotationData.
+		// -----------------------------------------------------------------------	
+      for (ImageAnnotation ia : iac.getAnnotationList())
+		{
+			AimImageAnnotationDataUploader iau = new AimImageAnnotationDataUploader(xnprf);
+			
+			try
+			{
+				iau.setAccessionId(ia.getUid());
+				iau.setImageAnnotation(ia);
+				iau.setUserParent(iac.getUser());
+				
+			}
+			catch  (XNATException | DataFormatException | IOException ex)
+			{
+				errorOccurred = true;
+				errorMessage  = ex.getMessage();
+				throw ex;
+			}
+		}
 
       
       
@@ -441,13 +467,18 @@ public class AimImageAnnotationCollectionDataUploader extends DataUploader
       iacd.setPersonEthnicGroup(    iac.getPerson().getEthnicGroup());
       
 		iacd.setnumImageAnnotations(iac.getAnnotationCount());
-      
+		iacd.setAssociatedRegionSetId(assocRegionSetId);
+		
+		List<String> iaIdl = new ArrayList<>();
+		for (ImageAnnotation ia : iac.getAnnotationList()) iaIdl.add(ia.getUid());
+		iacd.setImageAnnotationIdList(iaIdl);
+		
      
       // IcrRegionSetDataMdComplexType inherits from IcrGenericImageAssessmentDataMdComplexType.
 		
 		// iacd.setType();  Not currently sure what should go here.
 		iacd.setXnatSubjId(XNATSubjectID);
-	//	iacd.setDicomSubjName(rts.patient.patientName);
+	   iacd.setDicomSubjName(iacRts.patient.patientName);
 		
 		// Although the full version of Scan, including scan and slice image
 		// statistics is implemented, this is overkill for the RT-STRUCT and
@@ -504,7 +535,33 @@ public class AimImageAnnotationCollectionDataUploader extends DataUploader
 		// empty, but still needs to be set.
 		iacd.setParamList(new ArrayList<AdditionalField>());
 		
+		// XnatImageAssessorDataMdComplexType inherits from XnatDerivedDataMdComplexType.
 		
+		prov = createProvenance();
+		iacd.setProvenance(prov);
+				                                 
+		
+		// XnatDerivedDataMdComplexType inherits from XnatExperimentData.
+		
+      iacd.setId(XNATAccessionID);
+      iacd.setProject(XNATProject);
+      
+     
+		// Apparently the version XML element has to be an integer, so it is not
+		// really clear what this field signifies.
+		iacd.setVersion("1");
+		
+      String labelSuffix = "_" + uploadFile.getName() + "_" + UIDGenerator.createShortUnique();
+		label = isBatchMode ? labelPrefix + labelSuffix : labelPrefix;
+		iacd.setLabel(label);
+      
+		iacd.setDate(date);
+      iacd.setTime(time);
+      iacd.setNote(note);
+		
+      // No correlates in the structure set read in for visit, visitId,
+      // original, protocol and investigator.
+		iacd.setInvestigator(new InvestigatorList.Investigator());      
 		// Finally write the metadata XML document.
 		Document metaDoc = null;
 		try
@@ -677,7 +734,7 @@ public class AimImageAnnotationCollectionDataUploader extends DataUploader
    public void createAuxiliaryResources()
    {
       // There are no auxiliary resources associated with an
-      // AimImageAnnotationCollection. uploadMetadata() above kicks off a
+      // AimImageAnnotationCollection. uploadMetadataAndDependencies() above kicks off a
       // separate upload of an RT-STRUCT, which, in turn archives the ROI objects.
       // Hence, nothing needs to be done here.
    }

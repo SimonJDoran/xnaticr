@@ -62,7 +62,7 @@ public class UploadToXNATWorker extends SwingWorker<Void, Void>
       // are placed in the SQL tables of the PostgreSQL database, by uploading
       // a metadata XML document using REST. Then the data file itself is
       // uploaded, together with any auxiliary files.
-      uploader.uploadMetadata();
+      uploader.uploadMetadataAndDependencies();
       uploader.uploadResourcesToRepository();
       
       

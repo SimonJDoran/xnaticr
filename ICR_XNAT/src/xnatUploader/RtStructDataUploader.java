@@ -94,7 +94,7 @@ class RtStructDataUploader extends DataUploader
 	private DicomObject        bdo;
 	
 	// These instance variables are public because they need to be accessed by
-	// the RegionFromRtStructDataUploader class in the uploadMetadata method.
+	// the RegionFromRtStructDataUploader class in the uploadMetadataAndDependencies method.
 	private RtStruct            rts;
   	private Set<String>         studyUidSet       = new LinkedHashSet<>();
 	private Set<String>         seriesUidSet      = new LinkedHashSet<>();
@@ -226,19 +226,12 @@ class RtStructDataUploader extends DataUploader
            
 	
 	/**
-    * Uploading data to XNAT is a two-stage process. First the data file
-    * is placed in the repository, then the metadata are placed in the SQL
-    * tables of the PostgreSQL database. This method attempts the repository
-    * upload.
-    * 
-    * Note that we have to override the method in the parent class DataUploader.
-    * Loading an RT-STRUCT file is special because not only do we create a
-    * set-of-ROIs element in the database (icr:regionSetData), but we also create
-    * all the individual ROIs as separate icr:regionData objects.
-    * @throws Exception
+    * See comment in the superclass method.
+    * @throws XNATException
     */
    @Override
-   public void uploadMetadata() throws XNATException
+   public void uploadMetadataAndDependencies()
+			      throws XNATException, DataFormatException, IOException
    {
       errorOccurred = false;
 		
@@ -253,46 +246,12 @@ class RtStructDataUploader extends DataUploader
 		nRois = rts.structureSet.structureSetRoiList.size();
 		for (int i=0; i<nRois; i++) assignedRegionIdList.add("ROI_" + UIDGenerator.createShortUnique());
 		 
-      Document metaDoc = createMetadataXml();
-      if (errorOccurred) throw new XNATException(XNATException.FILE_UPLOAD,
-                          "There was a problem in creating the metadata to "
-                          + "metadata to describe the uploaded DICOM-RT "
-                          + "structure set file.\n"
-                          + errorMessage);
-            
-//      try
-//      {
-//         RESTCommand = getMetadataUploadCommand();
-//         
-//         InputStream is = xnprf.doRESTPut(RESTCommand, metaDoc);
-//         int         n  = is.available();
-//         byte[]      b  = new byte[n];
-//         is.read(b, 0, n);
-//         String XNATUploadMessage = new String(b);
-//         
-//         if ((xnrt.XNATRespondsWithError(XNATUploadMessage)) ||
-//             (!XNATUploadMessage.equals(XNATAccessionID)))
-//         {
-//            errorOccurred = true;
-//            errorMessage  = XNATUploadMessage;
-//            throw new XNATException(XNATException.FILE_UPLOAD,
-//                          "XNAT generated the message:\n" + XNATUploadMessage);
-//         }
-//      }
-//      catch (Exception ex)
-//      {
-//         // Here we cater both for reporting the error by throwing an exception
-//         // and by setting the error variables. When performing the upload via
-//         // a SwingWorker, it is not easy to retrieve an Exception.
-//         errorOccurred = true;
-//         errorMessage = ex.getMessage();
-//         throw new XNATException(XNATException.FILE_UPLOAD, ex.getMessage());
-//      }
+      super.uploadMetadataAndDependencies();
  
-      // ----------------------------------------------------------
+      // -------------------------------------------------------------
       // Step 2: Upload the icr:regionData metadata and data files for
-      //         each ROI_old referred to by the structure set.
-      // ----------------------------------------------------------    
+      //         each ROI referred to by the structure set.
+      // -------------------------------------------------------------    
       	
       for (int i=0; i<rts.structureSet.structureSetRoiList.size(); i++)
       {
@@ -316,7 +275,7 @@ class RtStructDataUploader extends DataUploader
             ru.setTime(time);
             ru.setNote(note);
                     
-				ru.uploadMetadata();
+				ru.uploadMetadataAndDependencies();
             ru.uploadResourcesToRepository();
          }
          catch (Exception ex)
@@ -327,7 +286,6 @@ class RtStructDataUploader extends DataUploader
             throw new XNATException(XNATException.FILE_UPLOAD, ex.getMessage());
          }
       }
-      
    }
 	
 	
@@ -337,23 +295,26 @@ class RtStructDataUploader extends DataUploader
 	@Override
 	public void createPrimaryResource()
 	{
-		StringBuilder description = new StringBuilder();
-		description.append("DICOM RT-STRUCT file created by node ")
-					  .append(rts.generalEquipment.stationName)
-					  .append(" of type ")
-				     .append(rts.generalEquipment.manufacturer)
-				     .append(" ")
-				     .append(rts.generalEquipment.modelName)
-				     .append(" using software ")
-				     .append(rts.generalEquipment.softwareVersions);
+		if (primaryResource != null)
+		{
+			StringBuilder description = new StringBuilder();
+			description.append("DICOM RT-STRUCT file created by node ")
+						  .append(rts.generalEquipment.stationName)
+						  .append(" of type ")
+						  .append(rts.generalEquipment.manufacturer)
+						  .append(" ")
+						  .append(rts.generalEquipment.modelName)
+						  .append(" using software ")
+						  .append(rts.generalEquipment.softwareVersions);
 
-		primaryResource = new XnatResource(uploadFile,
-		                                   "out",
-		                                   "RT-STRUCT",
-				                             "DICOM",
-		                                   "EXTERNAL",
-		                                   description.toString(),
-				                             uploadFile.getName());
+			primaryResource = new XnatResource(uploadFile,
+														  "out",
+														  "RT-STRUCT",
+														  "DICOM",
+														  "EXTERNAL",
+														  description.toString(),
+														  uploadFile.getName());
+		}
 	}
    
    
@@ -364,12 +325,8 @@ class RtStructDataUploader extends DataUploader
    @Override
    public void createAuxiliaryResources()
    {
-      // In the first instance, the only auxiliary file needed is the
-		// input catalogue, since the referenced ROI objects already contain
-		// the required thumbnails.
       // TODO: Consider whether some composite visualisation is needed to
       // summarise all the ROI_old's making up the ROISet object.
-	//	createInputCatalogue("DICOM", "RAW", "referenced contour image");
    }
 	
 	@Override
@@ -461,7 +418,7 @@ class RtStructDataUploader extends DataUploader
 		
 		// XnatImageAssessorDataMdComplexType inherits from XnatDerivedDataMdComplexType.
 		
-		prov = retrieveProvenance();  // Used later, too.
+		prov = createProvenance();  // Used later, too.
 		regionSet.setProvenance(prov);
 				                                 
 		
@@ -519,7 +476,7 @@ class RtStructDataUploader extends DataUploader
 	}
 	
 	@Override
-   public Provenance retrieveProvenance()
+   public Provenance createProvenance()
    {
       // A number of fields are mandatory in the birn.xsd provenance schema,
 		// so provide defaults if they do not exist.

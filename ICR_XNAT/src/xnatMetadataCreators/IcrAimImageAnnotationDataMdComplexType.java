@@ -62,9 +62,13 @@ import xmlUtilities.DelayedPrettyPrinterXmlWriter;
 public class IcrAimImageAnnotationDataMdComplexType extends IcrGenericImageAssessmentDataMdComplexType
 {
 	protected String       comment;
-	protected String       description;
+	protected String       aimUserName;
+	protected String       aimUserLoginName;
+	protected String       aimUserRole;
+	protected Integer      aimUserNumberInRole;
 	protected String       associatedRegionSetId;
 	protected List<String> aimEntitySubclassIdList;
+	protected Integer      nMarkupEntity;
 	protected Integer      nTaskContextEntity;
 	protected Integer      nInferenceEntity;
 	protected Integer      nAnnotationRoleEntity;
@@ -77,9 +81,14 @@ public class IcrAimImageAnnotationDataMdComplexType extends IcrGenericImageAsses
 	{
 		super.insertXml();
 		
-		dppXML.delayedWriteEntityWithText("comment",        comment)
-				.delayedWriteEntityWithText("description",    description)
-				.delayedWriteEntityWithText("regionSetId",    associatedRegionSetId);
+		dppXML.delayedWriteEntityWithText("comment",                   comment)
+				.delayedWriteEntity("aimUser")
+				   .delayedWriteAttribute("name",                        aimUserName)
+				   .delayedWriteAttribute("loginName",                   aimUserLoginName)
+				   .delayedWriteAttribute("roleInClinicalTrial",         aimUserRole)
+				   .delayedWriteAttribute("numberWithinRoleOfClinicalTrial", aimUserNumberInRole)
+				.delayedEndEntity()
+				.delayedWriteEntityWithText("associatedRegionSetId",     associatedRegionSetId);
 		
 		dppXML.delayedWriteEntity("aimEntitySubclassIds");
 		for (String s : aimEntitySubclassIdList)
@@ -87,7 +96,16 @@ public class IcrAimImageAnnotationDataMdComplexType extends IcrGenericImageAsses
 			dppXML.delayedWriteEntityWithText("aimEntitySubclassId", s);
 		}
 		dppXML.delayedEndEntity();
+		
+		dppXML.delayedWriteEntityWithText("nMarkupEntity",             nMarkupEntity)
+				.delayedWriteEntityWithText("nTaskContextEntity",        nTaskContextEntity)
+				.delayedWriteEntityWithText("nInferenceEntity",          nInferenceEntity)
+				.delayedWriteEntityWithText("nAnnotationRoleEntity",     nAnnotationRoleEntity)
+				.delayedWriteEntityWithText("nCalculationEntity",        nCalculationEntity)
+				.delayedWriteEntityWithText("nImagingObservationEntity", nImagingObservationEntity)
+				.delayedWriteEntityWithText("nImagingPhysicalEntity",    nImagingPhysicalEntity);
 	}
+	
 	
 	public void setComment(String s)
 	{
@@ -95,13 +113,31 @@ public class IcrAimImageAnnotationDataMdComplexType extends IcrGenericImageAsses
 	}
 	
 	
-	public void setDescription(String s)
+	public void setAimUserName(String s)
 	{
-		description = s;
+		aimUserName = s;
 	}
 	
 	
-	public void setAssociatedRoiSetId(String s)
+	public void setAimUserLoginName(String s)
+	{
+		aimUserLoginName = s;
+	}
+	
+	
+	public void setAimUserRole(String s)
+	{
+		aimUserRole = s;
+	}
+	
+	
+	public void setAimUserNumberInRole(Integer n)
+	{
+		aimUserNumberInRole = n;
+	}
+	
+	
+	public void setAssociatedRegionSetId(String s)
 	{
 		associatedRegionSetId = s;
 	}
@@ -110,6 +146,11 @@ public class IcrAimImageAnnotationDataMdComplexType extends IcrGenericImageAsses
 	public void setAimEntitySubclassIdList(List<String> ls)
 	{
 		aimEntitySubclassIdList = ls;
+	}
+	
+	public void setNTaskMarkupEntity(Integer n)
+	{
+		nTaskMarkupEntity = n;
 	}
 	
 	public void setNTaskContextEntity(Integer n)

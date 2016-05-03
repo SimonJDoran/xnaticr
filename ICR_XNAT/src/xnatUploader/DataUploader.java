@@ -230,14 +230,21 @@ public abstract class DataUploader
 
 	
 	/**
-    * Uploading data to XNAT is a two-stage process. First the metadata
-    * are placed in the SQL tables of the PostgreSQL database, by uploading
-    * a metadata XML document using REST. Then the data file itself is
-    * uploaded, together with any auxiliary files, such as catalogue files
-    * and snapshots.
-    * @throws Exception
+    * First stage of the two-step process. This method places the metadata
+    * in the SQL tables of the PostgreSQL database, by uploading a metadata
+    * XML document using REST. Then in uploadResourcesToRepository(), the
+	 * data file itself is uploaded, together with any auxiliary files,
+	 * such as catalogue files and snapshots.
+	 * 
+	 * The basic metadata upload is here. However, this method is often
+	 * over-ridden, because some of the data types have dependencies. For
+	 * example, uploading an RT-STRUCT not only uploads the metadata for an
+	 * icr:regionSetData, but also creates an icr:regionData entry for each of
+	 * the individual ROI's contained in the RT-STRUCT.
+	 * @throws exceptions.XNATException
     */
-   public void uploadMetadata() throws Exception
+   public void uploadMetadataAndDependencies()
+			      throws XNATException, exceptions.DataFormatException, IOException
    {
       errorOccurred = false;
       
@@ -251,33 +258,33 @@ public abstract class DataUploader
                           + errorMessage);
       
       
-//      try
-//      {
-//         RESTCommand    = getMetadataUploadCommand();
-//         InputStream is = xnprf.doRESTPut(RESTCommand, metaDoc);
-//         int         n  = is.available();
-//         byte[]      b  = new byte[n];
-//         is.read(b, 0, n);
-//         String XNATUploadMessage = new String(b);
-//         
-//         if ((xnrt.XNATRespondsWithError(XNATUploadMessage)) ||
-//             (!XNATUploadMessage.equals(XNATAccessionID)))
-//         {
-//            errorOccurred = true;
-//            errorMessage  = XNATUploadMessage;
-//            throw new XNATException(XNATException.FILE_UPLOAD,
-//                          "XNAT generated the message:\n" + XNATUploadMessage);
-//         }
-//      }
-//      catch (Exception ex)
-//      {
-//         // Here we cater both for reporting the error by throwing an exception
-//         // and by setting the error variables. When performing the upload via
-//         // a SwingWorker, it is not easy to retrieve an Exception.
-//         errorOccurred = true;
-//         errorMessage = ex.getMessage();
-//         throw new XNATException(XNATException.FILE_UPLOAD, ex.getMessage());
-//      }             
+      try
+      {
+         RESTCommand    = getMetadataUploadCommand();
+         InputStream is = xnprf.doRESTPut(RESTCommand, metaDoc);
+         int         n  = is.available();
+         byte[]      b  = new byte[n];
+         is.read(b, 0, n);
+         String XNATUploadMessage = new String(b);
+         
+         if ((xnrt.XNATRespondsWithError(XNATUploadMessage)) ||
+             (!XNATUploadMessage.equals(XNATAccessionID)))
+         {
+            errorOccurred = true;
+            errorMessage  = XNATUploadMessage;
+            throw new XNATException(XNATException.FILE_UPLOAD,
+                          "XNAT generated the message:\n" + XNATUploadMessage);
+         }
+      }
+      catch (Exception ex)
+      {
+         // Here we cater both for reporting the error by throwing an exception
+         // and by setting the error variables. When performing the upload via
+         // a SwingWorker, it is not easy to retrieve an Exception.
+         errorOccurred = true;
+         errorMessage = ex.getMessage();
+         throw new XNATException(XNATException.FILE_UPLOAD, ex.getMessage());
+      }             
    }
    
    
@@ -465,7 +472,7 @@ public abstract class DataUploader
     * available will clearly depend on the specific datatype and this
     * method may or may not be over-ridden by subclasses of DataUploader.
     */
-   public Provenance retrieveProvenance()
+   public Provenance createProvenance()
    {
       return new Provenance();
    }
