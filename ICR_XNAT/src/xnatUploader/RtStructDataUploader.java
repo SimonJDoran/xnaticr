@@ -64,6 +64,7 @@ import dataRepresentations.xnatSchema.Scan;
 import exceptions.DataFormatException;
 import exceptions.XMLException;
 import exceptions.XNATException;
+import generalUtilities.DicomXnatDateTime;
 import generalUtilities.UIDGenerator;
 import java.io.BufferedInputStream;
 import java.io.FileInputStream;
@@ -523,13 +524,20 @@ class RtStructDataUploader extends DataUploader
       // A number of fields are mandatory in the birn.xsd provenance schema,
 		// so provide defaults if they do not exist.
 		final String DEFAULT = "Unknown";
-		
+		final String SEP     = " | ";
 		
 		// Provenance step 1 : source data
 		
-		StringBuilder sb = new StringBuilder();
-		for (String s : rts.generalEquipment.softwareVersions) sb.append(s);
-      String                 versions = getDefaultIfEmpty(sb.toString());
+		StringBuilder sb    = new StringBuilder();
+		for (String s : rts.generalEquipment.softwareVersions)
+		{
+			if (!(sb.toString().contains(s))) 
+			{
+			   if (sb.length() != 0) sb.append(SEP);
+				if (s != null) sb.append(s);
+			}
+		}
+      String versions = getDefaultIfEmpty(sb.toString());
 		
 		Program                prog1    = new Program(getDefaultIfEmpty(rts.generalEquipment.manufacturer) + " software",
 		                                              versions,
@@ -538,11 +546,12 @@ class RtStructDataUploader extends DataUploader
 		Platform               plat1    = new Platform(getDefaultIfEmpty(rts.generalEquipment.modelName),
 				                                         DEFAULT);
 		
-		String                 ts1      = "1900-01-01T00:00:00";
+		// Note that ts1 has to be initialised with a valid default. 
+		String ts1 ="1900-01-01T00:00:00";
 		try
 		{
-			ts1 = convertToDateTime(rts.structureSet.structureSetDate,
-				                     rts.structureSet.structureSetTime);
+			ts1 = DicomXnatDateTime.convertDicomToXnatDateTime(rts.structureSet.structureSetDate,
+				                                                rts.structureSet.structureSetTime);
 		}
 		catch (DataFormatException exDF)
 		{
@@ -550,11 +559,8 @@ class RtStructDataUploader extends DataUploader
 			errorMessage  = "Incorrect DICOM date format in structure set file";
 		}
 		
-		String                 cvs1     = null;
-		
+		String                 cvs1     = null;		
 		String                 user1    = getDefaultIfEmpty(rts.rtRoiObservationList.get(0).roiInterpreter);
-
-		
 		String                 mach1    = getDefaultIfEmpty(rts.generalEquipment.stationName);
 		
 		// We don't have a compiler version, but we still need to specify it, as
@@ -603,32 +609,7 @@ class RtStructDataUploader extends DataUploader
    }
 	
 	
-	public String convertToDateTime(String date, String time) throws DataFormatException
-   {
-      String month;
-      String day;
-      String year;
-      String hour;
-      String minute;
-      String second;
-      
-      try
-      {
-         month  = date.substring(4, 6);
-         day    = date.substring(6, 8);
-         year   = date.substring(0, 4);
-         hour   = time.substring(0, 2);
-         minute = time.substring(2, 4);
-         second = time.substring(4, 6);
-      }
-      catch (Exception ex)
-      {
-         throw new DataFormatException(DataFormatException.DATE);
-      }
-      
-      return new String(year + "-" + month + "-" + day
-                        + "T" + hour + ":" + minute + ":" + second);
-   }
+	
    
    
    @Override
@@ -732,4 +713,17 @@ class RtStructDataUploader extends DataUploader
 	{
 		rts = r;
 	}
+	
+	   
+	public void setProvenance(Provenance p)
+	{
+		prov = p;
+	}
+	
+	
+	public void setPrimaryResource(XnatResource xnr)
+	{
+		primaryResource = xnr;
+	}
+	
 }

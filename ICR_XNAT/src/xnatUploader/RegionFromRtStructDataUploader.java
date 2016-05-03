@@ -428,9 +428,9 @@ class RegionFromRtStructDataUploader extends DataUploader implements ContourRend
             
             XnatResource xr = new XnatResource(bais,
 		                                         "out",
-		                                         filePrefix + i,
-				                                   "PNG",
 		                                         "ROI_THUMBNAIL",
+				                                   "PNG",
+		                                         "GENERATED",
 		                                         description.toString(),
 				                                   filePrefix + i + ".png");
 				

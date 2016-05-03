@@ -48,6 +48,10 @@ import dataRepresentations.dicom.RtStruct;
 import dataRepresentations.xnatSchema.AbstractResource;
 import dataRepresentations.xnatSchema.AdditionalField;
 import dataRepresentations.xnatSchema.MetaField;
+import dataRepresentations.xnatSchema.Provenance;
+import dataRepresentations.xnatSchema.Provenance.ProcessStep;
+import dataRepresentations.xnatSchema.Provenance.ProcessStep.Platform;
+import dataRepresentations.xnatSchema.Provenance.ProcessStep.Program;
 import dataRepresentations.xnatSchema.Scan;
 import etherj.XmlException;
 import etherj.aim.AimToolkit;
@@ -65,6 +69,8 @@ import generalUtilities.DicomXnatDateTime;
 import generalUtilities.UIDGenerator;
 import generalUtilities.Vector2D;
 import java.io.*;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -76,6 +82,7 @@ import java.util.Vector;
 import org.dcm4che2.data.BasicDicomObject;
 import org.dcm4che2.data.DicomObject;
 import org.dcm4che2.io.DicomInputStream;
+import org.dcm4che2.io.DicomOutputStream;
 import org.w3c.dom.Document;
 import xnatDAO.XNATProfile;
 import xnatMetadataCreators.IcrAimImageAnnotationCollectionDataMdComplexType;
@@ -192,11 +199,7 @@ public class AimImageAnnotationCollectionDataUploader extends DataUploader
       // we need to create a number of DICOM structures. Much of the information
       // required can be obtained from any of the files referenced by the AIM
       // document.
-      if (!downloadDicomFile()) return false;
-      
-
-            
-      return true;
+      return downloadDicomFile();  
    }
   
    
@@ -324,7 +327,7 @@ public class AimImageAnnotationCollectionDataUploader extends DataUploader
    
       
    /**
-	 * Uploading data to XNAT is a two-stage process. First the data file
+	 * Uploading data for an assessor to XNAT is a two-stage process. First the data file
 	 * is placed in the repository, then the metadata are placed in the SQL
 	 * tables of the PostgreSQL database. This method attempts the repository
     * upload.
@@ -337,10 +340,12 @@ public class AimImageAnnotationCollectionDataUploader extends DataUploader
 	 * THE AIM UML document is rather complex and so the translation into the
 	 * XNAT schema necessarily misses out some of the relationships.
 	 * 
-	 * @throws Exception 
+	 * @throws exceptions.XNATException
+	 * @throws exceptions.DataFormatException
+	 * @throws java.io.IOException
 	 */
    @Override
-   public void uploadMetadata() throws Exception
+   public void uploadMetadata() throws XNATException, DataFormatException,IOException
    {
       errorOccurred = false;
           
@@ -348,22 +353,48 @@ public class AimImageAnnotationCollectionDataUploader extends DataUploader
       // Step 1: Create and upload the corresponding RT-STRUCT.
       // ------------------------------------------------------
       RtStructDataUploader ru = new RtStructDataUploader(xnprf);
-      //try
-      //{
+      try
+      {
          String rtsId = ru.getRootElement() + "_" + UIDGenerator.createShortUnique(); 
          ru.setAccessionId(rtsId);
          ru.setSubjectId(XNATSubjectID);
          ru.setExperimentId(XNATExperimentID);
-         ru.setProvenance(createProvenance());
-         ru.setRtStruct(new RtStruct(iac, bdo));
+			RtStruct iacRts = new RtStruct(iac, bdo);
+			ru.setRtStruct(iacRts);
+         ru.setProvenance(createProvenance(iacRts));
          ru.setSopFilenameMap(sopFilenameMap);
          ru.setFilenameSopMap(filenameSopMap);
          ru.setFilenameScanMap(filenameScanMap);
          
          ru.uploadMetadata();
+			
+			String description = "DICOM RT-STRUCT file auto-created by ICR XNAT uploader from AIM instance file";
+			DicomObject iacDo  = new BasicDicomObject();
+			iacRts.writeToDicom(iacDo);
+			
+			// Create the new RT-STRUCT as an input stream to be fed into the uploader.
+			ByteArrayOutputStream baos = new ByteArrayOutputStream();
+			DicomOutputStream     dos  = new DicomOutputStream(baos);
+			dos.writeDicomFile(iacDo);		
+			InputStream           bais = new ByteArrayInputStream(baos.toByteArray());
+            
+			XnatResource xr = new XnatResource(bais,
+														  "out",
+														  "RT-STRUCT",
+														  "DICOM",
+														  "GENERATED",
+														  description.toString(),
+														  XNATAccessionID + "_RTSTRUCT.dcm");
+			
+			ru.setPrimaryResource(xr);
          ru.uploadResourcesToRepository();
-      //}
-      //catch
+      }
+      catch (XNATException | DataFormatException | IOException ex)
+		{
+			errorOccurred = true;
+			errorMessage  = ex.getMessage();
+			throw ex;
+		}
       
       // -----------------------------------------------------------------
       // Step 1: Upload the icr:aimImageAnnotationCollectionData metadata.
@@ -492,6 +523,139 @@ public class AimImageAnnotationCollectionDataUploader extends DataUploader
 	}
 	
 	
+	private String getDefaultIfEmpty(String src)
+	{
+		final String DEFAULT = "Unknown";
+		
+		if (src == null)   return DEFAULT;
+		if (src.isEmpty()) return DEFAULT;
+		return src;
+	}
+	
+	
+	Provenance createProvenance(RtStruct iacRts)
+	{
+		// A number of fields are mandatory in the birn.xsd provenance schema,
+		// so provide defaults if they do not exist.
+		final String DEFAULT = "Unknown";
+		final String SEP     = " | ";
+		
+		
+		// Provenance step 1 : source DICOM data	
+		StringBuilder sb    = new StringBuilder();
+		for (String s : iacRts.generalEquipment.softwareVersions)
+		{
+			if (!(sb.toString().contains(s))) 
+			{
+			   if (sb.length() != 0) sb.append(SEP);
+				if (s != null) sb.append(s);
+			}
+		}
+      String versions = getDefaultIfEmpty(sb.toString());
+		
+		ProcessStep.Program    prog1    = new Program(getDefaultIfEmpty(iacRts.generalEquipment.manufacturer) + " software",
+		                                              versions,
+		                                              DEFAULT);
+		
+		ProcessStep.Platform   plat1    = new Platform(getDefaultIfEmpty(iacRts.generalEquipment.modelName),
+				                                         DEFAULT);
+
+		
+		// Note that ts1 has to be initialised with a valid default. 
+		String ts1 ="1900-01-01T00:00:00";
+		try
+		{
+			ts1 = DicomXnatDateTime.convertDicomToXnatDateTime(iacRts.structureSet.structureSetDate,
+				                                                iacRts.structureSet.structureSetTime);
+		}
+		catch (DataFormatException exDF)
+		{
+			errorOccurred = true;
+			errorMessage  = "Incorrect DICOM date format in structure set file";
+		}
+		
+		String                 cvs1     = null;
+		String                 user1    = getDefaultIfEmpty(iacRts.rtRoiObservationList.get(0).roiInterpreter);	
+		String                 mach1    = getDefaultIfEmpty(iacRts.generalEquipment.stationName);
+		
+		// We don't have a compiler version, but we still need to specify it, as
+		// the instance variables are accessed later. (Still needed even though the instance
+		// variables are null themselves ...)
+		
+		String                 compN1   = null;
+		String                 compV1   = null;
+		ProcessStep.Compiler   comp1    = new ProcessStep.Compiler(compN1, compV1);
+		
+      // Even though  the library list is empty we still need to specify it, otherwise
+		// a null pointer exception will pop up when we try to iterate through the list.
+		List<ProcessStep.Library>  ll1 = new ArrayList<ProcessStep.Library>();
+				  
+		ProcessStep ps1 = new Provenance.ProcessStep(prog1, ts1, cvs1, user1, mach1, plat1, comp1, ll1);
+		
+
+		
+		// Provenance step 2: record the step that created the ImageAnnotationCollection.
+		ProcessStep.Program    prog2    = new Program("AIM data source", iac.getAimVersion(), DEFAULT);
+ 
+		String                 iacMn    = "Equipment manufacturer from AIM document: " + iac.getEquipment().getManufacturerName();	
+		String                 iacSv    = "Equipment software version from AIM document: " + iac.getEquipment().getSoftwareVersion();	
+		ProcessStep.Platform   plat2    = new Platform(iacMn, iacSv);
+   
+      String                 ts2      = iac.getDateTime();
+      
+      String                 cvs2     = null;
+			
+		sb = new StringBuilder();
+		sb.append("Name:").append(iac.getUser().getName()).append(SEP)
+		  .append("Login name:").append(iac.getUser().getLoginName()).append(SEP)
+		  .append("Role in trial").append(iac.getUser().getRoleInTrial()).append(SEP)
+		  .append("Number within role").append(iac.getUser().getNumberWithinRoleOfClinicalTrial());
+		
+		String                 user2    = sb.toString();
+      
+      String                 mach2    = "Equipment model from AIM document: " + iac.getEquipment().getManufacturerName();;
+    
+		List<ProcessStep.Library> ll2   = new ArrayList<ProcessStep.Library>();
+		
+		String                 compN2   = null;
+		String                 compV2   = null;
+		ProcessStep.Compiler   comp2    = new Provenance.ProcessStep.Compiler(compN2, compV2);
+		
+		Provenance.ProcessStep ps2      = new Provenance.ProcessStep(prog2, ts2, cvs2, user2, mach2, plat2, comp2, ll2);
+
+
+		// Provenance step 3: record the transit through DataUploader.
+		
+      ProcessStep.Program    prog3    = new Program("ICR XNAT DataUploader", version, "None");
+      
+		ProcessStep.Platform   plat3    = new Platform(System.getProperty("os.arch") + " " + System.getProperty("os.name"),
+				                                         System.getProperty("os.version"));
+   
+      String                 ts3      = LocalDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME);
+      
+      String                 cvs3     = null;
+		
+		String                 user3    = System.getProperty("user.name");
+      
+      String                 mach3    = DEFAULT;
+    
+		List<ProcessStep.Library> ll3   = new ArrayList<ProcessStep.Library>();
+		
+		String                 compN3   = null;
+		String                 compV3   = null;
+		ProcessStep.Compiler   comp3    = new Provenance.ProcessStep.Compiler(compN3, compV3);
+		
+		Provenance.ProcessStep ps3      = new Provenance.ProcessStep(prog3, ts3, cvs3, user3, mach3, plat3, comp3, ll3);
+		
+      ArrayList<Provenance.ProcessStep> stepList = new ArrayList<>();
+		stepList.add(ps1);
+      stepList.add(ps2);
+		stepList.add(ps3);
+      
+      return new Provenance(stepList);
+	}
+	
+	
 	@Override
 	public void createPrimaryResource()
 	{
@@ -571,8 +735,6 @@ public class AimImageAnnotationCollectionDataUploader extends DataUploader
 		return s;
    }
    
-   
-	
 	
 	@Override
    public boolean rightMetadataPresent()

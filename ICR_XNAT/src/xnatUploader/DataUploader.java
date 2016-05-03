@@ -380,33 +380,25 @@ public abstract class DataUploader
     * This is the method called by the upload worker thread.
     * @throws XNATException 
     */
-   public void uploadResourcesToRepository() throws Exception
+   public void uploadResourcesToRepository() throws XNATException
    {
-      try
-      {
-			if (uploadFile != null) createPrimaryResource();
-			createAuxiliaryResources();
-			createXnatResources();
-			
-			
-         if (uploadFile != null)
-         {
-            uploadXnatResource(primaryResource);
-            if (errorOccurred)
-               throw new XNATException(XNATException.FILE_UPLOAD, errorMessage);
-         }
-			
-			for (XnatResource ar : auxiliaryResources) {
-				uploadXnatResource(ar);
-				if (errorOccurred)
-					throw new XNATException(XNATException.FILE_UPLOAD, errorMessage);
-			}
-      }
-      catch (Exception ex)
-      {
-         throw ex;
-      }
-      
+		if (uploadFile != null) createPrimaryResource();
+		createAuxiliaryResources();
+		createXnatResources();
+
+
+		if (uploadFile != null)
+		{
+			uploadXnatResource(primaryResource);
+			if (errorOccurred)
+				throw new XNATException(XNATException.FILE_UPLOAD, errorMessage);
+		}
+
+		for (XnatResource ar : auxiliaryResources) {
+			uploadXnatResource(ar);
+			if (errorOccurred)
+				throw new XNATException(XNATException.FILE_UPLOAD, errorMessage);
+		}  
    }
 	
 	

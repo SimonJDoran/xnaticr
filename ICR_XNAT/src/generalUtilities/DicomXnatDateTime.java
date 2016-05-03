@@ -47,6 +47,35 @@ import exceptions.DataFormatException;
 
 public class DicomXnatDateTime
 {
+	public static String convertDicomToXnatDateTime(String date, String time)
+			        throws DataFormatException
+   {
+      String month;
+      String day;
+      String year;
+      String hour;
+      String minute;
+      String second;
+      
+      try
+      {
+         month  = date.substring(4, 6);
+         day    = date.substring(6, 8);
+         year   = date.substring(0, 4);
+         hour   = time.substring(0, 2);
+         minute = time.substring(2, 4);
+         second = time.substring(4, 6);
+      }
+      catch (Exception ex)
+      {
+         throw new DataFormatException(DataFormatException.DATE);
+      }
+      
+      return new String(year + "-" + month + "-" + day
+                        + "T" + hour + ":" + minute + ":" + second);
+   }
+	
+	
 	/**
     * Take a String variable in the form that is used by XNAT and
     * convert it to the DICOM time format hhmmss.
