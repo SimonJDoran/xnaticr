@@ -64,7 +64,7 @@ public class AimImageAnnotationDataUploader extends DataUploader
 	protected ImageAnnotation ia;
 	protected User            userParent;
 	protected String          associatedRegionSetId;
-
+	protected String          associatedRegionId;
 	
 	public AimImageAnnotationDataUploader(XNATProfile xnprf)
 	{
@@ -89,7 +89,8 @@ public class AimImageAnnotationDataUploader extends DataUploader
       iad.setAimUserRole(userParent.getRoleInTrial());
       iad.setAimUserNumberInRole(userParent.getNumberWithinRoleOfClinicalTrial());
 		
-		iad.setAssociatedRegionSetId()
+		iad.setAssociatedRegionSetId(associatedRegionSetId);
+		iad.setAssociatedRegionId(associatedRegionId);
       
       // Finally write the metadata XML document.
 		Document metaDoc = null;
