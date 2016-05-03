@@ -44,7 +44,7 @@
 
 package treeTable;
 
-import generalUtilities.UIDGenerator;
+import generalUtilities.UidGeneratorTemp;
 import generalUtilities.SimpleColourTable;
 import imageUtilities.DownloadIcon;
 import java.awt.Color;
@@ -303,9 +303,9 @@ public class DAOTreeModel extends DefaultTreeModel
 
             // If 
             if (isLeaf && nodeName.equals(""))
-               nodeName = UIDGenerator.createNewDicomUID(UIDGenerator.XNAT_DAO,
-                                                         UIDGenerator.ORIGINAL_UID_UNAVAILABLE,
-                                                         UIDGenerator.GENERIC_DATA_TYPE)
+               nodeName = UidGeneratorTemp.createNewDicomUID(UidGeneratorTemp.XNAT_DAO,
+                                                         UidGeneratorTemp.ORIGINAL_UID_UNAVAILABLE,
+                                                         UidGeneratorTemp.GENERIC_DATA_TYPE)
                                                          + ARTIFICIAL_UID;
             // Retrieve the tooltip and create icons from the render list.
             Vector<String>  nodeProperties = irl.getIconInfoProperties().get(nodeType);

@@ -49,7 +49,7 @@ import dataRepresentations.xnatSchema.Catalog;
 import dataRepresentations.xnatSchema.InvestigatorList;
 import dataRepresentations.xnatSchema.Provenance;
 import exceptions.XNATException;
-import generalUtilities.UIDGenerator;
+import generalUtilities.UidGeneratorTemp;
 import generalUtilities.Vector2D;
 import java.awt.Cursor;
 import java.io.File;
@@ -249,7 +249,7 @@ public abstract class DataUploader
       errorOccurred = false;
       
       if (XNATAccessionID == null)
-            XNATAccessionID = getRootElement() + '_' + UIDGenerator.createShortUnique();
+            XNATAccessionID = getRootElement() + '_' + UidGeneratorTemp.createShortUnique();
 
       Document metaDoc = createMetadataXml();
       if (errorOccurred) throw new XNATException(XNATException.FILE_UPLOAD,

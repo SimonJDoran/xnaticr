@@ -67,12 +67,13 @@ import exceptions.DataFormatException;
 import exceptions.XMLException;
 import exceptions.XNATException;
 import generalUtilities.DicomXnatDateTime;
-import generalUtilities.UIDGenerator;
+import generalUtilities.UidGeneratorTemp;
 import generalUtilities.Vector2D;
 import java.io.*;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
@@ -95,15 +96,15 @@ import static xnatUploader.ContourRendererHelper.logger;
 public class AimImageAnnotationCollectionDataUploader extends DataUploader
 {
    private ImageAnnotationCollection iac;
-   private Set<String> studyUidSet;
-	private Set<String> seriesUidSet;
-	private Set<String> sopInstanceUidSet;
-   private Map<String, String> filenameSopMap;
-	private Map<String, String> sopFilenameMap;
-	private Map<String, String> filenameScanMap;
-   private DicomObject bdo;
-	private String      assocRegionSetId;
-	private RtStruct    iacRts;
+   private Set<String>               studyUidSet;
+	private Set<String>               seriesUidSet;
+	private Set<String>               sopInstanceUidSet;
+   private Map<String, String>       filenameSopMap;
+	private Map<String, String>       sopFilenameMap;
+	private Map<String, String>       filenameScanMap;
+   private Map<String, DicomObject>  seriesDoMap;
+	private String                    assocRegionSetId;
+	private RtStruct                  iacRts;
 	
 	
    public AimImageAnnotationCollectionDataUploader(XNATProfile xnprf)
@@ -201,28 +202,43 @@ public class AimImageAnnotationCollectionDataUploader extends DataUploader
       
       // In order to convert the ROI part of the AIM file to an RT-STRUCT file,
       // we need to create a number of DICOM structures. Much of the information
-      // required can be obtained from any of the files referenced by the AIM
-      // document.
-      return downloadDicomFile();  
+      // required can be obtained from the files referenced by the AIM
+      // document. Now that we know the mapping between filename and SOP instance
+      // UID, we can loop back through the list and download a representative
+      // file from each series.
+      seriesDoMap = new HashMap<>();
+      for (ImageAnnotation ia : iac.getAnnotationList())
+      {
+         for (ImageReference ir : ia.getReferenceList())
+         {
+            if (ir instanceof DicomImageReference)
+            {
+               DicomImageReference dir    = (DicomImageReference) ir;
+               ImageStudy          study  = dir.getStudy();
+               ImageSeries         series = study.getSeries();
+               if (!seriesDoMap.containsKey(series.getInstanceUid()))
+               {
+                  Image       im       = series.getImageList().get(0);
+                  String      filename = sopFilenameMap.get(im.getInstanceUid());
+                  DicomObject bdo      = downloadDicomObject(filename);
+                  
+                  if (bdo != null) seriesDoMap.put(series.getInstanceUid(), bdo);
+                  else return false;
+               }             
+            }
+         }
+      }
+      return true;
    }
   
    
-   private boolean downloadDicomFile()
+   private DicomObject downloadDicomObject(String filename)
    {
-      Set ks = filenameSopMap.keySet();
-      if (ks.isEmpty())
-      {
-         errorMessage  = "No matching files found.";
-         errorOccurred = true;
-         return false;
-      }
-      
+      DicomObject      bdo = null;
       String           homeDir      = System.getProperty("user.home");
       String           fileSep      = System.getProperty("file.separator");
 		String           cacheDirName = homeDir + fileSep + ".XNAT_DAO";
-      Iterator<String> ksi          = ks.iterator();
-      String           testFilename = ksi.next();
-      String           testScan     = filenameScanMap.get(testFilename);
+      String           testScan     = filenameScanMap.get(filename);
       String           restCommand  = "/data/archive/experiments/" + XNATExperimentID
                                       + "/scans/" + testScan + "/files?format=xml";
       Vector2D<String> resultSet;
@@ -234,7 +250,7 @@ public class AimImageAnnotationCollectionDataUploader extends DataUploader
       {
          errorMessage  = "Error retrieving file list: " + exXNAT.getMessage();
          errorOccurred = true;
-         return false;
+         return null;
       }
       Vector<String> URI  = resultSet.getColumn(2);
       Vector<String> type = resultSet.getColumn(3);
@@ -251,7 +267,7 @@ public class AimImageAnnotationCollectionDataUploader extends DataUploader
             File cacheFile = new File(sb.toString());
             File parent    = new File(cacheFile.getParent());
             
-            if (cacheFile.getName().equals(testFilename))
+            if (cacheFile.getName().equals(filename))
             {
 
                boolean success = true;
@@ -289,7 +305,7 @@ public class AimImageAnnotationCollectionDataUploader extends DataUploader
                      errorOccurred = true;
                      errorMessage = "Failed to download " + cacheFile.getName();
                      logger.error(errorMessage);
-                     return false;
+                     return null;
                   }
                }
                
@@ -305,12 +321,12 @@ public class AimImageAnnotationCollectionDataUploader extends DataUploader
                   errorOccurred = true;
                   errorMessage  = "Incorrect image format" + ex.getMessage();
                   logger.error(errorMessage);
-                  return false;               }
-            }
-           
+                  return null;
+               }
+            }           
          }
       }
-      return true;
+      return bdo;
    }
    
    @Override
@@ -343,6 +359,11 @@ public class AimImageAnnotationCollectionDataUploader extends DataUploader
 	 * 
 	 * THE AIM UML document is rather complex and so the translation into the
 	 * XNAT schema necessarily misses out some of the relationships.
+    * 
+    * Note also that for the situations that I have come across so far, the image
+    * annotation collection is a redundant layer of hierarchy, because all of the
+    * annotation collections I have examples of so far have only one image
+    * annotation in them.
 	 * 
 	 * @throws exceptions.XNATException
 	 * @throws exceptions.DataFormatException
@@ -359,11 +380,11 @@ public class AimImageAnnotationCollectionDataUploader extends DataUploader
       RtStructDataUploader ru = new RtStructDataUploader(xnprf);
       try
       {
-         assocRegionSetId = ru.getRootElement() + "_" + UIDGenerator.createShortUnique(); 
+         assocRegionSetId = ru.getRootElement() + "_" + UidGeneratorTemp.createShortUnique(); 
          ru.setAccessionId(assocRegionSetId);
          ru.setSubjectId(XNATSubjectID);
          ru.setExperimentId(XNATExperimentID);
-			iacRts = new RtStruct(iac, bdo);
+			iacRts = new RtStruct(iac, seriesDoMap);
 			ru.setRtStruct(iacRts);
          ru.setProvenance(createProvenance(iacRts));
          ru.setSopFilenameMap(sopFilenameMap);
@@ -422,6 +443,11 @@ public class AimImageAnnotationCollectionDataUploader extends DataUploader
 				iau.setAccessionId(ia.getUid());
 				iau.setImageAnnotation(ia);
 				iau.setUserParent(iac.getUser());
+            iau.setEquipmentParent(iac.getEquipment());
+            iau.setPersonParent(iac.getPerson());
+            iau.setAssociatedRegionSetId(assocRegionSetId);
+            
+            iau.uploadMetadataAndDependencies();
 				
 			}
 			catch  (XNATException | DataFormatException | IOException ex)
@@ -551,7 +577,7 @@ public class AimImageAnnotationCollectionDataUploader extends DataUploader
 		// really clear what this field signifies.
 		iacd.setVersion("1");
 		
-      String labelSuffix = "_" + uploadFile.getName() + "_" + UIDGenerator.createShortUnique();
+      String labelSuffix = "_" + uploadFile.getName() + "_" + UidGeneratorTemp.createShortUnique();
 		label = isBatchMode ? labelPrefix + labelSuffix : labelPrefix;
 		iacd.setLabel(label);
       
@@ -688,7 +714,7 @@ public class AimImageAnnotationCollectionDataUploader extends DataUploader
 		ProcessStep.Platform   plat3    = new Platform(System.getProperty("os.arch") + " " + System.getProperty("os.name"),
 				                                         System.getProperty("os.version"));
    
-      String                 ts3      = LocalDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME);
+      String                 ts3      = LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME);
       
       String                 cvs3     = null;
 		

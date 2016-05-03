@@ -46,10 +46,19 @@
 
 package dataRepresentations.dicom;
 
+import etherj.aim.DicomImageReference;
+import etherj.aim.Image;
+import etherj.aim.ImageAnnotation;
 import etherj.aim.ImageAnnotationCollection;
+import etherj.aim.ImageReference;
+import etherj.aim.ImageSeries;
+import etherj.aim.ImageStudy;
 import exceptions.DataFormatException;
 import exceptions.DataRepresentationException;
-import generalUtilities.UIDGenerator;
+import generalUtilities.DicomXnatDateTime;
+import generalUtilities.UidGeneratorTemp;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -58,6 +67,7 @@ import java.util.Map;
 import java.util.Set;
 import org.dcm4che2.data.DicomObject;
 import org.dcm4che2.data.Tag;
+import org.dcm4che2.data.UID;
 import org.dcm4che2.data.VR;
 
 public class RtStruct extends DicomEntity
@@ -142,13 +152,74 @@ public class RtStruct extends DicomEntity
     * referenced by the image annotation collection.
 	 * @throws exceptions.DataFormatException 
     */
-   public RtStruct(ImageAnnotationCollection iac, DicomObject iacDo)
+   public RtStruct(ImageAnnotationCollection iac, Map<String, DicomObject seriesDoMap)
                   throws DataFormatException
    {
-      sopCommon        = new SopCommon(iacDo);
-		patient          = new Patient(iacDo);
+      final String DEFAULT = "Unknown";
+      // Create the general items from one of the referenced image DICOM files,
+      // but with a new UID.
+      sopCommon = new SopCommon();
+      String dateTime = LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME);
+      sopCommon.instanceCreationDate = DicomXnatDateTime.convertXnatDateTimeToDicomDate(dateTime);
+      sopCommon.instanceCreationTime = DicomXnatDateTime.convertXnatDateTimeToDicomTime(dateTime);
+      sopCommon.sopClassUid = UID.RTStructureSetStorage;
+      sopCommon.sopInstanceUid = UidGeneratorTemp.createNewDicomUID(UidGeneratorTemp.XNAT_DAO,
+		                                                          UidGeneratorTemp.RT_STRUCT,
+                                                                UidGeneratorTemp.SOPInstanceUID);
+      patient          = new Patient(iacDo);
 		generalStudy     = new GeneralStudy(iacDo);
-      generalEquipment = new GeneralEquipment(iacDo);
+      
+      generalEquipment = new GeneralEquipment();
+      generalEquipment.institutionAddress = DEFAULT;
+      generalEquipment.institutionName    = DEFAULT;
+      generalEquipment.manufacturer       = DEFAULT;
+      generalEquipment.modelName          = DEFAULT;
+      List<String> ls = new ArrayList<>();
+      ls.add(iac.getAimVersion());
+      ls.add("Converted by ICR XNAT DataUploader");
+      generalEquipment.softwareVersions   = ls;
+      generalEquipment.stationName        = DEFAULT;
+      
+      // Create the specific structure set items from information in the AIM
+      // image annotation.
+      structureSet = new StructureSet();
+      structureSet.structureSetLabel       = "Auto-created structure set";
+      structureSet.structureSetName        = iac.getUid() + "_RT-STRUCT";
+      structureSet.structureSetDescription = "Auto-created from AIM instance document with UID "
+                                             + iac.getUid() + "by ICR XNAT DataUploader";
+      structureSet.instanceNumber          = "1";
+      
+      
+      ReferencedFrameOfReference rfor = new ReferencedFrameOfReference();
+      
+      // Note: At present, the case of an annotation collection with images
+      // from DICOM studies with different frames of reference is not supported.
+      // This is because of the expense involved in downloading lots of files
+      // from the repository and checking the frame of reference UID.
+      rfor.frameOfReferenceUid = rfor.readString(iacDo, Tag.FrameOfReferenceUID, 1);
+      
+      for (ImageAnnotation ia : iac.getAnnotationList())
+      {
+         for (ImageReference ir : ia.getReferenceList())
+         {
+            if (ir instanceof DicomImageReference)
+            {
+               DicomImageReference dir    = (DicomImageReference) ir;
+               ImageStudy          study  = dir.getStudy();
+               studyUidSet.add(study.getInstanceUid());
+               ImageSeries         series = study.getSeries();
+               seriesUidSet.add(series.getInstanceUid());
+               for (Image im : series.getImageList())
+               {
+                  sopInstanceUidSet.add(im.getInstanceUid());
+               }    
+            }
+         }
+      }
+      List<ReferencedFrameOfReference> rforList   = new ArrayList<>();
+      rforList.add(rfor);
+      
+      structureSet.referencedFrameOfReferenceList = rforList;
       
    }
    
@@ -173,9 +244,9 @@ public class RtStruct extends DicomEntity
       rtRoiObservationList = dest.rtRoiObservationList;
       
       // Make the modifications that come about because of selecting a single ROI.
-		sopCommon.sopInstanceUid = UIDGenerator.createNewDicomUID(UIDGenerator.XNAT_DAO,
-		                                                          UIDGenerator.RT_STRUCT,
-                                                                UIDGenerator.SOPInstanceUID);
+		sopCommon.sopInstanceUid = UidGeneratorTemp.createNewDicomUID(UidGeneratorTemp.XNAT_DAO,
+		                                                          UidGeneratorTemp.RT_STRUCT,
+                                                                UidGeneratorTemp.SOPInstanceUID);
 
 		structureSet.structureSetLabel        = src.structureSet.structureSetLabel + " - ROI subset";
 		structureSet.structureSetName         = src.structureSet.structureSetName + "_ROIsubset";

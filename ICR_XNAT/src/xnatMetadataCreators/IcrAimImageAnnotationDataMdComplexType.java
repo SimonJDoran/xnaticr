@@ -61,11 +61,21 @@ import xmlUtilities.DelayedPrettyPrinterXmlWriter;
 
 public class IcrAimImageAnnotationDataMdComplexType extends IcrGenericImageAssessmentDataMdComplexType
 {
+	protected String       aimVersion;
 	protected String       comment;
 	protected String       aimUserName;
 	protected String       aimUserLoginName;
 	protected String       aimUserRole;
 	protected Integer      aimUserNumberInRole;
+   protected String       manufacturerName;
+	protected String       manufacturerModelName;
+	protected String       deviceSerialNumber;
+	protected String       softwareVersion;
+   protected String       personName;
+	protected String       personId;
+	protected String       personBirthDate;
+	protected String       personSex;
+	protected String       personEthnicGroup;
 	protected String       associatedRegionSetId;
 	protected List<String> aimEntitySubclassIdList;
 	protected Integer      nMarkupEntity;
@@ -81,12 +91,26 @@ public class IcrAimImageAnnotationDataMdComplexType extends IcrGenericImageAsses
 	{
 		super.insertXml();
 		
-		dppXML.delayedWriteEntityWithText("comment",                   comment)
+		dppXML.delayedWriteEntityWithText("aimVersion",                aimVersion)
+            .delayedWriteEntityWithText("comment",                   comment)
 				.delayedWriteEntity("aimUser")
 				   .delayedWriteAttribute("name",                        aimUserName)
 				   .delayedWriteAttribute("loginName",                   aimUserLoginName)
 				   .delayedWriteAttribute("roleInClinicalTrial",         aimUserRole)
 				   .delayedWriteAttribute("numberWithinRoleOfClinicalTrial", aimUserNumberInRole)
+				.delayedEndEntity()
+				.delayedWriteEntity("equipment")
+				   .delayedWriteAttribute("manufacturerName",            manufacturerName)
+				   .delayedWriteAttribute("manufacturerModelName",       manufacturerModelName)
+				   .delayedWriteAttribute("deviceSerialNumber",          deviceSerialNumber)
+				   .delayedWriteAttribute("softwareVersion",             softwareVersion)
+				.delayedEndEntity()
+              .delayedWriteEntity("person")
+				   .delayedWriteAttribute("name",                        personName)
+				   .delayedWriteAttribute("id",                          personId)
+				   .delayedWriteAttribute("birthDate",                   personBirthDate)
+				   .delayedWriteAttribute("sex",                         personSex)
+				   .delayedWriteAttribute("ethnicGroup",                 personEthnicGroup)
 				.delayedEndEntity()
 				.delayedWriteEntityWithText("associatedRegionSetId",     associatedRegionSetId);
 		
@@ -104,6 +128,19 @@ public class IcrAimImageAnnotationDataMdComplexType extends IcrGenericImageAsses
 				.delayedWriteEntityWithText("nCalculationEntity",        nCalculationEntity)
 				.delayedWriteEntityWithText("nImagingObservationEntity", nImagingObservationEntity)
 				.delayedWriteEntityWithText("nImagingPhysicalEntity",    nImagingPhysicalEntity);
+	}
+	
+	
+	@Override
+   public String getRootElementName()
+   {
+      return "AimImageAnnotation";
+   }
+	
+	
+	public void setAimVersion(String s)
+	{
+		aimVersion = s;
 	}
 	
 	
@@ -137,6 +174,60 @@ public class IcrAimImageAnnotationDataMdComplexType extends IcrGenericImageAsses
 	}
 	
 	
+	public void setPersonName(String s)
+	{
+		personName = s;
+	}
+	
+	
+	public void setPersonId(String s)
+	{
+		personId = s;
+	}
+	
+	
+	public void setPersonBirthDate(String s)
+	{
+		personBirthDate = s;
+	}
+	
+	
+	public void setPersonSex(String s)
+	{
+		personSex = s;
+	}
+	
+	
+	public void setPersonEthnicGroup(String s)
+	{
+		personEthnicGroup = s;
+	}
+	
+	
+	public void setManufacturerName(String s)
+	{
+		manufacturerName = s;
+	}
+	
+	
+	public void setManufacturerModelName(String s)
+	{
+		manufacturerModelName = s;
+	}
+	
+	
+	public void setDeviceSerialNumber(String s)
+	{
+		deviceSerialNumber = s;
+	}
+	
+	
+	public void setSoftwareVersion(String s)
+	{
+		softwareVersion = s;
+	}
+	
+	
 	public void setAssociatedRegionSetId(String s)
 	{
 		associatedRegionSetId = s;
@@ -148,9 +239,9 @@ public class IcrAimImageAnnotationDataMdComplexType extends IcrGenericImageAsses
 		aimEntitySubclassIdList = ls;
 	}
 	
-	public void setNTaskMarkupEntity(Integer n)
+	public void setNMarkupEntity(Integer n)
 	{
-		nTaskMarkupEntity = n;
+		nMarkupEntity = n;
 	}
 	
 	public void setNTaskContextEntity(Integer n)

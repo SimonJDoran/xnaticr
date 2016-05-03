@@ -65,7 +65,7 @@ import exceptions.DataFormatException;
 import exceptions.XMLException;
 import exceptions.XNATException;
 import generalUtilities.DicomXnatDateTime;
-import generalUtilities.UIDGenerator;
+import generalUtilities.UidGeneratorTemp;
 import java.io.BufferedInputStream;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -240,11 +240,11 @@ class RtStructDataUploader extends DataUploader
       // ----------------------------------------------
       
       if (XNATAccessionID == null)
-         XNATAccessionID = getRootElement() + "_" + UIDGenerator.createShortUnique();
+         XNATAccessionID = getRootElement() + "_" + UidGeneratorTemp.createShortUnique();
 		
 		// Create separate accession IDs for all the individual ROI's.
 		nRois = rts.structureSet.structureSetRoiList.size();
-		for (int i=0; i<nRois; i++) assignedRegionIdList.add("ROI_" + UIDGenerator.createShortUnique());
+		for (int i=0; i<nRois; i++) assignedRegionIdList.add("ROI_" + UidGeneratorTemp.createShortUnique());
 		 
       super.uploadMetadataAndDependencies();
  
@@ -435,7 +435,7 @@ class RtStructDataUploader extends DataUploader
 		// version above is no use.
 		regionSet.setVersion("1");
 		
-      String labelSuffix = "_" + uploadFile.getName() + "_" + UIDGenerator.createShortUnique();
+      String labelSuffix = "_" + uploadFile.getName() + "_" + UidGeneratorTemp.createShortUnique();
 		label = isBatchMode ? labelPrefix + labelSuffix : labelPrefix;
 		regionSet.setLabel(label);
       

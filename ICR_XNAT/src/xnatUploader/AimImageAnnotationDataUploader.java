@@ -51,7 +51,9 @@
 
 package xnatUploader;
 
+import etherj.aim.Equipment;
 import etherj.aim.ImageAnnotation;
+import etherj.aim.Person;
 import etherj.aim.User;
 import exceptions.XMLException;
 import java.io.IOException;
@@ -63,8 +65,9 @@ public class AimImageAnnotationDataUploader extends DataUploader
 {
 	protected ImageAnnotation ia;
 	protected User            userParent;
-	protected String          associatedRegionSetId;
-	protected String          associatedRegionId;
+   protected Equipment       equipmentParent;
+   protected Person          personParent;
+	protected String          assocRegionSetId;
 	
 	public AimImageAnnotationDataUploader(XNATProfile xnprf)
 	{
@@ -84,14 +87,28 @@ public class AimImageAnnotationDataUploader extends DataUploader
 				  
 		iad.setComment(ia.getComment());
 		
-		iad.setAimUserName(userParent.getName());
-      iad.setAimUserLoginName(userParent.getLoginName());
-      iad.setAimUserRole(userParent.getRoleInTrial());
-      iad.setAimUserNumberInRole(userParent.getNumberWithinRoleOfClinicalTrial());
-		
-		iad.setAssociatedRegionSetId(associatedRegionSetId);
-		iad.setAssociatedRegionId(associatedRegionId);
+		iad.setAimUserName(          userParent.getName());
+      iad.setAimUserLoginName(     userParent.getLoginName());
+      iad.setAimUserRole(          userParent.getRoleInTrial());
+      iad.setAimUserNumberInRole(  userParent.getNumberWithinRoleOfClinicalTrial());
       
+      iad.setManufacturerName(     equipmentParent.getManufacturerName());
+      iad.setManufacturerModelName(equipmentParent.getManufacturerModelName());
+      iad.setDeviceSerialNumber(   equipmentParent.getDeviceSerialNumber());
+      iad.setSoftwareVersion(      equipmentParent.getSoftwareVersion());
+      
+      iad.setPersonName(           personParent.getName());
+      iad.setPersonId(             personParent.getId());
+      iad.setPersonBirthDate(      personParent.getBirthDate());
+      iad.setPersonSex(            personParent.getSex());
+      iad.setPersonEthnicGroup(    personParent.getEthnicGroup());
+       
+		iad.setAssociatedRegionSetId(assocRegionSetId);
+      
+      
+      
+      
+		
       // Finally write the metadata XML document.
 		Document metaDoc = null;
 		try
@@ -165,5 +182,23 @@ public class AimImageAnnotationDataUploader extends DataUploader
 	{
 		userParent = u;
 	}
+   
+   
+   void setEquipmentParent(Equipment e)
+	{
+		equipmentParent = e;
+	}
+   
+   
+   void setPersonParent(Person p)
+	{
+		personParent = p;
+	}
+   
+   
+   void setAssociatedRegionSetId(String s)
+   {
+      assocRegionSetId = s;
+   }
 	
 }
