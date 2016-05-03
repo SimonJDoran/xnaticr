@@ -48,7 +48,7 @@ import xnatUploader.ContourRendererHelper;
 import dataRepresentations.xnatUpload.XnatUpload;
 import exceptions.XMLException;
 import exceptions.XNATException;
-import generalUtilities.UidGeneratorTemp;
+import generalUtilities.UidGenerator;
 import generalUtilities.Vector2D;
 import java.io.BufferedInputStream;
 import java.io.IOException;
@@ -724,9 +724,9 @@ public final class MRIWOutput extends XnatUpload
       odo.initFileMetaInformation(UID.ExplicitVRLittleEndian);
       odo.putString(Tag.MediaStorageSOPClassUID, VR.UI, UID.RTStructureSetStorage);
       
-      String uid = UidGeneratorTemp.createNewDicomUID(UidGeneratorTemp.XNAT_DATA_UPLOADER,
-                                                  UidGeneratorTemp.RT_STRUCT,
-                                                  UidGeneratorTemp.SeriesInstanceUID);
+      String uid = UidGenerator.createNewDicomUID(UidGenerator.XNAT_DATA_UPLOADER,
+                                                  UidGenerator.RT_STRUCT,
+                                                  UidGenerator.SeriesInstanceUID);
       odo.putString(Tag.MediaStorageSOPInstanceUID, VR.UI, uid);
       
       odo.putString(Tag.SpecificCharacterSet,    VR.CS, "ISO_IR 100");
@@ -775,9 +775,9 @@ public final class MRIWOutput extends XnatUpload
       // a separate study and thus the SeriesInstanceUID should relate to that.
       odo.putString(Tag.StudyInstanceUID,        VR.UI, inp.refStudyUID);
       
-      uid = UidGeneratorTemp.createNewDicomUID(UidGeneratorTemp.XNAT_DATA_UPLOADER,
-                                           UidGeneratorTemp.RT_STRUCT,
-                                           UidGeneratorTemp.SeriesInstanceUID);
+      uid = UidGenerator.createNewDicomUID(UidGenerator.XNAT_DATA_UPLOADER,
+                                           UidGenerator.RT_STRUCT,
+                                           UidGenerator.SeriesInstanceUID);
       odo.putString(Tag.SeriesInstanceUID,       VR.UI, uid);
       
       odo.putString(Tag.StudyID,                 VR.SH, XNATExperimentID);

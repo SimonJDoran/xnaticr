@@ -44,7 +44,7 @@
 
 package fileDownloads;
 
-import generalUtilities.UidGeneratorTemp;
+import generalUtilities.UidGenerator;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;

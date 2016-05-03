@@ -67,7 +67,7 @@ import exceptions.DataFormatException;
 import exceptions.XMLException;
 import exceptions.XNATException;
 import generalUtilities.DicomXnatDateTime;
-import generalUtilities.UidGeneratorTemp;
+import generalUtilities.UidGenerator;
 import generalUtilities.Vector2D;
 import java.io.*;
 import java.time.LocalDateTime;
@@ -380,7 +380,7 @@ public class AimImageAnnotationCollectionDataUploader extends DataUploader
       RtStructDataUploader ru = new RtStructDataUploader(xnprf);
       try
       {
-         assocRegionSetId = ru.getRootElement() + "_" + UidGeneratorTemp.createShortUnique(); 
+         assocRegionSetId = ru.getRootElement() + "_" + UidGenerator.createShortUnique(); 
          ru.setAccessionId(assocRegionSetId);
          ru.setSubjectId(XNATSubjectID);
          ru.setExperimentId(XNATExperimentID);
@@ -577,7 +577,7 @@ public class AimImageAnnotationCollectionDataUploader extends DataUploader
 		// really clear what this field signifies.
 		iacd.setVersion("1");
 		
-      String labelSuffix = "_" + uploadFile.getName() + "_" + UidGeneratorTemp.createShortUnique();
+      String labelSuffix = "_" + uploadFile.getName() + "_" + UidGenerator.createShortUnique();
 		label = isBatchMode ? labelPrefix + labelSuffix : labelPrefix;
 		iacd.setLabel(label);
       

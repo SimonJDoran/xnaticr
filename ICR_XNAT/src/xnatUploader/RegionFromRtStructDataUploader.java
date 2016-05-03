@@ -71,7 +71,7 @@ import exceptions.DataFormatException;
 import exceptions.ImageUtilitiesException;
 import exceptions.XMLException;
 import exceptions.XNATException;
-import generalUtilities.UidGeneratorTemp;
+import generalUtilities.UidGenerator;
 import generalUtilities.Vector2D;
 import java.awt.image.BufferedImage;
 import java.io.BufferedInputStream;

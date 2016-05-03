@@ -56,7 +56,7 @@ import etherj.aim.ImageStudy;
 import exceptions.DataFormatException;
 import exceptions.DataRepresentationException;
 import generalUtilities.DicomXnatDateTime;
-import generalUtilities.UidGeneratorTemp;
+import generalUtilities.UidGenerator;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -163,9 +163,9 @@ public class RtStruct extends DicomEntity
       sopCommon.instanceCreationDate = DicomXnatDateTime.convertXnatDateTimeToDicomDate(dateTime);
       sopCommon.instanceCreationTime = DicomXnatDateTime.convertXnatDateTimeToDicomTime(dateTime);
       sopCommon.sopClassUid = UID.RTStructureSetStorage;
-      sopCommon.sopInstanceUid = UidGeneratorTemp.createNewDicomUID(UidGeneratorTemp.XNAT_DAO,
-		                                                          UidGeneratorTemp.RT_STRUCT,
-                                                                UidGeneratorTemp.SOPInstanceUID);
+      sopCommon.sopInstanceUid = UidGenerator.createNewDicomUID(UidGenerator.XNAT_DAO,
+		                                                          UidGenerator.RT_STRUCT,
+                                                                UidGenerator.SOPInstanceUID);
       patient          = new Patient(iacDo);
 		generalStudy     = new GeneralStudy(iacDo);
       
@@ -244,9 +244,9 @@ public class RtStruct extends DicomEntity
       rtRoiObservationList = dest.rtRoiObservationList;
       
       // Make the modifications that come about because of selecting a single ROI.
-		sopCommon.sopInstanceUid = UidGeneratorTemp.createNewDicomUID(UidGeneratorTemp.XNAT_DAO,
-		                                                          UidGeneratorTemp.RT_STRUCT,
-                                                                UidGeneratorTemp.SOPInstanceUID);
+		sopCommon.sopInstanceUid = UidGenerator.createNewDicomUID(UidGenerator.XNAT_DAO,
+		                                                          UidGenerator.RT_STRUCT,
+                                                                UidGenerator.SOPInstanceUID);
 
 		structureSet.structureSetLabel        = src.structureSet.structureSetLabel + " - ROI subset";
 		structureSet.structureSetName         = src.structureSet.structureSetName + "_ROIsubset";
