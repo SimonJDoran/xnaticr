@@ -60,6 +60,7 @@ public class DataFormatException extends CodedException
 	public static final int MRIW_GENERAL = 5;
 	public static final int MRIW_MAP     = 6;
 	public static final int RTSTRUCT     = 7;
+   public static final int BUILDER      = 8;
 	
 	private static final HashMap<Integer, String> messages;
 	static Logger logger = Logger.getLogger(XNATException.class);
@@ -75,6 +76,7 @@ public class DataFormatException extends CodedException
 		messages.put(MRIW_GENERAL, "Not a valid MRIW output: should be either MRIW ResultSet or batch processing file");
 		messages.put(MRIW_MAP,     "Invalid format for MRIW map");
 		messages.put(RTSTRUCT,     "Invalid format for DICOM RT Structure Set file");
+      messages.put(BUILDER,      "Incorrect combination of data supplied to builder");
 	};
 
 
