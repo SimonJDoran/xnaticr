@@ -714,7 +714,7 @@ public class AimImageAnnotationCollectionDataUploader extends DataUploader
 		ProcessStep.Platform   plat3    = new Platform(System.getProperty("os.arch") + " " + System.getProperty("os.name"),
 				                                         System.getProperty("os.version"));
    
-      String                 ts3      = LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME);
+      String                 ts3      = LocalDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME);
       
       String                 cvs3     = null;
 		

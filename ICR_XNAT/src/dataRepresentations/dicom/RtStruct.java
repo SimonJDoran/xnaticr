@@ -57,6 +57,8 @@ import exceptions.DataFormatException;
 import exceptions.DataRepresentationException;
 import generalUtilities.DicomXnatDateTime;
 import generalUtilities.UidGenerator;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -148,46 +150,33 @@ public class RtStruct extends DicomEntity
     * to seek it out from on of the original image source DICOM files.
     * @param iac an AIM ImageAnnotationCollection parsed from the source XML
     * by James d'Arcy's Etherj package.
-    * @param iacDo a DicomObject allowing access to one of the DICOM files
-    * referenced by the image annotation collection.
+	 * @param seriesDoMap a Map that links a DICOM series to one representative
+	 * image from that series, thus allowing us to extract the various header
+    * parameters to supplement the information in the image annotation.
 	 * @throws exceptions.DataFormatException 
     */
-   public RtStruct(ImageAnnotationCollection iac, Map<String, DicomObject seriesDoMap)
+   public RtStruct(ImageAnnotationCollection iac, Map<String, DicomObject> seriesDoMap)
                   throws DataFormatException
    {
-      final String DEFAULT = "Unknown";
-      // Create the general items from one of the referenced image DICOM files,
-      // but with a new UID.
-      sopCommon = new SopCommon();
-      String dateTime = LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME);
-      sopCommon.instanceCreationDate = DicomXnatDateTime.convertXnatDateTimeToDicomDate(dateTime);
-      sopCommon.instanceCreationTime = DicomXnatDateTime.convertXnatDateTimeToDicomTime(dateTime);
-      sopCommon.sopClassUid = UID.RTStructureSetStorage;
-      sopCommon.sopInstanceUid = UidGenerator.createNewDicomUID(UidGenerator.XNAT_DAO,
-		                                                          UidGenerator.RT_STRUCT,
-                                                                UidGenerator.SOPInstanceUID);
-      patient          = new Patient(iacDo);
-		generalStudy     = new GeneralStudy(iacDo);
+      iacCreateSopCommon(iac);
+		iacCreatePatient(iac, seriesDoMap);
+		iacCreateGeneralStudy();
+		iacCreateGeneralEquipment(iac);
+		iacCreateRtSeries(iac);
+		iacCreateStructureSet(iac, seriesDoMap);
       
-      generalEquipment = new GeneralEquipment();
-      generalEquipment.institutionAddress = DEFAULT;
-      generalEquipment.institutionName    = DEFAULT;
-      generalEquipment.manufacturer       = DEFAULT;
-      generalEquipment.modelName          = DEFAULT;
-      List<String> ls = new ArrayList<>();
-      ls.add(iac.getAimVersion());
-      ls.add("Converted by ICR XNAT DataUploader");
-      generalEquipment.softwareVersions   = ls;
-      generalEquipment.stationName        = DEFAULT;
+		
+
+		
+		
+		
+		
+		
+     
       
       // Create the specific structure set items from information in the AIM
       // image annotation.
-      structureSet = new StructureSet();
-      structureSet.structureSetLabel       = "Auto-created structure set";
-      structureSet.structureSetName        = iac.getUid() + "_RT-STRUCT";
-      structureSet.structureSetDescription = "Auto-created from AIM instance document with UID "
-                                             + iac.getUid() + "by ICR XNAT DataUploader";
-      structureSet.instanceNumber          = "1";
+      
       
       
       ReferencedFrameOfReference rfor = new ReferencedFrameOfReference();
@@ -223,7 +212,118 @@ public class RtStruct extends DicomEntity
       
    }
    
-   
+   private void iacCreateSopCommon(ImageAnnotationCollection iac)
+			  throws DataFormatException
+	{
+		sopCommon = new SopCommon();
+      String dateTime = LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME);
+      sopCommon.instanceCreationDate = DicomXnatDateTime.convertXnatDateTimeToDicomDate(dateTime);
+      sopCommon.instanceCreationTime = DicomXnatDateTime.convertXnatDateTimeToDicomTime(dateTime);
+      sopCommon.sopClassUid = UID.RTStructureSetStorage;
+      sopCommon.sopInstanceUid = UidGenerator.createNewDicomUID(UidGenerator.XNAT_DAO,
+		                                                          UidGenerator.RT_STRUCT,
+                                                                UidGenerator.SOPInstanceUID);  
+	}
+	
+	
+	private void iacCreatePatient(ImageAnnotationCollection iac, Map<String, DicomObject> seriesDoMap)
+			  throws DataFormatException
+	{
+		// Arbitrarily, pick the last series in the following loop to provide
+		// the template DICOM file from which to pick various patient parameters.
+		DicomObject templateDo = null;
+		
+		// Check that the same subject is referenced in all the images. This is
+		// potentially tricky, given that different variants of the name might
+		// have been entered differently by the scanner operators and that the
+		// images might have been subject to anonymisation.
+		String      name1      = null;
+		for (String series : seriesDoMap.keySet())
+		{
+			DicomObject bdo   = seriesDoMap.get(series);
+			String      name2 = readString(bdo, Tag.PatientName, 1);
+			if ((!name2.equals(name1)) && (name1 != null))
+			{
+				String msg = "Trying to construct an RT-STRUCT from two sets of "
+						       + "images with different patient names. Ensure that "
+						       + "source images are uploaded to XNAT with compatible"
+						       + "values in the Patient Name field of the DICOM headers.";
+				
+				throw new DataFormatException(DataFormatException.RTSTRUCT, msg);
+			}
+			name1      = name2;
+			templateDo = bdo;
+		}
+		
+		patient          = new Patient(templateDo);
+	}
+	
+	
+	private void iacCreateGeneralStudy()
+	{
+		generalStudy     = new GeneralStudy();
+		generalStudy.studyInstanceUid = UidGenerator.createNewDicomUID(UidGenerator.XNAT_DATA_UPLOADER,
+				                                                         UidGenerator.RT_STRUCT,
+																							UidGenerator.StudyInstanceUID);
+		generalStudy.studyDate = sopCommon.instanceCreationDate;
+		generalStudy.studyTime = sopCommon.instanceCreationTime;
+	}
+	
+	
+	private void iacCreateGeneralEquipment(ImageAnnotationCollection iac)
+	{
+		final String DEFAULT = "Unknown";
+		generalEquipment = new GeneralEquipment();
+      generalEquipment.institutionAddress = DEFAULT;
+      generalEquipment.institutionName    = DEFAULT;
+      generalEquipment.manufacturer       = "Institute of Cancer Research";
+      generalEquipment.modelName          = "ICR XNAT DataUploader";
+      List<String> sv = new ArrayList<>();
+      sv.add(iac.getAimVersion());
+      sv.add("Converted to RT-STRUCT by ICR XNAT DataUploader");
+      generalEquipment.softwareVersions   = sv;
+      try
+		{
+			generalEquipment.stationName = InetAddress.getLocalHost().getHostName();
+		}
+		catch (UnknownHostException exUH)
+		{
+			generalEquipment.stationName = DEFAULT;
+		}
+	}
+	
+	
+	private void iacCreateRtSeries(ImageAnnotationCollection iac)
+	{
+		rtSeries                   = new RtSeries();
+		rtSeries.modality          = "RTSTRUCT";
+		rtSeries.seriesInstanceUid = UidGenerator.createNewDicomUID(UidGenerator.XNAT_DATA_UPLOADER,
+				                                                      UidGenerator.RT_STRUCT,
+																						UidGenerator.SeriesInstanceUID);
+		rtSeries.seriesNumber      = 1;
+		rtSeries.seriesDate        = sopCommon.instanceCreationDate;
+		rtSeries.seriesTime        = sopCommon.instanceCreationTime;
+		rtSeries.seriesDescription = "Image markup from AIM instance with UID " + iac.getUid()
+				                       + " converted RT-STRUCT by XNAT DataUploader";
+		rtSeries.operatorName      = System.getProperty("user.name");
+	}
+	
+	
+	private void iacStructureSet(ImageAnnotationCollection iac, Map<String, DicomObject> seriesDoMap)
+			  throws DataFormatException
+	{
+		structureSet                         = new StructureSet();
+      structureSet.structureSetLabel       = "Auto-created structure set";
+      structureSet.structureSetName        = iac.getUid() + "_RT-STRUCT";
+      structureSet.structureSetDescription = "Image markup from AIM instance document with UID "
+                                             + iac.getUid() + " converted RT-STRUCT by ICR XNAT DataUploader";
+      structureSet.instanceNumber          = "1";
+		structureSet.structureSetDate        = sopCommon.instanceCreationDate;
+		structureSet.structureSetTime        = sopCommon.instanceCreationTime;
+		
+	}
+	
+	
 	/**
 	 * Constructor with data from a previously constructed RtStruct object,
 	 * and choosing a subset of the existing regions-of-interest
