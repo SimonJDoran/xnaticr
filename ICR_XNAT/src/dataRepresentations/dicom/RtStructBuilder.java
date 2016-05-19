@@ -69,74 +69,24 @@ import org.dcm4che2.data.Tag;
 import org.dcm4che2.data.UID;
 
 public class RtStructBuilder
-{
-	DicomObject               rtsDo       = null;
-	ImageAnnotationCollection iac         = null;
-	Map<String, DicomObject>  seriesDoMap = null;
-   Set<Integer>              rois        = null;
-	
-	public void setConstructorPars(DicomObject rtsDo)
-	{
-		this.rtsDo = rtsDo;
-	}
-	
-	public void setConstructorPars(DicomObject rtsDo, Set<Integer> rois)
-	{
-		this.rtsDo = rtsDo;
-      this.rois  = rois;
-	}
-   
-   public void setConstructorPars(ImageAnnotationCollection iac,
-                                  Map<String, DicomObject>  seriesDoMap)
-   {
-      this.iac         = iac;
-      this.seriesDoMap = seriesDoMap;
-   }
-   
-   public RtStruct getNewInstance() throws DataFormatException
-   {
-      // Check for presence of variables for more than one of the constructor
-      // parameters.
-      int count = 0;
-      
-      // RtStruct from uploaded RT-STRUCT file
-      if ((rtsDo != null) && (rois == null)) count++; 
-      
-      // RtStruct from subset of uploaded RT-STRUCT file
-      if ((rtsDo != null) && (rois != null)) count++; 
-      
-      // RtStruct from ImageAnnotationCollection
-      if ((iac != null)   && (seriesDoMap != null)) count++;
-              
-      if (count != 1) throw new DataFormatException(DataFormatException.BUILDER);
-           
-      RtStruct rts = new RtStruct();
-      
-      if ((rtsDo != null) && (rois == null))        populateRtStruct(rts, rtsDo);
-      if ((rtsDo != null) && (rois != null))        populateRtStruct(rts, src, rois);
-      if ((iac != null)   && (seriesDoMap != null)) populateRtStruct(rts, iac, seriesDoMap);
-      
-      return rts;
-   }
-   
-   
-   
-   /**
-    * Populate the supplied RtStruct object with data from a DicomObject -
+{	
+	/**
+    * Create a new RtStruct object and populate it with data from a DicomObject -
     * typically representing a file being uploaded.
-    * @param rts Destination RtStruct
     * @param rtsDo Source DICOM object
     * @throws DataFormatException 
     */
-   private void populateRtStruct(RtStruct rts, DicomObject rtsDo)
-           throws DataFormatException
-   {
-      // Before we start, check that this really is a structure set!
+	public RtStruct BuildNewInstance(DicomObject rtsDo)
+				       throws DataFormatException
+	{
+		// Before we start, check that this really is a structure set!
 		if (!rtsDo.getString(Tag.Modality).equals("RTSTRUCT"))
 		{
 			throw new DataFormatException(DataFormatException.RTSTRUCT, 
 						 "Can't create an RTStruct object.\n");
 		}
+		
+		RtStruct rts = new RtStruct();
 
 		rts.sopCommon        = new SopCommon(rtsDo);
 		rts.patient          = new Patient(rtsDo);
@@ -149,45 +99,246 @@ public class RtStructBuilder
 				                                         Tag.ROIContourSequence, 1);
 		rts.rtRoiObservationList = rts.readSequence(RtRoiObservation.class, rtsDo,
 				                                  Tag.RTROIObservationsSequence, 1); 
+		
+		return rts;
    }
-   
-   
-   /**
-    * Populate the supplied RtStruct object with data from a DicomObject -
-    * typically representing a file being uploaded - but including only a
-    * subset of the ROIs definied in the original RT-STRUCT file.
-    * @param rts Destination RtStruct
-    * @param rtsDo Source DICOM object
-    * @param rois Set of regions to put into the output RT-STRUCT.
+	
+	
+	/**
+    * Create a new RtStruct object and populate it with data from an existing
+    * RtStruct object, but including only a subset of the ROIs definied in the
+	 * original RT-STRUCT file.
+    * @param src Source RtStruct object
+    * @param rois Set of region numbers to put into the output RT-STRUCT.
     */
-   private void populateRtStruct(RtStruct src, Set<Integer> rois)
-           throws DataFormatException
+   public RtStruct buildNewInstance(RtStruct src, Set<Integer> rois)
+			          throws DataFormatException
    {
       RtStruct dest = src.deepCopy();
       
-      sopCommon            = dest.sopCommon;
-		patient              = dest.patient;
-		generalStudy         = dest.generalStudy;
-		rtSeries             = dest.rtSeries;
-		generalEquipment     = dest.generalEquipment;
-		structureSet         = dest.structureSet;
-		roiContourList       = dest.roiContourList;
-      rtRoiObservationList = dest.rtRoiObservationList;
-      
       // Make the modifications that come about because of selecting a single ROI.
-		sopCommon.sopInstanceUid = UidGenerator.createNewDicomUID(UidGenerator.XNAT_DAO,
+		dest.sopCommon.sopInstanceUid = UidGenerator.createNewDicomUID(UidGenerator.XNAT_DAO,
 		                                                          UidGenerator.RT_STRUCT,
                                                                 UidGenerator.SOPInstanceUID);
 
-		structureSet.structureSetLabel        = src.structureSet.structureSetLabel + " - ROI subset";
-		structureSet.structureSetName         = src.structureSet.structureSetName + "_ROIsubset";
-		structureSet.structureSetDescription  = src.structureSet.structureSetDescription + "(ROI subset generated by ICR_XNATDataUploader)";
-		structureSet.referencedFrameOfReferenceList
-		                                      = buildNewRforListFromSubset(src, rois);
-		structureSet.structureSetRoiList      = buildNewSsrListFromSubset(src, rois);
-		roiContourList                        = buildNewRcListFromSubset(src, rois);
-		rtRoiObservationList                  = buildNewRroListFromSubset(src, rois);
+		dest.structureSet.structureSetLabel        = src.structureSet.structureSetLabel + " - ROI subset";
+		dest.structureSet.structureSetName         = src.structureSet.structureSetName + "_ROIsubset";
+		dest.structureSet.structureSetDescription  = src.structureSet.structureSetDescription + "(ROI subset generated by ICR_XNATDataUploader)";
+		dest.structureSet.referencedFrameOfReferenceList
+		                                           = buildNewRforListFromSubset(src, rois);
+		dest.structureSet.structureSetRoiList      = buildNewSsrListFromSubset(src, rois);
+		dest.roiContourList                        = buildNewRcListFromSubset(src, rois);
+		dest.rtRoiObservationList                  = buildNewRroListFromSubset(src, rois);
+		
+		return dest;
    }
+	
+	
+	
+   /**
+	 * Create a new RtStruct object and populate it with data from an
+    * Annotation and Image Markup (AIM) instance file.
+	 * (https://wiki.nci.nih.gov/display/AIM)
+	 * @param iac
+	 * @param seriesDoMap
+	 * @return
+	 * @throws DataFormatException 
+	 */
+   public RtStruct buildNewInstance(ImageAnnotationCollection iac,
+                                    Map<String, DicomObject>  seriesDoMap)
+			          throws DataFormatException
+   {
+		RtStruct rts = new RtStruct();
+		rts.sopCommon        = iacCreateSopCommon(iac);
+		rts.patient          = iacCreatePatient(iac, seriesDoMap);
+		rts.generalStudy     = iacCreateGeneralStudy(rts.sopCommon);
+		rts.generalEquipment = iacCreateGeneralEquipment(iac);
+		rts.rtSeries         = iacCreateRtSeries(iac, rts.sopCommon);
+		rts.structureSet     = iacCreateStructureSet(iac, seriesDoMap, rts.sopCommon);
+		
+		return rts;
+   }
+
+   
+   private SopCommon iacCreateSopCommon(ImageAnnotationCollection iac)
+			  throws DataFormatException
+	{
+		SopCommon sc = new SopCommon();
+      String dateTime = LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME);
+      sc.instanceCreationDate = DicomXnatDateTime.convertXnatDateTimeToDicomDate(dateTime);
+      sc.instanceCreationTime = DicomXnatDateTime.convertXnatDateTimeToDicomTime(dateTime);
+      sc.sopClassUid          = UID.RTStructureSetStorage;
+      sc.sopInstanceUid       = UidGenerator.createNewDicomUID(UidGenerator.XNAT_DAO,
+		                                                         UidGenerator.RT_STRUCT,
+                                                               UidGenerator.SOPInstanceUID);
+		return sc;
+	}
+	
+	
+	private Patient iacCreatePatient(ImageAnnotationCollection iac, Map<String, DicomObject> seriesDoMap)
+			  throws DataFormatException
+	{
+		// Arbitrarily, pick the last series in the following loop to provide
+		// the template DICOM file from which to pick various patient parameters.
+		DicomObject templateDo = null;
+		
+		// Check that the same subject is referenced in all the images. This is
+		// potentially tricky, given that different variants of the name might
+		// have been entered differently by the scanner operators and that the
+		// images might have been subject to anonymisation.
+		String      name1      = null;
+		for (String series : seriesDoMap.keySet())
+		{
+			DicomObject bdo   = seriesDoMap.get(series);
+			
+			// Note that readString is not a static method, so we have to create an
+			// instance of a DicomEntity to use it. However, there is no need for
+			// any further use of the object after the operation completes.
+			String      name2 = (new Patient()).readString(bdo, Tag.PatientName, 1);
+			if ((!name2.equals(name1)) && (name1 != null))
+			{
+				String msg = "Trying to construct an RT-STRUCT from two sets of "
+						       + "images with different patient names. Ensure that "
+						       + "source images are uploaded to XNAT with compatible"
+						       + "values in the Patient Name field of the DICOM headers.";
+				
+				throw new DataFormatException(DataFormatException.RTSTRUCT, msg);
+			}
+			name1      = name2;
+			templateDo = bdo;
+		}
+		
+		return new Patient(templateDo);
+	}
+	
+	
+	private GeneralStudy iacCreateGeneralStudy(SopCommon sc)
+	{
+		GeneralStudy gs = new GeneralStudy();
+		gs.studyInstanceUid = UidGenerator.createNewDicomUID(UidGenerator.XNAT_DATA_UPLOADER,
+				                                                         UidGenerator.RT_STRUCT,
+																							UidGenerator.StudyInstanceUID);
+		gs.studyDate = sc.instanceCreationDate;
+		gs.studyTime = sc.instanceCreationTime;
+		
+		return gs;
+	}
+	
+	
+	private GeneralEquipment iacCreateGeneralEquipment(ImageAnnotationCollection iac)
+	{
+		final String DEFAULT = "Unknown";
+		
+		GeneralEquipment ge = new GeneralEquipment();
+		
+      ge.institutionAddress = DEFAULT;
+      ge.institutionName    = DEFAULT;
+      ge.manufacturer       = "Institute of Cancer Research";
+      ge.modelName          = "ICR XNAT DataUploader";
+      List<String> sv = new ArrayList<>();
+      sv.add(iac.getAimVersion());
+      sv.add("Converted to RT-STRUCT by ICR XNAT DataUploader");
+      ge.softwareVersions   = sv;
+      try
+		{
+			ge.stationName = InetAddress.getLocalHost().getHostName();
+		}
+		catch (UnknownHostException exUH)
+		{
+			ge.stationName = DEFAULT;
+		}
+		
+		return ge;
+	}
+	
+	
+	private RtSeries iacCreateRtSeries(ImageAnnotationCollection iac, SopCommon sc)
+	{
+		RtSeries rtSeries = new RtSeries();
+		rtSeries.modality          = "RTSTRUCT";
+		rtSeries.seriesInstanceUid = UidGenerator.createNewDicomUID(UidGenerator.XNAT_DATA_UPLOADER,
+				                                                      UidGenerator.RT_STRUCT,
+																						UidGenerator.SeriesInstanceUID);
+		rtSeries.seriesNumber      = 1;
+		rtSeries.seriesDate        = sc.instanceCreationDate;
+		rtSeries.seriesTime        = sc.instanceCreationTime;
+		rtSeries.seriesDescription = "Image markup from AIM instance with UID " + iac.getUid()
+				                       + " converted RT-STRUCT by XNAT DataUploader";
+		rtSeries.operatorName      = System.getProperty("user.name");
+		
+		return rtSeries;
+	}
+	
+	
+	private StructureSet iacCreateStructureSet(ImageAnnotationCollection iac,
+			                               Map<String, DicomObject>  seriesDoMap,
+													 SopCommon                 sc)
+			  throws DataFormatException
+	{
+		StructureSet ss = new StructureSet();
+      ss.structureSetLabel       = "Auto-created structure set";
+      ss.structureSetName        = iac.getUid() + "_RT-STRUCT";
+      ss.structureSetDescription = "Image markup from AIM instance document with UID "
+                                             + iac.getUid() + " converted RT-STRUCT by ICR XNAT DataUploader";
+      ss.instanceNumber          = "1";
+		ss.structureSetDate        = sc.instanceCreationDate;
+		ss.structureSetTime        = sc.instanceCreationTime;
+		
+		List<ReferencedFrameOfReference> rforList   = new ArrayList<>();
+		List<String> rforUidList = new ArrayList<>();
+		
+		// Create a dummy DicomEntity (note DicomEntity is abstract and we need to
+		// pick a trivial concrete class) to allow us to use the non-static
+		// readString method.
+		RtRelatedRoi dummy =  
+		for (String seriesUid : seriesDoMap.keySet())
+		{
+			
+		}
+		ReferencedFrameOfReference rfor = new ReferencedFrameOfReference();
+      
+      Set
+      rfor.frameOfReferenceUid = rfor.readString(iacDo, Tag.FrameOfReferenceUID, 1);
+      
+      for (ImageAnnotation ia : iac.getAnnotationList())
+      {
+         for (ImageReference ir : ia.getReferenceList())
+         {
+            if (ir instanceof DicomImageReference)
+            {
+               DicomImageReference dir    = (DicomImageReference) ir;
+               ImageStudy          study  = dir.getStudy();
+               studyUidSet.add(study.getInstanceUid());
+               ImageSeries         series = study.getSeries();
+               seriesUidSet.add(series.getInstanceUid());
+               for (Image im : series.getImageList())
+               {
+                  sopInstanceUidSet.add(im.getInstanceUid());
+               }    
+            }
+         }
+      }
+      
+      rforList.add(rfor);
+      
+      structureSet.referencedFrameOfReferenceList = rforList;
+		
+		return ss;
+	}
+	
+	
+	private List<RoiContour> iacCreateRoiContourList(ImageAnnotationCollection iac)
+			  throws DataFormatException
+	{
+		
+	}
+	
+	
+
+
+   
+   
+   
 	
 
 	private List<ReferencedFrameOfReference>
