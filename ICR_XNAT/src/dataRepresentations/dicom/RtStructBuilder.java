@@ -52,6 +52,14 @@ import etherj.aim.ImageReference;
 import etherj.aim.ImageSeries;
 import etherj.aim.ImageStudy;
 import etherj.aim.Markup;
+import static etherj.aim.Markup.TwoDimensionPolyline;
+import etherj.aim.TwoDimensionCircle;
+import etherj.aim.TwoDimensionCoordinate;
+import etherj.aim.TwoDimensionEllipse;
+import etherj.aim.TwoDimensionGeometricShape;
+import etherj.aim.TwoDimensionMultiPoint;
+import etherj.aim.TwoDimensionPoint;
+import etherj.aim.TwoDimensionPolyline;
 import exceptions.DataFormatException;
 import generalUtilities.DicomXnatDateTime;
 import generalUtilities.UidGenerator;
@@ -343,7 +351,7 @@ public class RtStructBuilder
       {
          for (ImageReference ir : ia.getReferenceList())
          {
-            if (ir instanceof DicomImageReference)
+           if (ir instanceof DicomImageReference)
             {
                DicomImageReference dir    = (DicomImageReference) ir;
                ImageStudy          study  = dir.getStudy();
@@ -366,7 +374,7 @@ public class RtStructBuilder
                   // Find the corresponding DicomObject in order to get the
                   // SOP class UID, which is not supplied by the AIM metadata.
                   DicomObject bdo = seriesDoMap.get(series.getInstanceUid());
-                  rtrs.referencedSopClassUid = rtrs.readString(bdo, Tag.ReferencedSOPClassUID, 1);
+                  rtrs.referencedSopClassUid = rtrs.readString(bdo, Tag.SOPClassUID, 1);
                   
                   rtrs.rtReferencedSeriesList = new ArrayList<>();                 
                   rtrsl.add(rtrs);
@@ -567,13 +575,130 @@ public class RtStructBuilder
    {
       List<RoiContour> rcl = new ArrayList<>();
       
+      int roiCount = 0;
       for (ImageAnnotation ia : iac.getAnnotationList())
       {
-         for (Markup im : ia.getMarkupList())
-         {im.
+         for (Markup mku : ia.getMarkupList())
+         {
+            if (mku instanceof TwoDimensionGeometricShape)
+            {
+               TwoDimensionGeometricShape shape;
+               shape = (TwoDimensionGeometricShape) mku;
+               
+               RoiContour rc = new RoiContour(); 
+               rc.referencedRoiNumber = roiCount;
+               //rc.roiDisplayColour = shape.getLineColour(); Not yet implemented in EtherJ
+               List<TwoDimensionCoordinate> tdcl = shape.getCoordinateList();
+               
+               // When we have a 2-D shape, there is only one Contour object in the
+               // RoiContour and there is also only one ContourImage in the list.
+               List<Contour>      cl  = new ArrayList<>();
+               Contour            c   = new Contour();
+               List<ContourImage> cil = new ArrayList<>();
+               ContourImage       ci  = new ContourImage();
+               ArrayList<Integer> fnl = new ArrayList<>();
+               List<List<Float>>  cd  = new ArrayList<List<Float>>();
+               
+               
+               
+               
+               ci.referencedSopInstanceUid = shape.getImageReferenceUid();
+               fnl.add(shape.getReferencedFrameNumber());
+               ci.referencedFrameNumberList = fnl;
+               
+               // Retrieving the SOP Class UID is a bit of a pain, because AIM
+               // doesn't store it. To get to it, we need to find the corresponding
+               // DICOM object and to do this, we have to find the series containing
+               // this image.
+               for (ImageReference ir : ia.getReferenceList())
+               {
+                  if (ir instanceof DicomImageReference)
+                  {
+                     DicomImageReference dir    = (DicomImageReference) ir;
+                     ImageStudy          study  = dir.getStudy();
+                     ImageSeries         series = study.getSeries();
+                     Set<String>         sops   = new HashSet<>();
+                     for (Image im : series.getImageList()) sops.add(im.getInstanceUid());
+                     if (sops.contains(shape.getImageReferenceUid()))
+                     {
+                        DicomObject bdo = seriesDoMap.get(series.getInstanceUid());
+                        ci.referencedSopClassUid = ci.readString(bdo, Tag.SOPClassUID, 1);
+                        c.contourSlabThickness   = ci.readFloat( bdo, Tag.SliceThickness, 1);
+                     }
+                  }
+               }
+               
+               cil.add(ci);
+               
+               c.contourNumber        = 0;
+               c.attachedContours     = new ArrayList<>();
+               c.contourImageList     = cil;
+               c.contourGeometricType = getDicomContourTypeFromAimMarkup(mku); 
+               c.contourOffsetVector  = new ArrayList<Float>();
+               c.nContourPoints       = tdcl.size();
+               List<Float> alf        = new ArrayList<ArrayList<Float>();
+               
+               
+            }
+         }
+      }
    }
 							 
-							 
+	
+   private String getDicomContourTypeFromAimMarkup(Markup mku)
+	{
+      if (mku instanceof TwoDimensionGeometricShape)
+            {
+               TwoDimensionGeometricShape shape;
+               shape = (TwoDimensionGeometricShape) mku;
+               if ((shape instanceof TwoDimensionPolyline) ||
+                   (shape instanceof TwoDimensionCircle) ||
+                   (shape instanceof TwoDimensionEllipse))
+               {
+                  return "CLOSED_PLANAR";
+               }
+               if ((shape instanceof TwoDimensionPoint) ||
+                   (shape instanceof TwoDimensionMultiPoint))
+               {
+                  return "POINT";
+               }
+		return null;
+	}
+
+	private List<Coordinate3D> aimToDicom(List<TwoDimensionCoordinate> coords2D,
+		DicomObject refDcm, int frame)
+	{
+		// TODO: Support multiframe
+		double[] pos = refDcm.getDoubles(Tag.ImagePositionPatient);
+		double[] ori = refDcm.getDoubles(Tag.ImageOrientationPatient);
+		double[] row = Arrays.copyOfRange(ori, 0, 3);
+		double[] col = Arrays.copyOfRange(ori, 3, 6);
+		// Are AIM TwoDimesionCoordinates in pixels or mm? Assuming pixels until
+		// proven otherwise
+		List<Coordinate3D> coords3D = new ArrayList<>(coords2D.size());
+		for (TwoDimensionCoordinate coord2D : coords2D)
+		{
+			coords3D.add(new Coordinate3D(coord2D.getX(), coord2D.getY(), 0.0));
+//			coords3D.add(DicomUtils.imageCoordToPatientCoord3D(pos, row,
+//				col, coord2D.getX(), coord2D.getY()));
+		}
+		return coords3D;
+	}
+
+	private String coordsToString(List<Coordinate3D> coords3D)
+	{
+		StringBuilder sb = new StringBuilder();
+		for (Coordinate3D coord : coords3D)
+		{
+			sb.append(Double.toString(coord.x)).append("\\")
+				.append(Double.toString(coord.y)).append("\\")
+				.append(Double.toString(coord.z)).append("\\");
+		}
+		// Chop off last \
+		sb.deleteCharAt(sb.length()-1);
+		return sb.toString();
+	}                   
+   
 	private List<RoiContour>
 	                   buildNewRcListFromSubset(RtStruct src, Set<Integer> rois)
 	{

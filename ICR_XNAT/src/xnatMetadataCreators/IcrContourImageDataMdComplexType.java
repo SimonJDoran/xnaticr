@@ -79,7 +79,7 @@ public class IcrContourImageDataMdComplexType extends MdComplexType
 	{
 		dppXML.delayedWriteEntityWithText("referencedSOPInstanceUID", ci.referencedSopInstanceUid)
 			   .delayedWriteEntityWithText("referencedSOPClassUID",    ci.referencedSopClassUid)
-			   .delayedWriteEntityWithText("referencedFrameNmber",    ci.referencedFrameNumber);
+			   .delayedWriteEntityWithText("referencedFrameNmber",    ci.referencedFrameNumberList);
 	}
 	
 }

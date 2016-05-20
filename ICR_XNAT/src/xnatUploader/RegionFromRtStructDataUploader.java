@@ -479,7 +479,7 @@ class RegionFromRtStructDataUploader extends DataUploader implements ContourRend
          RenderContour rndC       = new RenderContour();
          String baseSop           = c.contourImageList.get(0).referencedSopInstanceUid;
          rndC.baseImageFilename   = sopFilenameMap.get(baseSop);
-			rndC.baseFrameNumberList = c.contourImageList.get(0).referencedFrameNumber;
+			rndC.baseFrameNumberList = c.contourImageList.get(0).referencedFrameNumberList;
          rndC.nContourPoints      = c.nContourPoints;
          rndC.contourPoints       = new float[c.nContourPoints][3];
 
