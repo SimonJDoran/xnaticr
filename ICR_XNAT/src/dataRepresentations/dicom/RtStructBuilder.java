@@ -61,6 +61,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -76,7 +77,7 @@ public class RtStructBuilder
     * @param rtsDo Source DICOM object
     * @throws DataFormatException 
     */
-	public RtStruct BuildNewInstance(DicomObject rtsDo)
+	public RtStruct buildNewInstance(DicomObject rtsDo)
 				       throws DataFormatException
 	{
 		// Before we start, check that this really is a structure set!
@@ -106,11 +107,13 @@ public class RtStructBuilder
 	
 	/**
     * Create a new RtStruct object and populate it with data from an existing
-    * RtStruct object, but including only a subset of the ROIs definied in the
+    * RtStruct object, but including only a subset of the ROIs defined in the
 	 * original RT-STRUCT file.
     * @param src Source RtStruct object
     * @param rois Set of region numbers to put into the output RT-STRUCT.
-    */
+    * @return a new RtStruct generated from the input information
+	 * @throws DataFormatException 
+	 */
    public RtStruct buildNewInstance(RtStruct src, Set<Integer> rois)
 			          throws DataFormatException
    {
@@ -139,9 +142,15 @@ public class RtStructBuilder
 	 * Create a new RtStruct object and populate it with data from an
     * Annotation and Image Markup (AIM) instance file.
 	 * (https://wiki.nci.nih.gov/display/AIM)
-	 * @param iac
-	 * @param seriesDoMap
-	 * @return
+    * Note that most of the data needed for the RT-STRUCT is not contained
+    * within the AIM source file and we have to seek it out fromthe original
+    * image DICOM files, which are providedby the seriesDoMap parameter.
+	 * @param iac an AIM ImageAnnotationCollection parsed from the source XML
+    * by James d'Arcy's Etherj package.
+	 * @param seriesDoMap a Map that links a DICOM series to one representative
+	 * image from that series, thus allowing us to extract the various header
+    * parameters to supplement the information in the image annotation.
+	 * @return a new RtStruct generated from the input information
 	 * @throws DataFormatException 
 	 */
    public RtStruct buildNewInstance(ImageAnnotationCollection iac,
@@ -283,45 +292,10 @@ public class RtStructBuilder
       ss.instanceNumber          = "1";
 		ss.structureSetDate        = sc.instanceCreationDate;
 		ss.structureSetTime        = sc.instanceCreationTime;
+      ss.referencedFrameOfReferenceList
+                                 = buildNewRforListFromIac(iac, seriesDoMap);
 		
-		List<ReferencedFrameOfReference> rforList   = new ArrayList<>();
-		List<String> rforUidList = new ArrayList<>();
-		
-		// Create a dummy DicomEntity (note DicomEntity is abstract and we need to
-		// pick a trivial concrete class) to allow us to use the non-static
-		// readString method.
-		RtRelatedRoi dummy =  
-		for (String seriesUid : seriesDoMap.keySet())
-		{
-			
-		}
-		ReferencedFrameOfReference rfor = new ReferencedFrameOfReference();
-      
-      Set
-      rfor.frameOfReferenceUid = rfor.readString(iacDo, Tag.FrameOfReferenceUID, 1);
-      
-      for (ImageAnnotation ia : iac.getAnnotationList())
-      {
-         for (ImageReference ir : ia.getReferenceList())
-         {
-            if (ir instanceof DicomImageReference)
-            {
-               DicomImageReference dir    = (DicomImageReference) ir;
-               ImageStudy          study  = dir.getStudy();
-               studyUidSet.add(study.getInstanceUid());
-               ImageSeries         series = study.getSeries();
-               seriesUidSet.add(series.getInstanceUid());
-               for (Image im : series.getImageList())
-               {
-                  sopInstanceUidSet.add(im.getInstanceUid());
-               }    
-            }
-         }
-      }
-      
-      rforList.add(rfor);
-      
-      structureSet.referencedFrameOfReferenceList = rforList;
+
 		
 		return ss;
 	}
@@ -336,7 +310,127 @@ public class RtStructBuilder
 	
 
 
-   
+   private List<ReferencedFrameOfReference>
+	                   buildNewRforListFromIac(ImageAnnotationCollection iac,
+			                                     Map<String, DicomObject>  seriesDoMap)
+   {
+      // This method parallels buildNewRForListFromSubset, but sources the
+      // image metadata from a combination of AIM file and existing DICOM
+      // images rather than a pre-existing RT-STRUCT.
+      
+      List<ReferencedFrameOfReference> rforList   = new ArrayList<>();
+		
+      // First work out how many unique frames of reference we are dealing with.
+      // A lot of the time, it is only one.
+      List<String> rforUidList = new ArrayList<>();
+		
+		for (String seriesUid : seriesDoMap.keySet())
+		{
+      	DicomObject bdo = seriesDoMap.get(seriesUid);
+         ReferencedFrameOfReference rfor = new ReferencedFrameOfReference();
+         String rforUid = rfor.readString(bdo, Tag.FrameOfReferenceUID, 1);
+         if (!rforUidList.contains(rforUid))
+         {
+            rforUidList.add(rforUid);
+            rforList.add(rfor);
+            rfor.frameOfReferenceUid = rforUid;     
+         }
+		}
+      
+      List<RtReferencedStudy> rtrsl = new ArrayList<>(); 
+      for (ImageAnnotation ia : iac.getAnnotationList())
+      {
+         for (ImageReference ir : ia.getReferenceList())
+         {
+            if (ir instanceof DicomImageReference)
+            {
+               DicomImageReference dir    = (DicomImageReference) ir;
+               ImageStudy          study  = dir.getStudy();
+               ImageSeries         series = study.getSeries();
+               Set<String>         sops   = new HashSet<>();
+               for (Image im : series.getImageList()) sops.add(im.getInstanceUid());
+               
+               boolean newStudy = true;
+               for (RtReferencedStudy rtrs : rtrsl)
+               {
+                  if (rtrs.referencedSopInstanceUid.equals(study.getInstanceUid()))
+                     newStudy = false;
+               }
+               
+               if (newStudy)
+               {
+                  RtReferencedStudy rtrs = new RtReferencedStudy();
+                  rtrs.referencedSopInstanceUid = study.getInstanceUid();
+                  
+                  // Find the corresponding DicomObject in order to get the
+                  // SOP class UID, which is not supplied by the AIM metadata.
+                  DicomObject bdo = seriesDoMap.get(series.getInstanceUid());
+                  rtrs.referencedSopClassUid = rtrs.readString(bdo, Tag.ReferencedSOPClassUID, 1);
+                  
+                  rtrs.rtReferencedSeriesList = new ArrayList<>();                 
+                  rtrsl.add(rtrs);
+               }
+               
+               for (RtReferencedStudy rtrs : rtrsl)
+               {
+                  if (rtrs.referencedSopInstanceUid.equals(study.getInstanceUid()))
+                  {
+                     List<RtReferencedSeries> rtrsel = rtrs.rtReferencedSeriesList;
+                     boolean newSeries = true;
+                     for (RtReferencedSeries rtrse : rtrsel)
+                     {
+                        if (rtrse.seriesInstanceUid.equals(series.getInstanceUid()))
+                           newSeries = false;
+                     }
+                     if (newSeries)
+                     {
+                        RtReferencedSeries rtrse = new RtReferencedSeries();
+                        rtrse.seriesInstanceUid  = series.getInstanceUid();
+                        rtrse.contourImageList   = new ArrayList<>();
+                        rtrsel.add(rtrse);
+                     }
+                     
+                     for (RtReferencedSeries rtrse : rtrsel)
+                     {
+                        if (rtrse.seriesInstanceUid.equals(series.getInstanceUid()))
+                        {
+                           for (Image im : series.getImageList())
+                           {
+                              ContourImage ci             = new ContourImage();
+                              ci.referencedSopInstanceUid = im.getInstanceUid();
+                              ci.referencedSopClassUid    = im.getSopClassUid();
+                              rtrse.contourImageList.add(ci);
+                           }
+                        }
+                     }
+                  }
+               }
+            }            
+         }
+      }
+      
+      // By the time we get here, we have created a list of RtReferencedStudies.
+      // These might be from different modalities and will all likely have
+      // different frames of references. So the last step is to assign each
+      // RtReferencedStudy to the correct ReferencedFrameOfReference.
+      for (ReferencedFrameOfReference rfor : rforList)
+      {
+         for (RtReferencedStudy rtrs : rtrsl)
+         {
+            RtReferencedSeries firstSeries = rtrs.rtReferencedSeriesList.get(0);
+            ContourImage       firstImage  = firstSeries.contourImageList.get(0);
+            String             firstUid    = firstImage.referencedSopInstanceUid;
+            DicomObject        firstDo     = seriesDoMap.get(firstUid);
+            String             firstForUid = rtrs.readString(firstDo, Tag.FrameOfReferenceUID, 1);
+            
+            if (rfor.frameOfReferenceUid.equals(firstForUid))
+               rfor.rtReferencedStudyList.add(rtrs);
+         }
+      }
+      
+      return rforList;
+   }
+	
    
    
 	

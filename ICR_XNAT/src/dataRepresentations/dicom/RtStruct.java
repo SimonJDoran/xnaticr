@@ -113,54 +113,10 @@ public class RtStruct extends DicomEntity
 		// deepCopy() method and RtStructBuilder class.
 	}
 	
-   /**
-    * Constructor with data from an AIM image annotation collection (normally
-    * derived from an AIM XML instance file). Note that most of the data needed
-    * for the RT-STRUCT is not contained within the AIM source file and we have
-    * to seek it out from on of the original image source DICOM files.
-    * @param iac an AIM ImageAnnotationCollection parsed from the source XML
-    * by James d'Arcy's Etherj package.
-	 * @param seriesDoMap a Map that links a DICOM series to one representative
-	 * image from that series, thus allowing us to extract the various header
-    * parameters to supplement the information in the image annotation.
-	 * @throws exceptions.DataFormatException 
-    */
-   public RtStruct(ImageAnnotationCollection iac, Map<String, DicomObject> seriesDoMap)
-                  throws DataFormatException
-   {
-
-      
-		
-
-		
-		
-		
-		
-		
-     
-      
-      // Create the specific structure set items from information in the AIM
-      // image annotation.
-      
-      
-      
-    
-      
-   }
-   
-   
-	
-	
-	
-	
-	/**
-	 * Constructor with data from a previously constructed RtStruct object,
-	 * and choosing a subset of the existing regions-of-interest
-	 * @param src a source RtStruct.
-	 * @param rois 
-	 */
-	public RtStruct(RtStruct src, Set<Integer> rois)
-	{
+   // All the heavy lifting for constructing and RtStruct is performed by the
+   // class RtStructBuilder, which contains an overloaded method buildNewInstance
+   // that takes different parameters depending on how we wish to build the
+   // RtStruct object.
 						 
 	@Override
 	public void writeToDicom(DicomObject rtsDo)
