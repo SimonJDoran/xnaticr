@@ -51,7 +51,6 @@ import org.dcm4che2.data.VR;
 public class StructureSetRoi extends DicomEntity
 {
 	public Integer     roiNumber;
-	public Integer     correspondingROIObservation;
 	public String      referencedFrameOfReferenceUid;
 	public String      roiName;
 	public String      roiDescription;

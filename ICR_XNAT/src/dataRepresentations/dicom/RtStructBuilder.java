@@ -51,6 +51,7 @@ import etherj.aim.ImageAnnotationCollection;
 import etherj.aim.ImageReference;
 import etherj.aim.ImageSeries;
 import etherj.aim.ImageStudy;
+import etherj.aim.Markup;
 import exceptions.DataFormatException;
 import generalUtilities.DicomXnatDateTime;
 import generalUtilities.UidGenerator;
@@ -558,6 +559,19 @@ public class RtStructBuilder
 		return destSsrList;
 		
 	}
+                      
+                      
+   private List<RoiContour>
+                      buildNewRcListFromIac(ImageAnnotationCollection iac,
+			                                   Map<String, DicomObject>  seriesDoMap)
+   {
+      List<RoiContour> rcl = new ArrayList<>();
+      
+      for (ImageAnnotation ia : iac.getAnnotationList())
+      {
+         for (Markup im : ia.getMarkupList())
+         {im.
+   }
 							 
 							 
 	private List<RoiContour>
