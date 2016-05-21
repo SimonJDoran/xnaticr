@@ -102,7 +102,8 @@ public class AimImageAnnotationCollectionDataUploader extends DataUploader
    private Map<String, String>       filenameSopMap;
 	private Map<String, String>       sopFilenameMap;
 	private Map<String, String>       filenameScanMap;
-   private Map<String, DicomObject>  seriesDoMap;
+   private Map<String, String>       sopSeriesMap;
+   private Map<String, DicomObject>  sopDoMap;
 	private String                    assocRegionSetId;
 	private RtStruct                  iacRts;
 	
@@ -167,6 +168,8 @@ public class AimImageAnnotationCollectionDataUploader extends DataUploader
       }
       
       // Extract the image reference data from the AIM structure.
+      Map<String, String> sopSeriesMap = new HashMap<>();
+      
       for (ImageAnnotation ia : iac.getAnnotationList())
       {
          for (ImageReference ir : ia.getReferenceList())
@@ -181,6 +184,7 @@ public class AimImageAnnotationCollectionDataUploader extends DataUploader
                for (Image im : series.getImageList())
                {
                   sopInstanceUidSet.add(im.getInstanceUid());
+                  sopSeriesMap.put(im.getInstanceUid(), series.getInstanceUid());
                }    
             }
          }
@@ -204,9 +208,9 @@ public class AimImageAnnotationCollectionDataUploader extends DataUploader
       // we need to create a number of DICOM structures. Much of the information
       // required can be obtained from the files referenced by the AIM
       // document. Now that we know the mapping between filename and SOP instance
-      // UID, we can loop back through the list and download a representative
-      // file from each series.
-      seriesDoMap = new HashMap<>();
+      // UID, we can loop back through the list and download the relevant
+      // DICOM data.
+      sopDoMap = new HashMap<>();
       for (ImageAnnotation ia : iac.getAnnotationList())
       {
          for (ImageReference ir : ia.getReferenceList())
@@ -216,15 +220,13 @@ public class AimImageAnnotationCollectionDataUploader extends DataUploader
                DicomImageReference dir    = (DicomImageReference) ir;
                ImageStudy          study  = dir.getStudy();
                ImageSeries         series = study.getSeries();
-               if (!seriesDoMap.containsKey(series.getInstanceUid()))
+               for (Image im : series.getImageList())
                {
-                  Image       im       = series.getImageList().get(0);
                   String      filename = sopFilenameMap.get(im.getInstanceUid());
-                  DicomObject bdo      = downloadDicomObject(filename);
-                  
-                  if (bdo != null) seriesDoMap.put(series.getInstanceUid(), bdo);
+                  DicomObject bdo      = downloadDicomObject(filename);           
+                  if (bdo != null) sopDoMap.put(series.getInstanceUid(), bdo);
                   else return false;
-               }             
+               }          
             }
          }
       }
@@ -384,7 +386,7 @@ public class AimImageAnnotationCollectionDataUploader extends DataUploader
          ru.setAccessionId(assocRegionSetId);
          ru.setSubjectId(XNATSubjectID);
          ru.setExperimentId(XNATExperimentID);
-			iacRts = new RtStruct(iac, seriesDoMap);
+			iacRts = new RtStruct(iac, sopDoMap);
 			ru.setRtStruct(iacRts);
          ru.setProvenance(createProvenance(iacRts));
          ru.setSopFilenameMap(sopFilenameMap);

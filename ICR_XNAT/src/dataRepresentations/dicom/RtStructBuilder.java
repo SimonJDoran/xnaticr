@@ -152,27 +152,27 @@ public class RtStructBuilder
     * Annotation and Image Markup (AIM) instance file.
 	 * (https://wiki.nci.nih.gov/display/AIM)
     * Note that most of the data needed for the RT-STRUCT is not contained
-    * within the AIM source file and we have to seek it out fromthe original
-    * image DICOM files, which are providedby the seriesDoMap parameter.
+    * within the AIM source file and we have to seek it out from the original
+    * image DICOM files, which are provided by the sopDoMap parameter.
 	 * @param iac an AIM ImageAnnotationCollection parsed from the source XML
     * by James d'Arcy's Etherj package.
-	 * @param seriesDoMap a Map that links a DICOM series to one representative
-	 * image from that series, thus allowing us to extract the various header
+	 * @param sopDoMap a Map that links a DICOM sopInstanceUid to the actual DicomObject
+    * corresponding to the file, thus allowing us to extract the various header
     * parameters to supplement the information in the image annotation.
 	 * @return a new RtStruct generated from the input information
 	 * @throws DataFormatException 
 	 */
    public RtStruct buildNewInstance(ImageAnnotationCollection iac,
-                                    Map<String, DicomObject>  seriesDoMap)
+                                    Map<String, DicomObject>  sopDoMap)
 			          throws DataFormatException
    {
 		RtStruct rts = new RtStruct();
 		rts.sopCommon        = iacCreateSopCommon(iac);
-		rts.patient          = iacCreatePatient(iac, seriesDoMap);
+		rts.patient          = iacCreatePatient(iac, sopDoMap);
 		rts.generalStudy     = iacCreateGeneralStudy(rts.sopCommon);
 		rts.generalEquipment = iacCreateGeneralEquipment(iac);
 		rts.rtSeries         = iacCreateRtSeries(iac, rts.sopCommon);
-		rts.structureSet     = iacCreateStructureSet(iac, seriesDoMap, rts.sopCommon);
+		rts.structureSet     = iacCreateStructureSet(iac, sopDoMap, rts.sopCommon);
 		
 		return rts;
    }
@@ -193,7 +193,7 @@ public class RtStructBuilder
 	}
 	
 	
-	private Patient iacCreatePatient(ImageAnnotationCollection iac, Map<String, DicomObject> seriesDoMap)
+	private Patient iacCreatePatient(ImageAnnotationCollection iac, Map<String, DicomObject> sopDoMap)
 			  throws DataFormatException
 	{
 		// Arbitrarily, pick the last series in the following loop to provide
@@ -289,8 +289,8 @@ public class RtStructBuilder
 	
 	
 	private StructureSet iacCreateStructureSet(ImageAnnotationCollection iac,
-			                               Map<String, DicomObject>  seriesDoMap,
-													 SopCommon                 sc)
+			                                     Map<String, DicomObject>  seriesDoMap,
+													       SopCommon                 sc)
 			  throws DataFormatException
 	{
 		StructureSet ss = new StructureSet();
@@ -636,7 +636,10 @@ public class RtStructBuilder
                c.contourGeometricType = getDicomContourTypeFromAimMarkup(mku); 
                c.contourOffsetVector  = new ArrayList<Float>();
                c.nContourPoints       = tdcl.size();
-               List<Float> alf        = new ArrayList<ArrayList<Float>();
+               for (int i=0; i<tdcl.size(); i++)
+               {
+                  tdcl.
+               }
                
                
             }
@@ -648,22 +651,24 @@ public class RtStructBuilder
    private String getDicomContourTypeFromAimMarkup(Markup mku)
 	{
       if (mku instanceof TwoDimensionGeometricShape)
-            {
-               TwoDimensionGeometricShape shape;
-               shape = (TwoDimensionGeometricShape) mku;
-               if ((shape instanceof TwoDimensionPolyline) ||
-                   (shape instanceof TwoDimensionCircle) ||
-                   (shape instanceof TwoDimensionEllipse))
-               {
-                  return "CLOSED_PLANAR";
-               }
-               if ((shape instanceof TwoDimensionPoint) ||
-                   (shape instanceof TwoDimensionMultiPoint))
-               {
-                  return "POINT";
-               }
+      {
+         TwoDimensionGeometricShape shape;
+         shape = (TwoDimensionGeometricShape) mku;
+         if ((shape instanceof TwoDimensionPolyline) ||
+             (shape instanceof TwoDimensionCircle) ||
+             (shape instanceof TwoDimensionEllipse))
+         {
+            return "CLOSED_PLANAR";
+         }
+         if ((shape instanceof TwoDimensionPoint) ||
+             (shape instanceof TwoDimensionMultiPoint))
+         {
+            return "POINT";
+         }
 		return null;
+      }
 	}
+      
 
 	private List<Coordinate3D> aimToDicom(List<TwoDimensionCoordinate> coords2D,
 		DicomObject refDcm, int frame)

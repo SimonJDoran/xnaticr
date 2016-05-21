@@ -603,9 +603,12 @@ public class ContourRendererHelper
    {
       float[] result = new float[3];
       
-      result[0] = p[0] + col*c[0] + row*c[3];
-      result[1] = p[1] + col*c[1] + row*c[4];
-      result[2] = p[2] + col*c[2] + row*c[5];
+      float rd = row*d[0];
+      float cd = col*d[1];
+      
+      result[0] = p[0] + cd*c[0] + rd*c[3];
+      result[1] = p[1] + cd*c[1] + rd*c[4];
+      result[2] = p[2] + cd*c[2] + rd*c[5];
       
       return result;
    }
