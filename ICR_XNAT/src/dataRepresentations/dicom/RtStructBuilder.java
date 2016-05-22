@@ -77,6 +77,7 @@ import java.util.Set;
 import org.dcm4che2.data.DicomObject;
 import org.dcm4che2.data.Tag;
 import org.dcm4che2.data.UID;
+import xnatUploader.ContourRendererHelper;
 
 public class RtStructBuilder
 {	
@@ -205,9 +206,9 @@ public class RtStructBuilder
 		// have been entered differently by the scanner operators and that the
 		// images might have been subject to anonymisation.
 		String      name1      = null;
-		for (String series : seriesDoMap.keySet())
+		for (String sop : sopDoMap.keySet())
 		{
-			DicomObject bdo   = seriesDoMap.get(series);
+			DicomObject bdo   = sopDoMap.get(sop);
 			
 			// Note that readString is not a static method, so we have to create an
 			// instance of a DicomEntity to use it. However, there is no need for
@@ -289,7 +290,7 @@ public class RtStructBuilder
 	
 	
 	private StructureSet iacCreateStructureSet(ImageAnnotationCollection iac,
-			                                     Map<String, DicomObject>  seriesDoMap,
+			                                     Map<String, DicomObject>  sopDoMap,
 													       SopCommon                 sc)
 			  throws DataFormatException
 	{
@@ -302,7 +303,7 @@ public class RtStructBuilder
 		ss.structureSetDate        = sc.instanceCreationDate;
 		ss.structureSetTime        = sc.instanceCreationTime;
       ss.referencedFrameOfReferenceList
-                                 = buildNewRforListFromIac(iac, seriesDoMap);
+                                 = buildNewRforListFromIac(iac, sopDoMap);
 		
 
 		
@@ -321,7 +322,7 @@ public class RtStructBuilder
 
    private List<ReferencedFrameOfReference>
 	                   buildNewRforListFromIac(ImageAnnotationCollection iac,
-			                                     Map<String, DicomObject>  seriesDoMap)
+			                                     Map<String, DicomObject>  sopDoMap)
    {
       // This method parallels buildNewRForListFromSubset, but sources the
       // image metadata from a combination of AIM file and existing DICOM
@@ -332,14 +333,14 @@ public class RtStructBuilder
       // First work out how many unique frames of reference we are dealing with.
       // A lot of the time, it is only one.
       List<String> rforUidList = new ArrayList<>();
-		
-		for (String seriesUid : seriesDoMap.keySet())
+      
+      for (String sop : sopDoMap.keySet())
 		{
-      	DicomObject bdo = seriesDoMap.get(seriesUid);
-         ReferencedFrameOfReference rfor = new ReferencedFrameOfReference();
-         String rforUid = rfor.readString(bdo, Tag.FrameOfReferenceUID, 1);
+      	DicomObject bdo = sopDoMap.get(sop);
+         String rforUid  = bdo.getString(Tag.FrameOfReferenceUID);
          if (!rforUidList.contains(rforUid))
          {
+            ReferencedFrameOfReference rfor = new ReferencedFrameOfReference();
             rforUidList.add(rforUid);
             rforList.add(rfor);
             rfor.frameOfReferenceUid = rforUid;     
@@ -373,7 +374,8 @@ public class RtStructBuilder
                   
                   // Find the corresponding DicomObject in order to get the
                   // SOP class UID, which is not supplied by the AIM metadata.
-                  DicomObject bdo = seriesDoMap.get(series.getInstanceUid());
+                  String sop = series.getImageList().get(0).getInstanceUid();
+                  DicomObject bdo = sopDoMap.get(sop);
                   rtrs.referencedSopClassUid = rtrs.readString(bdo, Tag.SOPClassUID, 1);
                   
                   rtrs.rtReferencedSeriesList = new ArrayList<>();                 
@@ -429,7 +431,7 @@ public class RtStructBuilder
             RtReferencedSeries firstSeries = rtrs.rtReferencedSeriesList.get(0);
             ContourImage       firstImage  = firstSeries.contourImageList.get(0);
             String             firstUid    = firstImage.referencedSopInstanceUid;
-            DicomObject        firstDo     = seriesDoMap.get(firstUid);
+            DicomObject        firstDo     = sopDoMap.get(firstUid);
             String             firstForUid = rtrs.readString(firstDo, Tag.FrameOfReferenceUID, 1);
             
             if (rfor.frameOfReferenceUid.equals(firstForUid))
@@ -571,8 +573,12 @@ public class RtStructBuilder
                       
    private List<RoiContour>
                       buildNewRcListFromIac(ImageAnnotationCollection iac,
-			                                   Map<String, DicomObject>  seriesDoMap)
+			                                   Map<String, DicomObject>  sopDoMap)
+                      throws DataFormatException
    {
+      final float[] DUMMY_F2 = new float[] {0f, 0f};
+      final float[] DUMMY_F3 = new float[] {0f, 0f, 0f};
+      
       List<RoiContour> rcl = new ArrayList<>();
       
       int roiCount = 0;
@@ -588,19 +594,20 @@ public class RtStructBuilder
                RoiContour rc = new RoiContour(); 
                rc.referencedRoiNumber = roiCount;
                //rc.roiDisplayColour = shape.getLineColour(); Not yet implemented in EtherJ
-               List<TwoDimensionCoordinate> tdcl = shape.getCoordinateList();
+               List<TwoDimensionCoordinate> d2l = shape.getCoordinateList();
                
                // When we have a 2-D shape, there is only one Contour object in the
                // RoiContour and there is also only one ContourImage in the list.
+               DicomObject        bdo = null;
                List<Contour>      cl  = new ArrayList<>();
                Contour            c   = new Contour();
                List<ContourImage> cil = new ArrayList<>();
                ContourImage       ci  = new ContourImage();
                ArrayList<Integer> fnl = new ArrayList<>();
                List<List<Float>>  cd  = new ArrayList<List<Float>>();
-               
-               
-               
+               float[]            position    = DUMMY_F3;
+               float[]            orientation = DUMMY_F3;
+               float[]            pixelSize   = DUMMY_F2; 
                
                ci.referencedSopInstanceUid = shape.getImageReferenceUid();
                fnl.add(shape.getReferencedFrameNumber());
@@ -617,31 +624,47 @@ public class RtStructBuilder
                      DicomImageReference dir    = (DicomImageReference) ir;
                      ImageStudy          study  = dir.getStudy();
                      ImageSeries         series = study.getSeries();
-                     Set<String>         sops   = new HashSet<>();
-                     for (Image im : series.getImageList()) sops.add(im.getInstanceUid());
-                     if (sops.contains(shape.getImageReferenceUid()))
-                     {
-                        DicomObject bdo = seriesDoMap.get(series.getInstanceUid());
-                        ci.referencedSopClassUid = ci.readString(bdo, Tag.SOPClassUID, 1);
-                        c.contourSlabThickness   = ci.readFloat( bdo, Tag.SliceThickness, 1);
-                     }
+                     for (Image im : series.getImageList())
+                        if (im.getInstanceUid().equals(shape.getImageReferenceUid()))
+                        {
+                           bdo = sopDoMap.get(im.getInstanceUid());
+                           break;
+                        }
                   }
                }
+               if (bdo == null) throw new DataFormatException(DataFormatException.BUILDER);
                
                cil.add(ci);
+               
+               ci.referencedSopClassUid = bdo.getString(Tag.SOPClassUID);
+               
                
                c.contourNumber        = 0;
                c.attachedContours     = new ArrayList<>();
                c.contourImageList     = cil;
-               c.contourGeometricType = getDicomContourTypeFromAimMarkup(mku); 
+               c.contourGeometricType = getDicomContourTypeFromAimMarkup(mku);
+               c.contourSlabThickness = bdo.getFloat(Tag.SliceThickness);
                c.contourOffsetVector  = new ArrayList<Float>();
-               c.nContourPoints       = tdcl.size();
-               for (int i=0; i<tdcl.size(); i++)
+               c.nContourPoints       = d2l.size();
+               c.contourData          = cd;
+               
+               position    = bdo.getFloats(Tag.PatientPosition);
+               orientation = bdo.getFloats(Tag.PatientOrientation);
+               pixelSize   = bdo.getFloats(Tag.PixelSpacing);
+               
+               for (int i=0; i<d2l.size(); i++)
                {
-                  tdcl.
-               }
-               
-               
+                  TwoDimensionCoordinate d2 = d2l.get(i);
+                  float    x  = (float) d2.getX();
+                  float    y  = (float) d2.getY();
+                  float [] d3 = ContourRendererHelper.convertFromImageToPatientCoords(
+                                          x, y, position, orientation, pixelSize);
+                  List<Float> lf = new ArrayList<>();
+                  lf.add(d3[0]);
+                  lf.add(d3[1]);
+                  lf.add(d3[2]);
+                  cd.add(lf);
+               }                              
             }
          }
       }
@@ -739,15 +762,14 @@ public class RtStructBuilder
     * Note that most of the data needed for the RT-STRUCT is not contained
     * within the AIM source file and we have to seek it out from some of the
     * original image source DICOM files.
+    * @param rts and RtStruct 
     * @param iac an AIM ImageAnnotationCollection parsed from the source XML
     * by James d'Arcy's Etherj package.
-	 * @param seriesDoMap a Map that links a DICOM series to one representative
-	 * image from that series, thus allowing us to extract the various header
+	 * @param sopDoMap a Map that links each DICOM SOPInstanceUID to the
+	 * corresponding DICOM object, thus allowing us to extract the various header
     * parameters to supplement the information in the image annotation.
 	 * @throws exceptions.DataFormatException 
-    * @param rts
-    * @param iac
-    * @param seriesDoMap 
+
     */
    private void populateRtStruct(RtStruct rts, ImageAnnotationCollection iac,
                              Map<String, DicomObject>  seriesDoMap)
