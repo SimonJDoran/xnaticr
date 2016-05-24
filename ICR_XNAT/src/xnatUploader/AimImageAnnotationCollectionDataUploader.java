@@ -45,6 +45,7 @@
 package xnatUploader;
 
 import dataRepresentations.dicom.RtStruct;
+import dataRepresentations.dicom.RtStructBuilder;
 import dataRepresentations.xnatSchema.AbstractResource;
 import dataRepresentations.xnatSchema.AdditionalField;
 import dataRepresentations.xnatSchema.InvestigatorList;
@@ -182,10 +183,7 @@ public class AimImageAnnotationCollectionDataUploader extends DataUploader
                ImageSeries         series = study.getSeries();
                seriesUidSet.add(series.getInstanceUid());
                for (Image im : series.getImageList())
-               {
-                  sopInstanceUidSet.add(im.getInstanceUid());
-                  sopSeriesMap.put(im.getInstanceUid(), series.getInstanceUid());
-               }    
+                  sopInstanceUidSet.add(im.getInstanceUid());    
             }
          }
       }
@@ -354,8 +352,9 @@ public class AimImageAnnotationCollectionDataUploader extends DataUploader
 	 * tables of the PostgreSQL database. This method attempts the repository
     * upload. See also the comment for this method in the superclass.
     *
-	 * The AIM upload is particularly complicated, because a single AIM file
-	 * can describe multiple ROIs. In this sense, the situation is a little like
+	 * The cascade for the AIM upload is particularly complicated, because a
+    * single AIM file can describe multiple ROIs.
+    * In this sense, the situation is a little like
 	 * the case for an RT-STRUCT, but it is even more involved, because one also
 	 * needs to upload the references to the various radiological observations.
 	 * 
@@ -372,28 +371,28 @@ public class AimImageAnnotationCollectionDataUploader extends DataUploader
 	 * @throws java.io.IOException
 	 */
    @Override
-   public void uploadMetadataAndDependencies() throws XNATException, DataFormatException, IOException
+   public void uploadMetadataAndCascade() throws XNATException, DataFormatException, IOException
    {
       errorOccurred = false;
           
       // ------------------------------------------------------
       // Step 1: Create and upload the corresponding RT-STRUCT.
       // ------------------------------------------------------
-      RtStructDataUploader ru = new RtStructDataUploader(xnprf);
+      RtStructDataUploader rtsu = new RtStructDataUploader(xnprf);
       try
       {
-         assocRegionSetId = ru.getRootElement() + "_" + UidGenerator.createShortUnique(); 
-         ru.setAccessionId(assocRegionSetId);
-         ru.setSubjectId(XNATSubjectID);
-         ru.setExperimentId(XNATExperimentID);
-			iacRts = new RtStruct(iac, sopDoMap);
-			ru.setRtStruct(iacRts);
-         ru.setProvenance(createProvenance(iacRts));
-         ru.setSopFilenameMap(sopFilenameMap);
-         ru.setFilenameSopMap(filenameSopMap);
-         ru.setFilenameScanMap(filenameScanMap);
+         assocRegionSetId = rtsu.getRootElement() + "_" + iac.getUid(); 
+         rtsu.setAccessionId(assocRegionSetId);
+         rtsu.setSubjectId(XNATSubjectID);
+         rtsu.setExperimentId(XNATExperimentID);
+			iacRts = (new RtStructBuilder()).buildNewInstance(iac, sopDoMap);
+			rtsu.setRtStruct(iacRts);
+         rtsu.setProvenance(createProvenance(iacRts));
+         rtsu.setSopFilenameMap(sopFilenameMap);
+         rtsu.setFilenameSopMap(filenameSopMap);
+         rtsu.setFilenameScanMap(filenameScanMap);
          
-         ru.uploadMetadataAndDependencies();
+         rtsu.uploadMetadataAndCascade();
 			
 			String description = "DICOM RT-STRUCT file auto-created by ICR XNAT uploader from AIM instance file";
 			DicomObject iacDo  = new BasicDicomObject();
@@ -413,8 +412,8 @@ public class AimImageAnnotationCollectionDataUploader extends DataUploader
 														  description.toString(),
 														  XNATAccessionID + "_RTSTRUCT.dcm");
 			
-			ru.setPrimaryResource(xr);
-         ru.uploadResourcesToRepository();
+			rtsu.setPrimaryResource(xr);
+         rtsu.uploadResourcesToRepository();
       }
       catch (XNATException | DataFormatException | IOException ex)
 		{
@@ -428,7 +427,7 @@ public class AimImageAnnotationCollectionDataUploader extends DataUploader
       // Step 2: Upload the icr:aimImageAnnotationCollectionData metadata.
       // -----------------------------------------------------------------		
 		XNATAccessionID = iac.getUid();
-      super.uploadMetadataAndDependencies();
+      super.uploadMetadataAndCascade();
       
 		
 		// -----------------------------------------------------------------------
@@ -449,7 +448,7 @@ public class AimImageAnnotationCollectionDataUploader extends DataUploader
             iau.setPersonParent(iac.getPerson());
             iau.setAssociatedRegionSetId(assocRegionSetId);
             
-            iau.uploadMetadataAndDependencies();
+            iau.uploadMetadataAndCascade();
 				
 			}
 			catch  (XNATException | DataFormatException | IOException ex)
@@ -498,7 +497,8 @@ public class AimImageAnnotationCollectionDataUploader extends DataUploader
 		iacd.setAssociatedRegionSetId(assocRegionSetId);
 		
 		List<String> iaIdl = new ArrayList<>();
-		for (ImageAnnotation ia : iac.getAnnotationList()) iaIdl.add(ia.getUid());
+		for (ImageAnnotation ia : iac.getAnnotationList())
+         iaIdl.add(ia.getUid());
 		iacd.setImageAnnotationIdList(iaIdl);
 		
      
@@ -762,7 +762,7 @@ public class AimImageAnnotationCollectionDataUploader extends DataUploader
    public void createAuxiliaryResources()
    {
       // There are no auxiliary resources associated with an
-      // AimImageAnnotationCollection. uploadMetadataAndDependencies() above kicks off a
+      // AimImageAnnotationCollection. uploadMetadataAndCascade() above kicks off a
       // separate upload of an RT-STRUCT, which, in turn archives the ROI objects.
       // Hence, nothing needs to be done here.
    }

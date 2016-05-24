@@ -46,11 +46,12 @@
 /********************************************************************
 * @author Simon J Doran
 * Java class: AimImageAnnotationDataUploader.java
-* First created on Apr 26, 2016 at 10:04:04 AM
+* First created on May 24, 2016 at 23:54:00 AM
 *********************************************************************/
 
 package xnatUploader;
 
+import dataRepresentations.xnatSchema.AimEntitySubclass;
 import etherj.aim.Equipment;
 import etherj.aim.ImageAnnotation;
 import etherj.aim.Markup;
@@ -64,45 +65,19 @@ import org.w3c.dom.Document;
 import xnatDAO.XNATProfile;
 import xnatMetadataCreators.IcrAimImageAnnotationDataMdComplexType;
 
-public class AimImageAnnotationDataUploader extends DataUploader
+public class AimEntitySubclassDataUploader extends DataUploader
 {
-	protected ImageAnnotation ia;
+	protected AimEntitySubclass es;
 	protected User            userParent;
    protected Equipment       equipmentParent;
    protected Person          personParent;
 	protected String          assocRegionSetId;
 	
-	public AimImageAnnotationDataUploader(XNATProfile xnprf)
+	public AimEntitySubclassDataUploader(XNATProfile xnprf)
 	{
 		super(xnprf);  
 	}
    
-   
-   @Override
-   public void uploadMetadataAndCascade() throws XNATException, DataFormatException, IOException
-   {
-      errorOccurred = false;
-      
-      XNATAccessionID = ia.getUid();
-      super.uploadMetadataAndCascade();
-      
-      for (Markup mku : ia.getMarkupList())
-      {
-         AimEntitySubclassDataUploader esu = new AimEntitySubclassDataUploader(xnprf);
-         
-         try
-         {
-            
-         }
-         catch (XNATException | DataFormatException | IOException ex)
-         {
-            errorOccurred = true;
-            errorMessage  = ex.getMessage();
-            throw ex;
-         }
-      }
-          
-   }
    
    
 	@Override
@@ -203,33 +178,11 @@ public class AimImageAnnotationDataUploader extends DataUploader
    }
 	
 	
-	void setImageAnnotation(ImageAnnotation ia)
+	void setEntitySubtype(AimEntitySubclass es)
 	{
-		this.ia = ia;
+		this.es = es;
 	}
 	
-	
-	void setUserParent(User u)
-	{
-		userParent = u;
-	}
-   
-   
-   void setEquipmentParent(Equipment e)
-	{
-		equipmentParent = e;
-	}
-   
-   
-   void setPersonParent(Person p)
-	{
-		personParent = p;
-	}
-   
-   
-   void setAssociatedRegionSetId(String s)
-   {
-      assocRegionSetId = s;
-   }
 	
 }
+

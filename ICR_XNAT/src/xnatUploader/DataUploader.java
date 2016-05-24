@@ -237,13 +237,13 @@ public abstract class DataUploader
 	 * such as catalogue files and snapshots.
 	 * 
 	 * The basic metadata upload is here. However, this method is often
-	 * over-ridden, because some of the data types have dependencies. For
-	 * example, uploading an RT-STRUCT not only uploads the metadata for an
-	 * icr:regionSetData, but also creates an icr:regionData entry for each of
-	 * the individual ROI's contained in the RT-STRUCT.
+	 * over-ridden, because some of the data types require additional
+    * work to be done. This is the cascade. For example, uploading an RT-STRUCT
+    * not only uploads the metadata for an icr:regionSetData, but also creates
+    * an icr:regionData entry for each individual ROI contained in the RT-STRUCT.
 	 * @throws exceptions.XNATException
     */
-   public void uploadMetadataAndDependencies()
+   public void uploadMetadataAndCascade()
 			      throws XNATException, exceptions.DataFormatException, IOException
    {
       errorOccurred = false;

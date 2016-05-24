@@ -47,6 +47,7 @@
 
 package xnatMetadataCreators;
 
+import dataRepresentations.xnatSchema.AimEntitySubclass;
 import exceptions.XMLException;
 import java.io.IOException;
 import java.util.List;
@@ -54,49 +55,34 @@ import xmlUtilities.DelayedPrettyPrinterXmlWriter;
 
 public class IcrAimEntitySubclassDataMdComplexType extends IcrGenericImageAssessmentDataMdComplexType
 {
-	protected String       comment;
-	protected String       description;
-	protected String       typeCode;
-	protected String       typeCodeSystemUid;
-	protected String       typeCodeSystemName;
-	protected String       typeCodeSystemVersion;
-	protected String       questionTypeCode;
-	protected String       questionTypeCodeSystemUid;
-	protected String       questionTypeCodeSystemName;
-	protected String       questionTypeCodeSystemVersion;
-	protected String       questionIndex;
-	protected String       templateUid;
-	protected String       subtypeName;
-	protected String       isPresent;
-	protected String       annotatorConfidence;
-	protected String       associatedRegionSetId;
-	protected List<String> associatedAimEntitySubclassIdList;
+	protected AimEntitySubclass es;
 	
 	@Override
 	public void insertXml() throws IOException, XMLException
 	{
 		super.insertXml();
 		
-		dppXML.delayedWriteEntityWithText("comment",                       comment)
-				.delayedWriteEntityWithText("description",                   description)
-				.delayedWriteEntityWithText("typeCode",                      typeCode)
-				.delayedWriteEntityWithText("typeCodeSystemUid",             typeCodeSystemUid)
-				.delayedWriteEntityWithText("typeCodeSystemName",            typeCodeSystemName)
-				.delayedWriteEntityWithText("typeCodeSystemVersion",         typeCodeSystemVersion)
-				.delayedWriteEntityWithText("questionTypeCode",              questionTypeCode)
-				.delayedWriteEntityWithText("questionTypeCodeSystemUid",     questionTypeCodeSystemUid)
-				.delayedWriteEntityWithText("questionTypeCodeSystemName",    questionTypeCodeSystemName)
-				.delayedWriteEntityWithText("questionTypeCodeSystemVersion", questionTypeCodeSystemVersion)
-				.delayedWriteEntityWithText("questionIndex",                 questionIndex)
-				.delayedWriteEntityWithText("templateUid",                   templateUid)
-				.delayedWriteEntityWithText("subtypeName",                   subtypeName)
-				.delayedWriteEntityWithText("isPresent",                     isPresent)
-				.delayedWriteEntityWithText("annotatorConfidence",           annotatorConfidence)
-				.delayedWriteEntityWithText("associatedRegionSetId",         associatedRegionSetId);
+		dppXML.delayedWriteEntityWithText("comment",                       es.comment)
+				.delayedWriteEntityWithText("description",                   es.description)
+				.delayedWriteEntityWithText("typeCode",                      es.typeCode)
+				.delayedWriteEntityWithText("typeCodeSystemUid",             es.typeCodeSystemUid)
+				.delayedWriteEntityWithText("typeCodeSystemName",            es.typeCodeSystemName)
+				.delayedWriteEntityWithText("typeCodeSystemVersion",         es.typeCodeSystemVersion)
+				.delayedWriteEntityWithText("questionTypeCode",              es.questionTypeCode)
+				.delayedWriteEntityWithText("questionTypeCodeSystemUid",     es.questionTypeCodeSystemUid)
+				.delayedWriteEntityWithText("questionTypeCodeSystemName",    es.questionTypeCodeSystemName)
+				.delayedWriteEntityWithText("questionTypeCodeSystemVersion", es.questionTypeCodeSystemVersion)
+				.delayedWriteEntityWithText("questionIndex",                 es.questionIndex)
+				.delayedWriteEntityWithText("templateUid",                   es.templateUid)
+				.delayedWriteEntityWithText("subtypeName",                   es.subtypeName)
+				.delayedWriteEntityWithText("isPresent",                     es.isPresent)
+				.delayedWriteEntityWithText("annotatorConfidence",           es.annotatorConfidence)
+            .delayedWriteEntityWithText("associatedRegionId",            es.associatedRegionId)
+				.delayedWriteEntityWithText("associatedRegionSetId",         es.associatedRegionSetId);
 			
 		
 		dppXML.delayedWriteEntity("asociatedAimEntitySubclassIds");
-		for (String s : associatedAimEntitySubclassIdList)
+		for (String s : es.associatedAimEntitySubclassIdList)
 		{
 			dppXML.delayedWriteEntityWithText("asocEntSubId", s);
 		}
@@ -104,104 +90,8 @@ public class IcrAimEntitySubclassDataMdComplexType extends IcrGenericImageAssess
 	}
 	
 	
-	public void setComment(String s)
+	public void setEntitySubclass(AimEntitySubclass es)
 	{
-		comment = s;
-	}
-	
-	
-	public void setDescription(String s)
-	{
-		description = s;
-	}
-	
-	
-	public void setTypeCode(String s)
-	{
-		typeCode = s;
-	}
-		
-	
-	public void setTypeCodeSystemUid(String s)
-	{
-		typeCodeSystemUid = s;
-	}
-	
-	
-	public void setTypeCodeSystemName(String s)
-	{
-		typeCodeSystemName = s;
-	}
-	
-	
-	public void setTypeCodeSystemVersion(String s)
-	{
-		typeCodeSystemVersion = s;
-	}
-	
-		
-	
-	public void setQuestionTypeCode(String s)
-	{
-		questionTypeCode = s;
-	}
-		
-	
-	public void setQuestionTypeCodeSystemUid(String s)
-	{
-		questionTypeCodeSystemUid = s;
-	}
-	
-	
-	public void setQuestionTypeCodeSystemName(String s)
-	{
-		questionTypeCodeSystemName = s;
-	}
-	
-	
-	public void setQuestionTypeCodeSystemVersion(String s)
-	{
-		questionTypeCodeSystemVersion = s;
-	}
-	
-		
-	public void setQuestionIndex(String s)
-	{
-		questionIndex = s;
-	}
-	
-	
-	public void setTemplateUid(String s)
-	{
-		templateUid = s;
-	}
-	
-	
-	public void setSubtypeName(String s)
-	{
-		subtypeName = s;
-	}
-	
-	
-	public void setIsPresent(String s)
-	{
-		isPresent = s;
-	}
-		
-	
-	public void setAnnotatorConfidence(String s)
-	{
-		annotatorConfidence = s;
-	}
-	
-	
-	public void setAssociatedRegionSetId(String s)
-	{
-		associatedRegionSetId = s;
-	}
-	
-	public void setAssociatedAimEntitySubclassIdList(List<String> ls)
-	{
-		associatedAimEntitySubclassIdList = ls;
+		this.es = es;
 	}
 }

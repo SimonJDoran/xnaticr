@@ -50,6 +50,7 @@ import dataRepresentations.dicom.RoiContour;
 import dataRepresentations.dicom.RtReferencedSeries;
 import dataRepresentations.dicom.RtReferencedStudy;
 import dataRepresentations.dicom.RtStruct;
+import dataRepresentations.dicom.RtStructBuilder;
 import dataRepresentations.xnatSchema.AbstractResource;
 import dataRepresentations.xnatSchema.AdditionalField;
 import dataRepresentations.xnatSchema.InvestigatorList.Investigator;
@@ -94,7 +95,7 @@ class RtStructDataUploader extends DataUploader
 	private DicomObject        bdo;
 	
 	// These instance variables are public because they need to be accessed by
-	// the RegionFromRtStructDataUploader class in the uploadMetadataAndDependencies method.
+	// the RegionFromRtStructDataUploader class in the uploadMetadataAndCascade method.
 	private RtStruct            rts;
   	private Set<String>         studyUidSet       = new LinkedHashSet<>();
 	private Set<String>         seriesUidSet      = new LinkedHashSet<>();
@@ -145,7 +146,7 @@ class RtStructDataUploader extends DataUploader
    {
 		try
 		{
-			rts = new RtStruct(bdo);
+			rts = (new RtStructBuilder()).buildNewInstance(bdo);
 		}
 		catch (DataFormatException exDF)
 		{
@@ -230,7 +231,7 @@ class RtStructDataUploader extends DataUploader
     * @throws XNATException
     */
    @Override
-   public void uploadMetadataAndDependencies()
+   public void uploadMetadataAndCascade()
 			      throws XNATException, DataFormatException, IOException
    {
       errorOccurred = false;
@@ -246,7 +247,7 @@ class RtStructDataUploader extends DataUploader
 		nRois = rts.structureSet.structureSetRoiList.size();
 		for (int i=0; i<nRois; i++) assignedRegionIdList.add("ROI_" + UidGenerator.createShortUnique());
 		 
-      super.uploadMetadataAndDependencies();
+      super.uploadMetadataAndCascade();
  
       // -------------------------------------------------------------
       // Step 2: Upload the icr:regionData metadata and data files for
@@ -275,7 +276,7 @@ class RtStructDataUploader extends DataUploader
             ru.setTime(time);
             ru.setNote(note);
                     
-				ru.uploadMetadataAndDependencies();
+				ru.uploadMetadataAndCascade();
             ru.uploadResourcesToRepository();
          }
          catch (Exception ex)
@@ -326,7 +327,7 @@ class RtStructDataUploader extends DataUploader
    public void createAuxiliaryResources()
    {
       // TODO: Consider whether some composite visualisation is needed to
-      // summarise all the ROI_old's making up the ROISet object.
+      // summarise all the icr:region instances making up the icr:regionSet instance.
    }
 	
 	@Override

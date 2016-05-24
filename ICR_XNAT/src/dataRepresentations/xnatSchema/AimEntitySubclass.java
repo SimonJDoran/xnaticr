@@ -1,5 +1,5 @@
 /********************************************************************
-* Copyright (c) 2012, Institute of Cancer Research
+* Copyright (c) 2016, Institute of Cancer Research
 * All rights reserved.
 * 
 * Redistribution and use in source and binary forms, with or without
@@ -35,40 +35,37 @@
 
 /*********************************************************************
 * @author Simon J Doran
-* Java class: UploadToXNATWorker.java
-* First created on May 23, 2011 at 10.25 AM
+* Java class: RoiDisplay.java
+* First created on Jan 20, 2016 at 4:20:18 PM
 * 
-* Wrapper routine to allow a separate thread to upload a file to the
-* XNAT database
+* Data structure parallelling the icr:roiDisplay element and used in
+* conjunction with icrRoiDisplayDataMDComplexType.java
 *********************************************************************/
 
-package xnatUploader;
-import javax.swing.SwingWorker;
+package dataRepresentations.xnatSchema;
 
-public class UploadToXNATWorker extends SwingWorker<Void, Void>
+import java.util.List;
+
+public class AimEntitySubclass extends XnatSchemaElement
 {
-   protected DataUploader uploader;
-
-   public UploadToXNATWorker(DataUploader uploader)
-   {
-      this.uploader = uploader;
-   }
-
-
-   @Override
-   protected Void doInBackground() throws Exception
-   {
-      // Uploading data to XNAT is a two-stage process. First the metadata
-      // are placed in the SQL tables of the PostgreSQL database, by uploading
-      // a metadata XML document using REST. Then the data file itself is
-      // uploaded, together with any auxiliary files.
-      uploader.uploadMetadataAndCascade();
-      uploader.uploadResourcesToRepository();
-      
-      
-      // Note that we have no need to return anything from this function,
-      // because if we get to here the upload is a success. All error conditions
-      // cause an Exception to be thrown.
-      return null;
-   }
+	public String       comment;
+	public String       description;
+	public String       typeCode;
+	public String       typeCodeSystemUid;
+	public String       typeCodeSystemName;
+	public String       typeCodeSystemVersion;
+	public String       questionTypeCode;
+	public String       questionTypeCodeSystemUid;
+	public String       questionTypeCodeSystemName;
+	public String       questionTypeCodeSystemVersion;
+	public String       questionIndex;
+	public String       templateUid;
+	public String       subtypeName;
+	public String       isPresent;
+	public String       annotatorConfidence;
+   public String       associatedRegionId;
+	public String       associatedRegionSetId;
+	public List<String> associatedAimEntitySubclassIdList;
+	
+	public AimEntitySubclass(){}			  
 }
