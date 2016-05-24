@@ -44,7 +44,6 @@
 
 package dataRepresentations.dicom;
 
-import dataRepresentations.dicom.RtStruct;
 import etherj.aim.DicomImageReference;
 import etherj.aim.Image;
 import etherj.aim.ImageAnnotation;
@@ -53,7 +52,6 @@ import etherj.aim.ImageReference;
 import etherj.aim.ImageSeries;
 import etherj.aim.ImageStudy;
 import etherj.aim.Markup;
-import static etherj.aim.Markup.TwoDimensionPolyline;
 import etherj.aim.TwoDimensionCircle;
 import etherj.aim.TwoDimensionCoordinate;
 import etherj.aim.TwoDimensionEllipse;
@@ -318,17 +316,18 @@ public class RtStructBuilder
 			          throws DataFormatException
    {
 		RtStruct rts = new RtStruct();
-		rts.sopCommon        = iacBuildSopCommon(iac);
-		rts.patient          = iacBuildPatient(iac, sopDoMap);
-		rts.generalStudy     = iacBuildGeneralStudy(rts.sopCommon);
-		rts.generalEquipment = iacBuildGeneralEquipment(iac);
-		rts.rtSeries         = iacBuildRtSeries(iac, rts.sopCommon);
+		rts.sopCommon            = iacBuildSopCommon(iac);
+		rts.patient              = iacBuildPatient(iac, sopDoMap);
+		rts.generalStudy         = iacBuildGeneralStudy(rts.sopCommon);
+		rts.generalEquipment     = iacBuildGeneralEquipment(iac);
+		rts.rtSeries             = iacBuildRtSeries(iac, rts.sopCommon);
+		rts.rtRoiObservationList = iacBuildRtRoiObservationList(iac);
 		
-		// We need to build the iacBuildRoiContourList and
-		// iacBuildStructureSet methods, because the information needed to build
+		// We need to build the RoiContourList, StructureSet and RtRoiObservations
+		// with the same method, because the information needed to build
 		// the StructureSetRois is actually parsed at the time of extracting
-		// the contour lists. Hence, the name and description parameters.
-		iacBuildRoiContourListAndStructureSet(iac, sopDoMap, rts.sopCommon);
+		// the contour lists.
+		iacBuildRoiContourListAndStructureSet(iac, sopDoMap, rts);
 		
 		return rts;
    }
@@ -447,13 +446,12 @@ public class RtStructBuilder
 	private StructureSet iacBuildRoiContourListAndStructureSet
 		                      (ImageAnnotationCollection iac,
 			                    Map<String, DicomObject>  sopDoMap,
-									  SopCommon                 sc)
+									  RtStruct                  rts)
 			  throws DataFormatException
 	{
 		final float[] DUMMY_F2 = new float[] {0f, 0f};
       final float[] DUMMY_F3 = new float[] {0f, 0f, 0f};
       
-		List<RoiContour>      rcl  = new ArrayList<>();
 		StructureSet ss = new StructureSet();
 		
       ss.structureSetLabel           = "Auto-created structure set";
@@ -461,16 +459,20 @@ public class RtStructBuilder
       ss.structureSetDescription     = "Image markup from AIM instance document with UID "
                                         + iac.getUid() + " converted RT-STRUCT by ICR XNAT DataUploader";
       ss.instanceNumber              = "1";
-		ss.structureSetDate            = sc.instanceCreationDate;
-		ss.structureSetTime            = sc.instanceCreationTime;
+		ss.structureSetDate            = rts.sopCommon.instanceCreationDate;
+		ss.structureSetTime            = rts.sopCommon.instanceCreationTime;
       ss.referencedFrameOfReferenceList
                                      = iacBuildRforList(iac, sopDoMap);
 		ss.predecessorStructureSetList = new ArrayList<>();
 		
 		
 		// Build the list of structure set ROIs from the AIM data.
+		// When we have a 2-D shape, there is only one Contour object in the
+		// RoiContour and there is also only one ContourImage in the list.
+		// Furthermore, there is a one-to-one mapping in this application
+		// between RoiContours and StructureSetROIs.
 		List<StructureSetRoi> ssrl = new ArrayList<>();
-		ss.structureSetRoiList = ssrl;
+		List<RoiContour>      rcl  = new ArrayList<>();
 		int roiCount = 0;
       for (ImageAnnotation ia : iac.getAnnotationList())
       {
@@ -480,14 +482,15 @@ public class RtStructBuilder
             {
                TwoDimensionGeometricShape shape;
                shape = (TwoDimensionGeometricShape) mku;
-               
-               RoiContour rc = new RoiContour(); 
+               StructureSetRoi ssr = new StructureSetRoi();              
+					RoiContour      rc  = new RoiContour(); 
                rc.referencedRoiNumber = roiCount;
+					ssr.roiNumber = roiCount;
+					roiCount++;
+					
                //rc.roiDisplayColour = shape.getLineColour(); Not yet implemented in EtherJ
                List<TwoDimensionCoordinate> d2l = shape.getCoordinateList();
                
-               // When we have a 2-D shape, there is only one Contour object in the
-               // RoiContour and there is also only one ContourImage in the list.
                DicomObject        bdo = null;
                List<Contour>      cl  = new ArrayList<>();
                Contour            c   = new Contour();
@@ -503,31 +506,15 @@ public class RtStructBuilder
                fnl.add(shape.getReferencedFrameNumber());
                ci.referencedFrameNumberList = fnl;
                
-               // Retrieving the SOP Class UID is a bit of a pain, because AIM
-               // doesn't store it. To get to it, we need to find the corresponding
-               // DICOM object and to do this, we have to find the series containing
-               // this image.
-               for (ImageReference ir : ia.getReferenceList())
-               {
-                  if (ir instanceof DicomImageReference)
-                  {
-                     DicomImageReference dir    = (DicomImageReference) ir;
-                     ImageStudy          study  = dir.getStudy();
-                     ImageSeries         series = study.getSeries();
-                     for (Image im : series.getImageList())
-                        if (im.getInstanceUid().equals(shape.getImageReferenceUid()))
-                        {
-                           bdo = sopDoMap.get(im.getInstanceUid());
-                           break;
-                        }
-                  }
-               }
+               // AIM doesn't store all the information that we need. To get it,
+					// we need to find the corresponding DICOM object.
+               bdo = sopDoMap.get(shape.getImageReferenceUid());
                if (bdo == null) throw new DataFormatException(DataFormatException.BUILDER);
-               
-               cil.add(ci);
-               
                ci.referencedSopClassUid = bdo.getString(Tag.SOPClassUID);
+					ssr.referencedFrameOfReferenceUid = bdo.getString(Tag.FrameOfReferenceUID);
                
+					cil.add(ci);
+         
                
                c.contourNumber        = 0;
                c.attachedContours     = new ArrayList<>();
@@ -554,11 +541,22 @@ public class RtStructBuilder
                   lf.add(d3[1]);
                   lf.add(d3[2]);
                   cd.add(lf);
-               }                              
+               }
+	
+					ssr.roiName                = shape.getLabel();
+					ssr.roiDescription         = shape.getDescription();
+					ssr.roiGenerationAlgorithm = ""; // Required field but can be empty.
+					ssr.derivationCodeList     = new ArrayList<>();
+					
+					rcl.add(rc);
+					ssrl.add(ssr);
             }
          }
+			ss.structureSetRoiList = ssrl;
+			rts.structureSet       = ss;
+			rts.roiContourList     = rcl;
       }
-		return rcl;
+
 		
 		return ss;
 	}
@@ -688,44 +686,25 @@ public class RtStructBuilder
 	
    
 
-	private List<StructureSetRoi> iacBuildStructureSetRoiList(ImageAnnotationCollection iac,
-			                                                    Map<String, DicomObject>  sopDoMap,
-																				 List<RoiContour>          rcl,
-																				 String                    name,
-																				 String                    description)
+	private List<RtRoiObservation> iacBuildRtRoiObservationList(ImageAnnotationCollection iac)
 	{
-		List<StructureSetRoi> ssrl = new ArrayList<>();
+		List<RtRoiObservation> rrol = new ArrayList<>();
 		
-		for (RoiContour rc : rcl)
-		{
-			StructureSetRoi ssr = new StructureSetRoi();
-			
-			ssr.roiNumber       = rc.referencedRoiNumber;
-			
-			String firstSop     = rc.contourList.get(0).contourImageList.get(0).referencedSopInstanceUid;
-			DicomObject firstDo = sopDoMap.get(firstSop);
-			ssr.referencedFrameOfReferenceUid
-					              = firstDo.getString(Tag.FrameOfReferenceUID);
-			
-			ssr.roiName         = name;
-			ssr.roiDescription  = description;
-		}
-		return ssrl;
+		// It is mandatory that this object exists in the DICOM standard, but there is
+		// no equivalent requirement in AIM. Thus, we need to include a dummy term here.
+		// It is anticipated that future versions of the software will look at the
+		// AIM Inference Entities to populate this field. However, to date, we have
+		// no examples that contain any of these types of data.
+		RtRoiObservation rro     = new RtRoiObservation();
+		rro.observationNumber    = 0;
+		rro.referencedRoiNumber  = 0;
+		rro.roiObservationLabel  = "Dummy entry";
+		rro.rtRoiInterpretedType = ""; // Mandatory category 2, can be empty
+		rro.roiInterpreter       = ""; // Mandatory category 2, can be empty
+		
+		rrol.add(rro);
+		return rrol;
 	}
-   
-	
-	private List<RoiContour>
-                      iacBuildRoiContourList(ImageAnnotationCollection iac,
-			                                    Map<String, DicomObject>  sopDoMap,
-															String                    name,
-															String                    description)
-                      throws DataFormatException
-   {
-      
-      List<RoiContour> rcl = new ArrayList<>();
-      
-      
-   }
 							 
 
 							 

@@ -141,7 +141,7 @@ class RegionFromRtStructDataUploader extends DataUploader implements ContourRend
 		
       Set<Integer> singleRoi = new HashSet<>();
       singleRoi.add(rtsParent.structureSet.structureSetRoiList.get(roiPos).roiNumber);
-      rtsSingle = new RtStruct(rtsParent, singleRoi);
+      rtsSingle = new RtStructBuilder(rtsParent, singleRoi);
 		
 		StructureSet    ss  = rtsSingle.structureSet;
       assert (ss.structureSetRoiList.size() == 1);
