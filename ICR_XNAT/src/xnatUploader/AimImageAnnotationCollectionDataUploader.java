@@ -224,12 +224,26 @@ public class AimImageAnnotationCollectionDataUploader extends DataUploader
                {
                   String      filename = sopFilenameMap.get(im.getInstanceUid());
                   DicomObject bdo      = downloadDicomObject(filename);           
-                  if (bdo != null) sopDoMap.put(series.getInstanceUid(), bdo);
+                  if (bdo != null) sopDoMap.put(im.getInstanceUid(), bdo);
                   else return false;
                }          
             }
          }
       }
+		
+		// The associated structure set file needs to be created right at the
+		// start of the upload process.
+		try
+		{
+			RtStructBuilder rb = new RtStructBuilder("XNATDataUploader", version, "Institute of Cancer Research");
+			iacRts = rb.buildNewInstance(iac, sopDoMap, markupRegionMap);
+		}
+		catch (DataFormatException exDF)
+		{
+			errorMessage = "Problem creating RT-STRUCT from AIM instance file.";
+			errorOccurred = true;
+			return false;
+		}
       return true;
    }
   
@@ -387,7 +401,6 @@ public class AimImageAnnotationCollectionDataUploader extends DataUploader
          rtsu.setAccessionId(assocRegionSetId);
          rtsu.setSubjectId(XNATSubjectID);
          rtsu.setExperimentId(XNATExperimentID);
-			iacRts = (new RtStructBuilder()).buildNewInstance(iac, sopDoMap, markupRegionMap);
 			
 			// Create a the list of region ids needed by the RtStructDataUploader from
 			// the map just generated.
@@ -397,7 +410,7 @@ public class AimImageAnnotationCollectionDataUploader extends DataUploader
 			rtsu.setAssignedRegionIdList(idList);
 			
 			rtsu.setRtStruct(iacRts);
-         rtsu.setProvenance(createProvenance(iacRts));
+         rtsu.setProvenance(createProvenance());
          rtsu.setSopFilenameMap(sopFilenameMap);
          rtsu.setFilenameSopMap(filenameSopMap);
          rtsu.setFilenameScanMap(filenameScanMap);
@@ -629,7 +642,8 @@ public class AimImageAnnotationCollectionDataUploader extends DataUploader
 	}
 	
 	
-	Provenance createProvenance(RtStruct iacRts)
+	@Override
+	public Provenance createProvenance()
 	{
 		// A number of fields are mandatory in the birn.xsd provenance schema,
 		// so provide defaults if they do not exist.

@@ -86,8 +86,8 @@ public class DicomXnatDateTime
       
       try
       {
-         day    = dateTime.substring(6, 8);
-         month  = dateTime.substring(4, 6);
+         day    = dateTime.substring(8, 10);
+         month  = dateTime.substring(5, 7);
          year   = dateTime.substring(0, 4);
       }
       catch (Exception ex)

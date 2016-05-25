@@ -80,6 +80,25 @@ import xnatUploader.ContourRendererHelper;
 
 public class RtStructBuilder
 {	
+	public String callerName;
+	public String callerVersion;
+	public String callerManufacturer;
+	
+	public RtStructBuilder()
+	{
+		callerName         = "";
+		callerVersion      = "";
+		callerManufacturer = "";
+	}
+	
+	public RtStructBuilder(String callerName, String callerVersion, String callerManufacturer)
+	{
+		this.callerName         = callerName;
+		this.callerVersion      = callerVersion;
+		this.callerManufacturer = callerManufacturer;
+	}
+	
+	
 	/**
     * Create a new RtStruct object and populate it with data from a DicomObject -
     * typically representing a file being uploaded.
@@ -320,7 +339,7 @@ public class RtStructBuilder
 		rts.sopCommon            = iacBuildSopCommon(iac);
 		rts.patient              = iacBuildPatient(iac, sopDoMap);
 		rts.generalStudy         = iacBuildGeneralStudy(rts.sopCommon);
-		rts.generalEquipment     = iacBuildGeneralEquipment(iac);
+		rts.generalEquipment     = iacBuildGeneralEquipment(iac, sopDoMap);
 		rts.rtSeries             = iacBuildRtSeries(iac, rts.sopCommon);
 		rts.rtRoiObservationList = iacBuildRtRoiObservationList(iac);
 		
@@ -339,12 +358,14 @@ public class RtStructBuilder
 	{
 		SopCommon sc = new SopCommon();
       String dateTime = LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME);
-      sc.instanceCreationDate = DicomXnatDateTime.convertXnatDateTimeToDicomDate(dateTime);
-      sc.instanceCreationTime = DicomXnatDateTime.convertXnatDateTimeToDicomTime(dateTime);
-      sc.sopClassUid          = UID.RTStructureSetStorage;
-      sc.sopInstanceUid       = UidGenerator.createNewDicomUID(UidGenerator.XNAT_DAO,
-		                                                         UidGenerator.RT_STRUCT,
-                                                               UidGenerator.SOPInstanceUID);
+      sc.instanceCreationDate    = DicomXnatDateTime.convertXnatDateTimeToDicomDate(dateTime);
+      sc.instanceCreationTime    = DicomXnatDateTime.convertXnatDateTimeToDicomTime(dateTime);
+      sc.sopClassUid             = UID.RTStructureSetStorage;
+      sc.sopInstanceUid          = UidGenerator.createNewDicomUID(UidGenerator.XNAT_DAO,
+		                                                            UidGenerator.RT_STRUCT,
+                                                                  UidGenerator.SOPInstanceUID);
+		sc.mediaStorageSopClassUid = UID.RTStructureSetStorage;
+		sc.specificCharacterSet    = "ISO_IR 100";
 		return sc;
 	}
 	
@@ -399,28 +420,65 @@ public class RtStructBuilder
 	}
 	
 	
-	private GeneralEquipment iacBuildGeneralEquipment(ImageAnnotationCollection iac)
+	private String getDefaultIfEmpty(String src)
 	{
 		final String DEFAULT = "Unknown";
 		
-		GeneralEquipment ge = new GeneralEquipment();
+		if (src == null)   return DEFAULT;
+		if (src.isEmpty()) return DEFAULT;
+		return src;
+	}
+	
+	
+	private String createStringFromSet(Set<String> set)
+	{
+		final String SEP = " | ";	
+		StringBuilder sb = new StringBuilder();
 		
-      ge.institutionAddress = DEFAULT;
-      ge.institutionName    = DEFAULT;
-      ge.manufacturer       = "Institute of Cancer Research";
-      ge.modelName          = "ICR XNAT DataUploader";
+		for (String s : set)
+		{
+			if (!(sb.toString().contains(s))) 
+			{
+			   if (sb.length() != 0) sb.append(SEP);
+				if (s != null) sb.append(s);
+			}
+		}
+      return getDefaultIfEmpty(sb.toString());
+
+	}
+	
+	private GeneralEquipment iacBuildGeneralEquipment(ImageAnnotationCollection iac,
+			                                            Map<String, DicomObject>  sopDoMap)
+	{
+		GeneralEquipment ge = new GeneralEquipment();
+	
+		// Potentially, an AIM file could have several annotations from different
+		// studies, which might be on different machines. We need to capture this.
+		Set<String> instAddressSet  = new LinkedHashSet<>();
+		Set<String> instNameSet     = new LinkedHashSet<>();
+		Set<String> manufacturerSet = new LinkedHashSet<>();
+		Set<String> modelNameSet    = new LinkedHashSet<>();
+		Set<String> stationNameSet  = new LinkedHashSet<>();
+		for (String sop : sopDoMap.keySet())
+		{
+			DicomObject      bdo   = sopDoMap.get(sop);
+			GeneralEquipment geSop = new GeneralEquipment(bdo);
+			instAddressSet.add(geSop.institutionAddress);
+			instNameSet.add(geSop.institutionName);
+			manufacturerSet.add(geSop.manufacturer);
+			modelNameSet.add(geSop.modelName);
+			stationNameSet.add(geSop.stationName);
+		}
+				
+      ge.institutionAddress = createStringFromSet(instAddressSet);
+      ge.institutionName    = createStringFromSet(instNameSet);
+      ge.manufacturer       = createStringFromSet(manufacturerSet);
+      ge.modelName          = createStringFromSet(modelNameSet);
+		ge.stationName        = createStringFromSet(stationNameSet);
       List<String> sv = new ArrayList<>();
       sv.add(iac.getAimVersion());
-      sv.add("Converted to RT-STRUCT by ICR XNAT DataUploader");
+      sv.add("Converted to RT-STRUCT by " + callerName + " version " + callerVersion);
       ge.softwareVersions   = sv;
-      try
-		{
-			ge.stationName = InetAddress.getLocalHost().getHostName();
-		}
-		catch (UnknownHostException exUH)
-		{
-			ge.stationName = DEFAULT;
-		}
 		
 		return ge;
 	}
@@ -453,13 +511,14 @@ public class RtStructBuilder
 	{
 		final float[] DUMMY_F2 = new float[] {0f, 0f};
       final float[] DUMMY_F3 = new float[] {0f, 0f, 0f};
+		final float[] DUMMY_F6 = new float[] {0f, 0f, 0f, 0f, 0f, 0f};
       
 		StructureSet ss = new StructureSet();
 		
       ss.structureSetLabel           = "Auto-created structure set";
-      ss.structureSetName            = iac.getUid() + "_RT-STRUCT";
+      ss.structureSetName            =  "RT-STRUCT_" + iac.getUid();
       ss.structureSetDescription     = "Image markup from AIM instance document with UID "
-                                        + iac.getUid() + " converted RT-STRUCT by ICR XNAT DataUploader";
+                                        + iac.getUid() + " converted to RT-STRUCT by ICR XNAT DataUploader";
       ss.instanceNumber              = "1";
 		ss.structureSetDate            = rts.sopCommon.instanceCreationDate;
 		ss.structureSetTime            = rts.sopCommon.instanceCreationTime;
@@ -502,7 +561,7 @@ public class RtStructBuilder
                ArrayList<Integer> fnl = new ArrayList<>();
                List<List<Float>>  cd  = new ArrayList<List<Float>>();
                float[]            position    = DUMMY_F3;
-               float[]            orientation = DUMMY_F3;
+               float[]            orientation = DUMMY_F6;
                float[]            pixelSize   = DUMMY_F2; 
                
                ci.referencedSopInstanceUid = shape.getImageReferenceUid();
@@ -528,23 +587,22 @@ public class RtStructBuilder
                c.nContourPoints       = d2l.size();
                c.contourData          = cd;
                
-               position    = bdo.getFloats(Tag.PatientPosition);
-               orientation = bdo.getFloats(Tag.PatientOrientation);
-               pixelSize   = bdo.getFloats(Tag.PixelSpacing);
+					position    = bdo.getFloats(Tag.ImagePositionPatient);
+               orientation = bdo.getFloats(Tag.ImageOrientationPatient);
+               pixelSize   = bdo.getFloats(Tag.PixelSpacing);					
                
-               for (int i=0; i<d2l.size(); i++)
-               {
-                  TwoDimensionCoordinate d2 = d2l.get(i);
-                  float    x  = (float) d2.getX();
-                  float    y  = (float) d2.getY();
-                  float [] d3 = ContourRendererHelper.convertFromImageToPatientCoords(
-                                          x, y, position, orientation, pixelSize);
-                  List<Float> lf = new ArrayList<>();
-                  lf.add(d3[0]);
-                  lf.add(d3[1]);
-                  lf.add(d3[2]);
-                  cd.add(lf);
-               }
+					for (TwoDimensionCoordinate d2 : d2l)
+					{
+						float    x  = (float) d2.getX();
+						float    y  = (float) d2.getY();
+						float [] d3 = ContourRendererHelper.convertFromImageToPatientCoords(
+								  x, y, position, orientation, pixelSize);
+						List<Float> lf = new ArrayList<>();
+						lf.add(d3[0]);
+						lf.add(d3[1]);
+						lf.add(d3[2]);
+						cd.add(lf);
+					}
 	
 					ssr.roiName                = shape.getLabel();
 					ssr.roiDescription         = shape.getDescription();
@@ -591,99 +649,89 @@ public class RtStructBuilder
             rfor.frameOfReferenceUid = rforUid;     
          }
 		}
+		
       
-      List<RtReferencedStudy> rtrsl = new ArrayList<>(); 
-      for (ImageAnnotation ia : iac.getAnnotationList())
-      {
-         for (ImageReference ir : ia.getReferenceList())
-         {
-           if (ir instanceof DicomImageReference)
-            {
-               DicomImageReference dir    = (DicomImageReference) ir;
-               ImageStudy          study  = dir.getStudy();
-               ImageSeries         series = study.getSeries();
-               Set<String>         sops   = new HashSet<>();
-               for (Image im : series.getImageList()) sops.add(im.getInstanceUid());
-               
-               boolean newStudy = true;
-               for (RtReferencedStudy rtrs : rtrsl)
-               {
-                  if (rtrs.referencedSopInstanceUid.equals(study.getInstanceUid()))
-                     newStudy = false;
-               }
-               
-               if (newStudy)
-               {
-                  RtReferencedStudy rtrs = new RtReferencedStudy();
-                  rtrs.referencedSopInstanceUid = study.getInstanceUid();
-                  
-                  // Find the corresponding DicomObject in order to get the
-                  // SOP class UID, which is not supplied by the AIM metadata.
-                  String sop = series.getImageList().get(0).getInstanceUid();
-                  DicomObject bdo = sopDoMap.get(sop);
-                  rtrs.referencedSopClassUid = rtrs.readString(bdo, Tag.SOPClassUID, 1);
-                  
-                  rtrs.rtReferencedSeriesList = new ArrayList<>();                 
-                  rtrsl.add(rtrs);
-               }
-               
-               for (RtReferencedStudy rtrs : rtrsl)
-               {
-                  if (rtrs.referencedSopInstanceUid.equals(study.getInstanceUid()))
-                  {
-                     List<RtReferencedSeries> rtrsel = rtrs.rtReferencedSeriesList;
-                     boolean newSeries = true;
-                     for (RtReferencedSeries rtrse : rtrsel)
-                     {
-                        if (rtrse.seriesInstanceUid.equals(series.getInstanceUid()))
-                           newSeries = false;
-                     }
-                     if (newSeries)
-                     {
-                        RtReferencedSeries rtrse = new RtReferencedSeries();
-                        rtrse.seriesInstanceUid  = series.getInstanceUid();
-                        rtrse.contourImageList   = new ArrayList<>();
-                        rtrsel.add(rtrse);
-                     }
-                     
-                     for (RtReferencedSeries rtrse : rtrsel)
-                     {
-                        if (rtrse.seriesInstanceUid.equals(series.getInstanceUid()))
-                        {
-                           for (Image im : series.getImageList())
-                           {
-                              ContourImage ci             = new ContourImage();
-                              ci.referencedSopInstanceUid = im.getInstanceUid();
-                              ci.referencedSopClassUid    = im.getSopClassUid();
-                              rtrse.contourImageList.add(ci);
-                           }
-                        }
-                     }
-                  }
-               }
+		// Now loop over all the frames of reference and create the underlying structure.
+		for (ReferencedFrameOfReference rfor : rforList)
+		{
+			List<RtReferencedStudy> rtrsl = new ArrayList<>();
+			rfor.rtReferencedStudyList = rtrsl;
+			
+			for (ImageAnnotation ia : iac.getAnnotationList())
+			{
+				for (ImageReference ir : ia.getReferenceList())
+				{
+				  if (ir instanceof DicomImageReference)
+					{
+						DicomImageReference dir    = (DicomImageReference) ir;
+						ImageStudy          study  = dir.getStudy();
+						ImageSeries         series = study.getSeries();
+					
+						// Without loss of generality, we can just pick the first
+						// image in the series, as all will have the same FoR.
+						String      firstSop = series.getImageList().get(0).getInstanceUid();
+						DicomObject firstDo  = sopDoMap.get(firstSop);
+						if (rfor.frameOfReferenceUid.equals(firstDo.getString(Tag.FrameOfReferenceUID)))
+						{
+							// At least one of the images in this study belongs in this
+							// frame of reference. Now check whether this is the first time
+							// we have encountered this particular study for this reference frame.
+							boolean newStudy = true;
+							for (RtReferencedStudy rtrs : rtrsl)
+							{
+								if (rtrs.referencedSopInstanceUid.equals(study.getInstanceUid()))
+									newStudy = false;
+							}
+
+							if (newStudy)
+							{
+								RtReferencedStudy rtrs = new RtReferencedStudy();
+								rtrs.referencedSopInstanceUid = study.getInstanceUid();
+								rtrs.referencedSopClassUid    = firstDo.getString(Tag.SOPClassUID);
+								rtrs.rtReferencedSeriesList   = new ArrayList<>();                 
+								rtrsl.add(rtrs);
+							}
+
+							for (RtReferencedStudy rtrs : rtrsl)
+							{
+								if (rtrs.referencedSopInstanceUid.equals(study.getInstanceUid()))
+								{
+									List<RtReferencedSeries> rtrsel = rtrs.rtReferencedSeriesList;
+									boolean newSeries = true;
+									for (RtReferencedSeries rtrse : rtrsel)
+									{
+										if (rtrse.seriesInstanceUid.equals(series.getInstanceUid()))
+											newSeries = false;
+									}
+									if (newSeries)
+									{
+										RtReferencedSeries rtrse = new RtReferencedSeries();
+										rtrse.seriesInstanceUid  = series.getInstanceUid();
+										rtrse.contourImageList   = new ArrayList<>();
+										rtrsel.add(rtrse);
+									}
+
+									for (RtReferencedSeries rtrse : rtrsel)
+									{
+										if (rtrse.seriesInstanceUid.equals(series.getInstanceUid()))
+										{
+											for (Image im : series.getImageList())
+											{
+												ContourImage ci             = new ContourImage();
+												ci.referencedSopInstanceUid = im.getInstanceUid();
+												ci.referencedSopClassUid    = im.getSopClassUid();
+												rtrse.contourImageList.add(ci);
+											}
+										}
+									}
+								}
+							}
+						}
+					}
             }            
          }
       }
-      
-      // By the time we get here, we have created a list of RtReferencedStudies.
-      // These might be from different modalities and will all likely have
-      // different frames of references. So the last step is to assign each
-      // RtReferencedStudy to the correct ReferencedFrameOfReference.
-      for (ReferencedFrameOfReference rfor : rforList)
-      {
-         for (RtReferencedStudy rtrs : rtrsl)
-         {
-            RtReferencedSeries firstSeries = rtrs.rtReferencedSeriesList.get(0);
-            ContourImage       firstImage  = firstSeries.contourImageList.get(0);
-            String             firstUid    = firstImage.referencedSopInstanceUid;
-            DicomObject        firstDo     = sopDoMap.get(firstUid);
-            String             firstForUid = rtrs.readString(firstDo, Tag.FrameOfReferenceUID, 1);
             
-            if (rfor.frameOfReferenceUid.equals(firstForUid))
-               rfor.rtReferencedStudyList.add(rtrs);
-         }
-      }
-      
       return rforList;
    }
 	
