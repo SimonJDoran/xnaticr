@@ -103,7 +103,7 @@ class RtStructDataUploader extends DataUploader
 	private Map<String, String> filenameSopMap;
 	private Map<String, String> sopFilenameMap;
 	private Map<String, String> filenameScanMap;
-	private ArrayList<String>   assignedRegionIdList = new ArrayList<>();
+	private List<String>        assignedRegionIdList = new ArrayList<>();
 	private int                 nRois;
 	
 	RtStructDataUploader(XNATProfile xnprf)
@@ -245,8 +245,12 @@ class RtStructDataUploader extends DataUploader
 		
 		// Create separate accession IDs for all the individual ROI's.
 		nRois = rts.structureSet.structureSetRoiList.size();
-		for (int i=0; i<nRois; i++) assignedRegionIdList.add("ROI_" + UidGenerator.createShortUnique());
-		 
+		if (assignedRegionIdList.isEmpty())
+		{
+			for (int i=0; i<nRois; i++)
+				assignedRegionIdList.add("ROI_" + UidGenerator.createShortUnique());
+		}
+		
       super.uploadMetadataAndCascade();
  
       // -------------------------------------------------------------
@@ -670,6 +674,12 @@ class RtStructDataUploader extends DataUploader
    void setRtStruct(RtStruct r)
 	{
 		rts = r;
+	}
+	
+	
+	void setAssignedRegionIdList(List<String> ls)
+	{
+		assignedRegionIdList = ls;
 	}
 	
 	   

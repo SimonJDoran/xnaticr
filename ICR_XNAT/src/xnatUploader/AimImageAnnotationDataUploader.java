@@ -51,26 +51,34 @@
 
 package xnatUploader;
 
+import dataRepresentations.xnatSchema.AimEntitySubclass;
 import etherj.aim.Equipment;
 import etherj.aim.ImageAnnotation;
 import etherj.aim.Markup;
 import etherj.aim.Person;
+import etherj.aim.TwoDimensionGeometricShape;
 import etherj.aim.User;
 import exceptions.DataFormatException;
 import exceptions.XMLException;
 import exceptions.XNATException;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 import org.w3c.dom.Document;
 import xnatDAO.XNATProfile;
 import xnatMetadataCreators.IcrAimImageAnnotationDataMdComplexType;
 
 public class AimImageAnnotationDataUploader extends DataUploader
 {
-	protected ImageAnnotation ia;
-	protected User            userParent;
-   protected Equipment       equipmentParent;
-   protected Person          personParent;
-	protected String          assocRegionSetId;
+	private ImageAnnotation     ia;
+	private User                userParent;
+   private Equipment           equipmentParent;
+   private Person              personParent;
+	private String              assocRegionSetId;
+	private Map<String, String> markupRegionMap;
+	private List<String>        subclassIdList;
+	
 	
 	public AimImageAnnotationDataUploader(XNATProfile xnprf)
 	{
@@ -83,16 +91,42 @@ public class AimImageAnnotationDataUploader extends DataUploader
    {
       errorOccurred = false;
       
-      XNATAccessionID = ia.getUid();
+      // Upload the metadata for the icr:aimImageAnnotation.
+		// The "cascade" part of the process involves separately uploading metadata
+		// for each of the individual bits (icr:aimEntitySubclass) of the image
+		// annotation. The ids of all the separate bits are stored in a list that
+		// is uploaded with the icr:aimImageAnnotation metadata.
+		subclassIdList = new ArrayList<>();
+		for (Markup mku : ia.getMarkupList())
+			subclassIdList.add(AimEntitySubclass.MARKUP + "_" + mku.getUid());
+		
+		XNATAccessionID = ia.getUid();
       super.uploadMetadataAndCascade();
       
+		// This is the "cascade" bit. Now set an upload in train for a separate
+		// icr:aimEntitySubclass for each of the bits of the image annotation.		
       for (Markup mku : ia.getMarkupList())
       {
+			AimEntitySubclass es = new AimEntitySubclass();
+			
+			es.subclassType          = es.MARKUP;
+			es.associatedRegionSetId = assocRegionSetId;
+			es.associatedRegionId    = markupRegionMap.get(mku.getUid());
+			
+			if (mku instanceof TwoDimensionGeometricShape)
+			{
+				TwoDimensionGeometricShape shape = (TwoDimensionGeometricShape) mku;
+				es.description     = shape.getDescription();
+				es.shapeIdentifier = Integer.toString(shape.getShapeId());
+			}
+			 
          AimEntitySubclassDataUploader esu = new AimEntitySubclassDataUploader(xnprf);
          
          try
          {
-            
+            esu.setAccessionId(AimEntitySubclass.MARKUP + "_" + mku.getUid());
+				esu.setEntitySubclass(es);
+				esu.uploadMetadataAndCascade();
          }
          catch (XNATException | DataFormatException | IOException ex)
          {
@@ -100,8 +134,7 @@ public class AimImageAnnotationDataUploader extends DataUploader
             errorMessage  = ex.getMessage();
             throw ex;
          }
-      }
-          
+      }         
    }
    
    
@@ -118,27 +151,27 @@ public class AimImageAnnotationDataUploader extends DataUploader
 				  
 		iad.setComment(ia.getComment());
 		
-		iad.setAimUserName(          userParent.getName());
-      iad.setAimUserLoginName(     userParent.getLoginName());
-      iad.setAimUserRole(          userParent.getRoleInTrial());
-      iad.setAimUserNumberInRole(  userParent.getNumberWithinRoleOfClinicalTrial());
+		iad.setAimUserName(            userParent.getName());
+      iad.setAimUserLoginName(       userParent.getLoginName());
+      iad.setAimUserRole(            userParent.getRoleInTrial());
+      iad.setAimUserNumberInRole(    userParent.getNumberWithinRoleOfClinicalTrial());
       
-      iad.setManufacturerName(     equipmentParent.getManufacturerName());
-      iad.setManufacturerModelName(equipmentParent.getManufacturerModelName());
-      iad.setDeviceSerialNumber(   equipmentParent.getDeviceSerialNumber());
-      iad.setSoftwareVersion(      equipmentParent.getSoftwareVersion());
+      iad.setManufacturerName(       equipmentParent.getManufacturerName());
+      iad.setManufacturerModelName(  equipmentParent.getManufacturerModelName());
+      iad.setDeviceSerialNumber(     equipmentParent.getDeviceSerialNumber());
+      iad.setSoftwareVersion(        equipmentParent.getSoftwareVersion());
       
-      iad.setPersonName(           personParent.getName());
-      iad.setPersonId(             personParent.getId());
-      iad.setPersonBirthDate(      personParent.getBirthDate());
-      iad.setPersonSex(            personParent.getSex());
-      iad.setPersonEthnicGroup(    personParent.getEthnicGroup());
+      iad.setPersonName(             personParent.getName());
+      iad.setPersonId(               personParent.getId());
+      iad.setPersonBirthDate(        personParent.getBirthDate());
+      iad.setPersonSex(              personParent.getSex());
+      iad.setPersonEthnicGroup(      personParent.getEthnicGroup());
        
-		iad.setAssociatedRegionSetId(assocRegionSetId);
-      iad.setNMarkupEntity(        ia.getMarkupList().size());
+		iad.setAssociatedRegionSetId(  assocRegionSetId);
+		iad.setAimEntitySubclassIdList(subclassIdList);
+      iad.setNMarkupEntity(          ia.getMarkupList().size());
       
-      
-      
+		// More here when the Etherj package is ready.
 		
       // Finally write the metadata XML document.
 		Document metaDoc = null;
@@ -209,6 +242,18 @@ public class AimImageAnnotationDataUploader extends DataUploader
 	}
 	
 	
+	void setMarkupRegionMap(Map<String, String> map)
+	{
+		markupRegionMap = map;
+	}
+   
+   
+   void setAssociatedRegionSetId(String s)
+   {
+      assocRegionSetId = s;
+   }
+	
+	
 	void setUserParent(User u)
 	{
 		userParent = u;
@@ -224,12 +269,5 @@ public class AimImageAnnotationDataUploader extends DataUploader
    void setPersonParent(Person p)
 	{
 		personParent = p;
-	}
-   
-   
-   void setAssociatedRegionSetId(String s)
-   {
-      assocRegionSetId = s;
-   }
-	
+	}	
 }

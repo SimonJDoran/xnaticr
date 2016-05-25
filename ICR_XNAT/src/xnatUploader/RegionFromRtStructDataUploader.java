@@ -57,6 +57,7 @@ import dataRepresentations.dicom.RtReferencedSeries;
 import dataRepresentations.dicom.RtReferencedStudy;
 import dataRepresentations.dicom.RtRoiObservation;
 import dataRepresentations.dicom.RtStruct;
+import dataRepresentations.dicom.RtStructBuilder;
 import dataRepresentations.dicom.StructureSet;
 import dataRepresentations.dicom.StructureSetRoi;
 import dataRepresentations.xnatSchema.AbstractResource;
@@ -126,7 +127,7 @@ class RegionFromRtStructDataUploader extends DataUploader implements ContourRend
 	protected Document createMetadataXml()
 	{
 		// Metadata are created simply by instantiating the metadata creator
-		// object for the required complex type, filling it with the correct
+		// object for the required complex type, filling it with the correct contents
 		// and calling its createXmlAsRootElement() method. The complexity
 		// in this method comes from the number of pieces of data that must
 		// be transferred from the RT-STRUCT to the metadata creator.
@@ -141,7 +142,16 @@ class RegionFromRtStructDataUploader extends DataUploader implements ContourRend
 		
       Set<Integer> singleRoi = new HashSet<>();
       singleRoi.add(rtsParent.structureSet.structureSetRoiList.get(roiPos).roiNumber);
-      rtsSingle = new RtStructBuilder(rtsParent, singleRoi);
+      try
+		{
+			rtsSingle = (new RtStructBuilder()).buildNewInstance(rtsParent, singleRoi);
+		}
+		catch (DataFormatException exDF)
+		{
+			errorOccurred = true;
+			errorMessage  = exDF.getMessage();
+		}
+		
 		
 		StructureSet    ss  = rtsSingle.structureSet;
       assert (ss.structureSetRoiList.size() == 1);

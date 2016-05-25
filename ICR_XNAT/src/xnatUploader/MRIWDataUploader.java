@@ -317,7 +317,8 @@ public class MRIWDataUploader extends QCAssessmentDataUploader
     * @throws Exception
     */
    @Override
-   public void uploadMetadataAndCascade() throws Exception
+   public void uploadMetadataAndCascade()
+			      throws XNATException, DataFormatException, IOException
    {
       errorOccurred = false;
           
@@ -384,7 +385,7 @@ public class MRIWDataUploader extends QCAssessmentDataUploader
       // just been performed on the MRIW result set file, but the overhead is
       // probably worth it for some cleaner coding here.
       rtsu.prepareUpload();
-      if (errorOccurred) throw new Exception(errorMessage);
+      if (errorOccurred) throw new DataFormatException(DataFormatException.MRIW_GENERAL, errorMessage);
       
       // The icr:roiSetData object that is created requires a label and a
       // description. If the structure set were uploaded manually, these

@@ -63,15 +63,12 @@ import exceptions.XNATException;
 import java.io.IOException;
 import org.w3c.dom.Document;
 import xnatDAO.XNATProfile;
+import xnatMetadataCreators.IcrAimEntitySubclassDataMdComplexType;
 import xnatMetadataCreators.IcrAimImageAnnotationDataMdComplexType;
 
 public class AimEntitySubclassDataUploader extends DataUploader
 {
-	protected AimEntitySubclass es;
-	protected User            userParent;
-   protected Equipment       equipmentParent;
-   protected Person          personParent;
-	protected String          assocRegionSetId;
+	private AimEntitySubclass es;
 	
 	public AimEntitySubclassDataUploader(XNATProfile xnprf)
 	{
@@ -85,41 +82,17 @@ public class AimEntitySubclassDataUploader extends DataUploader
 	{
 		// Metadata are created simply by instantiating the metadata creator
 		// object for the required complex type, filling it with the correct
-		// and calling its createXmlAsRootElement() method. The complexity
-		// in this method comes from the number of pieces of data that must
-		// be transferred from the image annotation to the metadata creator.
-		IcrAimImageAnnotationDataMdComplexType iad
-				                    = new IcrAimImageAnnotationDataMdComplexType();
-				  
-		iad.setComment(ia.getComment());
+		// and calling its createXmlAsRootElement() method.
+		IcrAimEntitySubclassDataMdComplexType
+				  esd = new IcrAimEntitySubclassDataMdComplexType();
 		
-		iad.setAimUserName(          userParent.getName());
-      iad.setAimUserLoginName(     userParent.getLoginName());
-      iad.setAimUserRole(          userParent.getRoleInTrial());
-      iad.setAimUserNumberInRole(  userParent.getNumberWithinRoleOfClinicalTrial());
+		esd.setEntitySubclass(es);
       
-      iad.setManufacturerName(     equipmentParent.getManufacturerName());
-      iad.setManufacturerModelName(equipmentParent.getManufacturerModelName());
-      iad.setDeviceSerialNumber(   equipmentParent.getDeviceSerialNumber());
-      iad.setSoftwareVersion(      equipmentParent.getSoftwareVersion());
-      
-      iad.setPersonName(           personParent.getName());
-      iad.setPersonId(             personParent.getId());
-      iad.setPersonBirthDate(      personParent.getBirthDate());
-      iad.setPersonSex(            personParent.getSex());
-      iad.setPersonEthnicGroup(    personParent.getEthnicGroup());
-       
-		iad.setAssociatedRegionSetId(assocRegionSetId);
-      iad.setNMarkupEntity(        ia.getMarkupList().size());
-      
-      
-      
-		
-      // Finally write the metadata XML document.
+		// Finally write the metadata XML document.
 		Document metaDoc = null;
 		try
 		{
-			metaDoc = iad.createXmlAsRootElement();
+			metaDoc = esd.createXmlAsRootElement();
 		}
 		catch (IOException | XMLException ex)
 		{
@@ -137,21 +110,21 @@ public class AimEntitySubclassDataUploader extends DataUploader
 	@Override
    public String getRootElement()
    {
-      return "AimImageAnnotation";
+      return "AimEntitySubclass";
    }
    
    
    @Override
    public String getRootComplexType()
    {
-      return "icr:aimImageAnnotationData";
+      return "icr:aimEntitySubclassData";
    }
    
 
    @Override
    protected void createPrimaryResource()
    {
-      // There is no primary resource associated with an AIM ImageAnnotation
+      // There is no primary resource associated with an AIM EntitySubclassData
       // entity. The AimImageAnnotationCollectionDataUploader does the upload
       // of the AIM instance XML file. 
    }
@@ -160,7 +133,7 @@ public class AimEntitySubclassDataUploader extends DataUploader
    @Override
    protected void createAuxiliaryResources()
    {
-      // There are no auxiliary resources associated with an AIM ImageAnnotation.
+      // There are no auxiliary resources associated with an AIM EntitySubclass.
       // The AimImageAnnotationCollectionDataUploader kicks off a separate upload
       // of an RT-STRUCT file, which, in turn archives the ROI objects. Hence,
       // nothing needs to be done here.
@@ -178,11 +151,9 @@ public class AimEntitySubclassDataUploader extends DataUploader
    }
 	
 	
-	void setEntitySubtype(AimEntitySubclass es)
+	void setEntitySubclass(AimEntitySubclass es)
 	{
 		this.es = es;
-	}
-	
-	
+	}	
 }
 

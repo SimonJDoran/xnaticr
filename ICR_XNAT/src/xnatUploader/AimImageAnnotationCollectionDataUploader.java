@@ -77,6 +77,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
@@ -103,8 +104,8 @@ public class AimImageAnnotationCollectionDataUploader extends DataUploader
    private Map<String, String>       filenameSopMap;
 	private Map<String, String>       sopFilenameMap;
 	private Map<String, String>       filenameScanMap;
-   private Map<String, String>       sopSeriesMap;
    private Map<String, DicomObject>  sopDoMap;
+	private Map<String, String>       markupRegionMap;
 	private String                    assocRegionSetId;
 	private RtStruct                  iacRts;
 	
@@ -116,6 +117,7 @@ public class AimImageAnnotationCollectionDataUploader extends DataUploader
       studyUidSet       = new LinkedHashSet<>();
       seriesUidSet      = new LinkedHashSet<>();
       sopInstanceUidSet = new LinkedHashSet<>();
+		markupRegionMap   = new LinkedHashMap<>();
    }
 
   /**
@@ -385,7 +387,15 @@ public class AimImageAnnotationCollectionDataUploader extends DataUploader
          rtsu.setAccessionId(assocRegionSetId);
          rtsu.setSubjectId(XNATSubjectID);
          rtsu.setExperimentId(XNATExperimentID);
-			iacRts = (new RtStructBuilder()).buildNewInstance(iac, sopDoMap);
+			iacRts = (new RtStructBuilder()).buildNewInstance(iac, sopDoMap, markupRegionMap);
+			
+			// Create a the list of region ids needed by the RtStructDataUploader from
+			// the map just generated.
+			List<String> idList = new ArrayList<>(); 
+			for (Map.Entry<String, String> entry : markupRegionMap.entrySet())
+				idList.add(entry.getValue());
+			rtsu.setAssignedRegionIdList(idList);
+			
 			rtsu.setRtStruct(iacRts);
          rtsu.setProvenance(createProvenance(iacRts));
          rtsu.setSopFilenameMap(sopFilenameMap);
@@ -443,6 +453,7 @@ public class AimImageAnnotationCollectionDataUploader extends DataUploader
 			{
 				iau.setAccessionId(ia.getUid());
 				iau.setImageAnnotation(ia);
+				iau.setMarkupRegionMap(markupRegionMap);
 				iau.setUserParent(iac.getUser());
             iau.setEquipmentParent(iac.getEquipment());
             iau.setPersonParent(iac.getPerson());

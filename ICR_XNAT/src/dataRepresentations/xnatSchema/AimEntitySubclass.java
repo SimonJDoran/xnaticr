@@ -48,6 +48,18 @@ import java.util.List;
 
 public class AimEntitySubclass extends XnatSchemaElement
 {
+	public static final String MARKUP  = "Markup Entity";
+	public static final String SEG     = "Segmentation Entity";
+	public static final String CALC    = "Calculation Entity";
+	public static final String CONTEXT = "Task Context Entity";
+	public static final String INF     = "Inference Entity";
+	public static final String ROLE    = "Annotation Role Entity";
+	public static final String OBS     = "Imaging Observation Entity";
+	public static final String PHYS    = "Imaging Physical Entity";
+			  
+	// Note: It is not expected that all (or indeed the majority) of these
+	//       variables will have values for any given EntitySubclass.
+	public String       subclassType;
 	public String       comment;
 	public String       description;
 	public String       typeCode;
@@ -60,7 +72,11 @@ public class AimEntitySubclass extends XnatSchemaElement
 	public String       questionTypeCodeSystemVersion;
 	public String       questionIndex;
 	public String       templateUid;
-	public String       subtypeName;
+	public String       shapeIdentifier;
+	public String       lineColour;
+	public String       lineOpacity;
+	public String       lineStyle;
+	public String       lineThickness;
 	public String       isPresent;
 	public String       annotatorConfidence;
    public String       associatedRegionId;

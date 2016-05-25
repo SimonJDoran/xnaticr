@@ -312,7 +312,8 @@ public class RtStructBuilder
 	 * @throws DataFormatException 
 	 */
    public RtStruct buildNewInstance(ImageAnnotationCollection iac,
-                                    Map<String, DicomObject>  sopDoMap)
+                                    Map<String, DicomObject>  sopDoMap,
+												Map<String, String>       markupRegionMap)
 			          throws DataFormatException
    {
 		RtStruct rts = new RtStruct();
@@ -327,7 +328,7 @@ public class RtStructBuilder
 		// with the same method, because the information needed to build
 		// the StructureSetRois is actually parsed at the time of extracting
 		// the contour lists.
-		iacBuildRoiContourListAndStructureSet(iac, sopDoMap, rts);
+		iacBuildRoiContourListAndStructureSet(iac, sopDoMap, markupRegionMap, rts);
 		
 		return rts;
    }
@@ -446,6 +447,7 @@ public class RtStructBuilder
 	private StructureSet iacBuildRoiContourListAndStructureSet
 		                      (ImageAnnotationCollection iac,
 			                    Map<String, DicomObject>  sopDoMap,
+									  Map<String, String>       markupRegionMap,
 									  RtStruct                  rts)
 			  throws DataFormatException
 	{
@@ -486,6 +488,7 @@ public class RtStructBuilder
 					RoiContour      rc  = new RoiContour(); 
                rc.referencedRoiNumber = roiCount;
 					ssr.roiNumber = roiCount;
+					markupRegionMap.put(shape.getUid(), "ROI_" + UidGenerator.createShortUnique());
 					roiCount++;
 					
                //rc.roiDisplayColour = shape.getLineColour(); Not yet implemented in EtherJ

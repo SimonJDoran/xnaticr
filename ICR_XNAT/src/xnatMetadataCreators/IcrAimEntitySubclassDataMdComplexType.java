@@ -62,7 +62,8 @@ public class IcrAimEntitySubclassDataMdComplexType extends IcrGenericImageAssess
 	{
 		super.insertXml();
 		
-		dppXML.delayedWriteEntityWithText("comment",                       es.comment)
+		dppXML.delayedWriteEntityWithText("subclassType",                  es.subclassType)
+				.delayedWriteEntityWithText("comment",                       es.comment)
 				.delayedWriteEntityWithText("description",                   es.description)
 				.delayedWriteEntityWithText("typeCode",                      es.typeCode)
 				.delayedWriteEntityWithText("typeCodeSystemUid",             es.typeCodeSystemUid)
@@ -74,7 +75,11 @@ public class IcrAimEntitySubclassDataMdComplexType extends IcrGenericImageAssess
 				.delayedWriteEntityWithText("questionTypeCodeSystemVersion", es.questionTypeCodeSystemVersion)
 				.delayedWriteEntityWithText("questionIndex",                 es.questionIndex)
 				.delayedWriteEntityWithText("templateUid",                   es.templateUid)
-				.delayedWriteEntityWithText("subtypeName",                   es.subtypeName)
+				.delayedWriteEntityWithText("shapeIdentifier",               es.shapeIdentifier)
+				.delayedWriteEntityWithText("lineColour",                    es.lineColour)
+				.delayedWriteEntityWithText("lineOpacity",                   es.lineOpacity)
+				.delayedWriteEntityWithText("lineStyle",                     es.lineStyle)
+				.delayedWriteEntityWithText("lineThickness",                 es.lineThickness)
 				.delayedWriteEntityWithText("isPresent",                     es.isPresent)
 				.delayedWriteEntityWithText("annotatorConfidence",           es.annotatorConfidence)
             .delayedWriteEntityWithText("associatedRegionId",            es.associatedRegionId)
