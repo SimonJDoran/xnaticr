@@ -161,6 +161,11 @@ public class AimImageAnnotationCollectionDataUploader extends DataUploader
 			errorOccurred = true;
 			return false;
 		}
+		
+		// Initially, the label of the XNAT assessor will be set to the same
+		// as the image annotation collection label, but this can be changed on
+		// the upload screen.
+		labelPrefix = getDefaultIfEmpty(""); //No etherj method iac.getDescription()
       
       try
       {
@@ -419,6 +424,10 @@ public class AimImageAnnotationCollectionDataUploader extends DataUploader
          rtsu.setSopFilenameMap(sopFilenameMap);
          rtsu.setFilenameSopMap(filenameSopMap);
          rtsu.setFilenameScanMap(filenameScanMap);
+			
+			// Set a dummy file. This is used only in order to generate an element
+			// in the provenance section of the metadata XML document.
+			rtsu.setUploadFile(new File(assocRegionSetId + ".dcm"));
          
          rtsu.uploadMetadataAndCascade();
 			
@@ -522,7 +531,7 @@ public class AimImageAnnotationCollectionDataUploader extends DataUploader
       iacd.setPersonSex(            iac.getPerson().getSex());
       iacd.setPersonEthnicGroup(    iac.getPerson().getEthnicGroup());
       
-		iacd.setnumImageAnnotations(iac.getAnnotationCount());
+		iacd.setNImageAnnotation(iac.getAnnotationCount());
 		iacd.setAssociatedRegionSetId(assocRegionSetId);
 		
 		List<String> iaIdl = new ArrayList<>();
@@ -702,8 +711,10 @@ public class AimImageAnnotationCollectionDataUploader extends DataUploader
 		}
 		catch (DataFormatException exDF)
 		{
-			errorOccurred = true;
-			errorMessage  = "Incorrect DICOM date format in structure set file";
+			// For the moment just swallow this exception, because it should not be
+			// a deal-breaker.
+			//errorOccurred = true;
+			//errorMessage  = "Incorrect DICOM date format in structure set file";
 		}
 		
 		String                 cvs1     = null;

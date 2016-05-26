@@ -68,7 +68,7 @@ public class IcrAimImageAnnotationCollectionDataMdComplexType extends IcrGeneric
 	protected String       personBirthDate;
 	protected String       personSex;
 	protected String       personEthnicGroup;
-	protected Integer      numImageAnnotations;
+	protected Integer      nImageAnnotation;
 	protected String       associatedRegionSetId;
 	protected List<String> imageAnnotationIdList;
 	
@@ -97,7 +97,7 @@ public class IcrAimImageAnnotationCollectionDataMdComplexType extends IcrGeneric
 				   .delayedWriteAttribute("sex",                   personSex)
 				   .delayedWriteAttribute("ethnicGroup",           personEthnicGroup)
 				.delayedEndEntity()
-				.delayedWriteEntityWithText("numImageAnnotations", numImageAnnotations)
+				.delayedWriteEntityWithText("nImageAnnotation",    nImageAnnotation)
 				.delayedWriteEntityWithText("associatedRoiSetId",  associatedRegionSetId);
 		      
 		dppXML.delayedWriteEntity("imageAnnotationIds");
@@ -200,9 +200,9 @@ public class IcrAimImageAnnotationCollectionDataMdComplexType extends IcrGeneric
 	}
 	
 	
-	public void setnumImageAnnotations(Integer n)
+	public void setNImageAnnotation(Integer n)
 	{
-		numImageAnnotations = n;
+		nImageAnnotation = n;
 	}
 	
 	
