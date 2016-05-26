@@ -263,6 +263,7 @@ class RtStructDataUploader extends DataUploader
          RegionFromRtStructDataUploader ru = new RegionFromRtStructDataUploader(xnprf);
          try
          {
+            ru.setVersion(version);
             ru.setAccessionId(assignedRegionIdList.get(i));
 				ru.setParentAccessionId(XNATAccessionID);
             ru.setRoiPositionInSSRoiSequence(i);
@@ -347,7 +348,7 @@ class RtStructDataUploader extends DataUploader
 		regionSet.setOriginalUid(rts.sopCommon.sopInstanceUid);
 		regionSet.setOriginalDataType("RT-STRUCT");
 		regionSet.setOriginalLabel(rts.structureSet.structureSetLabel);
-		regionSet.setOriginatingApplicationName(rts.generalEquipment.modelName);
+		regionSet.setOriginatingApplicationName(rts.generalEquipment.softwareVersions.get(0));
 		
 		final String sep = " | ";
 		StringBuilder sb = new StringBuilder();

@@ -407,6 +407,7 @@ public class AimImageAnnotationCollectionDataUploader extends DataUploader
       RtStructDataUploader rtsu = new RtStructDataUploader(xnprf);
       try
       {
+         rtsu.setVersion(version);
          assocRegionSetId = rtsu.getRootElement() + "_" + iac.getUid(); 
          rtsu.setAccessionId(assocRegionSetId);
          rtsu.setSubjectId(XNATSubjectID);

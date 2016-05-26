@@ -649,7 +649,8 @@ public class RtStructBuilder
             ReferencedFrameOfReference rfor = new ReferencedFrameOfReference();
             rforUidList.add(rforUid);
             rforList.add(rfor);
-            rfor.frameOfReferenceUid = rforUid;     
+            rfor.frameOfReferenceUid = rforUid;
+            rfor.frameOfReferenceRelationshipList = new ArrayList<>();
          }
 		}
 		
@@ -722,7 +723,7 @@ public class RtStructBuilder
 											{
 												ContourImage ci             = new ContourImage();
 												ci.referencedSopInstanceUid = im.getInstanceUid();
-												ci.referencedSopClassUid    = im.getSopClassUid();
+												ci.referencedSopClassUid    = rtrs.referencedSopInstanceUid; //im.getSopClassUid() not currently working.
 												rtrse.contourImageList.add(ci);
 											}
 										}
