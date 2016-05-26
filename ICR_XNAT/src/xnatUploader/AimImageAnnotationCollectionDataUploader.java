@@ -71,6 +71,8 @@ import generalUtilities.DicomXnatDateTime;
 import generalUtilities.UidGenerator;
 import generalUtilities.Vector2D;
 import java.io.*;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -82,9 +84,12 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
 import java.util.Vector;
 import org.dcm4che2.data.BasicDicomObject;
 import org.dcm4che2.data.DicomObject;
+import org.dcm4che2.data.Tag;
 import org.dcm4che2.io.DicomInputStream;
 import org.dcm4che2.io.DicomOutputStream;
 import org.w3c.dom.Document;
@@ -652,9 +657,12 @@ public class AimImageAnnotationCollectionDataUploader extends DataUploader
 		
 		
 		// Provenance step 1 : source DICOM data	
-		StringBuilder sb    = new StringBuilder();
-		for (String s : iacRts.generalEquipment.softwareVersions)
+		StringBuilder sb = new StringBuilder();
+		// This RT-STRUCT file was created by RtStructBuilder and the last two entries
+		// describe the conversion process via AIM and this program, so remove these.
+		for (int i=0 ; i< iacRts.generalEquipment.softwareVersions.size()-2; i++)
 		{
+			String s = iacRts.generalEquipment.softwareVersions.get(i);
 			if (!(sb.toString().contains(s))) 
 			{
 			   if (sb.length() != 0) sb.append(SEP);
@@ -662,7 +670,6 @@ public class AimImageAnnotationCollectionDataUploader extends DataUploader
 			}
 		}
       String versions = getDefaultIfEmpty(sb.toString());
-		
 		ProcessStep.Program    prog1    = new Program(getDefaultIfEmpty(iacRts.generalEquipment.manufacturer) + " software",
 		                                              versions,
 		                                              DEFAULT);
@@ -673,10 +680,25 @@ public class AimImageAnnotationCollectionDataUploader extends DataUploader
 		
 		// Note that ts1 has to be initialised with a valid default. 
 		String ts1 ="1900-01-01T00:00:00";
+		TreeSet<String> originalDateTimeSet = new TreeSet();
 		try
 		{
-			ts1 = DicomXnatDateTime.convertDicomToXnatDateTime(iacRts.structureSet.structureSetDate,
-				                                                iacRts.structureSet.structureSetTime);
+			// The DICOM data in an image annotation collection can potentially be
+			// sourced from a variety of acquisition platforms, at different times.
+			// This is problematic, because we can't include multiple dates in the ts1
+			// item, as it is present as a fixed format in the XNAT schema, not an
+			// arbitrary string. Deal with this by picking the earliest and adding a
+			// note in the spare space in the platform entry.
+			for (String sop : sopDoMap.keySet())
+			{
+				DicomObject bdo = sopDoMap.get(sop);
+				originalDateTimeSet.add(
+					DicomXnatDateTime.convertDicomToXnatDateTime(bdo.getString(Tag.StudyDate),
+					   	                                       bdo.getString(Tag.StudyTime)));
+			}
+			ts1 = originalDateTimeSet.first();
+			if (originalDateTimeSet.size() > 1)
+				plat1.version = "Note multiple acquisition and study timestamps";
 		}
 		catch (DataFormatException exDF)
 		{
@@ -707,8 +729,8 @@ public class AimImageAnnotationCollectionDataUploader extends DataUploader
 		// Provenance step 2: record the step that created the ImageAnnotationCollection.
 		ProcessStep.Program    prog2    = new Program("AIM data source", iac.getAimVersion(), DEFAULT);
  
-		String                 iacMn    = "Equipment manufacturer from AIM document: " + iac.getEquipment().getManufacturerName();	
-		String                 iacSv    = "Equipment software version from AIM document: " + iac.getEquipment().getSoftwareVersion();	
+		String                 iacMn    = DEFAULT;	
+		String                 iacSv    = DEFAULT;	
 		ProcessStep.Platform   plat2    = new Platform(iacMn, iacSv);
    
       String                 ts2      = iac.getDateTime();
@@ -718,12 +740,12 @@ public class AimImageAnnotationCollectionDataUploader extends DataUploader
 		sb = new StringBuilder();
 		sb.append("Name:").append(iac.getUser().getName()).append(SEP)
 		  .append("Login name:").append(iac.getUser().getLoginName()).append(SEP)
-		  .append("Role in trial").append(iac.getUser().getRoleInTrial()).append(SEP)
-		  .append("Number within role").append(iac.getUser().getNumberWithinRoleOfClinicalTrial());
+		  .append("Role in trial:").append(getDefaultIfEmpty(iac.getUser().getRoleInTrial())).append(SEP)
+		  .append("Number within role:").append(iac.getUser().getNumberWithinRoleOfClinicalTrial());
 		
 		String                 user2    = sb.toString();
       
-      String                 mach2    = "Equipment model from AIM document: " + iac.getEquipment().getManufacturerName();;
+      String                 mach2    = DEFAULT;
     
 		List<ProcessStep.Library> ll2   = new ArrayList<ProcessStep.Library>();
 		
@@ -747,7 +769,17 @@ public class AimImageAnnotationCollectionDataUploader extends DataUploader
 		
 		String                 user3    = System.getProperty("user.name");
       
-      String                 mach3    = DEFAULT;
+      String                 mach3;
+		try
+		{
+			 InetAddress addr;
+			 addr = InetAddress.getLocalHost();
+			 mach3 = addr.getHostName();
+		}
+		catch (UnknownHostException ex)
+		{
+			 mach3 = DEFAULT;
+		}
     
 		List<ProcessStep.Library> ll3   = new ArrayList<ProcessStep.Library>();
 		

@@ -459,6 +459,7 @@ public class RtStructBuilder
 		Set<String> manufacturerSet = new LinkedHashSet<>();
 		Set<String> modelNameSet    = new LinkedHashSet<>();
 		Set<String> stationNameSet  = new LinkedHashSet<>();
+		Set<String> softwareSet     = new LinkedHashSet<>();
 		for (String sop : sopDoMap.keySet())
 		{
 			DicomObject      bdo   = sopDoMap.get(sop);
@@ -468,6 +469,7 @@ public class RtStructBuilder
 			manufacturerSet.add(geSop.manufacturer);
 			modelNameSet.add(geSop.modelName);
 			stationNameSet.add(geSop.stationName);
+			for (String s : geSop.softwareVersions) softwareSet.add(s);
 		}
 				
       ge.institutionAddress = createStringFromSet(instAddressSet);
@@ -476,7 +478,8 @@ public class RtStructBuilder
       ge.modelName          = createStringFromSet(modelNameSet);
 		ge.stationName        = createStringFromSet(stationNameSet);
       List<String> sv = new ArrayList<>();
-      sv.add(iac.getAimVersion());
+		for (String s : softwareSet) sv.add("Source data acquired by " + s);
+      sv.add("Annotated via " + iac.getAimVersion());
       sv.add("Converted to RT-STRUCT by " + callerName + " version " + callerVersion);
       ge.softwareVersions   = sv;
 		

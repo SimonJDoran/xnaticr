@@ -45,6 +45,7 @@
 package dataRepresentations.dicom;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import org.dcm4che2.data.DicomObject;
 import org.dcm4che2.data.Tag;
@@ -71,7 +72,7 @@ public class GeneralEquipment extends DicomEntity
 		
 		String s[]         = readStrings(geDo, Tag.SoftwareVersions,      3);
 		softwareVersions   = new ArrayList<>();
-		if (s != null) for (int i=0; i<s.length; i++) softwareVersions.add(s[i]);
+		if (s != null) softwareVersions.addAll(Arrays.asList(s));
 	}
 	
 	@Override
