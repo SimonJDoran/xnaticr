@@ -116,6 +116,7 @@ class RegionFromRtStructDataUploader extends DataUploader implements ContourRend
 	private Map<String, String>  sopFilenameMap;
    private Map<String, String>  filenameSopMap;
 	private Map<String, String>  filenameScanMap;
+   private String               originalDataType;
    
 	
 	RegionFromRtStructDataUploader(XNATProfile xnprf)
@@ -138,7 +139,7 @@ class RegionFromRtStructDataUploader extends DataUploader implements ContourRend
 		region.setAssociatedRegionSetIdList(arsl);
 		
 		region.setOriginalUid(rtsParent.sopCommon.sopInstanceUid);
-		region.setOriginalDataType("RT-STRUCT");
+		region.setOriginalDataType(originalDataType);
 		
       Set<Integer> singleRoi = new HashSet<>();
       singleRoi.add(rtsParent.structureSet.structureSetRoiList.get(roiPos).roiNumber);
@@ -192,7 +193,7 @@ class RegionFromRtStructDataUploader extends DataUploader implements ContourRend
 			}
 		}
       
-      region.setRoiVolume(Float.toString(ssr.roiVolume));
+      region.setRoiVolume((ssr.roiVolume == null) ? null : Float.toString(ssr.roiVolume));
       region.setRoiGenerationAlgorithm(ssr.roiGenerationAlgorithm);
       region.setRoiGenerationDescription(ssr.roiGenerationDescription);
       
@@ -571,4 +572,11 @@ class RegionFromRtStructDataUploader extends DataUploader implements ContourRend
    {
       uploadFileParent = f;
    }
+   
+   
+   void setOriginalDataType(String s)
+   {
+      originalDataType = s;
+   }
+
 }

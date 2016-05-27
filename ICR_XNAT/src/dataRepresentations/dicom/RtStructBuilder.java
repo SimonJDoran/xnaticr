@@ -67,6 +67,7 @@ import java.net.UnknownHostException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
@@ -554,6 +555,10 @@ public class RtStructBuilder
 					roiCount++;
 					
                //rc.roiDisplayColour = shape.getLineColour(); Not yet implemented in EtherJ
+               rc.roiDisplayColour = new ArrayList<>();
+               Integer[] a = {255, 0, 0};
+               Collections.addAll(rc.roiDisplayColour, a);
+               
                List<TwoDimensionCoordinate> d2l = shape.getCoordinateList();
                
                DicomObject        bdo = null;
@@ -606,6 +611,8 @@ public class RtStructBuilder
 						lf.add(d3[2]);
 						cd.add(lf);
 					}
+               cl.add(c);
+               rc.contourList = cl;
 	
 					ssr.roiName                = shape.getLabel();
 					ssr.roiDescription         = shape.getDescription();

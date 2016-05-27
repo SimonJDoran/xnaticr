@@ -408,6 +408,7 @@ public class AimImageAnnotationCollectionDataUploader extends DataUploader
       try
       {
          rtsu.setVersion(version);
+         rtsu.setOriginalDataType("AIM instance");
          assocRegionSetId = rtsu.getRootElement() + "_" + iac.getUid(); 
          rtsu.setAccessionId(assocRegionSetId);
          rtsu.setSubjectId(XNATSubjectID);

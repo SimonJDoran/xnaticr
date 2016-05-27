@@ -105,6 +105,7 @@ class RtStructDataUploader extends DataUploader
 	private Map<String, String> filenameScanMap;
 	private List<String>        assignedRegionIdList = new ArrayList<>();
 	private int                 nRois;
+   private String              originalDataType;
 	
 	RtStructDataUploader(XNATProfile xnprf)
 	{
@@ -155,7 +156,7 @@ class RtStructDataUploader extends DataUploader
 			return false;
 		}
 		
-		
+		originalDataType = "RT-STRUCT";
 		date  = rts.structureSet.structureSetDate;
 		time  = rts.structureSet.structureSetTime;
 		
@@ -264,6 +265,8 @@ class RtStructDataUploader extends DataUploader
          try
          {
             ru.setVersion(version);
+            ru.setOriginalDataType(originalDataType);
+            ru.setUploadFile(uploadFile);
             ru.setAccessionId(assignedRegionIdList.get(i));
 				ru.setParentAccessionId(XNATAccessionID);
             ru.setRoiPositionInSSRoiSequence(i);
@@ -346,7 +349,7 @@ class RtStructDataUploader extends DataUploader
 		IcrRegionSetDataMdComplexType regionSet  = new IcrRegionSetDataMdComplexType();
 		
 		regionSet.setOriginalUid(rts.sopCommon.sopInstanceUid);
-		regionSet.setOriginalDataType("RT-STRUCT");
+		regionSet.setOriginalDataType(originalDataType);
 		regionSet.setOriginalLabel(rts.structureSet.structureSetLabel);
 		regionSet.setOriginatingApplicationName(rts.generalEquipment.softwareVersions.get(0));
 		
@@ -694,5 +697,10 @@ class RtStructDataUploader extends DataUploader
 	{
 		primaryResource = xnr;
 	}
-	
+   
+   
+   void setOriginalDataType(String s)
+   {
+      originalDataType = s;
+   }	
 }
