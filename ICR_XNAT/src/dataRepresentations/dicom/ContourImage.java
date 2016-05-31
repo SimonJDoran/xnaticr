@@ -98,7 +98,11 @@ public class ContourImage extends DicomEntity
 			writeInts(cdDo, Tag.ReferencedFrameNumber, VR.IS, "1C", a);
 		}
 		
-		if (referencedSegmentNumber != DUMMY_INT)
-			writeInt(cdDo, Tag.ReferencedSegmentNumber, VR.IS, "1C", referencedSegmentNumber);
-	}
+		if (referencedSegmentNumber != null)
+      {
+         if (referencedSegmentNumber != DUMMY_INT)
+            writeInt(cdDo, Tag.ReferencedSegmentNumber, VR.IS, "1C", referencedSegmentNumber);
+	
+      }
+   }
 }

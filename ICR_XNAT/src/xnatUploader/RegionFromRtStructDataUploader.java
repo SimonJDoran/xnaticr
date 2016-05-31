@@ -346,7 +346,7 @@ class RegionFromRtStructDataUploader extends DataUploader implements ContourRend
 		// version above is no use.
 		region.setVersion("1");
 		
-      label = labelParent + " " + getRootElement() + "_" + ssr.roiNumber;
+      label = labelParent + "_" + getRootElement() + "_" + ssr.roiNumber;
 		region.setLabel(label);
       
 		region.setDate(date);
@@ -568,7 +568,7 @@ class RegionFromRtStructDataUploader extends DataUploader implements ContourRend
    }
    
    
-   void setParentUploadFile(File f)
+   void setUploadFileParent(File f)
    {
       uploadFileParent = f;
    }
@@ -578,5 +578,10 @@ class RegionFromRtStructDataUploader extends DataUploader implements ContourRend
    {
       originalDataType = s;
    }
-
+   
+   
+   void setLabelParent(String s)
+   {
+      labelParent = s;
+   }
 }

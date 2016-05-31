@@ -165,6 +165,7 @@ public class AimImageAnnotationCollectionDataUploader extends DataUploader
 		// Initially, the label of the XNAT assessor will be set to the same
 		// as the image annotation collection label, but this can be changed on
 		// the upload screen.
+      //TODO
 		labelPrefix = getDefaultIfEmpty(""); //No etherj method iac.getDescription()
       
       try
@@ -254,6 +255,10 @@ public class AimImageAnnotationCollectionDataUploader extends DataUploader
 			errorOccurred = true;
 			return false;
 		}
+      
+      String labelSuffix = "_" + uploadFile.getName() + "_" + UidGenerator.createShortUnique();
+		label = isBatchMode ? labelPrefix + labelSuffix : labelPrefix;
+      
       return true;
    }
   
@@ -409,6 +414,7 @@ public class AimImageAnnotationCollectionDataUploader extends DataUploader
       {
          rtsu.setVersion(version);
          rtsu.setOriginalDataType("AIM instance");
+         rtsu.setLabelParent(label);
          assocRegionSetId = rtsu.getRootElement() + "_" + iac.getUid(); 
          rtsu.setAccessionId(assocRegionSetId);
          rtsu.setSubjectId(XNATSubjectID);
@@ -454,7 +460,8 @@ public class AimImageAnnotationCollectionDataUploader extends DataUploader
 			rtsu.setPrimaryResource(xr);
          rtsu.uploadResourcesToRepository();
       }
-      catch (XNATException | DataFormatException | IOException ex)
+      catch (Exception ex)
+   //   catch (XNATException | DataFormatException | IOException ex)
 		{
 			errorOccurred = true;
 			errorMessage  = ex.getMessage();
@@ -482,11 +489,22 @@ public class AimImageAnnotationCollectionDataUploader extends DataUploader
 			{
 				iau.setAccessionId(ia.getUid());
 				iau.setImageAnnotation(ia);
-				iau.setMarkupRegionMap(markupRegionMap);
+				iau.setMapsParent(filenameSopMap, sopFilenameMap, filenameScanMap,
+                              sopDoMap, markupRegionMap);
 				iau.setUserParent(iac.getUser());
             iau.setEquipmentParent(iac.getEquipment());
             iau.setPersonParent(iac.getPerson());
             iau.setAssociatedRegionSetId(assocRegionSetId);
+            
+            // Now set variables that can be passed directly on to go into the
+            // metadata XML created for the upload.
+            iau.XNATProject      = XNATProject;
+            iau.XNATExperimentID = XNATExperimentID;
+            iau.XNATSubjectID    = XNATSubjectID;
+            iau.date             = date;
+            iau.time             = time;
+            iau.setDicomSubjNameParent(iacRts.patient.patientName);
+            iau.setProvenanceParent(prov);
             
             iau.uploadMetadataAndCascade();
 				
@@ -542,14 +560,14 @@ public class AimImageAnnotationCollectionDataUploader extends DataUploader
 		iacd.setImageAnnotationIdList(iaIdl);
 		
      
-      // IcrRegionSetDataMdComplexType inherits from IcrGenericImageAssessmentDataMdComplexType.
+      // IcrAimImageAnnotationCollectionDataMdComplexType inherits from IcrGenericImageAssessmentDataMdComplexType.
 		
 		// iacd.setType();  Not currently sure what should go here.
 		iacd.setXnatSubjId(XNATSubjectID);
 	   iacd.setDicomSubjName(iacRts.patient.patientName);
 		
 		// Although the full version of Scan, including scan and slice image
-		// statistics is implemented, this is overkill for the RT-STRUCT and
+		// statistics is implemented, this is overkill here and
 		// the only part of scan for which information is available is the
 		// list of scan IDs. 
 		Set<String> idSet = new HashSet<>();
@@ -619,8 +637,6 @@ public class AimImageAnnotationCollectionDataUploader extends DataUploader
 		// really clear what this field signifies.
 		iacd.setVersion("1");
 		
-      String labelSuffix = "_" + uploadFile.getName() + "_" + UidGenerator.createShortUnique();
-		label = isBatchMode ? labelPrefix + labelSuffix : labelPrefix;
 		iacd.setLabel(label);
       
 		iacd.setDate(date);

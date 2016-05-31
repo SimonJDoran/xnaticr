@@ -86,7 +86,7 @@ public class StructureSetRoi extends DicomEntity
 		writeString(ssrDo,   Tag.ReferencedFrameOfReferenceUID, VR.UI, 1, referencedFrameOfReferenceUid);
       writeString(ssrDo,   Tag.ROIName,   VR.LO, 2, roiName);
 		writeString(ssrDo,   Tag.ROIDescription, VR.ST, 3, roiDescription);
-		writeFloat(ssrDo,    Tag.ROIName,   VR.DS, 3, roiVolume);
+		if (roiVolume != null) writeFloat(ssrDo,    Tag.ROIName,   VR.DS, 3, roiVolume);
 		writeString(ssrDo,   Tag.ROIGenerationAlgorithm, VR.CS, 3, roiGenerationAlgorithm);
 		writeString(ssrDo,   Tag.ROIGenerationDescription, VR.LO, 3, roiGenerationDescription);
 		writeSequence(ssrDo, Tag.DerivationCodeSequence, VR.SQ, 1, derivationCodeList);

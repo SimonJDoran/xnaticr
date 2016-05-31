@@ -757,13 +757,17 @@ public class RtStructBuilder
 		// It is anticipated that future versions of the software will look at the
 		// AIM Inference Entities to populate this field. However, to date, we have
 		// no examples that contain any of these types of data.
-		RtRoiObservation rro     = new RtRoiObservation();
-		rro.observationNumber    = 0;
-		rro.referencedRoiNumber  = 0;
-		rro.roiObservationLabel  = "Dummy entry";
-		rro.rtRoiInterpretedType = ""; // Mandatory category 2, can be empty
-		rro.roiInterpreter       = ""; // Mandatory category 2, can be empty
-		
+		RtRoiObservation rro             = new RtRoiObservation();
+		rro.observationNumber            = 0;
+		rro.referencedRoiNumber          = 0;
+		rro.roiObservationLabel          = "Dummy entry";
+      rro.roiObservationDescription    = "";
+		rro.rtRoiInterpretedType         = ""; // Mandatory category 2, can be empty
+		rro.roiInterpreter               = ""; // Mandatory category 2, can be empty
+		rro.rtRelatedRoiList             = new ArrayList<>();
+      rro.relatedRtRoiObservationsList = new ArrayList<>();
+      rro.roiPhysicalPropertyList      = new ArrayList<>();
+      
 		rrol.add(rro);
 		return rrol;
 	}

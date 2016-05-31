@@ -51,9 +51,20 @@
 
 package xnatUploader;
 
+import dataRepresentations.xnatSchema.AbstractResource;
+import dataRepresentations.xnatSchema.AdditionalField;
 import dataRepresentations.xnatSchema.AimEntitySubclass;
+import dataRepresentations.xnatSchema.InvestigatorList;
+import dataRepresentations.xnatSchema.MetaField;
+import dataRepresentations.xnatSchema.Provenance;
+import dataRepresentations.xnatSchema.Scan;
+import etherj.aim.DicomImageReference;
 import etherj.aim.Equipment;
+import etherj.aim.Image;
 import etherj.aim.ImageAnnotation;
+import etherj.aim.ImageReference;
+import etherj.aim.ImageSeries;
+import etherj.aim.ImageStudy;
 import etherj.aim.Markup;
 import etherj.aim.Person;
 import etherj.aim.TwoDimensionGeometricShape;
@@ -63,8 +74,11 @@ import exceptions.XMLException;
 import exceptions.XNATException;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import org.dcm4che2.data.DicomObject;
 import org.w3c.dom.Document;
 import xnatDAO.XNATProfile;
 import xnatMetadataCreators.IcrAimImageAnnotationDataMdComplexType;
@@ -72,12 +86,18 @@ import xnatMetadataCreators.IcrAimImageAnnotationDataMdComplexType;
 public class AimImageAnnotationDataUploader extends DataUploader
 {
 	private ImageAnnotation     ia;
-	private User                userParent;
-   private Equipment           equipmentParent;
-   private Person              personParent;
-	private String              assocRegionSetId;
-	private Map<String, String> markupRegionMap;
-	private List<String>        subclassIdList;
+	private User                     userParent;
+   private Equipment                equipmentParent;
+   private Person                   personParent;
+	private String                   assocRegionSetId;
+	private Map<String, String>      markupRegionMap;
+	private List<String>             subclassIdList;
+   private String                   dicomSubjNameParent;
+   private Map<String, String>      filenameSopMap;
+   private Map<String, String>      filenameScanMap;
+   private Map<String, String>      sopFilenameMap;
+   private Map<String, DicomObject> sopDoMap;
+   private Set<String>              sopSet;
 	
 	
 	public AimImageAnnotationDataUploader(XNATProfile xnprf)
@@ -91,6 +111,8 @@ public class AimImageAnnotationDataUploader extends DataUploader
    {
       errorOccurred = false;
       
+      label = ia.getName();
+      
       // Upload the metadata for the icr:aimImageAnnotation.
 		// The "cascade" part of the process involves separately uploading metadata
 		// for each of the individual bits (icr:aimEntitySubclass) of the image
@@ -101,6 +123,24 @@ public class AimImageAnnotationDataUploader extends DataUploader
 			subclassIdList.add(AimEntitySubclass.MARKUP + "_" + mku.getUid());
 		
 		XNATAccessionID = ia.getUid();
+      
+      // From the parent ImageAnnotationCollection, we have lists of all the
+      // DICOM images contributing to the collection. We now need to break this
+      // down into just the set of all images relevant to this annotation.
+      sopSet = new HashSet<>();
+      for (ImageReference ir : ia.getReferenceList())
+         {
+            if (ir instanceof DicomImageReference)
+            {
+               DicomImageReference dir    = (DicomImageReference) ir;
+               ImageStudy          study  = dir.getStudy();
+               ImageSeries         series = study.getSeries();
+               for (Image im : series.getImageList())
+                   sopSet.add(im.getInstanceUid());
+            }
+         }
+      
+      
       super.uploadMetadataAndCascade();
       
 		// This is the "cascade" bit. Now set an upload in train for a separate
@@ -171,8 +211,93 @@ public class AimImageAnnotationDataUploader extends DataUploader
 		iad.setAimEntitySubclassIdList(subclassIdList);
       iad.setNMarkupEntity(          ia.getMarkupList().size());
       
-		// More here when the Etherj package is ready.
+		// More here when the Etherj package is ready. For the moment, set all
+      // the other N...Entity variables to zero.
+      iad.setNTaskContextEntity(0);
+      iad.setNInferenceEntity(0);
+      iad.setNAnnotationRoleEntity(0);
+      iad.setNCalculationEntity(0);
+      iad.setNImagingObservationEntity(0);
+      iad.setNImagingPhysicalEntity(0);
 		
+      // IcrAimImageAnnotationDataMdComplexType inherits from IcrGenericImageAssessmentDataMdComplexType.
+		
+		// iacd.setType();  Not currently sure what should go here.
+		iad.setXnatSubjId(XNATSubjectID);
+	   iad.setDicomSubjName(dicomSubjNameParent);
+		
+		// Although the full version of Scan, including scan and slice image
+		// statistics is implemented, this is overkill here and
+		// the only part of scan for which information is available is the
+		// list of scan IDs. 
+		Set<String> idSet = new HashSet<>();
+		for (String sop : sopSet) idSet.add(filenameScanMap.get(sopFilenameMap.get(sop)));
+		
+		List<Scan> lsc = new ArrayList<>();
+		for (String id : idSet)
+		{
+			Scan sc = new Scan();
+			sc.id = id;
+			lsc.add(sc);
+		}
+		iad.setScanList(lsc);
+      
+      
+      // IcrGenericImageAssessmentDataMdComplexType inherits from XnatImageAssessorDataMdComplexType.
+		
+		// The "in" section of the assessor XML contains all files that were already
+		// in the database at the time of upload, whilst the "out" section lists
+		// the files that added at the time of upload, including those generated
+		// automatically. In this, the only generated files are the snapshots, but
+		// this information is already included in the separately uploaded ROI
+		// metadata files and need not be duplicated here.
+		List<AbstractResource> inList = new ArrayList<>();
+		
+		for (String sop : sopSet)
+		{
+			AbstractResource ar  = new AbstractResource();
+			List<MetaField>  mfl = new ArrayList<>();
+			mfl.add(new MetaField("filename",       sopFilenameMap.get(sop)));
+			mfl.add(new MetaField("format",         "DICOM"));
+			mfl.add(new MetaField("SOPInstanceUID", sop));
+			ar.tagList = mfl;
+			inList.add(ar);
+		}
+				
+		iad.setInList(inList);
+      iad.setOutList(new ArrayList<>());
+      // There is no outList for icr:imageAnnotationData
+		
+		iad.setImageSessionId(XNATExperimentID);
+		
+		// For this object, there are no additional fields. This entry is
+		// empty, but still needs to be set.
+		iad.setParamList(new ArrayList<AdditionalField>());
+		
+		// XnatImageAssessorDataMdComplexType inherits from XnatDerivedDataMdComplexType.
+		iad.setProvenance(prov);
+				                                 
+		
+		// XnatDerivedDataMdComplexType inherits from XnatExperimentData.
+		
+      iad.setId(XNATAccessionID);
+      iad.setProject(XNATProject);
+      
+     
+		// Apparently the version XML element has to be an integer, so it is not
+		// really clear what this field signifies.
+		iad.setVersion("1");
+		
+		iad.setLabel(label);
+      
+		iad.setDate(date);
+      iad.setTime(time);
+      iad.setNote(note);
+		
+      // No correlates in the structure set read in for visit, visitId,
+      // original, protocol and investigator.
+		iad.setInvestigator(new InvestigatorList.Investigator());      
+
       // Finally write the metadata XML document.
 		Document metaDoc = null;
 		try
@@ -242,12 +367,6 @@ public class AimImageAnnotationDataUploader extends DataUploader
 	}
 	
 	
-	void setMarkupRegionMap(Map<String, String> map)
-	{
-		markupRegionMap = map;
-	}
-   
-   
    void setAssociatedRegionSetId(String s)
    {
       assocRegionSetId = s;
@@ -269,5 +388,31 @@ public class AimImageAnnotationDataUploader extends DataUploader
    void setPersonParent(Person p)
 	{
 		personParent = p;
-	}	
+	}
+   
+   
+   void setDicomSubjNameParent(String s)
+   {
+      dicomSubjNameParent = s;
+   }
+   
+   
+   void setMapsParent(Map<String, String>      fsop,
+                      Map<String, String>      sf,
+                      Map<String, String>      fscan,
+                      Map<String, DicomObject> sdo,
+                      Map<String, String>      mr)
+   {
+      filenameSopMap  = fsop;
+      filenameScanMap = fscan;
+      sopFilenameMap  = sf;
+      sopDoMap        = sdo;
+      markupRegionMap = mr;
+   }
+   
+   
+   void setProvenanceParent(Provenance p)
+   {
+      prov = p;
+   }
 }

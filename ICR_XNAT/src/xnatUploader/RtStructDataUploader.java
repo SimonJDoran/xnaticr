@@ -71,6 +71,8 @@ import java.io.BufferedInputStream;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -106,6 +108,7 @@ class RtStructDataUploader extends DataUploader
 	private List<String>        assignedRegionIdList = new ArrayList<>();
 	private int                 nRois;
    private String              originalDataType;
+   private String              labelParent;
 	
 	RtStructDataUploader(XNATProfile xnprf)
 	{
@@ -163,6 +166,7 @@ class RtStructDataUploader extends DataUploader
 		// Initially, the label of the XNAT assessor will be set to the same
 		// as the structure set label, but this can be changed on the upload screen.
 		labelPrefix = rts.structureSet.structureSetLabel;
+      
 		
 		// Generate a single Set of all studies referenced for later use
 		// and similarly for all series and SOPInstances referenced.
@@ -193,6 +197,9 @@ class RtStructDataUploader extends DataUploader
 		filenameScanMap  = xnd.getFilenameScanMap();
 		ambiguousSubjExp = xnd.getAmbiguousSubjectExperiement();
 		errorMessage     = xnd.getErrorMessage();
+      
+      date = rts.sopCommon.instanceCreationDate;
+      time = rts.sopCommon.instanceCreationTime;
 		
 		return isOk;
 	}
@@ -243,6 +250,10 @@ class RtStructDataUploader extends DataUploader
       
       if (XNATAccessionID == null)
          XNATAccessionID = getRootElement() + "_" + UidGenerator.createShortUnique();
+      
+      if (labelPrefix == null) labelPrefix = labelParent;
+      String labelSuffix = "_" + uploadFile.getName() + "_" + UidGenerator.createShortUnique();
+		label = isBatchMode ? labelPrefix + labelSuffix : labelPrefix;
 		
 		// Create separate accession IDs for all the individual ROI's.
 		nRois = rts.structureSet.structureSetRoiList.size();
@@ -274,7 +285,7 @@ class RtStructDataUploader extends DataUploader
             ru.setExperimentId(XNATExperimentID);
 				ru.setParentProvenance(prov);
 				ru.setParentRtStruct(rts);
-            ru.setParentUploadFile(uploadFile);
+            ru.setUploadFileParent(uploadFile);
             ru.setParentLabel(label);
             ru.setParentNRois(nRois);
             ru.setSopFilenameMap(sopFilenameMap);
@@ -444,8 +455,6 @@ class RtStructDataUploader extends DataUploader
 		// version above is no use.
 		regionSet.setVersion("1");
 		
-      String labelSuffix = "_" + uploadFile.getName() + "_" + UidGenerator.createShortUnique();
-		label = isBatchMode ? labelPrefix + labelSuffix : labelPrefix;
 		regionSet.setLabel(label);
       
 		regionSet.setDate(date);
@@ -557,7 +566,17 @@ class RtStructDataUploader extends DataUploader
 		
 		String                 user2    = System.getProperty("user.name");
       
-      String                 mach2    = DEFAULT;
+      String                 mach2;
+		try
+		{
+			 InetAddress addr;
+			 addr = InetAddress.getLocalHost();
+			 mach2 = addr.getHostName();
+		}
+		catch (UnknownHostException ex)
+		{
+			 mach2 = DEFAULT;
+		}
     
 		List<Library>          ll2      = new ArrayList<Library>();
 		
@@ -702,5 +721,11 @@ class RtStructDataUploader extends DataUploader
    void setOriginalDataType(String s)
    {
       originalDataType = s;
-   }	
+   }
+   
+   
+   void setLabelParent(String s)
+   {
+      labelParent = s;
+   }
 }

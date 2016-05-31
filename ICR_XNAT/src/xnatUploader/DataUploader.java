@@ -353,16 +353,16 @@ public abstract class DataUploader
 				{
 					String rootCmd = getUploadRootCommand(XNATAccessionID);
 					String cmd     = xr.getResourceCreationCommand(rootCmd);
-					InputStream is = xnprf.doRESTPut(cmd);
-					int         n  = is.available( );
-					byte[]      b  = new byte[n];
-					is.read(b, 0, n);
-					String XNATUploadMessage = new String(b);
-
-					if (xnrt.XNATRespondsWithError(XNATUploadMessage))
-						throw new XNATException(XNATException.RESOURCE_CREATE,
-														"XNAT generated the message:\n"
-														+ XNATUploadMessage);         
+//					InputStream is = xnprf.doRESTPut(cmd);
+//					int         n  = is.available( );
+//					byte[]      b  = new byte[n];
+//					is.read(b, 0, n);
+//					String XNATUploadMessage = new String(b);
+//
+//					if (xnrt.XNATRespondsWithError(XNATUploadMessage))
+//						throw new XNATException(XNATException.RESOURCE_CREATE,
+//														"XNAT generated the message:\n"
+//														+ XNATUploadMessage);         
 				}
 				catch (Exception ex)
 				{
@@ -394,14 +394,15 @@ public abstract class DataUploader
 		createXnatResources();
 
 
-		if (uploadFile != null)
+		if (primaryResource != null)
 		{
 			uploadXnatResource(primaryResource);
 			if (errorOccurred)
 				throw new XNATException(XNATException.FILE_UPLOAD, errorMessage);
 		}
 
-		for (XnatResource ar : auxiliaryResources) {
+		for (XnatResource ar : auxiliaryResources)
+      {
 			uploadXnatResource(ar);
 			if (errorOccurred)
 				throw new XNATException(XNATException.FILE_UPLOAD, errorMessage);

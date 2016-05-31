@@ -69,6 +69,7 @@ import java.util.Map;
 import java.util.Set;
 import org.dcm4che2.data.DicomObject;
 import org.dcm4che2.data.Tag;
+import org.dcm4che2.data.TransferSyntax;
 import org.dcm4che2.data.UID;
 import org.dcm4che2.data.VR;
 
@@ -121,6 +122,8 @@ public class RtStruct extends DicomEntity
 	@Override
 	public void writeToDicom(DicomObject rtsDo)
 	{
+      final String EXPLICIT_VR_LITTLE_ENDIAN = "1.2.840.10008.1.2.";
+      writeString(rtsDo, Tag.TransferSyntaxUID, VR.UI, 1, EXPLICIT_VR_LITTLE_ENDIAN);
 		sopCommon.writeToDicom(rtsDo);
 		patient.writeToDicom(rtsDo);
 		generalStudy.writeToDicom(rtsDo);

@@ -86,7 +86,7 @@ public class RtRoiObservation extends DicomEntity
 		rtRoiInterpretedType      = readString(rroDo, Tag.RTROIInterpretedType, 2);
 		roiInterpreter            = readString(rroDo, Tag.ROIInterpreter, 2);
 		materialId                = readString(rroDo, Tag.MaterialID, 3);
-		roiPhysicalPropertyList = readSequence(RoiPhysicalProperty.class,
+		roiPhysicalPropertyList   = readSequence(RoiPhysicalProperty.class,
 				                               rroDo, Tag.ROIPhysicalPropertiesSequence, 3);		
 	}
 	
