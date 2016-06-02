@@ -258,33 +258,33 @@ public abstract class DataUploader
                           + errorMessage);
       
       
-//      try
-//      {
-//         RESTCommand    = getMetadataUploadCommand();
-//         InputStream is = xnprf.doRESTPut(RESTCommand, metaDoc);
-//         int         n  = is.available();
-//         byte[]      b  = new byte[n];
-//         is.read(b, 0, n);
-//         String XNATUploadMessage = new String(b);
-//         
-//         if ((xnrt.XNATRespondsWithError(XNATUploadMessage)) ||
-//             (!XNATUploadMessage.equals(XNATAccessionID)))
-//         {
-//            errorOccurred = true;
-//            errorMessage  = XNATUploadMessage;
-//            throw new XNATException(XNATException.FILE_UPLOAD,
-//                          "XNAT generated the message:\n" + XNATUploadMessage);
-//         }
-//      }
-//      catch (Exception ex)
-//      {
-//         // Here we cater both for reporting the error by throwing an exception
-//         // and by setting the error variables. When performing the upload via
-//         // a SwingWorker, it is not easy to retrieve an Exception.
-//         errorOccurred = true;
-//         errorMessage = ex.getMessage();
-//         throw new XNATException(XNATException.FILE_UPLOAD, ex.getMessage());
-//      }             
+      try
+      {
+         RESTCommand    = getMetadataUploadCommand();
+         InputStream is = xnprf.doRESTPut(RESTCommand, metaDoc);
+         int         n  = is.available();
+         byte[]      b  = new byte[n];
+         is.read(b, 0, n);
+         String XNATUploadMessage = new String(b);
+         
+         if ((xnrt.XNATRespondsWithError(XNATUploadMessage)) ||
+             (!XNATUploadMessage.equals(XNATAccessionID)))
+         {
+            errorOccurred = true;
+            errorMessage  = XNATUploadMessage;
+            throw new XNATException(XNATException.FILE_UPLOAD,
+                          "XNAT generated the message:\n" + XNATUploadMessage);
+         }
+      }
+      catch (Exception ex)
+      {
+         // Here we cater both for reporting the error by throwing an exception
+         // and by setting the error variables. When performing the upload via
+         // a SwingWorker, it is not easy to retrieve an Exception.
+         errorOccurred = true;
+         errorMessage = ex.getMessage();
+         throw new XNATException(XNATException.FILE_UPLOAD, ex.getMessage());
+      }             
    }
    
    
@@ -296,21 +296,21 @@ public abstract class DataUploader
 			String rootCmd = getUploadRootCommand(XNATAccessionID);
 			String cmd     = xr.getResourceDataUploadCommand(rootCmd);
 			
-//         InputStream is = null;
-//			if (xr.getFile()     != null) is = xnprf.doRESTPut(cmd, xr.getFile());
-//			if (xr.getDocument() != null) is = xnprf.doRESTPut(cmd, xr.getDocument());
-//			if (xr.getStream()   != null) is = xnprf.doRESTPut(cmd, xr.getStream());
-//			
-//			assert (is != null);
-//         int         n  = is.available( );
-//         byte[]      b  = new byte[n];
-//         is.read(b, 0, n);
-//         String XNATUploadMessage = new String(b);
-//         
-//         if (xnrt.XNATRespondsWithError(XNATUploadMessage))
-//            throw new XNATException(XNATException.FILE_UPLOAD,
-//                                    "XNAT generated the message:\n"
-//                                    + XNATUploadMessage);         
+         InputStream is = null;
+			if (xr.getFile()     != null) is = xnprf.doRESTPut(cmd, xr.getFile());
+			if (xr.getDocument() != null) is = xnprf.doRESTPut(cmd, xr.getDocument());
+			if (xr.getStream()   != null) is = xnprf.doRESTPut(cmd, xr.getStream());
+			
+			assert (is != null);
+         int         n  = is.available( );
+         byte[]      b  = new byte[n];
+         is.read(b, 0, n);
+         String XNATUploadMessage = new String(b);
+         
+         if (xnrt.XNATRespondsWithError(XNATUploadMessage))
+            throw new XNATException(XNATException.FILE_UPLOAD,
+                                    "XNAT generated the message:\n"
+                                    + XNATUploadMessage);         
       }
       catch (Exception ex)
       {
@@ -353,16 +353,16 @@ public abstract class DataUploader
 				{
 					String rootCmd = getUploadRootCommand(XNATAccessionID);
 					String cmd     = xr.getResourceCreationCommand(rootCmd);
-//					InputStream is = xnprf.doRESTPut(cmd);
-//					int         n  = is.available( );
-//					byte[]      b  = new byte[n];
-//					is.read(b, 0, n);
-//					String XNATUploadMessage = new String(b);
-//
-//					if (xnrt.XNATRespondsWithError(XNATUploadMessage))
-//						throw new XNATException(XNATException.RESOURCE_CREATE,
-//														"XNAT generated the message:\n"
-//														+ XNATUploadMessage);         
+					InputStream is = xnprf.doRESTPut(cmd);
+					int         n  = is.available( );
+					byte[]      b  = new byte[n];
+					is.read(b, 0, n);
+					String XNATUploadMessage = new String(b);
+
+					if (xnrt.XNATRespondsWithError(XNATUploadMessage))
+						throw new XNATException(XNATException.RESOURCE_CREATE,
+														"XNAT generated the message:\n"
+														+ XNATUploadMessage);         
 				}
 				catch (Exception ex)
 				{

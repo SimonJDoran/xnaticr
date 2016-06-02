@@ -735,7 +735,7 @@ public class AimImageAnnotationCollectionDataUploader extends DataUploader
 			//errorMessage  = "Incorrect DICOM date format in structure set file";
 		}
 		
-		String                 cvs1     = null;
+		String                 cvs1     = DEFAULT;
 		String                 user1    = getDefaultIfEmpty(iacRts.rtRoiObservationList.get(0).roiInterpreter);	
 		String                 mach1    = getDefaultIfEmpty(iacRts.generalEquipment.stationName);
 		
@@ -764,7 +764,7 @@ public class AimImageAnnotationCollectionDataUploader extends DataUploader
    
       String                 ts2      = iac.getDateTime();
       
-      String                 cvs2     = null;
+      String                 cvs2     = DEFAULT;
 			
 		sb = new StringBuilder();
 		sb.append("Name:").append(iac.getUser().getName()).append(SEP)
@@ -794,7 +794,7 @@ public class AimImageAnnotationCollectionDataUploader extends DataUploader
    
       String                 ts3      = LocalDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME);
       
-      String                 cvs3     = null;
+      String                 cvs3     = DEFAULT;
 		
 		String                 user3    = System.getProperty("user.name");
       

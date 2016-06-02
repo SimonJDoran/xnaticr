@@ -152,7 +152,11 @@ public class AimImageAnnotationDataUploader extends DataUploader
 			es.subclassType          = es.MARKUP;
 			es.associatedRegionSetId = assocRegionSetId;
 			es.associatedRegionId    = markupRegionMap.get(mku.getUid());
-			
+			es.associatedAimEntitySubclassIdList
+                                  = new ArrayList<>();
+         for (String s : subclassIdList)
+            if (!s.contains(mku.getUid())) es.associatedAimEntitySubclassIdList.add(s);
+         
 			if (mku instanceof TwoDimensionGeometricShape)
 			{
 				TwoDimensionGeometricShape shape = (TwoDimensionGeometricShape) mku;

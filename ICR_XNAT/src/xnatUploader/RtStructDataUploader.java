@@ -534,7 +534,7 @@ class RtStructDataUploader extends DataUploader
 			errorMessage  = "Incorrect DICOM date format in structure set file";
 		}
 		
-		String                 cvs1     = null;		
+		String                 cvs1     = DEFAULT;		
 		String                 user1    = getDefaultIfEmpty(rts.rtRoiObservationList.get(0).roiInterpreter);
 		String                 mach1    = getDefaultIfEmpty(rts.generalEquipment.stationName);
 		
@@ -562,7 +562,7 @@ class RtStructDataUploader extends DataUploader
    
       String                 ts2      = LocalDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME);
       
-      String                 cvs2     = null;
+      String                 cvs2     = DEFAULT;
 		
 		String                 user2    = System.getProperty("user.name");
       
