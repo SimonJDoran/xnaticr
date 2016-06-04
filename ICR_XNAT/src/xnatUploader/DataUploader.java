@@ -354,9 +354,12 @@ public abstract class DataUploader
 				{
 					String rootCmd = getUploadRootCommand(XNATAccessionID);
 					String cmd     = xr.getResourceCreationCommand(rootCmd);
-					InputStream is = xnprf.doRESTPut(cmd);
-					int         n  = is.available( );
-					byte[]      b  = new byte[n];
+					InputStream is;
+               if      (xr.getDocument() != null) is = xnprf.doRESTPut(cmd, xr.getDocument());
+               else if (xr.getFile()     != null) is = xnprf.doRESTPut(cmd, xr.getFile());
+               else                               is = xnprf.doRESTPut(cmd, xr.getStream());
+               int    n = is.available();
+					byte[] b = new byte[n];
 					is.read(b, 0, n);
 					String XNATUploadMessage = new String(b);
 
