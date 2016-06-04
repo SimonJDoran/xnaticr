@@ -879,10 +879,10 @@ public class AimImageAnnotationCollectionDataUploader extends DataUploader
 	
 	
 	@Override
-	public void updateVariablesForEditableFields(MetadataPanel mdp)
+	public void updateVariablesForEditableFields(MetadataPanel mdp, Character key, Object source)
 	{
-		labelPrefix = mdp.getJTextFieldContents("Label");
-		note        = mdp.getJTextFieldContents("Note");
+		labelPrefix = mdp.getJTextFieldContents("Label", key, source);
+		note        = mdp.getJTextFieldContents("Note", key, source);
 	}
 	
 	

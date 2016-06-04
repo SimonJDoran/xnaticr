@@ -280,9 +280,11 @@ public class MetadataPanel extends JPanel
     * alias in the sense that the "full field descriptor" is the XML schema
     * name of the XNAT element, whereas this is the "user-friendly" form that
     * appears in the GUI.
+    * @param key the most recently typed Character
+    * @param source the Component in which a Character was most recently typed
     * @return a String containing the current contents of the field.
     */
-   public String getJTextFieldContents(String fieldAlias)
+   public String getJTextFieldContents(String fieldAlias, Character key, Object source)
    {
       Component comp = fieldMap.get(fieldAlias);
       
@@ -292,7 +294,8 @@ public class MetadataPanel extends JPanel
 
 
       JTextField textField = (JTextField) fieldMap.get(fieldAlias);
-      return textField.getText();
+      String previousContents = textField.getText();
+      return (comp.equals(source))? previousContents + key.toString() : previousContents;
    }
    
    
@@ -466,18 +469,18 @@ public class MetadataPanel extends JPanel
       
       // Add listeners for the editable fields. Allow the flexibility for each
       //concrete class to define its own fields to watch.
-      List<String> requiredData = du.getRequiredFields();
+      List<String> editableData = du.getEditableFields();
 
-      for (int i=0; i<requiredData.size(); i++)
+      for (int i=0; i<editableData.size(); i++)
       {
-         final String     alias = requiredData.get(i);
+         final String     alias = editableData.get(i);
          final JTextField tf    = (JTextField) getComponent(alias);
          tf.addActionListener(new ActionListener()
          {
             @Override
             public void actionPerformed(ActionEvent evt)
             {
-               du.updateVariablesForEditableFields(MetadataPanel.this);
+               du.updateVariablesForEditableFields(MetadataPanel.this, null, evt.getSource());
                MetadataPanel.this.putClientProperty("enableUpload", du.rightMetadataPresent());
                }
          });
@@ -502,8 +505,7 @@ public class MetadataPanel extends JPanel
             @Override
             public void keyTyped(KeyEvent evt)
             {
-               du.updateVariablesForEditableFields(MetadataPanel.this);
-					System.out.println(du.rightMetadataPresent());
+               du.updateVariablesForEditableFields(MetadataPanel.this, evt.getKeyChar(), evt.getSource());
                MetadataPanel.this.putClientProperty("enableUpload", du.rightMetadataPresent());
             }
          });

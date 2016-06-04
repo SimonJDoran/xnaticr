@@ -290,17 +290,27 @@ class RegionFromRtStructDataUploader extends DataUploader implements ContourRend
 			ar.tagList = mfl;
 			inList.add(ar);
 		}
-		
-		List<AbstractResource> outList = new ArrayList<>();
-		AbstractResource       ar      = new AbstractResource();
-		List<MetaField>        mfl     = new ArrayList<>();
-		mfl.add(new MetaField("filename", uploadFile.getName()));
+      AbstractResource ar  = new AbstractResource();
+      List<MetaField>  mfl = new ArrayList<>();
+      mfl.add(new MetaField("filename", uploadFileParent.getName()));
 		mfl.add(new MetaField("format",   "RT-STRUCT"));
 		ar.tagList = mfl;
-		outList.add(ar);
+      inList.add(ar);
 		
-		region.setInList(inList);
-		region.setOutList(outList);
+		List<AbstractResource> outList = new ArrayList<>();
+		
+      // TODO: Work out how to create the names of the list of snapshots
+      // for this region. We may need to reverse the order of uploading the
+      // items to the repository and uploading the metadata, but this is quite
+      // a large task.
+      AbstractResource aro = new AbstractResource();
+		outList.add(aro);
+		
+		// TODO: Figure out why the in and out elements give rise to an upload error.
+      region.setInList(new ArrayList<>());  // should be inList
+      region.setOutList(new ArrayList<>()); // should be outList
+		
+		
 		
 		region.setImageSessionId(XNATExperimentID);
 		
@@ -430,8 +440,8 @@ class RegionFromRtStructDataUploader extends DataUploader implements ContourRend
             StringBuilder description = new StringBuilder();
             description.append("ROI thumbnail rendered by ICR DataUploader ")
                        .append(version)
-                       .append("extracted from original RT-STRUCT file ")
-                       .append(uploadFile.getName());
+                       .append(" extracted from original RT-STRUCT file ")
+                       .append(uploadFileParent.getName());
             
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
             ImageIO.write(thumbnails.get(i), "png", baos);

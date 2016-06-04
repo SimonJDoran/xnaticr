@@ -77,9 +77,17 @@ public class IcrContourImageDataMdComplexType extends MdComplexType
 	public void insertXml()
 			 throws IOException, XMLException
 	{
+      //TODO We should possibly consider listing out all the frame numbers
+      // as separate items. For the moment, just string them all together.
+      String frameNumbers = null;
+      StringBuilder sb = new StringBuilder();
+      for (Integer fn : ci.referencedFrameNumberList)
+         sb.append(fn.toString()).append(" ");
+      if (sb.length() != 0) frameNumbers = sb.toString();
+      
 		dppXML.delayedWriteEntityWithText("referencedSOPInstanceUID", ci.referencedSopInstanceUid)
 			   .delayedWriteEntityWithText("referencedSOPClassUID",    ci.referencedSopClassUid)
-			   .delayedWriteEntityWithText("referencedFrameNumber",    ci.referencedFrameNumberList);
+			   .delayedWriteEntityWithText("referencedFrameNumber",    frameNumbers);
 	}
 	
 }

@@ -71,6 +71,7 @@ import xnatDAO.XNATProfile;
 import xnatRestToolkit.XNATNamespaceContext;
 import xnatRestToolkit.XNATRESTToolkit;
 import exceptions.XMLException;
+import java.awt.Component;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
@@ -686,9 +687,15 @@ public abstract class DataUploader
 	
 	/**
 	 * Change appropriate data variables to reflect any edits made in the UI.
+    * Note that this routine "catches" the event *before* the new character
+    * has been added to the JTextField and so when we update the corresponding
+    * String variables, we need to add the newly typed character explicitly.
 	 * @param mdsp MetadataPanel in the UI where the fields are edited
+    * @param key  the Character that has just been typed.
 	 */
-   protected void updateVariablesForEditableFields(MetadataPanel mdsp) {}
+   protected void updateVariablesForEditableFields(MetadataPanel mdsp,
+                                                   Character     key,
+                                                   Object        source) {}
 	
 	
 	/**

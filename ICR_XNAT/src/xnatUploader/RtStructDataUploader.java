@@ -277,7 +277,6 @@ class RtStructDataUploader extends DataUploader
          {
             ru.setVersion(version);
             ru.setOriginalDataType(originalDataType);
-            ru.setUploadFile(uploadFile);
             ru.setAccessionId(assignedRegionIdList.get(i));
 				ru.setParentAccessionId(XNATAccessionID);
             ru.setRoiPositionInSSRoiSequence(i);
@@ -362,12 +361,19 @@ class RtStructDataUploader extends DataUploader
 		regionSet.setOriginalUid(rts.sopCommon.sopInstanceUid);
 		regionSet.setOriginalDataType(originalDataType);
 		regionSet.setOriginalLabel(rts.structureSet.structureSetLabel);
-		regionSet.setOriginatingApplicationName(rts.generalEquipment.softwareVersions.get(0));
+		regionSet.setOriginatingApplicationName(rts.generalEquipment.manufacturer + " software");
 		
-		final String sep = " | ";
-		StringBuilder sb = new StringBuilder();
-		for (String s : rts.generalEquipment.softwareVersions) sb.append(s).append(sep);
-		regionSet.setOriginatingApplicationVersion(sb.toString());
+		final String SEP = " | ";
+      StringBuilder sb = new StringBuilder();
+		for (String s : rts.generalEquipment.softwareVersions)
+		{
+			if (!(sb.toString().contains(s))) 
+			{
+			   if (sb.length() != 0) sb.append(SEP);
+				if (s != null) sb.append(s);
+			}
+		}
+		regionSet.setOriginatingApplicationVersion(getDefaultIfEmpty(sb.toString()));
 		
 		regionSet.setNRegions(rts.structureSet.structureSetRoiList.size());
 		regionSet.setRegionIdList(assignedRegionIdList);
@@ -425,9 +431,10 @@ class RtStructDataUploader extends DataUploader
 		mfl.add(new MetaField("format",   "RT-STRUCT"));
 		ar.tagList = mfl;
 		outList.add(ar);
-		
-		regionSet.setInList(inList);
-		regionSet.setOutList(outList);
+	
+      // TODO: Figure out why the in and out elements give rise to an upload error.
+      regionSet.setInList(new ArrayList<>());  // should be inList
+      regionSet.setOutList(new ArrayList<>()); // should be outList
 		
 		regionSet.setImageSessionId(XNATExperimentID);
 		
@@ -598,10 +605,10 @@ class RtStructDataUploader extends DataUploader
    
    
    @Override
-	public void updateVariablesForEditableFields(MetadataPanel mdp)
+	public void updateVariablesForEditableFields(MetadataPanel mdp, Character key, Object source)
 	{
-		labelPrefix = mdp.getJTextFieldContents("Label");
-		note        = mdp.getJTextFieldContents("Note");
+		labelPrefix = mdp.getJTextFieldContents("Label", key, source);
+		note        = mdp.getJTextFieldContents("Note", key, source);
 	}
 	
 	

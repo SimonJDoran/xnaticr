@@ -541,7 +541,7 @@ public abstract class QCAssessmentDataUploader extends DataUploader
 	
 	
 	@Override
-	public void updateVariablesForEditableFields(MetadataPanel mdsp)
+	public void updateVariablesForEditableFields(MetadataPanel mdsp, Character key, Object source)
 	{
 	}
 	
