@@ -71,6 +71,7 @@ import javax.swing.SwingWorker;
 import javax.swing.UIManager;
 import org.apache.log4j.Logger;
 import configurationLists.DAOSearchableElementsList;
+import org.apache.commons.lang.WordUtils;
 import xnatDAO.XNATGUI;
 import xnatDAO.XNATProfile;
 
@@ -898,8 +899,9 @@ public final class XNATUploader extends XNATGUI
       
       if (uploader.errorOccurred())
       {
+         String err = WordUtils.wrap(uploader.getErrorMessage(), 60, "\n", true);
          JOptionPane.showMessageDialog(this, uploader.getUploadFile().getName() +
-                 "\n\n" + uploader.getErrorMessage(),
+                 "\n\n" + err,
                  "File-open error", JOptionPane.ERROR_MESSAGE);
          dataFilenameJLabel.setText(NONE_SELECTED);
          clearDisplay();
@@ -1020,9 +1022,10 @@ public final class XNATUploader extends XNATGUI
       downloadIcon.stop();
       if (uploader.errorOccurred())
       {
+         String err = WordUtils.wrap(uploader.getErrorMessage(), 60, "\n", true);
          JOptionPane.showMessageDialog(this, "Unable to upload selected data"
             + " file to XNAT. \n\n"
-            + uploader.getErrorMessage(), "Data upload error", JOptionPane.ERROR_MESSAGE);
+            + err, "Data upload error", JOptionPane.ERROR_MESSAGE);
          
          logJTextArea.append("FAILED to upload "
             + uploader.getUploadFile().getPath() + "\n" + uploader.getErrorMessage() + "\n\n");

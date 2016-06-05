@@ -94,7 +94,7 @@ import org.dcm4che2.io.DicomInputStream;
 import org.dcm4che2.io.DicomOutputStream;
 import org.w3c.dom.Document;
 import xnatDAO.XNATProfile;
-import xnatMetadataCreators.IcrAimImageAnnotationCollectionDataMdComplexType;
+import xnatMetadataCreators.IcrAimImageAnnCollDataMdComplexType;
 import xnatRestToolkit.XNATRESTToolkit;
 import xnatRestToolkit.XnatResource;
 import static xnatUploader.ContourRendererHelper.logger;
@@ -470,7 +470,7 @@ public class AimImageAnnotationCollectionDataUploader extends DataUploader
 
 		
       // -----------------------------------------------------------------
-      // Step 2: Upload the icr:aimImageAnnotationCollectionData metadata.
+      // Step 2: Upload the icr:aimImageAnnCollData metadata.
       // -----------------------------------------------------------------		
 		XNATAccessionID = iac.getUid();
       super.uploadMetadataAndCascade();
@@ -530,8 +530,8 @@ public class AimImageAnnotationCollectionDataUploader extends DataUploader
 		// and calling its createXmlAsRootElement() method. The complexity
 		// in this method comes from the number of pieces of data that must
 		// be transferred from the RT-STRUCT to the metadata creator.
-		IcrAimImageAnnotationCollectionDataMdComplexType
-				    iacd = new IcrAimImageAnnotationCollectionDataMdComplexType();
+		IcrAimImageAnnCollDataMdComplexType
+				    iacd = new IcrAimImageAnnCollDataMdComplexType();
 		
 		iacd.setVersion(iac.getAimVersion());
       
@@ -560,7 +560,7 @@ public class AimImageAnnotationCollectionDataUploader extends DataUploader
 		iacd.setImageAnnotationIdList(iaIdl);
 		
      
-      // IcrAimImageAnnotationCollectionDataMdComplexType inherits from IcrGenericImageAssessmentDataMdComplexType.
+      // IcrAimImageAnnCollDataMdComplexType inherits from IcrGenericImageAssessmentDataMdComplexType.
 		
 		// iacd.setType();  Not currently sure what should go here.
 		iacd.setXnatSubjId(XNATSubjectID);
@@ -864,7 +864,7 @@ public class AimImageAnnotationCollectionDataUploader extends DataUploader
    @Override
    public String getRootComplexType()
    {
-      return "icr:aimImageAnnotationCollectionData";
+      return "icr:aimImageAnnCollData";
    }
 	
 	

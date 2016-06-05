@@ -342,7 +342,8 @@ public abstract class DataUploader
 		
 		Set<String> names = new HashSet<>();
 
-		// Create a resource for each unique label in the set of files to be
+		// Create a resource (which manifests itself as a directory on the
+      // server) for each unique label in the set of files to be
 		// uploaded.
 		for (XnatResource xr: xrList)
 		{
@@ -354,10 +355,7 @@ public abstract class DataUploader
 				{
 					String rootCmd = getUploadRootCommand(XNATAccessionID);
 					String cmd     = xr.getResourceCreationCommand(rootCmd);
-					InputStream is;
-               if      (xr.getDocument() != null) is = xnprf.doRESTPut(cmd, xr.getDocument());
-               else if (xr.getFile()     != null) is = xnprf.doRESTPut(cmd, xr.getFile());
-               else                               is = xnprf.doRESTPut(cmd, xr.getStream());
+               InputStream is = xnprf.doRESTPut(cmd);
                int    n = is.available();
 					byte[] b = new byte[n];
 					is.read(b, 0, n);

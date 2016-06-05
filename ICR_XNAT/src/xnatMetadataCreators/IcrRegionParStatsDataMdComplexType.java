@@ -35,10 +35,10 @@
 
 /********************************************************************
 * @author Simon J Doran
-* Java class: IcrRegionParameterStatisticsDataMdComplexType.java
+* Java class: IcrRegionParStatsDataMdComplexType.java
 * First created on Jan 21, 2016 at 23:45:00 PM
 * 
-* Creation of metadata XML for icr:regionParameterStatisticsData
+* Creation of metadata XML for icr:regionParStatsData
 * 
 * Eventually, the plan for this whole package is to replace the
 * explicit writing of the XML files with a higher level interface,
@@ -55,7 +55,7 @@ import exceptions.XMLException;
 import java.io.IOException;
 import xmlUtilities.DelayedPrettyPrinterXmlWriter;
 
-public class IcrRegionParameterStatisticsDataMdComplexType extends MdComplexType
+public class IcrRegionParStatsDataMdComplexType extends MdComplexType
 {
 	protected String           Id;
 	protected String           label;

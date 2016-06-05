@@ -188,7 +188,7 @@ class RtStructDataUploader extends DataUploader
 		
 		XnatDependencyChecker xnd = new XnatDependencyChecker(xnprf, XNATProject,
 		                                                      studyUidSet, seriesUidSet, sopInstanceUidSet);
-		boolean  isOk    = xnd.areDependenciesInDatabase();
+		errorOccurred    = !xnd.areDependenciesInDatabase();
 		XNATSubjectID    = xnd.getSubjectId();
 		XNATExperimentID = xnd.getExperimentId();
 		XNATScanIdSet    = xnd.getScanIdSet();
@@ -201,7 +201,7 @@ class RtStructDataUploader extends DataUploader
       date = rts.sopCommon.instanceCreationDate;
       time = rts.sopCommon.instanceCreationTime;
 		
-		return isOk;
+		return !errorOccurred;
 	}
 	
 	
@@ -314,7 +314,7 @@ class RtStructDataUploader extends DataUploader
 	@Override
 	public void createPrimaryResource()
 	{
-		if (primaryResource != null)
+		if (primaryResource == null)
 		{
 			StringBuilder description = new StringBuilder();
 			description.append("DICOM RT-STRUCT file created by node ")

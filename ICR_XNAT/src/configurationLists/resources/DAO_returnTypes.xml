@@ -55,7 +55,7 @@
    </DAO_datatype>
 	
 	<DAO_datatype alias="Image annotations">
-      <DAO_subtype alias="AIM image annotation collection">icr:aimImageAnnotationCollectionData</DAO_subtype>
+      <DAO_subtype alias="AIM image annotation collection">icr:aimImageAnnCollData</DAO_subtype>
       <DAO_subtype alias="AIM image annotation">icr:aimImageAnnotationData</DAO_subtype>
    </DAO_datatype>
 

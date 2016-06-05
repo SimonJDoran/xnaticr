@@ -325,27 +325,27 @@
       <searchableXNATElement alias="Associated project">icr:regionData/project</searchableXNATElement>
    </XNATSearchRootElement>
 	
-	<XNATSearchRootElement element="icr:aimImageAnnotationCollectionData">
-      <searchableXNATElement alias="Patient name">icr:aimImageAnnotationCollectionData/dicomSubjName</searchableXNATElement>
-      <searchableXNATElement alias="Number of annotations">icr:aimImageAnnotationCollectionData/nImageAnnotation</searchableXNATElement>
-		<searchableXNATElement alias="Label">icr:aimImageAnnotationCollectionData/label</searchableXNATElement>
-      <searchableXNATElement alias="Note">icr:aimImageAnnotationCollectionData/note</searchableXNATElement>
-		<searchableXNATElement alias="AIM user name">icr:aimImageAnnotationCollectionData/aimUser/name</searchableXNATElement>
-		<searchableXNATElement alias="AIM user login name">icr:aimImageAnnotationCollectionData/aimUser/loginName</searchableXNATElement>
-		<searchableXNATElement alias="AIM user role">icr:aimImageAnnotationCollectionData/aimUser/roleInClinicalTrial</searchableXNATElement>
-		<searchableXNATElement alias="AIM user number within role">icr:aimImageAnnotationCollectionData/aimUser/numberWithinRoleOfClinicalTrial</searchableXNATElement>
-		<searchableXNATElement alias="Manufacturer">icr:aimImageAnnotationCollectionData/equipment/manufacturerName</searchableXNATElement>
-		<searchableXNATElement alias="Manufacturer model">icr:aimImageAnnotationCollectionData/equipment/manufacturerModelName</searchableXNATElement>
-		<searchableXNATElement alias="Device serial number">icr:aimImageAnnotationCollectionData/equipment/deviceSerialNumber</searchableXNATElement>
-		<searchableXNATElement alias="Device software version">icr:aimImageAnnotationCollectionData/equipment/softwareVersion</searchableXNATElement>
-		<searchableXNATElement alias="AIM person name">icr:aimImageAnnotationCollectionData/person/name</searchableXNATElement>
-		<searchableXNATElement alias="AIM person id">icr:aimImageAnnotationCollectionData/person/id</searchableXNATElement>
-		<searchableXNATElement alias="AIM person DOB">icr:aimImageAnnotationCollectionData/person/birthDate</searchableXNATElement>
-		<searchableXNATElement alias="AIM person sex">icr:aimImageAnnotationCollectionData/person/sex</searchableXNATElement>
-		<searchableXNATElement alias="AIM person ethnic group">icr:aimImageAnnotationCollectionData/person/ethnicGroup</searchableXNATElement>
-		<searchableXNATElement alias="XNAT subject ID">icr:aimImageAnnotationCollectionData/xnatSubjId</searchableXNATElement>
-      <searchableXNATElement alias="XNAT assessment ID">icr:aimImageAnnotationCollectionData/ID</searchableXNATElement>
-      <searchableXNATElement alias="Associated project">icr:aimImageAnnotationCollectionData/project</searchableXNATElement>
+	<XNATSearchRootElement element="icr:aimImageAnnCollData">
+      <searchableXNATElement alias="Patient name">icr:aimImageAnnCollData/dicomSubjName</searchableXNATElement>
+      <searchableXNATElement alias="Number of annotations">icr:aimImageAnnCollData/nImageAnnotation</searchableXNATElement>
+		<searchableXNATElement alias="Label">icr:aimImageAnnCollData/label</searchableXNATElement>
+      <searchableXNATElement alias="Note">icr:aimImageAnnCollData/note</searchableXNATElement>
+		<searchableXNATElement alias="AIM user name">icr:aimImageAnnCollData/aimUser/name</searchableXNATElement>
+		<searchableXNATElement alias="AIM user login name">icr:aimImageAnnCollData/aimUser/loginName</searchableXNATElement>
+		<searchableXNATElement alias="AIM user role">icr:aimImageAnnCollData/aimUser/roleInClinicalTrial</searchableXNATElement>
+		<searchableXNATElement alias="AIM user number within role">icr:aimImageAnnCollData/aimUser/numberWithinRoleOfClinicalTrial</searchableXNATElement>
+		<searchableXNATElement alias="Manufacturer">icr:aimImageAnnCollData/equipment/manufacturerName</searchableXNATElement>
+		<searchableXNATElement alias="Manufacturer model">icr:aimImageAnnCollData/equipment/manufacturerModelName</searchableXNATElement>
+		<searchableXNATElement alias="Device serial number">icr:aimImageAnnCollData/equipment/deviceSerialNumber</searchableXNATElement>
+		<searchableXNATElement alias="Device software version">icr:aimImageAnnCollData/equipment/softwareVersion</searchableXNATElement>
+		<searchableXNATElement alias="AIM person name">icr:aimImageAnnCollData/person/name</searchableXNATElement>
+		<searchableXNATElement alias="AIM person id">icr:aimImageAnnCollData/person/id</searchableXNATElement>
+		<searchableXNATElement alias="AIM person DOB">icr:aimImageAnnCollData/person/birthDate</searchableXNATElement>
+		<searchableXNATElement alias="AIM person sex">icr:aimImageAnnCollData/person/sex</searchableXNATElement>
+		<searchableXNATElement alias="AIM person ethnic group">icr:aimImageAnnCollData/person/ethnicGroup</searchableXNATElement>
+		<searchableXNATElement alias="XNAT subject ID">icr:aimImageAnnCollData/xnatSubjId</searchableXNATElement>
+      <searchableXNATElement alias="XNAT assessment ID">icr:aimImageAnnCollData/ID</searchableXNATElement>
+      <searchableXNATElement alias="Associated project">icr:aimImageAnnCollData/project</searchableXNATElement>
 	</XNATSearchRootElement>
 	
 	<XNATSearchRootElement element="icr:aimImageAnnotationData">
@@ -367,7 +367,7 @@
 		<searchableXNATElement alias="AIM user number within role">icr:aimImageAnnotationData/aimUser/numberWithinRoleOfClinicalTrial</searchableXNATElement>
 		<searchableXNATElement alias="XNAT subject ID">icr:aimImageAnnotationData/xnatSubjId</searchableXNATElement>
       <searchableXNATElement alias="XNAT assessment ID">icr:aimImageAnnotationData/ID</searchableXNATElement>
-      <searchableXNATElement alias="Associated project">icr:aimImageAnnotationCollectionData/project</searchableXNATElement>
+      <searchableXNATElement alias="Associated project">icr:aimImageAnnCollData/project</searchableXNATElement>
 	</XNATSearchRootElement>
 
 </XNATSearchRootElements>
