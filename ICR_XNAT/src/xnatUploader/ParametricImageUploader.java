@@ -78,7 +78,7 @@ public class ParametricImageUploader extends DataUploader
 
 
    @Override
-   public void populateFields(MetadataPanel mdsp)
+   public void populateFields(MetadataPanel mdsp, boolean clearFields)
    {
       mdsp.populateJTextField("Associated XNAT image session ID",
                               XNATExperimentID);

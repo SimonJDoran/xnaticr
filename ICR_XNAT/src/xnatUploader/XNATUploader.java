@@ -90,6 +90,9 @@ public final class XNATUploader extends XNATGUI
    private NextMatchingFileWorker nmfWorker;
    private UploadToXNATWorker     uploadWorker;
    private PrepareUploadWorker    puWorker;
+   private String                 subtype;
+   private String                 subtypeAlias;
+   private Vector<String>         subtypes;
    
    // String constants to ensure consistency if wording changes need to occur.
    private static final String    NONE_SELECTED = "<None selected>";
@@ -914,7 +917,7 @@ public final class XNATUploader extends XNATGUI
       {
          dataFilenameJLabel.setText(
                  getAbbreviatedString(uploader.getUploadFile().getName(), 50));
-         uploader.populateFields(metadataJPanel);
+         uploader.populateFields(metadataJPanel, false);
          enableUpload(uploader.rightMetadataPresent());
       }
       
@@ -996,9 +999,12 @@ public final class XNATUploader extends XNATGUI
          logger.debug("FAILED to upload "
             + uploader.getUploadFile().getPath() + "\n" + ex.getMessage() + "\n");
 
-         clearDisplay();
          downloadIcon.stop();
          uploadJButton.setText(UPLOAD);
+         
+         // Clear and reset the uploader, by re-executing the initial code.
+         uploader.populateFields(metadataJPanel, true);
+         //useSubtype(subtype, subtypes, subtypeAlias);
          return;
       }
    }
@@ -1040,7 +1046,7 @@ public final class XNATUploader extends XNATGUI
          logger.debug("Upload successful for " + uploader.getUploadFile().getPath() + "\n\n");
       }
       
-      clearDisplay();
+      useSubtype(subtype, subtypes, subtypeAlias);
       uploadJButton.setText(UPLOAD);
       chooseFileJButton.setEnabled(true);
    }
@@ -1151,6 +1157,12 @@ public final class XNATUploader extends XNATGUI
    @Override
    public void useSubtype(String subtype, Vector<String> subtypes, String subtypeAlias)
    {
+      // Save the values of the arguments so that we can re-use them when we
+      // want to reset the panel after an upload.
+      this.subtype      = subtype;
+      this.subtypes     = subtypes;
+      this.subtypeAlias = subtypeAlias;
+      
       // Change the bottom half of the display to reflect the different fields
       // that can be set with the new subtype.
       metadataJPanel.replaceContentPanel(subtype);

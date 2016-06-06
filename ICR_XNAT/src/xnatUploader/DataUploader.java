@@ -514,23 +514,38 @@ public abstract class DataUploader
 
    /**
     * Once the file has been parsed, the values that are extracted are filled
-    * in on the screen. Again, this is over-ridden by each subclass to allow
-    * for the fact that different fields will be filled in for each data type.
+    * in on the screen.
+    * @param mdp the MetadataPanel currently being displayed in the uploader
+    * @param clearFields if false, fill the panel with new data; if true,
+    * then clear all the values.
     */
-   public void populateFields(MetadataPanel mdp)
+   public void populateFields(MetadataPanel mdp, boolean clearFields)
    {
       ArrayList<String> subjLabels = new ArrayList<>();
-      for (String key : ambiguousSubjExp.keySet())
-      {
-         subjLabels.add(ambiguousSubjExp.get(key).subjectLabel);
-      }   
-      mdp.populateJComboBox("XNAT Subject", subjLabels);
-      AmbiguousSubjectAndExperiment ase = ambiguousSubjExp.get(XNATSubjectID);
-      String            subjLabel = ase.subjectLabel;
-      ArrayList<String> expLabels = ase.experimentLabels;
-      ArrayList<String> expIDs    = ase.experimentIDs;
-      int               ind       = expIDs.indexOf(XNATExperimentID);
+      ArrayList<String> expLabels  = new ArrayList<>();
+      String            subjLabel;
+      int               ind;
       
+      if (clearFields)
+      {
+         subjLabels.add("No subject");
+         expLabels.add("No experiment");
+         subjLabel = subjLabels.get(0);
+         ind = 0;
+      }
+      else
+      {
+         for (String key : ambiguousSubjExp.keySet())
+         {
+            subjLabels.add(ambiguousSubjExp.get(key).subjectLabel);
+         }           
+         AmbiguousSubjectAndExperiment ase = ambiguousSubjExp.get(XNATSubjectID);
+         subjLabel = ase.subjectLabel;
+         expLabels = ase.experimentLabels;
+         ArrayList<String> expIDs = ase.experimentIDs;
+         ind = expIDs.indexOf(XNATExperimentID);       
+      }
+      mdp.populateJComboBox("XNAT Subject", subjLabels);
       mdp.populateJComboBox("XNAT Session Label", expLabels);
       
       JComboBox jcbSubj = (JComboBox) mdp.getComponent("XNAT Subject");
@@ -555,8 +570,7 @@ public abstract class DataUploader
 		Vector<String> elementAliases = sel.getSearchableXNATAliases().get(getRootComplexType());
 		Vector<String> elements       = sel.getSearchableXNATElements().get(getRootComplexType());
 		
-		
-		
+				
 		Document metaDoc = createMetadataXml();
 		
 		for (int i=0; i<elements.size(); i++)
@@ -585,7 +599,14 @@ public abstract class DataUploader
 				boolean editable = false;
 				if (getEditableFields().contains(elementAliases.get(i))) editable = true;
 				
-				if (result != null) mdp.populateJTextField(elementAliases.get(i), result, editable);
+				if (clearFields)
+            {
+               mdp.populateJTextField(elementAliases.get(i), "", editable); 
+            }
+            else
+            {
+               if (result != null) mdp.populateJTextField(elementAliases.get(i), result, editable);
+            }
 			}
 			catch (XMLException exXML)
 			{
