@@ -203,7 +203,7 @@ public class AimImageAnnotationCollectionDataUploader extends DataUploader
 
 		XnatDependencyChecker xnd = new XnatDependencyChecker(xnprf, XNATProject,
 		                                                      studyUidSet, seriesUidSet, sopInstanceUidSet);
-		boolean  isOk    = xnd.areDependenciesInDatabase();
+		errorOccurred    = !xnd.areDependenciesInDatabase();
 		XNATSubjectID    = xnd.getSubjectId();
 		XNATExperimentID = xnd.getExperimentId();
 		XNATScanIdSet    = xnd.getScanIdSet();
@@ -213,7 +213,7 @@ public class AimImageAnnotationCollectionDataUploader extends DataUploader
 		ambiguousSubjExp = xnd.getAmbiguousSubjectExperiement();
 		errorMessage     = xnd.getErrorMessage();
 		
-		if (!isOk) return false;
+		if (errorOccurred) return false;
       
       // In order to convert the ROI part of the AIM file to an RT-STRUCT file,
       // we need to create a number of DICOM structures. Much of the information
@@ -612,8 +612,13 @@ public class AimImageAnnotationCollectionDataUploader extends DataUploader
 		ar.tagList = mfl;
 		outList.add(ar);
 		
-		iacd.setInList(inList);
-		iacd.setOutList(outList);
+		//iacd.setInList(inList);
+		//iacd.setOutList(outList);
+      // TODO: Figure out why the in and out elements give rise to an upload error.
+      iacd.setInList(new ArrayList<>());  // should be inList
+      iacd.setOutList(new ArrayList<>()); // should be outList
+		
+		
 		
 		iacd.setImageSessionId(XNATExperimentID);
 		

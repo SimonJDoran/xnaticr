@@ -268,7 +268,8 @@ public class AimImageAnnotationDataUploader extends DataUploader
 			inList.add(ar);
 		}
 				
-		iad.setInList(inList);
+		// TODO: Figure out why the in and out elements give rise to an upload error.
+      iad.setInList(new ArrayList<>());  // should be inListiad.setInList(inList);
       iad.setOutList(new ArrayList<>());
       // There is no outList for icr:imageAnnotationData
 		
