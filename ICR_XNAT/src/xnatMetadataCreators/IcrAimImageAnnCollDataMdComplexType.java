@@ -76,7 +76,9 @@ public class IcrAimImageAnnCollDataMdComplexType extends IcrGenericImageAssessme
 	public void insertXml() throws IOException, XMLException
 	{
 		super.insertXml();
-		
+	
+      //Temporary kludge
+      softwareVersion = "1";
 		dppXML.delayedWriteEntityWithText("aimVersion",          aimVersion)
 				.delayedWriteEntity("aimUser")
 				   .delayedWriteAttribute("name",                  aimUserName)
@@ -84,7 +86,7 @@ public class IcrAimImageAnnCollDataMdComplexType extends IcrGenericImageAssessme
 				   .delayedWriteAttribute("roleInClinicalTrial",   aimUserRole)
 				   .delayedWriteAttribute("numberWithinRoleOfClinicalTrial", aimUserNumberInRole)
 				.delayedEndEntity()
-				.delayedWriteEntity("aimWquipment")
+				.delayedWriteEntity("aimEquipment")
 				   .delayedWriteAttribute("manufacturerName",      manufacturerName)
 				   .delayedWriteAttribute("manufacturerModelName", manufacturerModelName)
 				   .delayedWriteAttribute("deviceSerialNumber",    deviceSerialNumber)
@@ -98,7 +100,7 @@ public class IcrAimImageAnnCollDataMdComplexType extends IcrGenericImageAssessme
 				   .delayedWriteAttribute("ethnicGroup",           personEthnicGroup)
 				.delayedEndEntity()
 				.delayedWriteEntityWithText("nImageAnnotation",    nImageAnnotation)
-				.delayedWriteEntityWithText("associatedRoiSetId",  associatedRegionSetId);
+				.delayedWriteEntityWithText("associatedRegionSetId",  associatedRegionSetId);
 		      
 		dppXML.delayedWriteEntity("imageAnnotationIds");
 			for (String id : imageAnnotationIdList)

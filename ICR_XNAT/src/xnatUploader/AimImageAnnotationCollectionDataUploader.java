@@ -405,20 +405,21 @@ public class AimImageAnnotationCollectionDataUploader extends DataUploader
    public void uploadMetadataAndCascade() throws XNATException, DataFormatException, IOException
    {
       errorOccurred = false;
+      String uid = UidGenerator.createShortUnique();
+      XNATAccessionID = getRootElement() + "_" + uid;
           
       // ------------------------------------------------------
       // Step 1: Create and upload the corresponding RT-STRUCT.
       // ------------------------------------------------------
-      String labelSuffix = "_" + iac.getUid();
-		label = isBatchMode ? labelPrefix + labelSuffix + "_RTSTRUCT" :
-                            labelPrefix + "_RTSTRUCT";
+      String labelSuffix = "_" + iac.getUid() + "_" + uid;
+		label = isBatchMode ? labelPrefix + labelSuffix : labelPrefix;
       RtStructDataUploader rtsu = new RtStructDataUploader(xnprf);
       try
       {
          rtsu.setVersion(version);
          rtsu.setOriginalDataType("AIM instance");
-         rtsu.setLabelParent(label);
-         assocRegionSetId = iac.getUid() + "_" + rtsu.getRootElement(); 
+         rtsu.setLabelParent(label + "_" + rtsu.getRootElement());
+         assocRegionSetId = XNATAccessionID + "_" + rtsu.getRootElement(); 
          rtsu.setAccessionId(assocRegionSetId);
          rtsu.setSubjectId(XNATSubjectID);
          rtsu.setExperimentId(XNATExperimentID);
@@ -475,7 +476,6 @@ public class AimImageAnnotationCollectionDataUploader extends DataUploader
       // -----------------------------------------------------------------
       // Step 2: Upload the icr:aimImageAnnCollData metadata.
       // -----------------------------------------------------------------		
-		XNATAccessionID = iac.getUid();
       super.uploadMetadataAndCascade();
       
 		

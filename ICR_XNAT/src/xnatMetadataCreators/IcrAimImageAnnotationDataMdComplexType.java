@@ -91,6 +91,8 @@ public class IcrAimImageAnnotationDataMdComplexType extends IcrGenericImageAsses
 	{
 		super.insertXml();
 		
+      //Kludge
+      softwareVersion = "1";
 		dppXML.delayedWriteEntityWithText("aimVersion",                aimVersion)
             .delayedWriteEntityWithText("comment",                   comment)
 				.delayedWriteEntity("aimUser")
@@ -99,7 +101,7 @@ public class IcrAimImageAnnotationDataMdComplexType extends IcrGenericImageAsses
 				   .delayedWriteAttribute("roleInClinicalTrial",         aimUserRole)
 				   .delayedWriteAttribute("numberWithinRoleOfClinicalTrial", aimUserNumberInRole)
 				.delayedEndEntity()
-				.delayedWriteEntity("equipment")
+				.delayedWriteEntity("aimEquipment")
 				   .delayedWriteAttribute("manufacturerName",            manufacturerName)
 				   .delayedWriteAttribute("manufacturerModelName",       manufacturerModelName)
 				   .delayedWriteAttribute("deviceSerialNumber",          deviceSerialNumber)
