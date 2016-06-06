@@ -409,13 +409,16 @@ public class AimImageAnnotationCollectionDataUploader extends DataUploader
       // ------------------------------------------------------
       // Step 1: Create and upload the corresponding RT-STRUCT.
       // ------------------------------------------------------
+      String labelSuffix = "_" + iac.getUid();
+		label = isBatchMode ? labelPrefix + labelSuffix + "_RTSTRUCT" :
+                            labelPrefix + "_RTSTRUCT";
       RtStructDataUploader rtsu = new RtStructDataUploader(xnprf);
       try
       {
          rtsu.setVersion(version);
          rtsu.setOriginalDataType("AIM instance");
          rtsu.setLabelParent(label);
-         assocRegionSetId = rtsu.getRootElement() + "_" + iac.getUid(); 
+         assocRegionSetId = iac.getUid() + "_" + rtsu.getRootElement(); 
          rtsu.setAccessionId(assocRegionSetId);
          rtsu.setSubjectId(XNATSubjectID);
          rtsu.setExperimentId(XNATExperimentID);

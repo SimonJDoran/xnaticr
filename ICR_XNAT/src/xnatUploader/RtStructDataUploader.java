@@ -160,8 +160,6 @@ class RtStructDataUploader extends DataUploader
 		}
 		
 		originalDataType = "RT-STRUCT";
-		date  = rts.structureSet.structureSetDate;
-		time  = rts.structureSet.structureSetTime;
 		
 		// Initially, the label of the XNAT assessor will be set to the same
 		// as the structure set label, but this can be changed on the upload screen.
@@ -197,9 +195,6 @@ class RtStructDataUploader extends DataUploader
 		filenameScanMap  = xnd.getFilenameScanMap();
 		ambiguousSubjExp = xnd.getAmbiguousSubjectExperiement();
 		errorMessage     = xnd.getErrorMessage();
-      
-      date = rts.sopCommon.instanceCreationDate;
-      time = rts.sopCommon.instanceCreationTime;
 		
 		return !errorOccurred;
 	}
@@ -247,6 +242,9 @@ class RtStructDataUploader extends DataUploader
 		// ----------------------------------------------
       // Step 1: Upload the icr:regionSetData metadata.
       // ----------------------------------------------
+      
+      date = rts.sopCommon.instanceCreationDate;
+      time = rts.sopCommon.instanceCreationTime;
       
       if (XNATAccessionID == null)
          XNATAccessionID = getRootElement() + "_" + UidGenerator.createShortUnique();

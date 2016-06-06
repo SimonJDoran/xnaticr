@@ -554,7 +554,7 @@ public class RtStructBuilder
 					markupRegionMap.put(shape.getUid(), "ROI_" + UidGenerator.createShortUnique());
 					roiCount++;
 					
-               //rc.roiDisplayColour = shape.getLineColour(); Not yet implemented in EtherJ
+               //TODO: rc.roiDisplayColour = shape.getLineColour(); Not yet implemented in EtherJ
                rc.roiDisplayColour = new ArrayList<>();
                Integer[] a = {255, 0, 0};
                Collections.addAll(rc.roiDisplayColour, a);
@@ -731,7 +731,14 @@ public class RtStructBuilder
 												ContourImage ci             = new ContourImage();
 												ci.referencedSopInstanceUid = im.getInstanceUid();
 												ci.referencedSopClassUid    = rtrs.referencedSopInstanceUid; //im.getSopClassUid() not currently working.
-												rtrse.contourImageList.add(ci);
+												ArrayList<Integer> fnl = new ArrayList<>();
+                                    // TODO: AIM does not seem to include a list of frame
+                                    // numbers in the DicomImageReference, whereas it does
+                                    // in the image section of the markup. Without doing
+                                    // lots of heroics extracting the the latter here,
+                                    // there is nothing to add to fnl.
+                                    ci.referencedFrameNumberList = fnl;
+                                    rtrse.contourImageList.add(ci);
 											}
 										}
 									}

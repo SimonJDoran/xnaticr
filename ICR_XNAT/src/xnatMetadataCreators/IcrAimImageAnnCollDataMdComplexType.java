@@ -84,7 +84,7 @@ public class IcrAimImageAnnCollDataMdComplexType extends IcrGenericImageAssessme
 				   .delayedWriteAttribute("roleInClinicalTrial",   aimUserRole)
 				   .delayedWriteAttribute("numberWithinRoleOfClinicalTrial", aimUserNumberInRole)
 				.delayedEndEntity()
-				.delayedWriteEntity("equipment")
+				.delayedWriteEntity("aimWquipment")
 				   .delayedWriteAttribute("manufacturerName",      manufacturerName)
 				   .delayedWriteAttribute("manufacturerModelName", manufacturerModelName)
 				   .delayedWriteAttribute("deviceSerialNumber",    deviceSerialNumber)

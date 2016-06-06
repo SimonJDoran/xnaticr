@@ -94,8 +94,8 @@ public class IcrRegionSetDataMdComplexType extends IcrGenericImageAssessmentData
 					}
 	   dppXML.delayedEndEntity();
 			
-		dppXML.delayedWriteEntityWithText("structureSetName",        structureSetName)
-				.delayedWriteEntityWithText("instanceNumber",          instanceNumber);
+		dppXML.delayedWriteEntityWithText("structureSetName",            structureSetName)
+				.delayedWriteEntityWithText("structureSetInstanceNumber",  instanceNumber);
 		
 		dppXML.delayedWriteEntity("referencedFramesOfReference");
 		      for (ReferencedFrameOfReference rfor : rforList)
