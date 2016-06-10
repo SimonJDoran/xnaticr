@@ -310,7 +310,7 @@
       <searchableXNATElement alias="Note">icr:regionData/note</searchableXNATElement>
       <searchableXNATElement alias="ROI name">icr:regionData/roiName</searchableXNATElement>
       <searchableXNATElement alias="Description">icr:regionData/roiDescription</searchableXNATElement>
-		<searchableXNATElement alias="No. in structure set">icr:regionData/roiNumberInStructureSet</searchableXNATElement>
+		<searchableXNATElement alias="No. in structure set">icr:regionData/roiNumberInStructureSet</searchableXNATElement>    
       <searchableXNATElement alias="Volume">icr:regionData/roiVolume</searchableXNATElement>
       <searchableXNATElement alias="Generation algorithm">icr:regionData/roiGenerationAlgorithm</searchableXNATElement>
       <searchableXNATElement alias="Generation description">icr:regionData/roiGenerationDescription</searchableXNATElement>

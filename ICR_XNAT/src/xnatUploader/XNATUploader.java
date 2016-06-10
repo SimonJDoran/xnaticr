@@ -280,7 +280,8 @@ public final class XNATUploader extends XNATGUI
     */
     @SuppressWarnings("unchecked")
    // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
-   private void initComponents() {
+   private void initComponents()
+   {
 
       downloadIcon1 = new imageUtilities.DownloadIcon();
       jPanel1 = new javax.swing.JPanel();
@@ -338,10 +339,12 @@ public final class XNATUploader extends XNATGUI
       ICRLogoJLabel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/xnatDAO/projectResources/ICR_fibonacci_logo.jpg"))); // NOI18N
 
       titleLabel.setFont(new java.awt.Font("Lucida Grande", 0, 28)); // NOI18N
+      titleLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
       titleLabel.setText("Data Uploader");
 
       versionJLabel.setFont(new java.awt.Font("Lucida Grande", 0, 14)); // NOI18N
-      versionJLabel.setText("1.0 beta (build 243)");
+      versionJLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+      versionJLabel.setText("2.1 (alpha) 08/06/2016");
 
       uploadJButton.setText("Upload");
 
@@ -394,9 +397,11 @@ public final class XNATUploader extends XNATGUI
                         .add(16, 16, 16)
                         .add(ICRLogoJLabel)
                         .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .add(curDBLogPanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                           .add(org.jdesktop.layout.GroupLayout.TRAILING, titleLabel)
-                           .add(org.jdesktop.layout.GroupLayout.TRAILING, versionJLabel))
+                        .add(curDBLogPanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING, false)
+                           .add(curDBLogPanelLayout.createSequentialGroup()
+                              .add(6, 6, 6)
+                              .add(versionJLabel, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                           .add(titleLabel))
                         .add(18, 18, 18)
                         .add(poweredByXNATJLabel))
                      .add(curDBLogPanelLayout.createSequentialGroup()

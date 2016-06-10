@@ -113,6 +113,7 @@ public abstract class DataUploader
    protected String                        XNATAccessionID;
 	protected InvestigatorList              invList;
    protected Provenance                    prov;
+   protected Catalog                       inputCat;
    protected Map<String, AmbiguousSubjectAndExperiment> ambiguousSubjExp;
    protected UploadStructure               uploadStructure;
    protected boolean                       isPrepared;
@@ -647,7 +648,7 @@ public abstract class DataUploader
 		{
 			assert (xmlDoc != null);
 			XnatResource xr = new XnatResource(xmlDoc,
-					                             "in",
+					                             "out",
 					                             "INPUT_CATALOGUE",
 					                             "XML",
 			                                   "FILE_CATALOGUE",

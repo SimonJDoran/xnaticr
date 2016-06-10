@@ -53,6 +53,8 @@ import dataRepresentations.dicom.RtStruct;
 import dataRepresentations.dicom.RtStructBuilder;
 import dataRepresentations.xnatSchema.AbstractResource;
 import dataRepresentations.xnatSchema.AdditionalField;
+import dataRepresentations.xnatSchema.Catalog;
+import dataRepresentations.xnatSchema.CatalogEntry;
 import dataRepresentations.xnatSchema.InvestigatorList.Investigator;
 import dataRepresentations.xnatSchema.MetaField;
 import dataRepresentations.xnatSchema.Provenance;
@@ -60,6 +62,7 @@ import dataRepresentations.xnatSchema.Provenance.ProcessStep.Platform;
 import dataRepresentations.xnatSchema.Provenance.ProcessStep.Program;
 import dataRepresentations.xnatSchema.Provenance.ProcessStep;
 import dataRepresentations.xnatSchema.Provenance.ProcessStep.Library;
+import dataRepresentations.xnatSchema.Resource;
 import dataRepresentations.xnatSchema.RoiDisplay;
 import dataRepresentations.xnatSchema.Scan;
 import exceptions.DataFormatException;
@@ -406,32 +409,42 @@ class RtStructDataUploader extends DataUploader
 		// The "in" section of the assessor XML contains all files that were already
 		// in the database at the time of upload, whilst the "out" section lists
 		// the files that added at the time of upload, including those generated
-		// automatically. In this, the only generated files are the snapshots, but
-		// this information is already included in the separately uploaded ROI
-		// metadata files and need not be duplicated here.
-		List<AbstractResource> inList = new ArrayList<>();
-		
-		for (String filename : filenameSopMap.keySet())
+		// automatically. The latter is automatically updated by XNAT and may be
+      // set as empty here.
+      inputCat = new Catalog();
+      List<CatalogEntry> lce = new ArrayList<>();
+      for (String filename : filenameSopMap.keySet())
 		{
-			AbstractResource ar  = new AbstractResource();
-			List<MetaField>  mfl = new ArrayList<>();
-			mfl.add(new MetaField("filename",       filename));
-			mfl.add(new MetaField("format",         "DICOM"));
-			mfl.add(new MetaField("SOPInstanceUID", filenameSopMap.get(filename)));
-			ar.tagList = mfl;
-			inList.add(ar);
-		}
-		
-		List<AbstractResource> outList = new ArrayList<>();
-		AbstractResource       ar      = new AbstractResource();
-		List<MetaField>        mfl     = new ArrayList<>();
-		mfl.add(new MetaField("filename", uploadFile.getName()));
-		mfl.add(new MetaField("format",   "RT-STRUCT"));
-		ar.tagList = mfl;
-		outList.add(ar);
+			CatalogEntry ce   = new CatalogEntry();
+			ce.name           = filename;
+         ce.id             = filenameSopMap.get(filename);
+         ce.format         = "DICOM";
+         ce.content        = "IMAGE";
+         lce.add(ce);
+      }
+      CatalogEntry ce      = new CatalogEntry();
+      ce.name              = (uploadFile == null) ? "GENERATED" : uploadFile.getName();
+      // ce.id = ?? It's not easy to retrieve the SOPInstanceUID in this context.
+      ce.format            = "DICOM";
+      ce.content           = "RT-STRUCT";
+      lce.add(ce);
+      
+      inputCat.entryList   = lce;
+      inputCat.id          = "INPUT_FILES";
+      inputCat.description = "catalogue of input files for assessor " + XNATAccessionID;
+      
+      Resource         r   = new Resource();
+      List<MetaField>  mfl = new ArrayList<>();
+		r.tagList            = mfl;
+      r.Uri                = XNATAccessionID+"_input.xml";
+      r.format             = "XML";
+      r.description        = "catalogue of input files";
+      
+		List<Resource> inList = new ArrayList<>();
+		inList.add(r);
 	
       // TODO: Figure out why the in and out elements give rise to an upload error.
-      regionSet.setInList(new ArrayList<>());  // should be inList
+      regionSet.setInList(inList);  // should be inList
       regionSet.setOutList(new ArrayList<>()); // should be outList
 		
 		regionSet.setImageSessionId(XNATExperimentID);

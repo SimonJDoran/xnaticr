@@ -35,42 +35,24 @@
 
 /********************************************************************
 * @author Simon J Doran
-* Java class: AbstractResource.java
-* First created on Jan 20, 2016 at 10:24:37 AM
+* Java class: Resource.java
+* First created on Jun 9, 2016 at 11:18 AM
 * 
-* Representation of the xnat:abstractResource complex type
+* Representation of the xnat:resource complex type
+* Note that this class should not be confused with XnatResource in
+* package
 *********************************************************************/
-
 
 package dataRepresentations.xnatSchema;
 
-import java.util.List;
-
-public abstract class AbstractResource extends XnatSchemaElement
-{		
-	public String          label;
-	public Integer         fileCount;
-	public Long            fileSize;
-	public String          note;
-	
-	// Note that, in a highly confusing lack of consistency, tag in xnat.xsd
-	// is the extension of xs:string called metaField in catalog.xsd, while
-	// tag in catalog.xsd is a simple xs:string.
-	public List<MetaField> tagList;
-
-	// Give users the option to use either a single-line constructor (with
-	// possible nulls). Given that there is no "implementation" as such -
-	// these are just variables - there seems no reason to invoke setter
-	// methods and I will just expose the variables publicly.
-	public AbstractResource() {}
-	
-	public AbstractResource(String label, Integer fileCount, Long fileSize,
-			                  String note, List<MetaField> tags)
-	{
-		this.label     = label;
-		this.fileCount = fileCount;
-		this.fileSize  = fileSize;
-		this.note      = note;
-		this.tagList   = tags;
-	}	
+public class Resource extends AbstractResource
+{
+   public String     Uri;
+   public String     format;
+   public String     description;
+   public String     content;
+   public String     cachePath;
+   public Provenance prov; 
+   
+   public Resource() {}
 }

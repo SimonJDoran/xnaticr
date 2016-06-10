@@ -1184,11 +1184,5 @@
       <property name="Colour">XNAT green</property>
       <property name="tooltip">Associated XNAT project</property>
    </renderProperties>
-	
-	<renderProperties element="icr:regionData/roiNumberInStructureSet">
-      <property name="Letter">O</property>
-      <property name="Colour">light blue</property>
-      <property name="tooltip">No. in structure set</property>
-   </renderProperties>
-     
+ 
 </XNATIconRenderings>

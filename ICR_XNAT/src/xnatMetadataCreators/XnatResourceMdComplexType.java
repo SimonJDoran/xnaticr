@@ -35,10 +35,10 @@
 
 /********************************************************************
 * @author Simon J Doran
-* Java class: XnatImageAssessorData.java
-* First created on Jan 20, 2016 at 8:53:59 AM
+* Java class: XnatResourceMDComplexType.java
+* First created on Jun 9, 2016 at 11:28 PM
 * 
-* Creation of metadata XML for xnat:imageAssessorData
+* Creation of metadata XML for xnat:resource
 * 
 * Eventually, the plan for this whole package is to replace the
 * explicit writing of the XML files with a higher level interface,
@@ -49,74 +49,51 @@
 
 package xnatMetadataCreators;
 
-import dataRepresentations.xnatSchema.AdditionalField;
-import dataRepresentations.xnatSchema.AbstractResource;
+import dataRepresentations.xnatSchema.Provenance;
 import dataRepresentations.xnatSchema.Resource;
 import exceptions.XMLException;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
+import xmlUtilities.DelayedPrettyPrinterXmlWriter;
 
-public class XnatImageAssessorDataMdComplexType extends XnatDerivedDataMdComplexType
+public class XnatResourceMdComplexType extends XnatAbstractResourceMdComplexType
 {
-	protected List<Resource> inList;
-	protected List<Resource> outList;
-	protected String                 imageSessionId;
-	protected List<AdditionalField>  paramList; 	
+   protected Resource res;
+   
+   // Give the user two options for constructing the object.
+	public XnatResourceMdComplexType() {}
 	
-	@Override
+	public XnatResourceMdComplexType(Resource res,
+			                           DelayedPrettyPrinterXmlWriter dppXML)
+	{
+		this.res     = res;
+		this.dppXML = dppXML;
+	}
+   
+   @Override
 	public void insertXml() throws IOException, XMLException
 	{
-		super.insertXml();
+      super.insertXml();
+      
+		dppXML.delayedWriteAttribute("Uri",          res.Uri)
+				.delayedWriteAttribute("format",       res.format)
+				.delayedWriteAttribute("description",  res.description)
+            .delayedWriteAttribute("content",      res.content)
+            .delayedWriteAttribute("cachePath",    res.cachePath)
+            .delayedWriteAttribute("xsi:type",     "xnat:resource");
+      
+      dppXML.delayedWriteEntity("provenance");
 		
-		dppXML.delayedWriteEntity("in");
-		for (Resource r : inList)
+		for (Provenance.ProcessStep ps : res.prov.stepList)
 		{
-			(new XnatResourceMdComplexType(r, dppXML)).insertXmlAsElement("file");
+			(new ProvProcessStepMdComplexType(ps, dppXML)).insertXmlAsElement("processStep");
 		}
-		dppXML.delayedEndEntity();
 	
-		
-		dppXML.delayedWriteEntity("out");
-		for (Resource r : outList)
-		{
-			(new XnatResourceMdComplexType(r, dppXML)).insertXmlAsElement("file");
-		}
-		dppXML.delayedEndEntity();
-		
-		
-		dppXML.delayedWriteEntityWithText("imageSession_ID", imageSessionId);
-		
-		
-		dppXML.delayedWriteEntity("parameters");
-		for (AdditionalField af : paramList)
-		{
-			(new XnatAddFieldMdComplexType(af, dppXML)).insertXmlAsElement("addParam");
-		}
-		dppXML.delayedEndEntity();
-	}
-	
-	
-	public void setInList(List<Resource> lr)
-	{
-		inList = lr;
-	}
-	
-	
-	public void setOutList(List<Resource> lr)
-	{
-		outList = lr;
-	}
-	
-	
-	public void setImageSessionId(String s)
-	{
-		imageSessionId = s;
-	}
-	
-	
-	public void setParamList(List<AdditionalField> pl)
-	{
-		paramList = pl;
-	}
+		dppXML.delayedEndEntity();        
+   }
+   
+   
+   public void setResource(Resource r)
+   {
+      res = r;
+   }
 }

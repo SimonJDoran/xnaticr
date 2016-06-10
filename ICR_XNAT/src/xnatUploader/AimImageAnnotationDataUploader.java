@@ -54,9 +54,12 @@ package xnatUploader;
 import dataRepresentations.xnatSchema.AbstractResource;
 import dataRepresentations.xnatSchema.AdditionalField;
 import dataRepresentations.xnatSchema.AimEntitySubclass;
+import dataRepresentations.xnatSchema.Catalog;
+import dataRepresentations.xnatSchema.CatalogEntry;
 import dataRepresentations.xnatSchema.InvestigatorList;
 import dataRepresentations.xnatSchema.MetaField;
 import dataRepresentations.xnatSchema.Provenance;
+import dataRepresentations.xnatSchema.Resource;
 import dataRepresentations.xnatSchema.Scan;
 import etherj.aim.DicomImageReference;
 import etherj.aim.Equipment;
@@ -255,18 +258,38 @@ public class AimImageAnnotationDataUploader extends DataUploader
 		// automatically. In this, the only generated files are the snapshots, but
 		// this information is already included in the separately uploaded ROI
 		// metadata files and need not be duplicated here.
-		List<AbstractResource> inList = new ArrayList<>();
-		
-		for (String sop : sopSet)
+		inputCat = new Catalog();
+      List<CatalogEntry> lce = new ArrayList<>();
+      for (String sop : sopSet)
 		{
-			AbstractResource ar  = new AbstractResource();
-			List<MetaField>  mfl = new ArrayList<>();
-			mfl.add(new MetaField("filename",       sopFilenameMap.get(sop)));
-			mfl.add(new MetaField("format",         "DICOM"));
-			mfl.add(new MetaField("SOPInstanceUID", sop));
-			ar.tagList = mfl;
-			inList.add(ar);
-		}
+			CatalogEntry ce   = new CatalogEntry();
+			ce.name           = sopFilenameMap.get(sop);
+         ce.id             = sop;
+         ce.format         = "DICOM";
+         ce.content        = "IMAGE";
+         lce.add(ce);
+      }
+      CatalogEntry ce      = new CatalogEntry();
+      ce.name              = (uploadFile == null) ? "GENERATED" : uploadFile.getName();
+      ce.id                = "AIM_Instance_" + XNATAccessionID;
+      ce.format            = "AIM";
+      ce.content           = "Markup";
+      lce.add(ce);
+      
+      inputCat.entryList   = lce;
+      inputCat.id          = "INPUT_FILES";
+      inputCat.description = "catalogue of input files for assessor " + XNATAccessionID;
+      
+      Resource         r   = new Resource();
+      List<MetaField>  mfl = new ArrayList<>();
+		r.tagList            = mfl;
+      r.Uri                = XNATAccessionID+"_input.xml";
+      r.format             = "XML";
+      r.description        = "catalogue of input files";
+      
+		List<Resource> inList  = new ArrayList<>();
+		inList.add(r);
+      List<Resource> outList = new ArrayList<>();
 				
 		// TODO: Figure out why the in and out elements give rise to an upload error.
       iad.setInList(new ArrayList<>());  // should be inListiad.setInList(inList);
