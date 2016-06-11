@@ -51,7 +51,15 @@
 
 package xnatUploader;
 
+import dataRepresentations.xnatSchema.AdditionalField;
 import dataRepresentations.xnatSchema.AimEntitySubclass;
+import dataRepresentations.xnatSchema.Catalog;
+import dataRepresentations.xnatSchema.CatalogEntry;
+import dataRepresentations.xnatSchema.InvestigatorList;
+import dataRepresentations.xnatSchema.MetaField;
+import dataRepresentations.xnatSchema.Provenance;
+import dataRepresentations.xnatSchema.Resource;
+import dataRepresentations.xnatSchema.Scan;
 import etherj.aim.Equipment;
 import etherj.aim.ImageAnnotation;
 import etherj.aim.Markup;
@@ -61,6 +69,10 @@ import exceptions.DataFormatException;
 import exceptions.XMLException;
 import exceptions.XNATException;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 import org.w3c.dom.Document;
 import xnatDAO.XNATProfile;
 import xnatMetadataCreators.IcrAimEntitySubclassDataMdComplexType;
@@ -88,7 +100,109 @@ public class AimEntitySubclassDataUploader extends DataUploader
 		
 		esd.setEntitySubclass(es);
       
-		// Finally write the metadata XML document.
+		// IcrAimImageAnnotationDataMdComplexType inherits from IcrGenericImageAssessmentDataMdComplexType.
+		
+		// iacd.setType();  Not currently sure what should go here.
+		esd.setXnatSubjId(XNATSubjectID);
+	   esd.setDicomSubjName(dicomSubjNameParent);
+		
+		// Although the full version of Scan, including scan and slice image
+		// statistics is implemented, this is overkill here and
+		// the only part of scan for which information is available is the
+		// list of scan IDs. 
+		Set<String> idSet = new HashSet<>();
+		for (String sop : sopSet) idSet.add(filenameScanMap.get(sopFilenameMap.get(sop)));
+		
+		List<Scan> lsc = new ArrayList<>();
+		for (String id : idSet)
+		{
+			Scan sc = new Scan();
+			sc.id = id;
+			lsc.add(sc);
+		}
+		esd.setScanList(lsc);
+      
+      
+      // IcrGenericImageAssessmentDataMdComplexType inherits from XnatImageAssessorDataMdComplexType.
+		
+		// The "in" section of the assessor XML contains all files that were already
+		// in the database at the time of upload, whilst the "out" section lists
+		// the files that added at the time of upload, including those generated
+		// automatically. In this, the only generated files are the snapshots, but
+		// this information is already included in the separately uploaded ROI
+		// metadata files and need not be duplicated here.
+		inputCat = new Catalog();
+      List<CatalogEntry> lce = new ArrayList<>();
+      for (String sop : sopSet)
+		{
+			CatalogEntry ce   = new CatalogEntry();
+			ce.name           = sopFilenameMap.get(sop);
+         ce.id             = sop;
+         ce.format         = "DICOM";
+         ce.content        = "IMAGE";
+         lce.add(ce);
+      }
+      CatalogEntry ce      = new CatalogEntry();
+      ce.name              = (uploadFile == null) ? "GENERATED" : uploadFile.getName();
+      ce.id                = "AIM_Instance_" + XNATAccessionID;
+      ce.format            = "AIM";
+      ce.content           = "Markup";
+      lce.add(ce);
+      
+      inputCat.entryList   = lce;
+      inputCat.id          = "INPUT_FILES";
+      inputCat.description = "catalogue of input files for assessor " + XNATAccessionID;
+      
+      Resource         r   = new Resource();
+      List<MetaField>  mfl = new ArrayList<>();
+		r.tagList            = mfl;
+      r.uri                = XNATAccessionID+"_input.xml";
+      r.format             = "XML";
+      r.content            = "INPUT_CATALOGUE";
+      r.fileCount          = lce.size();
+      r.description        = "Input data for assessor " + XNATAccessionID;
+      Provenance       p   = new Provenance();
+      p.stepList           = new ArrayList<>();
+      r.prov               = p;
+      
+		List<Resource> inList  = new ArrayList<>();
+		inList.add(r);
+      List<Resource> outList = new ArrayList<>();
+				
+		esd.setInList(inList);
+      esd.setOutList(outList);
+      // There is no outList for icr:imageAnnotationData
+		
+		esd.setImageSessionId(XNATExperimentID);
+		
+		// For this object, there are no additional fields. This entry is
+		// empty, but still needs to be set.
+		esd.setParamList(new ArrayList<AdditionalField>());
+		
+		// XnatImageAssessorDataMdComplexType inherits from XnatDerivedDataMdComplexType.
+		esd.setProvenance(prov);
+				                                 
+		
+		// XnatDerivedDataMdComplexType inherits from XnatExperimentData.
+		
+      esd.setId(XNATAccessionID);
+      esd.setProject(XNATProject);
+      
+     
+		// Apparently the version XML element has to be an integer, so it is not
+		// really clear what this field signifies.
+		esd.setVersion("1");
+		
+		esd.setLabel(label);
+      
+		esd.setDate(date);
+      esd.setTime(time);
+      esd.setNote(note);
+		
+      // No correlates in the structure set read in for visit, visitId,
+      // original, protocol and investigator.
+		esd.setInvestigator(new InvestigatorList.Investigator());      
+// Finally write the metadata XML document.
 		Document metaDoc = null;
 		try
 		{

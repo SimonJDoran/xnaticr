@@ -115,6 +115,7 @@ public class AimImageAnnotationCollectionDataUploader extends DataUploader
    private Map<String, DicomObject>  sopDoMap;
 	private Map<String, String>       markupRegionMap;
 	private String                    assocRegionSetId;
+   private Map<String, String>       annotationUidIdMap;
 	private RtStruct                  iacRts;
 	
 	
@@ -185,10 +186,15 @@ public class AimImageAnnotationCollectionDataUploader extends DataUploader
       }
       
       // Extract the image reference data from the AIM structure.
-      Map<String, String> sopSeriesMap = new HashMap<>();
+      Map<String, String> sopSeriesMap       = new HashMap<>();
+      annotationUidIdMap = new HashMap<>();
       
       for (ImageAnnotation ia : iac.getAnnotationList())
       {
+         // Map from the AIM UID to the XNAT accession ID. 
+         String iaId = UidGenerator.createShortUnique();
+         annotationUidIdMap.put(ia.getUid(), iaId);
+         
          for (ImageReference ir : ia.getReferenceList())
          {
             if (ir instanceof DicomImageReference)
@@ -414,6 +420,8 @@ public class AimImageAnnotationCollectionDataUploader extends DataUploader
       // ------------------------------------------------------
       // Step 1: Create and upload the corresponding RT-STRUCT.
       // ------------------------------------------------------
+      //TODO: Not all annotations contain an image markup with an ROI.
+      // Execute the following code only if such ROIs exist.
       String labelSuffix = "_" + iac.getUid() + "_" + uid;
 		label = isBatchMode ? labelPrefix + labelSuffix : labelPrefix;
       RtStructDataUploader rtsu = new RtStructDataUploader(xnprf);
@@ -492,15 +500,16 @@ public class AimImageAnnotationCollectionDataUploader extends DataUploader
 			AimImageAnnotationDataUploader iau = new AimImageAnnotationDataUploader(xnprf);
 			
 			try
-			{
-				iau.setAccessionId(ia.getUid());
-				iau.setImageAnnotation(ia);
+			{         
+				iau.setAccessionId(iau.getRootElement() + "_" + annotationUidIdMap.get(ia.getUid()));
+            iau.setImageAnnotation(ia);
 				iau.setMapsParent(filenameSopMap, sopFilenameMap, filenameScanMap,
                               sopDoMap, markupRegionMap);
 				iau.setUserParent(iac.getUser());
             iau.setEquipmentParent(iac.getEquipment());
             iau.setPersonParent(iac.getPerson());
             iau.setAssociatedRegionSetId(assocRegionSetId);
+            iau.setLabelParent(label);
             
             // Now set variables that can be passed directly on to go into the
             // metadata XML created for the upload.
@@ -521,9 +530,7 @@ public class AimImageAnnotationCollectionDataUploader extends DataUploader
 				errorMessage  = ex.getMessage();
 				throw ex;
 			}
-		}
-
-      
+		}      
       
 	}   
       
@@ -560,10 +567,15 @@ public class AimImageAnnotationCollectionDataUploader extends DataUploader
 		iacd.setNImageAnnotation(iac.getAnnotationCount());
 		iacd.setAssociatedRegionSetId(assocRegionSetId);
 		
-		List<String> iaIdl = new ArrayList<>();
-		for (ImageAnnotation ia : iac.getAnnotationList())
-         iaIdl.add(ia.getUid());
-		iacd.setImageAnnotationIdList(iaIdl);
+		List<String> assocImageAnnotationIds = new ArrayList<>();
+      for (ImageAnnotation ia : iac.getAnnotationList())
+      {
+         // Kludge: should be iau.getRootElement(), but I don't have access to
+         // iau in this context.
+         String id = "ImageAnnotation_" + annotationUidIdMap.get(ia.getUid());
+         assocImageAnnotationIds.add(id);
+      }
+      iacd.setImageAnnotationIdList(assocImageAnnotationIds);
 		
      
       // IcrAimImageAnnCollDataMdComplexType inherits from IcrGenericImageAssessmentDataMdComplexType.
@@ -624,17 +636,19 @@ public class AimImageAnnotationCollectionDataUploader extends DataUploader
 		r.tagList            = mfl;
       r.uri                = XNATAccessionID+"_input.xml";
       r.format             = "XML";
-      r.description        = "catalogue of input files";
+      r.content            = "INPUT_CATALOGUE";
+      r.fileCount          = lce.size();
+      r.description        = "Input data for assessor " + XNATAccessionID;
+      Provenance       p   = new Provenance();
+      p.stepList           = new ArrayList<>();
+      r.prov               = p;
       
 		List<Resource> inList  = new ArrayList<>();
 		inList.add(r);
       List<Resource> outList = new ArrayList<>();
 
-      // TODO: Figure out why the in and out elements give rise to an upload error.
-      iacd.setInList(new ArrayList<>());  // should be inList
-      iacd.setOutList(new ArrayList<>()); // should be outList
-		
-		
+      iacd.setInList(inList);
+      iacd.setOutList(outList);	
 		
 		iacd.setImageSessionId(XNATExperimentID);
 		

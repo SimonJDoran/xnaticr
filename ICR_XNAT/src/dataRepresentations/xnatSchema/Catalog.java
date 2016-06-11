@@ -48,6 +48,7 @@
 
 package dataRepresentations.xnatSchema;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class Catalog
@@ -55,8 +56,12 @@ public class Catalog
 	public String             id;
 	public String             name;
 	public String             description;
-	public List<MetaField>    metaFieldList;
-	public List<String>       tagList;
-	public List<Catalog>      setList;
-	public List<CatalogEntry> entryList;
+	
+   // These variables are explicitly initialised, because in the class
+   // CatCatalogMdComplexType, we iterate over them and get an error if
+   // they are null.
+	public List<MetaField>    metaFieldList = new ArrayList<>();;
+   public List<String>       tagList       = new ArrayList<>();
+	public List<Catalog>      setList       = new ArrayList<>();
+	public List<CatalogEntry> entryList     = new ArrayList<>();
 }

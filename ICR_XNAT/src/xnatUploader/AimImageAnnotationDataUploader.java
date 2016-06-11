@@ -75,6 +75,7 @@ import etherj.aim.User;
 import exceptions.DataFormatException;
 import exceptions.XMLException;
 import exceptions.XNATException;
+import generalUtilities.UidGenerator;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -92,6 +93,7 @@ public class AimImageAnnotationDataUploader extends DataUploader
 	private User                     userParent;
    private Equipment                equipmentParent;
    private Person                   personParent;
+   private String                   labelParent;
 	private String                   assocRegionSetId;
 	private Map<String, String>      markupRegionMap;
 	private List<String>             subclassIdList;
@@ -114,7 +116,7 @@ public class AimImageAnnotationDataUploader extends DataUploader
    {
       errorOccurred = false;
       
-      label = ia.getName();
+      label = labelParent + "_" + ia.getName();
       
       // Upload the metadata for the icr:aimImageAnnotation.
 		// The "cascade" part of the process involves separately uploading metadata
@@ -124,8 +126,7 @@ public class AimImageAnnotationDataUploader extends DataUploader
 		subclassIdList = new ArrayList<>();
 		for (Markup mku : ia.getMarkupList())
 			subclassIdList.add(AimEntitySubclass.MARKUP + "_" + mku.getUid());
-		
-		XNATAccessionID = ia.getUid();
+	
       
       // From the parent ImageAnnotationCollection, we have lists of all the
       // DICOM images contributing to the collection. We now need to break this
@@ -171,7 +172,7 @@ public class AimImageAnnotationDataUploader extends DataUploader
          
          try
          {
-            esu.setAccessionId(AimEntitySubclass.MARKUP + "_" + mku.getUid());
+            esu.setAccessionId(AimEntitySubclass.MARKUP + "_" + UidGenerator.createShortUnique());
 				esu.setEntitySubclass(es);
 				esu.uploadMetadataAndCascade();
          }
@@ -285,15 +286,19 @@ public class AimImageAnnotationDataUploader extends DataUploader
 		r.tagList            = mfl;
       r.uri                = XNATAccessionID+"_input.xml";
       r.format             = "XML";
-      r.description        = "catalogue of input files";
+      r.content            = "INPUT_CATALOGUE";
+      r.fileCount          = lce.size();
+      r.description        = "Input data for assessor " + XNATAccessionID;
+      Provenance       p   = new Provenance();
+      p.stepList           = new ArrayList<>();
+      r.prov               = p;
       
 		List<Resource> inList  = new ArrayList<>();
 		inList.add(r);
       List<Resource> outList = new ArrayList<>();
 				
-		// TODO: Figure out why the in and out elements give rise to an upload error.
-      iad.setInList(new ArrayList<>());  // should be inListiad.setInList(inList);
-      iad.setOutList(new ArrayList<>());
+		iad.setInList(inList);
+      iad.setOutList(outList);
       // There is no outList for icr:imageAnnotationData
 		
 		iad.setImageSessionId(XNATExperimentID);
@@ -422,6 +427,12 @@ public class AimImageAnnotationDataUploader extends DataUploader
    void setDicomSubjNameParent(String s)
    {
       dicomSubjNameParent = s;
+   }
+   
+   
+   void setLabelParent(String s)
+   {
+      labelParent = s;
    }
    
    

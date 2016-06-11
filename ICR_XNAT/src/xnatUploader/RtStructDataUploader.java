@@ -448,7 +448,6 @@ class RtStructDataUploader extends DataUploader
       List<Resource> inList = new ArrayList<>();
 		inList.add(r);
 	
-      // TODO: Figure out why the in and out elements give rise to an upload error.
       regionSet.setInList(inList);  // should be inList
       regionSet.setOutList(new ArrayList<>()); // should be outList
 		

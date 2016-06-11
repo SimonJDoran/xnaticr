@@ -48,6 +48,7 @@
 
 package dataRepresentations.xnatSchema;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class CatalogEntry
@@ -66,6 +67,6 @@ public class CatalogEntry
 	public String          modifiedBy;
 	public String          modifiedEventId;
 	public String          digest;
-	public List<MetaField> metaFieldList;
-	public List<String>    tagList;	
+	public List<MetaField> metaFieldList = new ArrayList<>();
+	public List<String>    tagList       = new ArrayList<>();	
 }

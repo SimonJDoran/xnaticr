@@ -99,4 +99,14 @@ public class IcrAimEntitySubclassDataMdComplexType extends IcrGenericImageAssess
 	{
 		this.es = es;
 	}
+   
+   
+   @Override
+   public String getRootElementName()
+   {
+      return "AimEntitySubclass";
+   }
+	
+	
+
 }
