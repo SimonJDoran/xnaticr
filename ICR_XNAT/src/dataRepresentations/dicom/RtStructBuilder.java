@@ -551,7 +551,7 @@ public class RtStructBuilder
 					RoiContour      rc  = new RoiContour(); 
                rc.referencedRoiNumber = roiCount;
 					ssr.roiNumber = roiCount;
-					markupRegionMap.put(shape.getUid(), "ROI_" + UidGenerator.createShortUnique());
+					markupRegionMap.put(shape.getUid(), "Region_" + UidGenerator.createShortUnique());
 					roiCount++;
 					
                //TODO: rc.roiDisplayColour = shape.getLineColour(); Not yet implemented in EtherJ

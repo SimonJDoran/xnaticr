@@ -111,6 +111,12 @@ public class CatCatalogMdComplexType extends MdComplexType
 		}
 		dppXML.delayedEndEntity();
 	}
+   
+   @Override
+   public String getRootElementName()
+   {
+      return "Catalog";
+   }
 }
 
 

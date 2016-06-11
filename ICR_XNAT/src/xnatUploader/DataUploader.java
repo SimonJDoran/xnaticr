@@ -632,12 +632,13 @@ public abstract class DataUploader
 	 * 
 	 * @param cat input catalog data structure
     */
-   protected void createInputCatalogue(Catalog cat)
+   protected void createInputCatalogue()
    {
-		Document xmlDoc = null;
+		if (inputCat == null) return;
+      Document xmlDoc = null;
       try
       {
-         xmlDoc = (new CatCatalogMdComplexType(cat)).createXmlAsRootElement();
+         xmlDoc = (new CatCatalogMdComplexType(inputCat)).createXmlAsRootElement();
       }
       catch (XMLException | IOException ex)
       {

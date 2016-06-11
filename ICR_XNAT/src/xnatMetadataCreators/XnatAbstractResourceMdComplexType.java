@@ -61,7 +61,7 @@ public class XnatAbstractResourceMdComplexType extends MdComplexType
 	
 	
 	// Give the user two options for constructing the object.
-	public XnatAbstractResourceMdComplexType() {}
+	public XnatAbstractResourceMdComplexType(){}
 	
 	public XnatAbstractResourceMdComplexType(AbstractResource ar,
 			                                   DelayedPrettyPrinterXmlWriter dppXML)

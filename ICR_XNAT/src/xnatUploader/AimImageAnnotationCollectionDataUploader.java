@@ -622,7 +622,7 @@ public class AimImageAnnotationCollectionDataUploader extends DataUploader
       Resource         r   = new Resource();
       List<MetaField>  mfl = new ArrayList<>();
 		r.tagList            = mfl;
-      r.Uri                = XNATAccessionID+"_input.xml";
+      r.uri                = XNATAccessionID+"_input.xml";
       r.format             = "XML";
       r.description        = "catalogue of input files";
       

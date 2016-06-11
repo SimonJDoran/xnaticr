@@ -306,9 +306,13 @@ class RegionFromRtStructDataUploader extends DataUploader implements ContourRend
       Resource         r   = new Resource();
       List<MetaField>  mfl = new ArrayList<>();
 		r.tagList            = mfl;
-      r.Uri                = XNATAccessionID+"_input.xml";
-      r.format             = "XML";
-      r.description        = "catalogue of input files";
+      r.uri                = XNATAccessionID+"_input.xml";
+      r.format             = "INPUT_CATALOGUE";
+      r.fileCount          = lce.size();
+      r.description        = "Input data for assessor " + XNATAccessionID;
+      Provenance       pv  = new Provenance();
+      pv.stepList          = new ArrayList<>();
+      r.prov               = pv;
       
 		List<Resource> inList  = new ArrayList<>();
 		inList.add(r);
@@ -426,7 +430,7 @@ class RegionFromRtStructDataUploader extends DataUploader implements ContourRend
    @Override
    protected void createAuxiliaryResources()
    {
-      //createInputCatalogueFile("DICOM", "RAW", "referenced contour image");
+      createInputCatalogue();
 		
       ContourRendererHelper crh;
       Map<String, File>     fileMap;

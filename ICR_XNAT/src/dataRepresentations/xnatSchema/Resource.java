@@ -47,7 +47,7 @@ package dataRepresentations.xnatSchema;
 
 public class Resource extends AbstractResource
 {
-   public String     Uri;
+   public String     uri;
    public String     format;
    public String     description;
    public String     content;

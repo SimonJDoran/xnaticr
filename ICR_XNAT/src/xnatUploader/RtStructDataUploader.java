@@ -261,7 +261,7 @@ class RtStructDataUploader extends DataUploader
 		if (assignedRegionIdList.isEmpty())
 		{
 			for (int i=0; i<nRois; i++)
-				assignedRegionIdList.add("ROI_" + UidGenerator.createShortUnique());
+				assignedRegionIdList.add("Region_" + UidGenerator.createShortUnique());
 		}
 		
       super.uploadMetadataAndCascade();
@@ -345,6 +345,7 @@ class RtStructDataUploader extends DataUploader
    @Override
    public void createAuxiliaryResources()
    {
+      createInputCatalogue();
       // TODO: Consider whether some composite visualisation is needed to
       // summarise all the icr:region instances making up the icr:regionSet instance.
    }
@@ -436,11 +437,15 @@ class RtStructDataUploader extends DataUploader
       Resource         r   = new Resource();
       List<MetaField>  mfl = new ArrayList<>();
 		r.tagList            = mfl;
-      r.Uri                = XNATAccessionID+"_input.xml";
-      r.format             = "XML";
-      r.description        = "catalogue of input files";
+      r.uri                = XNATAccessionID+"_input.xml";
+      r.format             = "INPUT_CATALOGUE";
+      r.fileCount          = lce.size();
+      r.description        = "Input data for assessor " + XNATAccessionID;
+      Provenance       p   = new Provenance();
+      p.stepList           = new ArrayList<>();
+      r.prov               = p;
       
-		List<Resource> inList = new ArrayList<>();
+      List<Resource> inList = new ArrayList<>();
 		inList.add(r);
 	
       // TODO: Figure out why the in and out elements give rise to an upload error.

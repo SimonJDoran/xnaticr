@@ -49,6 +49,7 @@
 
 package xnatMetadataCreators;
 
+import dataRepresentations.xnatSchema.AbstractResource;
 import dataRepresentations.xnatSchema.Provenance;
 import dataRepresentations.xnatSchema.Resource;
 import exceptions.XMLException;
@@ -65,6 +66,7 @@ public class XnatResourceMdComplexType extends XnatAbstractResourceMdComplexType
 	public XnatResourceMdComplexType(Resource res,
 			                           DelayedPrettyPrinterXmlWriter dppXML)
 	{
+      ar = (AbstractResource) res;
 		this.res     = res;
 		this.dppXML = dppXML;
 	}
@@ -74,7 +76,7 @@ public class XnatResourceMdComplexType extends XnatAbstractResourceMdComplexType
 	{
       super.insertXml();
       
-		dppXML.delayedWriteAttribute("Uri",          res.Uri)
+		dppXML.delayedWriteAttribute("Uri",          res.uri)
 				.delayedWriteAttribute("format",       res.format)
 				.delayedWriteAttribute("description",  res.description)
             .delayedWriteAttribute("content",      res.content)
