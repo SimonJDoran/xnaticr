@@ -113,6 +113,6 @@ public abstract class MdComplexType
 	
 	String getRootElementName()
 	{
-		return "None";
+		return "AimEntitySubclass";
 	}
 }

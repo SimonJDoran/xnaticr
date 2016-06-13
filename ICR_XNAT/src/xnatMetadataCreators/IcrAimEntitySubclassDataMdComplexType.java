@@ -86,10 +86,10 @@ public class IcrAimEntitySubclassDataMdComplexType extends IcrGenericImageAssess
 				.delayedWriteEntityWithText("associatedRegionSetId",         es.associatedRegionSetId);
 			
 		
-		dppXML.delayedWriteEntity("asociatedAimEntitySubclassIds");
+		dppXML.delayedWriteEntity("associatedAimEntitySubclassIds");
 		for (String s : es.associatedAimEntitySubclassIdList)
 		{
-			dppXML.delayedWriteEntityWithText("asocEntSubId", s);
+			dppXML.delayedWriteEntityWithText("assocEntSubId", s);
 		}
 		dppXML.delayedEndEntity();
 	}

@@ -170,13 +170,14 @@ public class AimImageAnnotationDataUploader extends DataUploader
             if (me.getKey().equals(mku.getUid()))
 					es.associatedAimEntitySubclassIdList.add(me.getValue());
 			}
-		
+         String mkLabel = "";
 			if (mku instanceof TwoDimensionGeometricShape)
 			{
 				TwoDimensionGeometricShape shape = (TwoDimensionGeometricShape) mku;
             es.description     = shape.getDescription();
 				es.shapeIdentifier = Integer.toString(shape.getShapeId());
 				mkSop.add(shape.getImageReferenceUid());
+            mkLabel += shape.getLabel();
 			}
 			 
          AimEntitySubclassDataUploader esu = new AimEntitySubclassDataUploader(xnprf);
@@ -189,9 +190,11 @@ public class AimImageAnnotationDataUploader extends DataUploader
             esu.XNATSubjectID    = XNATSubjectID;
             esu.date             = date;
             esu.time             = time;
+            esu.label            = mkLabel;
 				esu.setSops(sopFilenameMap, filenameScanMap, mkSop);
 				esu.setEntitySubclass(es);
             esu.setDicomSubjNameParent(dicomSubjNameParent);
+            esu.setProvenanceParent(prov);
 				esu.uploadMetadataAndCascade();
          }
          catch (XNATException | DataFormatException | IOException ex)

@@ -93,7 +93,7 @@ public class ContourRendererHelper
    }
    
    static Logger               logger = Logger.getLogger(ContourRendererHelper.class);
-   private static final int    DEFAULT_THUMBNAIL_SIZE = 128;
+   private static final int    DEFAULT_THUMBNAIL_SIZE = 512;
 	private int                 thumbnailSize;
    private Map<String, File>   filenameCacheFileMap;
    private float[]             pixelSpacing;
