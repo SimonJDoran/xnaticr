@@ -290,5 +290,11 @@ public class AimEntitySubclassDataUploader extends DataUploader
 		filenameScanMap = fscan;
 		sopSet          = sops;
 	}
+   
+   
+   void setProvenanceParent(Provenance p)
+   {
+      prov = p;
+   }
 }
 
