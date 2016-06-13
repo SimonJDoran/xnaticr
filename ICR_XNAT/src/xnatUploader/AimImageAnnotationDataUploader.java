@@ -152,7 +152,7 @@ public class AimImageAnnotationDataUploader extends DataUploader
       for (Markup mku : ia.getMarkupList())
       {
 			AimEntitySubclass es = new AimEntitySubclass();
-			
+		
 			es.subclassType          = es.MARKUP;
 			es.associatedRegionSetId = assocRegionSetId;
 			es.associatedRegionId    = markupRegionMap.get(mku.getUid());
@@ -164,7 +164,7 @@ public class AimImageAnnotationDataUploader extends DataUploader
 			if (mku instanceof TwoDimensionGeometricShape)
 			{
 				TwoDimensionGeometricShape shape = (TwoDimensionGeometricShape) mku;
-				es.description     = shape.getDescription();
+            es.description     = shape.getDescription();
 				es.shapeIdentifier = Integer.toString(shape.getShapeId());
 			}
 			 
@@ -174,6 +174,7 @@ public class AimImageAnnotationDataUploader extends DataUploader
          {
             esu.setAccessionId(AimEntitySubclass.MARKUP + "_" + UidGenerator.createShortUnique());
 				esu.setEntitySubclass(es);
+            esu.setDicomSubjNameParent(dicomSubjNameParent);
 				esu.uploadMetadataAndCascade();
          }
          catch (XNATException | DataFormatException | IOException ex)

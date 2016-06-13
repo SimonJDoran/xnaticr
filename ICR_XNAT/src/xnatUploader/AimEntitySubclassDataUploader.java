@@ -81,6 +81,7 @@ import xnatMetadataCreators.IcrAimImageAnnotationDataMdComplexType;
 public class AimEntitySubclassDataUploader extends DataUploader
 {
 	private AimEntitySubclass es;
+   private String            dicomSubjNameParent;
 	
 	public AimEntitySubclassDataUploader(XNATProfile xnprf)
 	{
@@ -268,6 +269,15 @@ public class AimEntitySubclassDataUploader extends DataUploader
 	void setEntitySubclass(AimEntitySubclass es)
 	{
 		this.es = es;
-	}	
+	}
+   
+   
+   void setDicomSubjNameParent(String s)
+   {
+      dicomSubjNameParent = s;
+   }
+   
+   
+
 }
 
