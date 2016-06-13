@@ -78,6 +78,7 @@ import exceptions.XNATException;
 import generalUtilities.UidGenerator;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -102,8 +103,8 @@ public class AimImageAnnotationDataUploader extends DataUploader
    private Map<String, String>      filenameScanMap;
    private Map<String, String>      sopFilenameMap;
    private Map<String, DicomObject> sopDoMap;
-   private Set<String>              sopSet;
-	
+	Set<String>                      sopSet;
+	private Map<String, String>      uidIdMap;
 	
 	public AimImageAnnotationDataUploader(XNATProfile xnprf)
 	{
@@ -123,15 +124,19 @@ public class AimImageAnnotationDataUploader extends DataUploader
 		// for each of the individual bits (icr:aimEntitySubclass) of the image
 		// annotation. The ids of all the separate bits are stored in a list that
 		// is uploaded with the icr:aimImageAnnotation metadata.
+		uidIdMap       = new HashMap<>();
 		subclassIdList = new ArrayList<>();
 		for (Markup mku : ia.getMarkupList())
-			subclassIdList.add(AimEntitySubclass.MARKUP + "_" + mku.getUid());
-	
+		{
+			String id = AimEntitySubclass.MARKUP + "_" + UidGenerator.createShortUnique();
+			uidIdMap.put(mku.getUid(), id);
+			subclassIdList.add(id);
+		}
       
       // From the parent ImageAnnotationCollection, we have lists of all the
       // DICOM images contributing to the collection. We now need to break this
       // down into just the set of all images relevant to this annotation.
-      sopSet = new HashSet<>();
+		sopSet = new HashSet<>();
       for (ImageReference ir : ia.getReferenceList())
          {
             if (ir instanceof DicomImageReference)
@@ -149,30 +154,42 @@ public class AimImageAnnotationDataUploader extends DataUploader
       
 		// This is the "cascade" bit. Now set an upload in train for a separate
 		// icr:aimEntitySubclass for each of the bits of the image annotation.		
-      for (Markup mku : ia.getMarkupList())
+		
+		
+		for (Markup mku : ia.getMarkupList())
       {
-			AimEntitySubclass es = new AimEntitySubclass();
+			AimEntitySubclass es    = new AimEntitySubclass();
+			Set<String>       mkSop = new HashSet<>();
 			
-			es.subclassType          = es.MARKUP;
-			es.associatedRegionSetId = assocRegionSetId;
-			es.associatedRegionId    = markupRegionMap.get(mku.getUid());
-			es.associatedAimEntitySubclassIdList
-                                  = new ArrayList<>();
-         for (String s : subclassIdList)
-            if (!s.contains(mku.getUid())) es.associatedAimEntitySubclassIdList.add(s);
-         
+			es.subclassType                      = es.MARKUP;
+			es.associatedRegionSetId             = assocRegionSetId;
+			es.associatedRegionId                = markupRegionMap.get(mku.getUid());
+			es.associatedAimEntitySubclassIdList = new ArrayList<>();
+         for (Map.Entry<String, String> me : uidIdMap.entrySet())
+			{
+            if (me.getKey().equals(mku.getUid()))
+					es.associatedAimEntitySubclassIdList.add(me.getValue());
+			}
+		
 			if (mku instanceof TwoDimensionGeometricShape)
 			{
 				TwoDimensionGeometricShape shape = (TwoDimensionGeometricShape) mku;
 				es.description     = shape.getDescription();
 				es.shapeIdentifier = Integer.toString(shape.getShapeId());
+				mkSop.add(shape.getImageReferenceUid());
 			}
 			 
          AimEntitySubclassDataUploader esu = new AimEntitySubclassDataUploader(xnprf);
          
          try
          {
-            esu.setAccessionId(AimEntitySubclass.MARKUP + "_" + UidGenerator.createShortUnique());
+            esu.setAccessionId(uidIdMap.get(mku.getUid()));
+				esu.XNATProject      = XNATProject;
+            esu.XNATExperimentID = XNATExperimentID;
+            esu.XNATSubjectID    = XNATSubjectID;
+            esu.date             = date;
+            esu.time             = time;
+				esu.setSops(sopFilenameMap, filenameScanMap, mkSop);
 				esu.setEntitySubclass(es);
 				esu.uploadMetadataAndCascade();
          }

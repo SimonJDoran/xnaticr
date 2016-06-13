@@ -72,6 +72,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import org.w3c.dom.Document;
 import xnatDAO.XNATProfile;
@@ -80,7 +81,11 @@ import xnatMetadataCreators.IcrAimImageAnnotationDataMdComplexType;
 
 public class AimEntitySubclassDataUploader extends DataUploader
 {
-	private AimEntitySubclass es;
+	private AimEntitySubclass   es;
+	private String              dicomSubjNameParent;
+	private Map<String, String> sopFilenameMap;
+	private Map<String, String> filenameScanMap;
+	private Set<String>         sopSet;
 	
 	public AimEntitySubclassDataUploader(XNATProfile xnprf)
 	{
@@ -144,7 +149,7 @@ public class AimEntitySubclassDataUploader extends DataUploader
       }
       CatalogEntry ce      = new CatalogEntry();
       ce.name              = (uploadFile == null) ? "GENERATED" : uploadFile.getName();
-      ce.id                = "AIM_Instance_" + XNATAccessionID;
+      ce.id                = es.subclassType + "_" + XNATAccessionID;
       ce.format            = "AIM";
       ce.content           = "Markup";
       lce.add(ce);
@@ -268,6 +273,22 @@ public class AimEntitySubclassDataUploader extends DataUploader
 	void setEntitySubclass(AimEntitySubclass es)
 	{
 		this.es = es;
-	}	
+	}
+	
+	
+	void setDicomSubjNameParent(String s)
+   {
+      dicomSubjNameParent = s;
+   }
+   
+   
+	void setSops(Map<String, String> sopf,
+			       Map<String, String> fscan,
+					 Set<String>         sops)
+	{
+		sopFilenameMap  = sopf;
+		filenameScanMap = fscan;
+		sopSet          = sops;
+	}
 }
 
