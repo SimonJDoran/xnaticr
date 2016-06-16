@@ -170,7 +170,7 @@ public class AimImageAnnotationCollectionDataUploader extends DataUploader
 		// as the image annotation collection label, but this can be changed on
 		// the upload screen.
       //TODO
-		labelPrefix = getDefaultIfEmpty(""); //No etherj method iac.getDescription()
+		labelPrefix = iac.getDescription();
       
       try
       {

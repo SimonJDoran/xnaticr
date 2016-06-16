@@ -48,14 +48,14 @@ import java.util.List;
 
 public class AimEntitySubclass extends XnatSchemaElement
 {
-	public static final String MARKUP  = "Markup_Entity";
-	public static final String SEG     = "Segmentation_Entity";
-	public static final String CALC    = "Calculation_Entity";
-	public static final String CONTEXT = "Task_Context_Entity";
-	public static final String INF     = "Inference_Entity";
-	public static final String ROLE    = "Annotation_Role_Entity";
-	public static final String OBS     = "Imaging_Observation_Entity";
-	public static final String PHYS    = "Imaging_Physical_Entity";
+	public static final String MARKUP  = "MarkupEntity";
+	public static final String SEG     = "SegmentationEntity";
+	public static final String CALC    = "CalculationEntity";
+	public static final String CONTEXT = "Task_ContextEntity";
+	public static final String INF     = "InferenceEntity";
+	public static final String ROLE    = "AnnotationRoleEntity";
+	public static final String OBS     = "ImagingObservationEntity";
+	public static final String PHYS    = "ImagingPhysicalEntity";
 			  
 	// Note: It is not expected that all (or indeed the majority) of these
 	//       variables will have values for any given EntitySubclass.

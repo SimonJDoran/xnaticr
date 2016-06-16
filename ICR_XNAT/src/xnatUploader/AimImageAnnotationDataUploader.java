@@ -177,7 +177,7 @@ public class AimImageAnnotationDataUploader extends DataUploader
             es.description     = shape.getDescription();
 				es.shapeIdentifier = Integer.toString(shape.getShapeId());
 				mkSop.add(shape.getImageReferenceUid());
-            mkLabel += shape.getLabel();
+            mkLabel = shape.getLabel();
 			}
 			 
          AimEntitySubclassDataUploader esu = new AimEntitySubclassDataUploader(xnprf);
@@ -190,7 +190,8 @@ public class AimImageAnnotationDataUploader extends DataUploader
             esu.XNATSubjectID    = XNATSubjectID;
             esu.date             = date;
             esu.time             = time;
-            esu.label            = mkLabel;
+            esu.label            = mkLabel.isEmpty() ? label + "_" + esu.XNATAccessionID :
+						                                     label + "_" + mkLabel;
 				esu.setSops(sopFilenameMap, filenameScanMap, mkSop);
 				esu.setEntitySubclass(es);
             esu.setDicomSubjNameParent(dicomSubjNameParent);
@@ -220,34 +221,31 @@ public class AimImageAnnotationDataUploader extends DataUploader
 				  
 		iad.setComment(ia.getComment());
 		
-		iad.setAimUserName(            userParent.getName());
-      iad.setAimUserLoginName(       userParent.getLoginName());
-      iad.setAimUserRole(            userParent.getRoleInTrial());
-      iad.setAimUserNumberInRole(    userParent.getNumberWithinRoleOfClinicalTrial());
+		iad.setAimUserName(              userParent.getName());
+      iad.setAimUserLoginName(         userParent.getLoginName());
+      iad.setAimUserRole(              userParent.getRoleInTrial());
+      iad.setAimUserNumberInRole(      userParent.getNumberWithinRoleOfClinicalTrial());
       
-      iad.setManufacturerName(       equipmentParent.getManufacturerName());
-      iad.setManufacturerModelName(  equipmentParent.getManufacturerModelName());
-      iad.setDeviceSerialNumber(     equipmentParent.getDeviceSerialNumber());
-      iad.setSoftwareVersion(        equipmentParent.getSoftwareVersion());
+      iad.setManufacturerName(         equipmentParent.getManufacturerName());
+      iad.setManufacturerModelName(    equipmentParent.getManufacturerModelName());
+      iad.setDeviceSerialNumber(       equipmentParent.getDeviceSerialNumber());
+      iad.setSoftwareVersion(          equipmentParent.getSoftwareVersion());
       
-      iad.setPersonName(             personParent.getName());
-      iad.setPersonId(               personParent.getId());
-      iad.setPersonBirthDate(        personParent.getBirthDate());
-      iad.setPersonSex(              personParent.getSex());
-      iad.setPersonEthnicGroup(      personParent.getEthnicGroup());
+      iad.setPersonName(               personParent.getName());
+      iad.setPersonId(                 personParent.getId());
+      iad.setPersonBirthDate(          personParent.getBirthDate());
+      iad.setPersonSex(                personParent.getSex());
+      iad.setPersonEthnicGroup(        personParent.getEthnicGroup());
        
-		iad.setAssociatedRegionSetId(  assocRegionSetId);
-		iad.setAimEntitySubclassIdList(subclassIdList);
-      iad.setNMarkupEntity(          ia.getMarkupList().size());
-      
-		// More here when the Etherj package is ready. For the moment, set all
-      // the other N...Entity variables to zero.
-      iad.setNTaskContextEntity(0);
-      iad.setNInferenceEntity(0);
-      iad.setNAnnotationRoleEntity(0);
-      iad.setNCalculationEntity(0);
-      iad.setNImagingObservationEntity(0);
-      iad.setNImagingPhysicalEntity(0);
+		iad.setAssociatedRegionSetId(    assocRegionSetId);
+		iad.setAimEntitySubclassIdList(  subclassIdList);
+      iad.setNMarkupEntity(            ia.getMarkupList().size());
+      iad.setNTaskContextEntity(       ia.getTaskContextList().size());
+      iad.setNInferenceEntity(         ia.getInferenceList().size());
+      iad.setNAnnotationRoleEntity(    ia.getAnnotationRoleList().size());
+      iad.setNCalculationEntity(       ia.getCalculationList().hashCode());
+      iad.setNImagingObservationEntity(ia.getImagingObservationList().size());
+      iad.setNImagingPhysicalEntity(   ia.getImagingPhysicalList().size());
 		
       // IcrAimImageAnnotationDataMdComplexType inherits from IcrGenericImageAssessmentDataMdComplexType.
 		
