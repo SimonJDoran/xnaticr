@@ -416,13 +416,13 @@ public class AimImageAnnotationCollectionDataUploader extends DataUploader
       errorOccurred = false;
       String uid = UidGenerator.createShortUnique();
       XNATAccessionID = getRootElement() + "_" + uid;
-          
+    
       // ------------------------------------------------------
       // Step 1: Create and upload the corresponding RT-STRUCT.
       // ------------------------------------------------------
       //TODO: Not all annotations contain an image markup with an ROI.
       // Execute the following code only if such ROIs exist.
-      String labelSuffix = "_" + iac.getUid() + "_" + uid;
+      String labelSuffix = "_" + uid;
 		label = isBatchMode ? labelPrefix + labelSuffix : labelPrefix;
       RtStructDataUploader rtsu = new RtStructDataUploader(xnprf);
       try
@@ -709,7 +709,7 @@ public class AimImageAnnotationCollectionDataUploader extends DataUploader
 	}
 	
 	
-	@Override
+   @Override
 	public Provenance createProvenance()
 	{
 		// A number of fields are mandatory in the birn.xsd provenance schema,
@@ -731,7 +731,7 @@ public class AimImageAnnotationCollectionDataUploader extends DataUploader
 				if (s != null) sb.append(s);
 			}
 		}
-      String versions = getDefaultIfEmpty(sb.toString());
+      String versions = truncateString(getDefaultIfEmpty(sb.toString()), 255);
 		ProcessStep.Program    prog1    = new Program(getDefaultIfEmpty(iacRts.generalEquipment.manufacturer) + " software",
 		                                              versions,
 		                                              DEFAULT);

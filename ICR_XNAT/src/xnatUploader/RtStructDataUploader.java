@@ -337,8 +337,7 @@ class RtStructDataUploader extends DataUploader
 		}
 	}
    
-   
-   
+      
    /**
     * Create additional thumbnail files for upload with the DICOM-RT structure set.
     */
@@ -375,7 +374,7 @@ class RtStructDataUploader extends DataUploader
 				if (s != null) sb.append(s);
 			}
 		}
-		regionSet.setOriginatingApplicationVersion(getDefaultIfEmpty(sb.toString()));
+		regionSet.setOriginatingApplicationVersion(truncateString(getDefaultIfEmpty(sb.toString()), 255));
 		
 		regionSet.setNRegions(rts.structureSet.structureSetRoiList.size());
 		regionSet.setRegionIdList(assignedRegionIdList);
@@ -534,7 +533,7 @@ class RtStructDataUploader extends DataUploader
 				if (s != null) sb.append(s);
 			}
 		}
-      String versions = getDefaultIfEmpty(sb.toString());
+      String versions = truncateString(getDefaultIfEmpty(sb.toString()), 255);
 		
 		Program                prog1    = new Program(getDefaultIfEmpty(rts.generalEquipment.manufacturer) + " software",
 		                                              versions,

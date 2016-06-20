@@ -253,6 +253,8 @@ public abstract class DataUploader
       if (XNATAccessionID == null)
             XNATAccessionID = getRootElement() + '_' + UidGenerator.createShortUnique();
 
+      // TODO: If a label is suppliee, then check that it is unique.
+      
       Document metaDoc = createMetadataXml();
       if (errorOccurred) throw new XNATException(XNATException.FILE_UPLOAD,
                           "There was a problem in creating the metadata to "
@@ -775,7 +777,14 @@ public abstract class DataUploader
     * @return an XNAT-compatible metadata XML Document
     */
    protected abstract Document createMetadataXml();
+
    
+   protected String truncateString(String s, int maxLength)
+   {
+      return  (s.length() <= maxLength) ? s : s.substring(0, maxLength-3) + "...";     
+   }
+	
+
 
 
    /**

@@ -430,22 +430,30 @@ public class RtStructBuilder
 		return src;
 	}
 	
+	private String truncateString(String s, int maxLength)
+   {
+      return  (s.length() <= maxLength) ? s : s.substring(0, maxLength-3) + "...";     
+   }
 	
-	private String createStringFromSet(Set<String> set)
+   
+   private String createStringFromSet(Set<String> set)
 	{
 		final String SEP = " | ";	
 		StringBuilder sb = new StringBuilder();
 		
 		for (String s : set)
 		{
-			if (!(sb.toString().contains(s))) 
-			{
-			   if (sb.length() != 0) sb.append(SEP);
-				if (s != null) sb.append(s);
-			}
+         if (s != null)
+         {
+            if (!(sb.toString().contains(s))) 
+            {
+               if (sb.length() != 0) sb.append(SEP);
+               sb.append(s);
+            }
+         }
 		}
-      return getDefaultIfEmpty(sb.toString());
-
+      // Note that strings longer than 255 characters cause an XNAT upload error.
+      return truncateString(getDefaultIfEmpty(sb.toString()), 255);
 	}
 	
 	private GeneralEquipment iacBuildGeneralEquipment(ImageAnnotationCollection iac,
@@ -479,7 +487,10 @@ public class RtStructBuilder
       ge.modelName          = createStringFromSet(modelNameSet);
 		ge.stationName        = createStringFromSet(stationNameSet);
       List<String> sv = new ArrayList<>();
-		for (String s : softwareSet) sv.add("Source data acquired by " + s);
+      StringBuilder svb = new StringBuilder();
+      if (!softwareSet.isEmpty()) svb.append("Source data acquired by ");
+		svb.append(createStringFromSet(softwareSet));
+      sv.add(svb.toString());
       sv.add("Annotated via " + iac.getAimVersion());
       sv.add("Converted to RT-STRUCT by " + callerName + " version " + callerVersion);
       ge.softwareVersions   = sv;

@@ -347,7 +347,7 @@ class RegionFromRtStructDataUploader extends DataUploader implements ContourRend
       prov = new Provenance();
       prov.stepList = new ArrayList<>();
       prov.stepList.add(provParent.stepList.get(0));
-      Program p = new Program("Auto-extracted from RT-STRUCT file by ICR XNAT DataUploader", version, "None");
+      Program p = new Program("Auto-extracted from RT-STRUCT file by ICR XNAT DataUploader", truncateString(version, 255), "None");
       prov.stepList.add(new ProcessStep(p,
                                         provParent.stepList.get(1).timestamp,
                                         provParent.stepList.get(1).cvs,
