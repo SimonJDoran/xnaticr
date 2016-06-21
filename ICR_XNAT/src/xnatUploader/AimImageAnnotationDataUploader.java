@@ -185,13 +185,15 @@ public class AimImageAnnotationDataUploader extends DataUploader
          try
          {
             esu.setAccessionId(uidIdMap.get(mku.getUid()));
-				esu.XNATProject      = XNATProject;
-            esu.XNATExperimentID = XNATExperimentID;
-            esu.XNATSubjectID    = XNATSubjectID;
-            esu.date             = date;
-            esu.time             = time;
-            esu.label            = mkLabel.isEmpty() ? label + "_" + esu.XNATAccessionID :
-						                                     label + "_" + mkLabel;
+				esu.XNATProject         = XNATProject;
+            esu.XNATExperimentID    = XNATExperimentID;
+				esu.XNATExperimentLabel = XNATExperimentLabel;
+            esu.XNATSubjectID       = XNATSubjectID;
+				esu.XNATSubjectLabel    = XNATSubjectLabel;
+            esu.date                = date;
+            esu.time                = time;
+            esu.label               = mkLabel.isEmpty() ? label + "_" + esu.XNATAccessionID :
+						                                        label + "_" + mkLabel;
 				esu.setSops(sopFilenameMap, filenameScanMap, mkSop);
 				esu.setEntitySubclass(es);
             esu.setDicomSubjNameParent(dicomSubjNameParent);
@@ -243,7 +245,7 @@ public class AimImageAnnotationDataUploader extends DataUploader
       iad.setNTaskContextEntity(       ia.getTaskContextList().size());
       iad.setNInferenceEntity(         ia.getInferenceList().size());
       iad.setNAnnotationRoleEntity(    ia.getAnnotationRoleList().size());
-      iad.setNCalculationEntity(       ia.getCalculationList().hashCode());
+      iad.setNCalculationEntity(       ia.getCalculationList().size());
       iad.setNImagingObservationEntity(ia.getImagingObservationList().size());
       iad.setNImagingPhysicalEntity(   ia.getImagingPhysicalList().size());
 		

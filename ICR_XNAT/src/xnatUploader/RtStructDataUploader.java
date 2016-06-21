@@ -282,7 +282,9 @@ class RtStructDataUploader extends DataUploader
 				ru.setParentAccessionId(XNATAccessionID);
             ru.setRoiPositionInSSRoiSequence(i);
             ru.setSubjectId(XNATSubjectID);
+				ru.setSubjectLabel(XNATSubjectLabel);
             ru.setExperimentId(XNATExperimentID);
+				ru.setExperimentLabel(XNATExperimentLabel);
 				ru.setParentProvenance(prov);
 				ru.setParentRtStruct(rts);
             ru.setUploadFileParent(uploadFile);

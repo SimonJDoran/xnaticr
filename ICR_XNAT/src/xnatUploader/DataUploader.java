@@ -104,6 +104,7 @@ public abstract class DataUploader
 	protected String                        original;
    protected String                        protocol;
    protected String                        XNATExperimentID;
+	protected String                        XNATExperimentLabel;
    protected String                        XNATProject;
    protected Set<String>                   XNATScanIdSet;
    protected String                        XNATSubjectID;
@@ -253,8 +254,12 @@ public abstract class DataUploader
       if (XNATAccessionID == null)
             XNATAccessionID = getRootElement() + '_' + UidGenerator.createShortUnique();
 
-      // TODO: If a label is suppliee, then check that it is unique.
-      
+      // Replace template information in label with actual values.
+		if (label != null)
+		{
+			label = label.replace("$SESSION$", XNATExperimentLabel);
+			label = label.replace("$SUBJECT$", XNATSubjectLabel);
+		}
       Document metaDoc = createMetadataXml();
       if (errorOccurred) throw new XNATException(XNATException.FILE_UPLOAD,
                           "There was a problem in creating the metadata to "
@@ -969,10 +974,22 @@ public abstract class DataUploader
    }
    
    
+   public void setSubjectLabel(String s)
+   {
+      XNATSubjectLabel = s;
+   }
+   
+   
    public void setExperimentId(String id)
    {
       XNATExperimentID = id;
    }
+	
+	
+	public void setExperimentLabel(String s)
+	{
+		XNATExperimentLabel = s;
+	}
    
    
    public void setDate(String s)

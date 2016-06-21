@@ -371,7 +371,15 @@ class RegionFromRtStructDataUploader extends DataUploader implements ContourRend
 		// version above is no use.
 		region.setVersion("1");
 		
+		// Note that this line is out of the ideal sequence. The variable label
+		// should be created outside of createMetaDataXml(), because the template
+		// replacement below ought to happen just prior to that call. However, 
+		// we don't have the structure ssr available outside this method.
       label = labelParent + "_" + getRootElement() + "_" + ssr.roiNumber;
+		label = label.replace("$SESSION$", XNATExperimentLabel);
+		label = label.replace("$SUBJECT$", XNATSubjectLabel);
+		
+		
 		region.setLabel(label);
       
 		region.setDate(date);

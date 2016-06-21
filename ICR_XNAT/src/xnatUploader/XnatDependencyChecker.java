@@ -68,6 +68,7 @@ public class XnatDependencyChecker
 	private String      XNATProject;
 	private String      XNATSubjectID;
 	private String      XNATExperimentID;
+	private String      XNATExperimentLabel;
 	private Map<String, AmbiguousSubjectAndExperiment> ambiguousSubjExp;
 	private Set<String> studyUidSet;
 	private Set<String> seriesUidSet;
@@ -215,8 +216,9 @@ public class XnatDependencyChecker
       // Simply choose the first entry as the default.
       for (String key : ambiguousSubjExp.keySet())
       {
-         XNATSubjectID    = key;
-         XNATExperimentID = ambiguousSubjExp.get(key).experimentIDs.get(0);
+         XNATSubjectID       = key;
+         XNATExperimentID    = ambiguousSubjExp.get(key).experimentIDs.get(0);
+			XNATExperimentLabel = ambiguousSubjExp.get(key).experimentLabels.get(0);
       }         
    }
    
@@ -344,6 +346,12 @@ public class XnatDependencyChecker
 	public String getExperimentId()
 	{
 		return XNATExperimentID;
+	}
+	
+	
+	public String getExperimentLabel()
+	{
+		return XNATExperimentLabel;
 	}
 	
 	

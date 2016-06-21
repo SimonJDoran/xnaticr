@@ -212,15 +212,16 @@ public class AimImageAnnotationCollectionDataUploader extends DataUploader
 
 		XnatDependencyChecker xnd = new XnatDependencyChecker(xnprf, XNATProject,
 		                                                      studyUidSet, seriesUidSet, sopInstanceUidSet);
-		errorOccurred    = !xnd.areDependenciesInDatabase();
-		XNATSubjectID    = xnd.getSubjectId();
-		XNATExperimentID = xnd.getExperimentId();
-		XNATScanIdSet    = xnd.getScanIdSet();
-		filenameSopMap   = xnd.getFilenameSopMap();
-		sopFilenameMap   = xnd.getSopFilenameMap();
-		filenameScanMap  = xnd.getFilenameScanMap();
-		ambiguousSubjExp = xnd.getAmbiguousSubjectExperiement();
-		errorMessage     = xnd.getErrorMessage();
+		errorOccurred       = !xnd.areDependenciesInDatabase();
+		XNATSubjectID       = xnd.getSubjectId();
+		XNATExperimentID    = xnd.getExperimentId();
+		XNATExperimentLabel = xnd.getExperimentLabel();
+		XNATScanIdSet       = xnd.getScanIdSet();
+		filenameSopMap      = xnd.getFilenameSopMap();
+		sopFilenameMap      = xnd.getSopFilenameMap();
+		filenameScanMap     = xnd.getFilenameScanMap();
+		ambiguousSubjExp    = xnd.getAmbiguousSubjectExperiement();
+		errorMessage        = xnd.getErrorMessage();
 		
 		if (errorOccurred) return false;
       
@@ -422,67 +423,82 @@ public class AimImageAnnotationCollectionDataUploader extends DataUploader
       // ------------------------------------------------------
       //TODO: Not all annotations contain an image markup with an ROI.
       // Execute the following code only if such ROIs exist.
-      String labelSuffix = "_" + uid;
-		label = isBatchMode ? labelPrefix + labelSuffix : labelPrefix;
-      RtStructDataUploader rtsu = new RtStructDataUploader(xnprf);
-      try
-      {
-         rtsu.setVersion(version);
-         rtsu.setOriginalDataType("AIM instance");
-         rtsu.setLabelParent(label + "_" + rtsu.getRootElement());
-         assocRegionSetId = XNATAccessionID + "_" + rtsu.getRootElement(); 
-         rtsu.setAccessionId(assocRegionSetId);
-         rtsu.setSubjectId(XNATSubjectID);
-         rtsu.setExperimentId(XNATExperimentID);
-			
-			// Create a the list of region ids needed by the RtStructDataUploader from
-			// the map just generated.
-			List<String> idList = new ArrayList<>(); 
-			for (Map.Entry<String, String> entry : markupRegionMap.entrySet())
-				idList.add(entry.getValue());
-			rtsu.setAssignedRegionIdList(idList);
-			
-			rtsu.setRtStruct(iacRts);
-         rtsu.setProvenance(createProvenance());
-         rtsu.setSopFilenameMap(sopFilenameMap);
-         rtsu.setFilenameSopMap(filenameSopMap);
-         rtsu.setFilenameScanMap(filenameScanMap);
-			
-			// Set a dummy file. This is used only in order to generate an element
-			// in the provenance section of the metadata XML document.
-			rtsu.setUploadFile(new File(assocRegionSetId + ".dcm"));
-         
-         rtsu.uploadMetadataAndCascade();
-			
-			String description = "DICOM RT-STRUCT file auto-created by ICR XNAT uploader from AIM instance file";
-			DicomObject iacDo  = new BasicDicomObject();
-			iacRts.writeToDicom(iacDo);
-			
-			// Create the new RT-STRUCT as an input stream to be fed into the uploader.
-			ByteArrayOutputStream baos = new ByteArrayOutputStream();
-			DicomOutputStream     dos  = new DicomOutputStream(baos);
-			dos.writeDicomFile(iacDo);		
-			InputStream           bais = new ByteArrayInputStream(baos.toByteArray());
-            
-			XnatResource xr = new XnatResource(bais,
-														  "out",
-														  "RT-STRUCT",
-														  "DICOM",
-														  "GENERATED",
-														  description.toString(),
-														  XNATAccessionID + "_RTSTRUCT.dcm");
-			
-			rtsu.setPrimaryResource(xr);
-         rtsu.uploadResourcesToRepository();
-      }
-      catch (Exception ex)
-   //   catch (XNATException | DataFormatException | IOException ex)
+      if (iac.getAnnotationCount() != 0)
 		{
-			errorOccurred = true;
-			errorMessage  = ex.getMessage();
-			throw ex;
-		}
+			int nMarkups = 0;
+			for (ImageAnnotation ia : iac.getAnnotationList())
+			{
+				nMarkups += ia.getMarkupList().size();
+			}
+			if (nMarkups > 0)
+			{
+				String labelSuffix = "_" + uid;
+				label = isBatchMode ? labelPrefix + labelSuffix : labelPrefix;
+				RtStructDataUploader rtsu = new RtStructDataUploader(xnprf);
+				try
+				{
+					rtsu.setVersion(version);
+					rtsu.setOriginalDataType("AIM instance");
+					rtsu.setLabelParent(label + "_" + rtsu.getRootElement());
+					assocRegionSetId = rtsu.getRootElement() + "_" + UidGenerator.createShortUnique(); 
+					rtsu.setAccessionId(assocRegionSetId);
 
+					// TODO: Resolve the philosophical question of whether to use setter
+					//       methods or set the variables directly! Code is inconsistent.
+					rtsu.setSubjectId(XNATSubjectID);
+					rtsu.XNATSubjectLabel = XNATSubjectLabel;
+					rtsu.setExperimentId(XNATExperimentID);
+					rtsu.setExperimentLabel(XNATExperimentLabel);
+
+					// Create a the list of region ids needed by the RtStructDataUploader from
+					// the map just generated.
+					List<String> idList = new ArrayList<>(); 
+					for (Map.Entry<String, String> entry : markupRegionMap.entrySet())
+						idList.add(entry.getValue());
+					rtsu.setAssignedRegionIdList(idList);
+
+					rtsu.setRtStruct(iacRts);
+					rtsu.setProvenance(createProvenance());
+					rtsu.setSopFilenameMap(sopFilenameMap);
+					rtsu.setFilenameSopMap(filenameSopMap);
+					rtsu.setFilenameScanMap(filenameScanMap);
+
+					// Set a dummy file. This is used only in order to generate an element
+					// in the provenance section of the metadata XML document.
+					rtsu.setUploadFile(new File(assocRegionSetId + ".dcm"));
+
+					rtsu.uploadMetadataAndCascade();
+
+					String description = "DICOM RT-STRUCT file auto-created by ICR XNAT uploader from AIM instance file";
+					DicomObject iacDo  = new BasicDicomObject();
+					iacRts.writeToDicom(iacDo);
+
+					// Create the new RT-STRUCT as an input stream to be fed into the uploader.
+					ByteArrayOutputStream baos = new ByteArrayOutputStream();
+					DicomOutputStream     dos  = new DicomOutputStream(baos);
+					dos.writeDicomFile(iacDo);		
+					InputStream           bais = new ByteArrayInputStream(baos.toByteArray());
+
+					XnatResource xr = new XnatResource(bais,
+																  "out",
+																  "RT-STRUCT",
+																  "DICOM",
+																  "GENERATED",
+																  description.toString(),
+																  XNATAccessionID + "_RTSTRUCT.dcm");
+
+					rtsu.setPrimaryResource(xr);
+					rtsu.uploadResourcesToRepository();
+				}
+				catch (Exception ex)
+			//   catch (XNATException | DataFormatException | IOException ex)
+				{
+					errorOccurred = true;
+					errorMessage  = ex.getMessage();
+					throw ex;
+				}
+			}
+		}
 		
       // -----------------------------------------------------------------
       // Step 2: Upload the icr:aimImageAnnCollData metadata.
@@ -513,11 +529,13 @@ public class AimImageAnnotationCollectionDataUploader extends DataUploader
             
             // Now set variables that can be passed directly on to go into the
             // metadata XML created for the upload.
-            iau.XNATProject      = XNATProject;
-            iau.XNATExperimentID = XNATExperimentID;
-            iau.XNATSubjectID    = XNATSubjectID;
-            iau.date             = date;
-            iau.time             = time;
+            iau.XNATProject         = XNATProject;
+            iau.XNATExperimentID    = XNATExperimentID;
+				iau.XNATExperimentLabel = XNATExperimentLabel;
+            iau.XNATSubjectID       = XNATSubjectID;
+				iau.XNATSubjectLabel    = XNATSubjectLabel;
+            iau.date                = date;
+            iau.time                = time;
             iau.setDicomSubjNameParent(iacRts.patient.patientName);
             iau.setProvenanceParent(prov);
             
