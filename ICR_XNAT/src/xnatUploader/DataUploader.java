@@ -254,11 +254,13 @@ public abstract class DataUploader
       if (XNATAccessionID == null)
             XNATAccessionID = getRootElement() + '_' + UidGenerator.createShortUnique();
 
-      // Replace template information in label with actual values.
+      // Replace template information in label with actual values and ensure that
+      // only characters valid for XNAT experiment labels make it through.
 		if (label != null)
 		{
-			label = label.replace("$SESSION$", XNATExperimentLabel);
-			label = label.replace("$SUBJECT$", XNATSubjectLabel);
+			label = label.replace("$SESSION$", XNATExperimentLabel)
+			             .replace("$SUBJECT$", XNATSubjectLabel)
+                      .replaceAll("[^A-Za-z0-9_]", "");
 		}
       Document metaDoc = createMetadataXml();
       if (errorOccurred) throw new XNATException(XNATException.FILE_UPLOAD,

@@ -376,8 +376,9 @@ class RegionFromRtStructDataUploader extends DataUploader implements ContourRend
 		// replacement below ought to happen just prior to that call. However, 
 		// we don't have the structure ssr available outside this method.
       label = labelParent + "_" + getRootElement() + "_" + ssr.roiNumber;
-		label = label.replace("$SESSION$", XNATExperimentLabel);
-		label = label.replace("$SUBJECT$", XNATSubjectLabel);
+		label = label.replace("$SESSION$", XNATExperimentLabel)
+		             .replace("$SUBJECT$", XNATSubjectLabel)
+                   .replaceAll("[^A-Za-z0-9_]", "");;
 		
 		
 		region.setLabel(label);
