@@ -1,0 +1,459 @@
+<?xml version="1.0" encoding="UTF-8"?><ImageAnnotationCollection xmlns="gme://caCORE.caCORE/4.4/edu.northwestern.radiology.AIM" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" aimVersion="AIMv4_0" xsi:schemaLocation="gme://caCORE.caCORE/4.4/edu.northwestern.radiology.AIM AIM_v4_rv44_XML.xsd">
+<uniqueIdentifier root="0j1rvrj69ts2xqw9m41nn0uwnof5i6mfz03vgh3i"/>
+<dateTime value="2016-03-23T11:44:54"/>
+<user>
+<name value="zakiahmed"/>
+<loginName value="zakiahmed"/>
+<roleInTrial/>
+</user>
+<equipment>
+<manufacturerName value="Philips Medical Systems"/>
+<manufacturerModelName value="Achieva"/>
+<softwareVersion value="2.6.3"/>
+</equipment>
+<person>
+<name value="BRC_RADPRIM_027SCJ"/>
+<id value="380420"/>
+<birthDate value="1900--0-1-T00:00:00"/>
+<sex value="F"/>
+<ethnicGroup/>
+</person>
+<imageAnnotations>
+<ImageAnnotation>
+<uniqueIdentifier root="1311112.77.7630.30501.920.7.172965594.94006098.135425.2893253348"/>
+<typeCode code="ICR_MRI" codeSystem="RadiogenomicsMRI" codeSystemName="RadiogenomicsMRI"/>
+<dateTime value="2016-03-23T11:44:54"/>
+<name value="Lesion1~sp1~-~sp1~-1~sp1~#FFFFFF"/>
+<comment value="MR / SDYN_SUB2 / 78"/>
+<imagingPhysicalEntityCollection>
+<ImagingPhysicalEntity>
+<uniqueIdentifier root="182780.86932683.353244020.18.183.8.1773.2436769028.91974.5268488"/>
+<typeCode code="RID5702" codeSystem="focal" codeSystemName="RadLex" codeSystemVersion="1.0"/>
+<annotatorConfidence value="0.0"/>
+<label value="Tumor location characteristics"/>
+</ImagingPhysicalEntity>
+<ImagingPhysicalEntity>
+<uniqueIdentifier root="21425128.90.5330827554.22002.962402352.6977.244953.485.5.5140982"/>
+<typeCode code="RID29928" codeSystem="upper outer quadrant of breast" codeSystemName="RadLex" codeSystemVersion="1.0"/>
+<annotatorConfidence value="0.0"/>
+<label value="Tumor location quadrants"/>
+</ImagingPhysicalEntity>
+</imagingPhysicalEntityCollection>
+<calculationEntityCollection>
+<CalculationEntity>
+<uniqueIdentifier root="0"/>
+<typeCode code="LineLength" codeSystem="LineLength" codeSystemName="private"/>
+<description value="LineLength"/>
+<mathML/>
+<calculationResultCollection>
+<CalculationResult type="Scalar" xsi:type="ExtendedCalculationResult">
+<unitOfMeasure value="linear"/>
+<dataType code="" codeSystem="" codeSystemName="" codeSystemVersion=""/>
+<dimensionCollection>
+<Dimension>
+<index value="0"/>
+<size value="1"/>
+<label value="LineLength"/>
+</Dimension>
+</dimensionCollection>
+<calculationDataCollection>
+<CalculationData>
+<value value="0.0"/>
+<coordinateCollection>
+<Coordinate>
+<dimensionIndex value="0"/>
+<position value="0"/>
+</Coordinate>
+</coordinateCollection>
+</CalculationData>
+</calculationDataCollection>
+</CalculationResult>
+</calculationResultCollection>
+<algorithm>
+<name value="LineLength"/>
+<type code="" codeSystem="" codeSystemName="" codeSystemVersion=""/>
+<version value="1.0"/>
+</algorithm>
+</CalculationEntity>
+<CalculationEntity>
+<uniqueIdentifier root="0"/>
+<typeCode code="LineLength" codeSystem="LineLength" codeSystemName="private"/>
+<description value="LineLength"/>
+<mathML/>
+<calculationResultCollection>
+<CalculationResult type="Scalar" xsi:type="ExtendedCalculationResult">
+<unitOfMeasure value="linear"/>
+<dataType code="" codeSystem="" codeSystemName="" codeSystemVersion=""/>
+<dimensionCollection>
+<Dimension>
+<index value="0"/>
+<size value="1"/>
+<label value="LineLength"/>
+</Dimension>
+</dimensionCollection>
+<calculationDataCollection>
+<CalculationData>
+<value value="6.013329714536667"/>
+<coordinateCollection>
+<Coordinate>
+<dimensionIndex value="0"/>
+<position value="0"/>
+</Coordinate>
+</coordinateCollection>
+</CalculationData>
+</calculationDataCollection>
+</CalculationResult>
+</calculationResultCollection>
+<algorithm>
+<name value="LineLength"/>
+<type code="" codeSystem="" codeSystemName="" codeSystemVersion=""/>
+<version value="1.0"/>
+</algorithm>
+</CalculationEntity>
+</calculationEntityCollection>
+<imagingObservationEntityCollection>
+<ImagingObservationEntity>
+<uniqueIdentifier root="4.51192.742478.79.5118.227.6792394.3034939742.644080052.14551399"/>
+<typeCode code="RID49531" codeSystem="dynamic contrast enhanced MRI" codeSystemName="Radlex" codeSystemVersion=""/>
+<annotatorConfidence value="0.0"/>
+<label value="Modality"/>
+<comment/>
+</ImagingObservationEntity>
+<ImagingObservationEntity>
+<uniqueIdentifier root="147157.8284279420.6644.4091833.37362.88.792622044.1.92201507.183"/>
+<typeCode code="RID34342" codeSystem="non-mass-like enhancement" codeSystemName="RadLex" codeSystemVersion="1.0"/>
+<annotatorConfidence value="0.0"/>
+<label value="Lesion type"/>
+<comment/>
+</ImagingObservationEntity>
+<ImagingObservationEntity>
+<uniqueIdentifier root="332368.77.5482830.43903.3787.21697466.736407450.5.477.1595526824"/>
+<typeCode code="RID28454" codeSystem="none" codeSystemName="RadLex" codeSystemVersion="1.0"/>
+<annotatorConfidence value="0.0"/>
+<label value="Shape"/>
+<comment/>
+</ImagingObservationEntity>
+<ImagingObservationEntity>
+<uniqueIdentifier root="41.347145.8926326.6789.4.4177984086.613.138671478.11835.99997651"/>
+<typeCode code="RID28454" codeSystem="none" codeSystemName="RadLex" codeSystemVersion="1.0"/>
+<annotatorConfidence value="0.0"/>
+<label value="Margin"/>
+<comment/>
+</ImagingObservationEntity>
+<ImagingObservationEntity>
+<uniqueIdentifier root="160.911401.4995970120.5280071.82484.8.56372325.58.1195.664005135"/>
+<typeCode code="RID28454" codeSystem="none" codeSystemName="RadLex" codeSystemVersion="1.0"/>
+<annotatorConfidence value="0.0"/>
+<label value="Mass enhancement"/>
+<comment/>
+</ImagingObservationEntity>
+<ImagingObservationEntity>
+<uniqueIdentifier root="4448955.2670.807.8482963651.59081.680441.36.707981776.3.55869282"/>
+<typeCode code="RID34338" codeSystem="segmental enhancement" codeSystemName="RadLex" codeSystemVersion="1.0"/>
+<annotatorConfidence value="0.0"/>
+<label value="Distribution modifiers"/>
+<comment/>
+</ImagingObservationEntity>
+<ImagingObservationEntity>
+<uniqueIdentifier root="4535223491.55730.7.764.5914.94677338.989110155.242626.8757617.35"/>
+<typeCode code="RID34422" codeSystem="heterogeneous internal enhancement" codeSystemName="RadLex" codeSystemVersion="1.0"/>
+<annotatorConfidence value="0.0"/>
+<label value="Internal enhancement"/>
+<comment/>
+</ImagingObservationEntity>
+<ImagingObservationEntity>
+<uniqueIdentifier root="553.756367.9.3604424.554796559.56886011.7220.74159.7075773790.45"/>
+<typeCode code="RID28454" codeSystem="none" codeSystemName="RadLex" codeSystemVersion="1.0"/>
+<annotatorConfidence value="0.0"/>
+<label value="Other findings"/>
+<comment/>
+</ImagingObservationEntity>
+<ImagingObservationEntity>
+<uniqueIdentifier root="62.628.6134655764.596884934.3646458.763269.38781.48509620.2.6480"/>
+<typeCode code="RID13173" codeSystem="normal" codeSystemName="RadLex" codeSystemVersion="1.0"/>
+<annotatorConfidence value="0.0"/>
+<label value="Lymph nodes status"/>
+<comment/>
+</ImagingObservationEntity>
+<ImagingObservationEntity>
+<uniqueIdentifier root="79065.6522328.44859868.4135.5714352942.661239384.7.670163.86.796"/>
+<typeCode code="RID28454" codeSystem="none" codeSystemName="RadLex" codeSystemVersion="1.0"/>
+<annotatorConfidence value="0.0"/>
+<label value="T2 signal"/>
+<comment/>
+</ImagingObservationEntity>
+<ImagingObservationEntity>
+<uniqueIdentifier root="71.403348191.423179.59925702.3400046.764.92344.9033026741.3117.1"/>
+<typeCode code="RID28454" codeSystem="none" codeSystemName="RadLex" codeSystemVersion="1.0"/>
+<annotatorConfidence value="0.0"/>
+<label value="Margin2"/>
+<comment/>
+</ImagingObservationEntity>
+<ImagingObservationEntity>
+<uniqueIdentifier root="480.67334.51.2777921.51139568.4166.7.554112.8036858915.486005315"/>
+<typeCode code="RID28454" codeSystem="none" codeSystemName="RadLex" codeSystemVersion="1.0"/>
+<annotatorConfidence value="0.0"/>
+<label value="Shape2"/>
+<comment/>
+</ImagingObservationEntity>
+</imagingObservationEntityCollection>
+<markupEntityCollection>
+<MarkupEntity xsi:type="TwoDimensionPolyline">
+<uniqueIdentifier root="9n5ifu1qnqmw5vubv9hfstl286ipcxcuqb2n73s9"/>
+<shapeIdentifier value="1"/>
+<includeFlag value="true"/>
+<lineColor/>
+<lineOpacity/>
+<lineStyle/>
+<lineThickness/>
+<imageReferenceUid root="1.3.46.670589.11.24046.5.0.3552.2015121811352795081.1"/>
+<referencedFrameNumber value="1"/>
+<twoDimensionSpatialCoordinateCollection>
+<TwoDimensionSpatialCoordinate>
+<coordinateIndex value="0"/>
+<x value="158.47619047619048"/>
+<y value="175.89115646258503"/>
+</TwoDimensionSpatialCoordinate>
+<TwoDimensionSpatialCoordinate>
+<coordinateIndex value="1"/>
+<x value="160.21768707482994"/>
+<y value="162.8299319727891"/>
+</TwoDimensionSpatialCoordinate>
+<TwoDimensionSpatialCoordinate>
+<coordinateIndex value="2"/>
+<x value="166.312925170068"/>
+<y value="155.8639455782313"/>
+</TwoDimensionSpatialCoordinate>
+<TwoDimensionSpatialCoordinate>
+<coordinateIndex value="3"/>
+<x value="175.89115646258503"/>
+<y value="146.28571428571428"/>
+</TwoDimensionSpatialCoordinate>
+<TwoDimensionSpatialCoordinate>
+<coordinateIndex value="4"/>
+<x value="168.9251700680272"/>
+<y value="142.80272108843536"/>
+</TwoDimensionSpatialCoordinate>
+<TwoDimensionSpatialCoordinate>
+<coordinateIndex value="5"/>
+<x value="162.8299319727891"/>
+<y value="146.28571428571428"/>
+</TwoDimensionSpatialCoordinate>
+<TwoDimensionSpatialCoordinate>
+<coordinateIndex value="6"/>
+<x value="158.47619047619048"/>
+<y value="140.19047619047618"/>
+</TwoDimensionSpatialCoordinate>
+<TwoDimensionSpatialCoordinate>
+<coordinateIndex value="7"/>
+<x value="152.38095238095238"/>
+<y value="133.22448979591837"/>
+</TwoDimensionSpatialCoordinate>
+<TwoDimensionSpatialCoordinate>
+<coordinateIndex value="8"/>
+<x value="151.51020408163265"/>
+<y value="133.22448979591837"/>
+</TwoDimensionSpatialCoordinate>
+<TwoDimensionSpatialCoordinate>
+<coordinateIndex value="9"/>
+<x value="135.83673469387756"/>
+<y value="140.19047619047618"/>
+</TwoDimensionSpatialCoordinate>
+<TwoDimensionSpatialCoordinate>
+<coordinateIndex value="10"/>
+<x value="129.74149659863946"/>
+<y value="147.156462585034"/>
+</TwoDimensionSpatialCoordinate>
+<TwoDimensionSpatialCoordinate>
+<coordinateIndex value="11"/>
+<x value="127.12925170068027"/>
+<y value="154.12244897959184"/>
+</TwoDimensionSpatialCoordinate>
+<TwoDimensionSpatialCoordinate>
+<coordinateIndex value="12"/>
+<x value="122.77551020408163"/>
+<y value="161.95918367346937"/>
+</TwoDimensionSpatialCoordinate>
+<TwoDimensionSpatialCoordinate>
+<coordinateIndex value="13"/>
+<x value="113.19727891156462"/>
+<y value="168.05442176870747"/>
+</TwoDimensionSpatialCoordinate>
+<TwoDimensionSpatialCoordinate>
+<coordinateIndex value="14"/>
+<x value="111.45578231292517"/>
+<y value="170.66666666666666"/>
+</TwoDimensionSpatialCoordinate>
+<TwoDimensionSpatialCoordinate>
+<coordinateIndex value="15"/>
+<x value="97.52380952380952"/>
+<y value="171.5374149659864"/>
+</TwoDimensionSpatialCoordinate>
+<TwoDimensionSpatialCoordinate>
+<coordinateIndex value="16"/>
+<x value="111.45578231292517"/>
+<y value="177.6326530612245"/>
+</TwoDimensionSpatialCoordinate>
+<TwoDimensionSpatialCoordinate>
+<coordinateIndex value="17"/>
+<x value="112.3265306122449"/>
+<y value="188.0816326530612"/>
+</TwoDimensionSpatialCoordinate>
+<TwoDimensionSpatialCoordinate>
+<coordinateIndex value="18"/>
+<x value="112.3265306122449"/>
+<y value="193.30612244897958"/>
+</TwoDimensionSpatialCoordinate>
+<TwoDimensionSpatialCoordinate>
+<coordinateIndex value="19"/>
+<x value="112.3265306122449"/>
+<y value="201.14285714285714"/>
+</TwoDimensionSpatialCoordinate>
+<TwoDimensionSpatialCoordinate>
+<coordinateIndex value="20"/>
+<x value="115.80952380952381"/>
+<y value="208.10884353741497"/>
+</TwoDimensionSpatialCoordinate>
+<TwoDimensionSpatialCoordinate>
+<coordinateIndex value="21"/>
+<x value="119.29251700680271"/>
+<y value="200.2721088435374"/>
+</TwoDimensionSpatialCoordinate>
+<TwoDimensionSpatialCoordinate>
+<coordinateIndex value="22"/>
+<x value="121.03401360544217"/>
+<y value="200.2721088435374"/>
+</TwoDimensionSpatialCoordinate>
+<TwoDimensionSpatialCoordinate>
+<coordinateIndex value="23"/>
+<x value="126.25850340136054"/>
+<y value="203.75510204081633"/>
+</TwoDimensionSpatialCoordinate>
+<TwoDimensionSpatialCoordinate>
+<coordinateIndex value="24"/>
+<x value="130.6122448979592"/>
+<y value="207.23809523809524"/>
+</TwoDimensionSpatialCoordinate>
+<TwoDimensionSpatialCoordinate>
+<coordinateIndex value="25"/>
+<x value="131.48299319727892"/>
+<y value="208.9795918367347"/>
+</TwoDimensionSpatialCoordinate>
+<TwoDimensionSpatialCoordinate>
+<coordinateIndex value="26"/>
+<x value="140.19047619047618"/>
+<y value="208.10884353741497"/>
+</TwoDimensionSpatialCoordinate>
+<TwoDimensionSpatialCoordinate>
+<coordinateIndex value="27"/>
+<x value="140.19047619047618"/>
+<y value="203.75510204081633"/>
+</TwoDimensionSpatialCoordinate>
+<TwoDimensionSpatialCoordinate>
+<coordinateIndex value="28"/>
+<x value="145.41496598639455"/>
+<y value="209.85034013605443"/>
+</TwoDimensionSpatialCoordinate>
+<TwoDimensionSpatialCoordinate>
+<coordinateIndex value="29"/>
+<x value="151.51020408163265"/>
+<y value="216.81632653061223"/>
+</TwoDimensionSpatialCoordinate>
+<TwoDimensionSpatialCoordinate>
+<coordinateIndex value="30"/>
+<x value="153.2517006802721"/>
+<y value="217.68707482993196"/>
+</TwoDimensionSpatialCoordinate>
+<TwoDimensionSpatialCoordinate>
+<coordinateIndex value="31"/>
+<x value="160.21768707482994"/>
+<y value="214.20408163265304"/>
+</TwoDimensionSpatialCoordinate>
+<TwoDimensionSpatialCoordinate>
+<coordinateIndex value="32"/>
+<x value="159.3469387755102"/>
+<y value="206.3673469387755"/>
+</TwoDimensionSpatialCoordinate>
+<TwoDimensionSpatialCoordinate>
+<coordinateIndex value="33"/>
+<x value="157.60544217687075"/>
+<y value="197.65986394557822"/>
+</TwoDimensionSpatialCoordinate>
+<TwoDimensionSpatialCoordinate>
+<coordinateIndex value="34"/>
+<x value="156.73469387755102"/>
+<y value="188.95238095238093"/>
+</TwoDimensionSpatialCoordinate>
+<TwoDimensionSpatialCoordinate>
+<coordinateIndex value="35"/>
+<x value="156.73469387755102"/>
+<y value="183.7278911564626"/>
+</TwoDimensionSpatialCoordinate>
+</twoDimensionSpatialCoordinateCollection>
+</MarkupEntity>
+<MarkupEntity xsi:type="TwoDimensionMultiPoint">
+<uniqueIdentifier root="pm8kobkhv1m416wzy6527p4v88bg5rr7xx5i2iqt"/>
+<shapeIdentifier value="2"/>
+<includeFlag value="true"/>
+<lineColor/>
+<lineOpacity/>
+<lineStyle/>
+<lineThickness/>
+<imageReferenceUid root="1.3.46.670589.11.24046.5.0.3552.2015121811352795081.1"/>
+<referencedFrameNumber value="1"/>
+<twoDimensionSpatialCoordinateCollection>
+<TwoDimensionSpatialCoordinate>
+<coordinateIndex value="0"/>
+<x value="154.99319727891157"/>
+<y value="215.07482993197277"/>
+</TwoDimensionSpatialCoordinate>
+<TwoDimensionSpatialCoordinate>
+<coordinateIndex value="1"/>
+<x value="152.38095238095238"/>
+<y value="134.0952380952381"/>
+</TwoDimensionSpatialCoordinate>
+</twoDimensionSpatialCoordinateCollection>
+</MarkupEntity>
+</markupEntityCollection>
+<imageAnnotationStatementCollection>
+<ImageAnnotationStatement xsi:type="ImagingPhysicalEntityHasTwoDimensionGeometricShapeEntityStatement">
+<subjectUniqueIdentifier root="2"/>
+<objectUniqueIdentifier root="36229.916035.4.53943804.547964375.1875032.846.9486008534.3321.97"/>
+</ImageAnnotationStatement>
+<ImageAnnotationStatement xsi:type="ImagingPhysicalEntityHasCalculationEntityStatement">
+<subjectUniqueIdentifier root="0"/>
+<objectUniqueIdentifier root="36229.916035.4.53943804.547964375.1875032.846.9486008534.3321.97"/>
+</ImageAnnotationStatement>
+<ImageAnnotationStatement xsi:type="ImagingPhysicalEntityHasTwoDimensionGeometricShapeEntityStatement">
+<subjectUniqueIdentifier root="2"/>
+<objectUniqueIdentifier root="8813764.447429.1894.3322133228.91.7.606740069.833.29038.54246932"/>
+</ImageAnnotationStatement>
+<ImageAnnotationStatement xsi:type="ImagingPhysicalEntityHasCalculationEntityStatement">
+<subjectUniqueIdentifier root="0"/>
+<objectUniqueIdentifier root="8813764.447429.1894.3322133228.91.7.606740069.833.29038.54246932"/>
+</ImageAnnotationStatement>
+</imageAnnotationStatementCollection>
+<imageReferenceEntityCollection>
+<ImageReferenceEntity xsi:type="DicomImageReferenceEntity">
+<uniqueIdentifier root="3726129.2830833996.429470.66.54958.7335.135191088.749.65056508.3"/>
+<imageStudy>
+<instanceUid root="1.2.840.113564.9.1.2728161578.69.2.5000289944"/>
+<startDate value="2012-06-09T11:00:00"/>
+<startTime value="11:00:00"/>
+<imageSeries>
+<instanceUid root="1.3.46.670589.11.24046.5.0.3552.2015121811351723000.1"/>
+<modality code="" codeSystem="" codeSystemName="" codeSystemVersion=""/>
+<imageCollection>
+<Image>
+<sopClassUid root=""/>
+<sopInstanceUid root="1.3.46.670589.11.24046.5.0.3552.2015121811352795081.1"/>
+</Image>
+</imageCollection>
+</imageSeries>
+</imageStudy>
+</ImageReferenceEntity>
+</imageReferenceEntityCollection>
+</ImageAnnotation>
+</imageAnnotations>
+</ImageAnnotationCollection>
+

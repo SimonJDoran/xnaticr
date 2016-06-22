@@ -74,11 +74,13 @@ import generalUtilities.DicomXnatDateTime;
 import generalUtilities.UidGenerator;
 import generalUtilities.Vector2D;
 import java.io.*;
+import java.lang.reflect.Field;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -970,5 +972,31 @@ public class AimImageAnnotationCollectionDataUploader extends DataUploader
              (!XNATScanIdSet.isEmpty());
    }
    
+   public void reportFieldValues()
+   {
+      List<Field> fieldList = new ArrayList<>();
+      Class cls = this.getClass();
+      while (cls.getSuperclass() != null)
+      {
+         fieldList.addAll(Arrays.asList(cls.getDeclaredFields()));
+         cls = cls.getSuperclass();
+      }
+     
+      for (Field f : fieldList)
+      {
+         String value;
+         try
+         {
+            value = f.get(this).toString();
+         }
+         catch (IllegalAccessException | IllegalArgumentException |
+                NullPointerException | ExceptionInInitializerError ex)
+         {
+            value = ex.getMessage();
+         }
+         
+         System.out.println(f.getName() + " = " + value);
+      }
+   }
 }
 

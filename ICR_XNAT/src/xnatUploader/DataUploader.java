@@ -73,6 +73,8 @@ import xnatRestToolkit.XNATRESTToolkit;
 import exceptions.XMLException;
 import java.awt.Component;
 import java.io.IOException;
+import java.lang.reflect.Field;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Vector;
@@ -178,7 +180,7 @@ public abstract class DataUploader
     * 
     * @return a boolean indicating whether the file was parsed correctly
     */
-   protected boolean parseFile()
+   public boolean parseFile()
 	{
 		return true;
 	}
@@ -1044,5 +1046,8 @@ public abstract class DataUploader
    {
       return uploadFile;
    }
+   
+   
+
 	   
 }
