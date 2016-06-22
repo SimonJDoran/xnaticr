@@ -129,8 +129,6 @@ public class AimImageAnnotationCollectionDataUploader extends DataUploader
 		markupRegionMap   = new LinkedHashMap<>();
    }
 
-
-
   /**
     * Open and read the specified file.
     * Note that the default type of file is XML, but this method will be over-
