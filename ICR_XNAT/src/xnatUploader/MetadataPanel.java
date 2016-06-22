@@ -475,6 +475,7 @@ public class MetadataPanel extends JPanel
       {
          final String     alias = editableData.get(i);
          final JTextField tf    = (JTextField) getComponent(alias);
+			tf.setName(alias);
          tf.addActionListener(new ActionListener()
          {
             @Override
@@ -506,6 +507,8 @@ public class MetadataPanel extends JPanel
             public void keyTyped(KeyEvent evt)
             {
                du.updateVariablesForEditableFields(MetadataPanel.this, evt.getKeyChar(), evt.getSource());
+					System.out.println(evt.getComponent().getName());
+					System.out.println("Right metadata " + du.rightMetadataPresent());
                MetadataPanel.this.putClientProperty("enableUpload", du.rightMetadataPresent());
             }
          });

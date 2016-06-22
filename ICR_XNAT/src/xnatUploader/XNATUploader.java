@@ -1053,6 +1053,7 @@ public final class XNATUploader extends XNATGUI
       
       useSubtype(subtype, subtypes, subtypeAlias);
       uploadJButton.setText(UPLOAD);
+		enableUpload(false);
       chooseFileJButton.setEnabled(true);
    }
    
@@ -1205,6 +1206,7 @@ public final class XNATUploader extends XNATGUI
             @Override
             public void propertyChange(PropertyChangeEvent evt)
             {
+					System.out.println(evt.getPropertyName());
                if (evt.getPropertyName().equals("enableUpload"))
                   enableUpload((Boolean) evt.getNewValue());
             }
