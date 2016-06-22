@@ -294,8 +294,17 @@ public class MetadataPanel extends JPanel
 
 
       JTextField textField = (JTextField) fieldMap.get(fieldAlias);
-      String previousContents = textField.getText();
-      return (comp.equals(source))? previousContents + key.toString() : previousContents;
+      
+		String previousContents = textField.getText();
+		String r = previousContents;
+		if (comp.equals(source))
+		{
+			// For some completely unknown reason previous contents already has the
+		   // character removed when the key is a delete.
+			if (Integer.toHexString(key | 0x10000).substring(1).equals("0008")) r = previousContents;
+			else r = previousContents + key.toString();
+		}
+		return r;
    }
    
    
@@ -483,7 +492,7 @@ public class MetadataPanel extends JPanel
             {
                du.updateVariablesForEditableFields(MetadataPanel.this, null, evt.getSource());
                MetadataPanel.this.putClientProperty("enableUpload", du.rightMetadataPresent());
-               }
+            }
          });
 
          tf.addFocusListener(new FocusListener()
@@ -507,9 +516,7 @@ public class MetadataPanel extends JPanel
             public void keyTyped(KeyEvent evt)
             {
                du.updateVariablesForEditableFields(MetadataPanel.this, evt.getKeyChar(), evt.getSource());
-					System.out.println(evt.getComponent().getName());
-					System.out.println("Right metadata " + du.rightMetadataPresent());
-               MetadataPanel.this.putClientProperty("enableUpload", du.rightMetadataPresent());
+					MetadataPanel.this.putClientProperty("enableUpload", du.rightMetadataPresent());
             }
          });
       }

@@ -1208,7 +1208,12 @@ public final class XNATUploader extends XNATGUI
             {
 					System.out.println(evt.getPropertyName());
                if (evt.getPropertyName().equals("enableUpload"))
-                  enableUpload((Boolean) evt.getNewValue());
+					{
+						if (evt.getNewValue() instanceof Boolean )
+						{
+							enableUpload((Boolean) evt.getNewValue());
+						}
+					}
             }
          });
          clearDisplay();
