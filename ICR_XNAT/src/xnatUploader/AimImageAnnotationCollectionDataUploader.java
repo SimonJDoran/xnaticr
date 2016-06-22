@@ -129,9 +129,7 @@ public class AimImageAnnotationCollectionDataUploader extends DataUploader
 		markupRegionMap   = new LinkedHashMap<>();
    }
 
-	AimImageAnnotationCollectionDataUploader() {
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-	}
+
 
   /**
     * Open and read the specified file.
