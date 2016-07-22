@@ -78,8 +78,6 @@ public class IcrAimImageAnnCollDataMdComplexType extends IcrGenericImageAssessme
 	{
 		super.insertXml();
 	
-      //Temporary kludge
-      softwareVersion = "1";
 		dppXML.delayedWriteEntityWithText("aimVersion",          aimVersion)
 				.delayedWriteEntityWithText("aimId",               aimId)
                .delayedWriteEntity("aimUser")
@@ -92,7 +90,7 @@ public class IcrAimImageAnnCollDataMdComplexType extends IcrGenericImageAssessme
 				   .delayedWriteAttribute("manufacturerName",      manufacturerName)
 				   .delayedWriteAttribute("manufacturerModelName", manufacturerModelName)
 				   .delayedWriteAttribute("deviceSerialNumber",    deviceSerialNumber)
-				   .delayedWriteAttribute("softwareVersion",       softwareVersion)
+				   .delayedWriteAttribute("softwareVersionString", softwareVersion)
 				.delayedEndEntity()
 				.delayedWriteEntity("person")
 				   .delayedWriteAttribute("name",                  personName)
