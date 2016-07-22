@@ -625,7 +625,7 @@ public class RtStructBuilder
                cl.add(c);
                rc.contourList = cl;
 	
-					ssr.roiName                = shape.getLabel();
+					ssr.roiName                = shape.getLabel() + "_" + shape.getUid();
 					ssr.roiDescription         = shape.getDescription();
 					ssr.roiGenerationAlgorithm = ""; // Required field but can be empty.
 					ssr.derivationCodeList     = new ArrayList<>();

@@ -55,6 +55,7 @@ import xmlUtilities.DelayedPrettyPrinterXmlWriter;
 public class IcrAimImageAnnCollDataMdComplexType extends IcrGenericImageAssessmentDataMdComplexType
 {
 	protected String       aimVersion;
+   protected String       aimId;
 	protected String       aimUserName;
 	protected String       aimUserLoginName;
 	protected String       aimUserRole;
@@ -80,7 +81,8 @@ public class IcrAimImageAnnCollDataMdComplexType extends IcrGenericImageAssessme
       //Temporary kludge
       softwareVersion = "1";
 		dppXML.delayedWriteEntityWithText("aimVersion",          aimVersion)
-				.delayedWriteEntity("aimUser")
+				.delayedWriteEntityWithText("aimId",               aimId)
+               .delayedWriteEntity("aimUser")
 				   .delayedWriteAttribute("name",                  aimUserName)
 				   .delayedWriteAttribute("loginName",             aimUserLoginName)
 				   .delayedWriteAttribute("roleInClinicalTrial",   aimUserRole)
@@ -121,6 +123,12 @@ public class IcrAimImageAnnCollDataMdComplexType extends IcrGenericImageAssessme
 	public void setAimVersion(String s)
 	{
 		aimVersion = s;
+	}
+	
+	
+   public void setAimId(String s)
+	{
+		aimId = s;
 	}
 	
 	

@@ -59,7 +59,8 @@ public class AimEntitySubclass extends XnatSchemaElement
 			  
 	// Note: It is not expected that all (or indeed the majority) of these
 	//       variables will have values for any given EntitySubclass.
-	public String       subclassType;
+	public String       aimId;
+   public String       subclassType;
 	public String       comment;
 	public String       description;
 	public String       typeCode;

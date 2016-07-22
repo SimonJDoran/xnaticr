@@ -62,6 +62,7 @@ import xmlUtilities.DelayedPrettyPrinterXmlWriter;
 public class IcrAimImageAnnotationDataMdComplexType extends IcrGenericImageAssessmentDataMdComplexType
 {
 	protected String       aimVersion;
+   protected String       aimId;
 	protected String       comment;
 	protected String       aimUserName;
 	protected String       aimUserLoginName;
@@ -94,6 +95,7 @@ public class IcrAimImageAnnotationDataMdComplexType extends IcrGenericImageAsses
       //Kludge
       softwareVersion = "1";
 		dppXML.delayedWriteEntityWithText("aimVersion",                aimVersion)
+            .delayedWriteEntityWithText("aimId",                     aimId)  
             .delayedWriteEntityWithText("comment",                   comment)
 				.delayedWriteEntity("aimUser")
 				   .delayedWriteAttribute("name",                        aimUserName)
@@ -143,6 +145,12 @@ public class IcrAimImageAnnotationDataMdComplexType extends IcrGenericImageAsses
 	public void setAimVersion(String s)
 	{
 		aimVersion = s;
+	}
+	
+	
+	public void setAimId(String s)
+	{
+		aimId = s;
 	}
 	
 	

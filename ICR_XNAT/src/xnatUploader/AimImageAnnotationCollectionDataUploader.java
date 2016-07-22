@@ -567,6 +567,7 @@ public class AimImageAnnotationCollectionDataUploader extends DataUploader
 				    iacd = new IcrAimImageAnnCollDataMdComplexType();
 		
 		iacd.setVersion(iac.getAimVersion());
+      iacd.setAimId(iac.getUid());
       
       iacd.setAimUserName(          iac.getUser().getName());
       iacd.setAimUserLoginName(     iac.getUser().getLoginName());

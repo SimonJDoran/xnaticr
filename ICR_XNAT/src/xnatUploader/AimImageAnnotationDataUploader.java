@@ -161,7 +161,8 @@ public class AimImageAnnotationDataUploader extends DataUploader
 			AimEntitySubclass es    = new AimEntitySubclass();
 			Set<String>       mkSop = new HashSet<>();
 			
-			es.subclassType                      = es.MARKUP;
+			es.aimId                             = mku.getUid();
+         es.subclassType                      = es.MARKUP;
 			es.associatedRegionSetId             = assocRegionSetId;
 			es.associatedRegionId                = markupRegionMap.get(mku.getUid());
 			es.associatedAimEntitySubclassIdList = new ArrayList<>();
@@ -221,7 +222,8 @@ public class AimImageAnnotationDataUploader extends DataUploader
 		IcrAimImageAnnotationDataMdComplexType iad
 				                    = new IcrAimImageAnnotationDataMdComplexType();
 				  
-		iad.setComment(ia.getComment());
+		iad.setAimId(ia.getUid());
+      iad.setComment(ia.getComment());
 		
 		iad.setAimUserName(              userParent.getName());
       iad.setAimUserLoginName(         userParent.getLoginName());

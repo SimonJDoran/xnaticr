@@ -62,7 +62,8 @@ public class IcrAimEntitySubclassDataMdComplexType extends IcrGenericImageAssess
 	{
 		super.insertXml();
 		
-		dppXML.delayedWriteEntityWithText("subclassType",                  es.subclassType)
+		dppXML.delayedWriteEntityWithText("aimId",                         es.aimId)
+            .delayedWriteEntityWithText("subclassType",                  es.subclassType)
 				.delayedWriteEntityWithText("comment",                       es.comment)
 				.delayedWriteEntityWithText("description",                   es.description)
 				.delayedWriteEntityWithText("typeCode",                      es.typeCode)
