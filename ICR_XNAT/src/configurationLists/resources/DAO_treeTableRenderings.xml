@@ -1033,37 +1033,37 @@
       <property name="tooltip">XNAT assessment note</property>
    </renderProperties>
    
-   <renderProperties element="icr:regionSetData/nROIs">
+   <renderProperties element="icr:regionSetData/nRegions">
       <property name="Letter">O</property>
       <property name="Colour">light blue</property>
       <property name="tooltip">Application output: number of ROIs contained in this set</property>
    </renderProperties>
    
-   <renderProperties element="icr:regionSetData/originatingRoiSetSource/originalDataType">
+   <renderProperties element="icr:regionSetData/originatingRegionSetSource/originalDataType">
       <property name="Letter">T</property>
       <property name="Colour">light blue</property>
       <property name="tooltip">Application output: original data type</property>
    </renderProperties>
    
-   <renderProperties element="icr:regionSetData/originatingRoiSetSource/originalLabel">
+   <renderProperties element="icr:regionSetData/originatingRegionSetSource/originalLabel">
       <property name="Letter">L</property>
       <property name="Colour">light blue</property>
       <property name="tooltip">Application output: original label</property>
    </renderProperties>
    
-   <renderProperties element="icr:regionSetData/originatingRoiSetSource/originatingApplicationName">
+   <renderProperties element="icr:regionSetData/originatingRegionSetSource/originatingApplicationName">
       <property name="Letter">N</property>
       <property name="Colour">light blue</property>
       <property name="tooltip">Application output: originating application name</property>
    </renderProperties>
    
-   <renderProperties element="icr:regionSetData/originatingRoiSetSource/originatingApplicationVersion">
+   <renderProperties element="icr:regionSetData/originatingRegionSetSource/originatingApplicationVersion">
       <property name="Letter">V</property>
       <property name="Colour">light blue</property>
       <property name="tooltip">Application output: originating application version</property>
    </renderProperties>
    
-   <renderProperties element="icr:regionSetData/originatingRoiSetSource/originalUID">
+   <renderProperties element="icr:regionSetData/originatingRegionSetSource/originalUid">
       <property name="Letter">U</property>
       <property name="Colour">light blue</property>
       <property name="tooltip">Application output: original UID</property>

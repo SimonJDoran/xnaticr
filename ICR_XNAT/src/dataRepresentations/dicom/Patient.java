@@ -65,8 +65,8 @@ public class Patient extends DicomEntity
    
    public Patient(DicomObject pDo)
    {
-      patientName               = readString(pDo, Tag.PatientName, 1);
-      patientId                 = readString(pDo, Tag.PatientID, 1);
+      patientName               = readString(pDo, Tag.PatientName, 2);
+      patientId                 = readString(pDo, Tag.PatientID, 2);
       patientBirthDate          = readString(pDo, Tag.PatientBirthDate, 2);
       patientSex                = readString(pDo, Tag.PatientSex, 2);
       clinicalTrialSponsorName  = readString(pDo, Tag.ClinicalTrialSponsorName, 2);
@@ -84,8 +84,8 @@ public class Patient extends DicomEntity
    
    public void writeToDicom(DicomObject pDo)
    {
-      writeString(pDo, Tag.PatientName,              VR.PN, 1, patientName);
-      writeString(pDo, Tag.PatientID,                VR.LO, 1, patientId);
+      writeString(pDo, Tag.PatientName,              VR.PN, 2, patientName);
+      writeString(pDo, Tag.PatientID,                VR.LO, 2, patientId);
       writeString(pDo, Tag.PatientBirthDate,         VR.DA, 2, patientBirthDate);
       writeString(pDo, Tag.PatientSex,               VR.CS, 2, patientSex);
       writeString(pDo, Tag.ClinicalTrialSponsorName, VR.LO, 2, clinicalTrialSponsorName);
