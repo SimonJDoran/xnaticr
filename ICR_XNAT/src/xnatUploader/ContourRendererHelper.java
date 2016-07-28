@@ -438,9 +438,12 @@ public class ContourRendererHelper
 //         g2d.drawLine(startPoint[0], startPoint[1], endPoint[0], endPoint[1]);
 //         
 //      }
-      
-      int[] x = new int[rc.nContourPoints];
-      int[] y = new int[rc.nContourPoints];
+      System.out.println(topLeftPos[0] + ", " + topLeftPos[1] + ", " + topLeftPos[2]);
+      System.out.println(dirCosines[0] + ", " + dirCosines[1] + ", " + dirCosines[2] + ", " + dirCosines[3] + ", " + dirCosines[4] + ", " + dirCosines[5]);
+      System.out.println(pixelSpacing[0] + ", " + pixelSpacing[1]);
+               
+      float[] x = new float[rc.nContourPoints];
+      float[] y = new float[rc.nContourPoints];
       for (int j=0; j<rc.nContourPoints; j++)
       {
          if (coordsAsPixel)
@@ -452,10 +455,11 @@ public class ContourRendererHelper
          else
          {
             // For example, RT-STRUCTS have the ROI's coded in patient coords.
-            int[] point = convertFromPatientToImageCoords(
+            float[] point = convertFromPatientToImageCoords(
                              rc.contourPoints[j], topLeftPos, dirCosines, pixelSpacing);
             x[j] = point[0];
             y[j] = point[1];
+            System.out.println(x[j] + ", " + y[j] + ", " + rc.contourPoints[j][0] + ", " + rc.contourPoints[j][1] + ", " + rc.contourPoints[j][2]);
          }
       }
       
@@ -463,6 +467,9 @@ public class ContourRendererHelper
       polygon.moveTo(x[0], y[0]);
       for (int j=1; j<x.length; j++) polygon.lineTo(x[j], y[j]);
       polygon.closePath();
+      
+      // TODO: create an appropriate framework to allow filling to be
+      // turned on or off as desired by the user.
       g2d.fill(polygon);
       g2d.dispose();    
    }
@@ -495,6 +502,7 @@ public class ContourRendererHelper
    }
    
    
+   
    /**
     * Convert coordinates supplied (e.g., from DICOM file) in patient space
     * to the column and row indices of the raw pixel image.
@@ -507,83 +515,75 @@ public class ContourRendererHelper
     * @param d the pixel dimensions: d[0] = row spacing; d[1] = column spacing
     * @return two element float[]: x[0] = image column, x[1] = image row. 
     */
-   public static int[] convertFromPatientToImageCoords(float[] r, float[] p, float[] c, float[] d)
+   public static float[] convertFromPatientToImageCoords(float[] r, float[] p, float[] c, float[] d)
    {
-      float fCol = 0;
-      float fRow = 0;
-      int[] result = new int[2];
+      // There are a number of different ways of calculating the row and 
+      // column in the image, all of which should give the same result within
+      // the relevant floating point tolerance. However, not all methods are
+      // applicable or reliable if a given direction cosine is zero or close
+      // to zero. In the code below, all combinations are tried and checked for
+      // consistency at the end.
+      List<Float> X = new ArrayList<>();
+      List<Float> Y = new ArrayList<>();
+      float[] result = new float[2];
       
-      // Note that we cannot blindly find the inverse of the 4 x 4
-      // matrix specified on p. 1288 of Volume 3 (Information Object
-      // Definitions) of the 2011 DICOM standard, because it is not
-      // actually a valid 3-D transformation and the inverse does not
-      // exist. We solve some simultaneous equations, but have to check
-      // for special cases because quite often the coefficients are zero.
-
-      if (c[3] != 0)
+      float x = r[0] - p[0];
+      float y = r[1] - p[1];
+      float z = r[2] - p[2];
+      
+      // Replace tests for equality to zero with comparisons to tolerance value,
+      // so that we don't get inaccuracies creeping in by using very small numbers
+      // in calculations.
+      float tol = 0.001f;
+      
+      if (Math.abs(c[3]) > tol)
       {
-         if (c[1] != 0) 
+         if (Math.abs(c[1]) > tol)        
          {
-            fCol = ((r[1] - p[1]) - c[4]/c[3] * (r[0] - p[0]))
-                                  / (c[1]*d[1] * (1 - c[4]/c[3] * c[0]/c[1]));
+            X.add((c[3]*y - c[4]*x) / (c[1]*c[3] - c[0]*c[4]));
+            Y.add((c[1]*x - c[0]*y) / (c[1]*c[3] - c[0]*c[4]));
          }
          
-         
-         if (c[2] != 0)
+         if (Math.abs(c[2]) > tol)
          {
-            fCol = ((r[2] - p[2]) - c[5]/c[3] * (r[0] - p[0]))
-                                  / (c[2]*d[1] * (1 - c[5]/c[3] * c[0]/c[2]));
+            X.add((c[3]*z - c[5]*x) / (c[2]*c[3] - c[0]*c[5]));
+            Y.add((c[2]*x - c[0]*z) / (c[2]*c[3] - c[0]*c[5]));
          }
-         
-         fRow = ((r[0] - p[0]) - c[0]*d[1]*fCol) / (c[3]*d[0]);         
-      }
-         
-         
-      if (c[4] != 0)
-      {
-         if (c[2] != 0) 
-         {
-            fCol = ((r[2] - p[2]) - c[5]/c[4] * (r[1] - p[1]))
-                                  / (c[2]*d[1] * (1 - c[5]/c[4] * c[1]/c[2]));
-         }
-         
-         
-         if (c[0] != 0)
-         {
-            fCol = ((r[0] - p[0]) - c[3]/c[4] * (r[1] - p[1]))
-                                  / (c[0]*d[1] * (1 - c[3]/c[4] * c[1]/c[0]));
-         }
-         
-         fRow = ((r[1] - p[1]) - c[1]*d[1]*fCol) / (c[4]*d[0]);         
       }
       
       
-      if (c[5] != 0)
+      if (Math.abs(c[4]) > tol)
       {
-         if (c[0] != 0) 
+         if (Math.abs(c[2]) > tol)        
          {
-            fCol = ((r[0] - p[0]) - c[3]/c[5] * (r[2] - p[2]))
-                                  / (c[0]*d[1] * (1 - c[3]/c[5] * c[2]/c[0]));
+            X.add((c[4]*z - c[5]*y) / (c[2]*c[4] - c[1]*c[5]));
+            Y.add((c[2]*y - c[1]*z) / (c[2]*c[4] - c[1]*c[5]));
          }
          
-         
-         if (c[1] != 0)
+         if (Math.abs(c[0]) > tol)
          {
-            fCol = ((r[0] - p[0]) - c[4]/c[5] * (r[2] - p[2]))
-                                  / (c[1]*d[1] * (1 - c[4]/c[5] * c[2]/c[1]));
+            X.add((c[4]*x - c[3]*y) / (c[0]*c[4] - c[1]*c[3]));
+            Y.add((c[0]*y - c[1]*x) / (c[0]*c[4] - c[1]*c[3]));
          }
-         
-         fRow = ((r[2] - p[2]) - c[2]*d[1]*fCol) / (c[5]*d[0]);         
       }
       
+      // Sanity check
+      for (int i=0; i<X.size(); i++)
+      {
+         if ((Math.abs(X.get(i) - X.get(0)) > tol) ||
+             (Math.abs(Y.get(i) - Y.get(0)) > tol))
+            throw new RuntimeException("Error converting coords.");               
+      }
       
-      result[0] = Math.round(fCol);
-      result[1] = Math.round(fRow);
+      if (X.isEmpty()) throw new RuntimeException("Error converting coords.");
+      
+      result[0] = X.get(0) / d[1];
+      result[1] = Y.get(0) / d[0];
       
       return result;
    }
-   
-   
+      
+     
    /**
     * Convert coordinates supplied in terms of 2-D image pixels to patient space
     * as encoded in a DICOM file.

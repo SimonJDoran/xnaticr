@@ -99,7 +99,7 @@ public class StructureSet extends DicomEntity
 	{
 		writeString(ssDo,   Tag.StructureSetLabel,        VR.SH, 1, structureSetLabel);
 		writeString(ssDo,   Tag.StructureSetName,         VR.LO, 1, structureSetName);
-		writeString(ssDo,   Tag.StructureSetDescription,  VR.ST, 3, structureSetName);
+		writeString(ssDo,   Tag.StructureSetDescription,  VR.ST, 3, structureSetDescription);
 		writeString(ssDo,   Tag.InstanceNumber,           VR.IS, 3, instanceNumber);
 		writeString(ssDo,   Tag.StructureSetDate,         VR.DA, 2, structureSetDate);
 		writeString(ssDo,   Tag.StructureSetTime,         VR.TM, 2, structureSetTime);

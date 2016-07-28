@@ -530,10 +530,12 @@ public class RtStructBuilder
       
 		StructureSet ss = new StructureSet();
 		
-      ss.structureSetLabel           = "Auto-created structure set";
-      ss.structureSetName            =  "RT-STRUCT_" + iac.getUid();
-      ss.structureSetDescription     = "Image markup from AIM instance document with UID "
-                                        + iac.getUid() + " converted to RT-STRUCT by ICR XNAT DataUploader";
+      ss.structureSetLabel           = "RT-STRUCT_from_AIM_" + iac.getUid();
+      ss.structureSetName            = "RT-STRUCT_from_AIM_" + iac.getUid();
+      ss.structureSetDescription     = "ROIs from AIM instance document with UID "
+                                        + iac.getUid() + " and AIM description '"
+                                        + iac.getDescription() + "', "
+                                        + "converted to RT-STRUCT by ICR XNAT DataUploader";
       ss.instanceNumber              = "1";
 		ss.structureSetDate            = rts.sopCommon.instanceCreationDate;
 		ss.structureSetTime            = rts.sopCommon.instanceCreationTime;
@@ -608,8 +610,10 @@ public class RtStructBuilder
                
 					position    = bdo.getFloats(Tag.ImagePositionPatient);
                orientation = bdo.getFloats(Tag.ImageOrientationPatient);
-               pixelSize   = bdo.getFloats(Tag.PixelSpacing);					
-               
+               pixelSize   = bdo.getFloats(Tag.PixelSpacing);
+               System.out.println(position[0] + ", " + position[1] + ", " + position[2]);
+               System.out.println(orientation[0] + ", " + orientation[1] + ", " + orientation[2] + ", " + orientation[3] + ", " + orientation[4] + ", " + orientation[5]);
+               System.out.println(pixelSize[0] + ", " + pixelSize[1]);
 					for (TwoDimensionCoordinate d2 : d2l)
 					{
 						float    x  = (float) d2.getX();
@@ -621,12 +625,16 @@ public class RtStructBuilder
 						lf.add(d3[1]);
 						lf.add(d3[2]);
 						cd.add(lf);
+                  System.out.println(x + ", " + y + ", " + d3[0] + ", " + d3[1] + ", " + d3[2]);
 					}
                cl.add(c);
                rc.contourList = cl;
 	
-					ssr.roiName                = shape.getLabel() + "_" + shape.getUid();
-					ssr.roiDescription         = shape.getDescription();
+					ssr.roiName                = "StructureSetROI_from_AIM_" + shape.getUid();
+					ssr.roiDescription         = "ROI from AIM ImageMarkupEntity with UID "
+                                             + shape.getUid() + ", with AIM label '"
+                                             + shape.getLabel() + "' and AIM description '"
+                                             + shape.getDescription() + "'";
 					ssr.roiGenerationAlgorithm = ""; // Required field but can be empty.
 					ssr.derivationCodeList     = new ArrayList<>();
 					
