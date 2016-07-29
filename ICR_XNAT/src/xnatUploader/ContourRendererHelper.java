@@ -66,6 +66,7 @@ import org.dcm4che2.io.DicomInputStream;
 import org.dcm4che2.iod.module.composite.ImagePixel;
 import exceptions.XNATException;
 import generalUtilities.Vector2D;
+import java.awt.BasicStroke;
 import java.awt.geom.GeneralPath;
 import java.io.BufferedOutputStream;
 import java.io.File;
@@ -399,48 +400,11 @@ public class ContourRendererHelper
    {
       Graphics2D g2d = bi.createGraphics();
       g2d.setPaint(new Color(displayColour.get(0), displayColour.get(1), displayColour.get(2)));
-//      g2d.setStroke(new BasicStroke(1.0f)); // Need to experiment with some values here.
-//      for (int j=0; j<rc.nContourPoints-1; j++)
-//      {
-//         float[] r0 = new float[3];
-//         float[] r1 = new float[3];
-//         
-//         for (int i=0; i<3; i++)
-//         {
-//            r0[i] = rc.contourPoints[j][i];
-//            r1[i] = rc.contourPoints[j+1][i];
-//         }
-//         
-//         
-//         int[] startPoint = new int[3];
-//         int[] endPoint   = new int[3];
-//         
-//         if (coordsAsPixel)
-//         {
-//            // For example, MRIW specifies ROI's like this.
-//            for (int i=0; i<3; i++)
-//            {
-//               startPoint[i] = Math.round(r0[i]);
-//               endPoint[i]   = Math.round(r1[i]);
-//            }
-//         }
-//         
-//         else
-//         {
-//            // For example, RT-STRUCTS have the ROI's coded in patient coords.
-//            startPoint = convertFromPatientToImageCoords(
-//                                      r0, topLeftPos, dirCosines, pixelSpacing);
-//            
-//            endPoint   = convertFromPatientToImageCoords(
-//                                      r1, topLeftPos, dirCosines, pixelSpacing);
-//         }
-//         
-//         g2d.drawLine(startPoint[0], startPoint[1], endPoint[0], endPoint[1]);
-//         
-//      }
-      System.out.println(topLeftPos[0] + ", " + topLeftPos[1] + ", " + topLeftPos[2]);
-      System.out.println(dirCosines[0] + ", " + dirCosines[1] + ", " + dirCosines[2] + ", " + dirCosines[3] + ", " + dirCosines[4] + ", " + dirCosines[5]);
-      System.out.println(pixelSpacing[0] + ", " + pixelSpacing[1]);
+      g2d.setStroke(new BasicStroke(1.0f)); // Need to experiment with some values here.
+
+      logger.debug(topLeftPos[0]   + ", " + topLeftPos[1] + ", " + topLeftPos[2]);
+      logger.debug(dirCosines[0]   + ", " + dirCosines[1] + ", " + dirCosines[2] + ", " + dirCosines[3] + ", " + dirCosines[4] + ", " + dirCosines[5]);
+      logger.debug(pixelSpacing[0] + ", " + pixelSpacing[1]);
                
       float[] x = new float[rc.nContourPoints];
       float[] y = new float[rc.nContourPoints];
@@ -459,7 +423,7 @@ public class ContourRendererHelper
                              rc.contourPoints[j], topLeftPos, dirCosines, pixelSpacing);
             x[j] = point[0];
             y[j] = point[1];
-            System.out.println(x[j] + ", " + y[j] + ", " + rc.contourPoints[j][0] + ", " + rc.contourPoints[j][1] + ", " + rc.contourPoints[j][2]);
+            logger.debug(x[j] + ", " + y[j] + ", " + rc.contourPoints[j][0] + ", " + rc.contourPoints[j][1] + ", " + rc.contourPoints[j][2]);
          }
       }
       
@@ -470,7 +434,8 @@ public class ContourRendererHelper
       
       // TODO: create an appropriate framework to allow filling to be
       // turned on or off as desired by the user.
-      g2d.fill(polygon);
+      //g2d.fill(polygon);
+		g2d.draw(polygon);
       g2d.dispose();    
    }
 
@@ -535,36 +500,59 @@ public class ContourRendererHelper
       // so that we don't get inaccuracies creeping in by using very small numbers
       // in calculations.
       float tol = 0.001f;
+		float dn;
       
       if (Math.abs(c[3]) > tol)
       {
-         if (Math.abs(c[1]) > tol)        
-         {
-            X.add((c[3]*y - c[4]*x) / (c[1]*c[3] - c[0]*c[4]));
-            Y.add((c[1]*x - c[0]*y) / (c[1]*c[3] - c[0]*c[4]));
-         }
-         
-         if (Math.abs(c[2]) > tol)
-         {
-            X.add((c[3]*z - c[5]*x) / (c[2]*c[3] - c[0]*c[5]));
-            Y.add((c[2]*x - c[0]*z) / (c[2]*c[3] - c[0]*c[5]));
-         }
+			dn = c[1]*c[3] - c[0]*c[4];
+			if (dn > tol)
+			{
+            X.add((c[3]*y - c[4]*x) / dn);
+            Y.add((c[1]*x - c[0]*y) / dn);
+			}
+
+         dn = c[2]*c[3] - c[0]*c[5];
+			if (dn > tol)
+			{
+				X.add((c[3]*z - c[5]*x) / dn);
+				Y.add((c[2]*x - c[0]*z) / dn);
+			}
       }
       
       
       if (Math.abs(c[4]) > tol)
       {
-         if (Math.abs(c[2]) > tol)        
-         {
-            X.add((c[4]*z - c[5]*y) / (c[2]*c[4] - c[1]*c[5]));
-            Y.add((c[2]*y - c[1]*z) / (c[2]*c[4] - c[1]*c[5]));
-         }
-         
-         if (Math.abs(c[0]) > tol)
-         {
-            X.add((c[4]*x - c[3]*y) / (c[0]*c[4] - c[1]*c[3]));
-            Y.add((c[0]*y - c[1]*x) / (c[0]*c[4] - c[1]*c[3]));
-         }
+			dn = c[2]*c[4] - c[1]*c[5];
+			if (dn > tol)
+			{
+				X.add((c[4]*z - c[5]*y) / dn);
+				Y.add((c[2]*y - c[1]*z) / dn);
+			}
+
+			dn = c[0]*c[4] - c[1]*c[3];
+			if (dn > tol)
+			{
+				X.add((c[4]*x - c[3]*y) / dn);
+				Y.add((c[0]*y - c[1]*x) / dn);
+			}
+      }
+		
+		
+		if (Math.abs(c[5]) > tol)
+      {
+			dn = c[0]*c[5] - c[2]*c[3];
+			if (dn > tol)
+			{
+				X.add((c[5]*x - c[3]*z) / dn);
+				Y.add((c[0]*z - c[2]*x) / dn);
+			}
+			
+			dn = c[1]*c[5] - c[2]*c[4];
+			if (dn > tol)
+			{
+				X.add((c[5]*y - c[4]*z) / dn);
+				Y.add((c[1]*z - c[2]*y) / dn);
+			}
       }
       
       // Sanity check

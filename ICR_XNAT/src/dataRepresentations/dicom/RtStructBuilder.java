@@ -529,9 +529,9 @@ public class RtStructBuilder
 		final float[] DUMMY_F6 = new float[] {0f, 0f, 0f, 0f, 0f, 0f};
       
 		StructureSet ss = new StructureSet();
-		
-      ss.structureSetLabel           = "RT-STRUCT_from_AIM_" + iac.getUid();
-      ss.structureSetName            = "RT-STRUCT_from_AIM_" + iac.getUid();
+      ss.structureSetLabel           = "RT-STRUCT_AIM";
+		String s                       = "AIM_" + iac.getUid(); 
+      ss.structureSetName            = s.substring(0, Math.min(64, s.length()));
       ss.structureSetDescription     = "ROIs from AIM instance document with UID "
                                         + iac.getUid() + " and AIM description '"
                                         + iac.getDescription() + "', "
@@ -580,7 +580,7 @@ public class RtStructBuilder
                List<ContourImage> cil = new ArrayList<>();
                ContourImage       ci  = new ContourImage();
                ArrayList<Integer> fnl = new ArrayList<>();
-               List<List<Float>>  cd  = new ArrayList<List<Float>>();
+               List<List<Float>>  cd  = new ArrayList<>();
                float[]            position    = DUMMY_F3;
                float[]            orientation = DUMMY_F6;
                float[]            pixelSize   = DUMMY_F2; 
@@ -604,16 +604,14 @@ public class RtStructBuilder
                c.contourImageList     = cil;
                c.contourGeometricType = getDicomContourTypeFromAimMarkup(mku);
                c.contourSlabThickness = bdo.getFloat(Tag.SliceThickness);
-               c.contourOffsetVector  = new ArrayList<Float>();
+               c.contourOffsetVector  = new ArrayList<>();
                c.nContourPoints       = d2l.size();
                c.contourData          = cd;
                
 					position    = bdo.getFloats(Tag.ImagePositionPatient);
                orientation = bdo.getFloats(Tag.ImageOrientationPatient);
                pixelSize   = bdo.getFloats(Tag.PixelSpacing);
-               System.out.println(position[0] + ", " + position[1] + ", " + position[2]);
-               System.out.println(orientation[0] + ", " + orientation[1] + ", " + orientation[2] + ", " + orientation[3] + ", " + orientation[4] + ", " + orientation[5]);
-               System.out.println(pixelSize[0] + ", " + pixelSize[1]);
+
 					for (TwoDimensionCoordinate d2 : d2l)
 					{
 						float    x  = (float) d2.getX();
@@ -625,12 +623,12 @@ public class RtStructBuilder
 						lf.add(d3[1]);
 						lf.add(d3[2]);
 						cd.add(lf);
-                  System.out.println(x + ", " + y + ", " + d3[0] + ", " + d3[1] + ", " + d3[2]);
 					}
                cl.add(c);
                rc.contourList = cl;
 	
-					ssr.roiName                = "StructureSetROI_from_AIM_" + shape.getUid();
+					s                          = "AIM_" + ia.getName(); 
+					ssr.roiName                = s.substring(0, Math.min(64, s.length()));
 					ssr.roiDescription         = "ROI from AIM ImageMarkupEntity with UID "
                                              + shape.getUid() + ", with AIM label '"
                                              + shape.getLabel() + "' and AIM description '"
