@@ -161,11 +161,17 @@ public class AimImageAnnotationDataUploader extends DataUploader
 			AimEntitySubclass es    = new AimEntitySubclass();
 			Set<String>       mkSop = new HashSet<>();
 			
-			es.aimId                             = mku.getUid();
+			String uid;
+         if (ia.getComment().contains("One ROI per annotation (multiple markups)"))
+            uid = ia.getUid();
+         else uid = mku.getUid();
+         
+         es.aimId                             = mku.getUid();
          es.subclassType                      = es.MARKUP;
 			es.associatedRegionSetId             = assocRegionSetId;
-			es.associatedRegionId                = markupRegionMap.get(mku.getUid());
+         es.associatedRegionId                = markupRegionMap.get(ia.getUid());
 			es.associatedAimEntitySubclassIdList = new ArrayList<>();
+         
          for (Map.Entry<String, String> me : uidIdMap.entrySet())
 			{
             if (me.getKey().equals(mku.getUid()))

@@ -75,6 +75,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.SortedMap;
 import org.dcm4che2.data.DicomObject;
 import org.dcm4che2.data.Tag;
 import org.dcm4che2.data.UID;
@@ -550,36 +551,68 @@ public class RtStructBuilder
 		// RoiContour and there is also only one ContourImage in the list.
 		// Furthermore, there is a one-to-one mapping in this application
 		// between RoiContours and StructureSetROIs.
+      // Note added 30.7.16: For some applications, it may be necessary
+      // to interpret two or more markups for the same image annotation as
+      // representing different parts of the same ROI, i.e., each annotation is
+      // a DICOM RoiContour/StructureSetROI, associated with a number of 2-D
+      // shape markups, each of which corresponds to a DICOM Contour.
+      // This interpretation matches the current output from ePad,
+      // but will need to be revised if we start receiving individual markups
+      // that are 3-D shapes.
 		List<StructureSetRoi> ssrl = new ArrayList<>();
 		List<RoiContour>      rcl  = new ArrayList<>();
 		int roiCount = 0;
       for (ImageAnnotation ia : iac.getAnnotationList())
       {
-         int colourCount = 1;
+         boolean oneRoiPerMarkup = true;
+         if (ia.getComment().contains("One ROI per annotation (multiple markups)"))
+            oneRoiPerMarkup = false;
+         boolean oneRoiPerAnnotation = !oneRoiPerMarkup;
+         
+         StructureSetRoi ssr = new StructureSetRoi();              
+         RoiContour      rc  = new RoiContour(); 
+         
+         if (oneRoiPerAnnotation)
+         {
+            rc.referencedRoiNumber = roiCount;
+            rc.contourList         = new ArrayList<>();
+            ssr.roiNumber          = roiCount;
+            rc.roiDisplayColour    = new ArrayList<>();
+            int[] a = SimpleColourTable.getRGB(roiCount);
+            for (int i=0; i<3; i++) rc.roiDisplayColour.add(a[i]);
+            markupRegionMap.put(ia.getUid(), "Region_" + UidGenerator.createShortUnique());
+         }
+         
          for (Markup mku : ia.getMarkupList())
          {
+				if (!(mku instanceof TwoDimensionGeometricShape))
+            {
+               throw new DataFormatException(DataFormatException.BUILDER,
+                  "Building RT-STRUCTs from AIM markups that are not 2-D geometric shapes is currently unsupported.");
+            }
+            
             if (mku instanceof TwoDimensionGeometricShape)
             {
                TwoDimensionGeometricShape shape;
                shape = (TwoDimensionGeometricShape) mku;
-               StructureSetRoi ssr = new StructureSetRoi();              
-					RoiContour      rc  = new RoiContour(); 
-               rc.referencedRoiNumber = roiCount;
-					ssr.roiNumber = roiCount;
-					markupRegionMap.put(shape.getUid(), "Region_" + UidGenerator.createShortUnique());
-					roiCount++;
-					
-               //shape.getLineColour(); No examples yet of line colour to check
-               rc.roiDisplayColour = new ArrayList<>();
-               Integer[] aI = new Integer[3];
-               int[]     ai = SimpleColourTable.getRGB(colourCount++);
-               for (int i=0; i<3; i++) aI[i] = ai[i];
-               Collections.addAll(rc.roiDisplayColour, aI);
                
+               if (oneRoiPerMarkup)
+               {
+                  ssr = new StructureSetRoi();
+                  rc  = new RoiContour();
+                  rc.referencedRoiNumber = roiCount;
+                  rc.contourList         = new ArrayList<>();
+                  ssr.roiNumber          = roiCount;
+                  rc.roiDisplayColour    = new ArrayList<>();
+                  // No examples yet of output of shape.getLineColour().
+                  int[] a = SimpleColourTable.getRGB(roiCount);
+                  for (int i=0; i<3; i++) rc.roiDisplayColour.add(a[i]);
+                  markupRegionMap.put(shape.getUid(), "Region_" + UidGenerator.createShortUnique());
+               }
+                 
                List<TwoDimensionCoordinate> d2l = shape.getCoordinateList();
                
                DicomObject        bdo = null;
-               List<Contour>      cl  = new ArrayList<>();
                Contour            c   = new Contour();
                List<ContourImage> cil = new ArrayList<>();
                ContourImage       ci  = new ContourImage();
@@ -628,8 +661,7 @@ public class RtStructBuilder
 						lf.add(d3[2]);
 						cd.add(lf);
 					}
-               cl.add(c);
-               rc.contourList = cl;
+               rc.contourList.add(c);
 	
 					s                          = "AIM_" + ia.getName(); 
 					ssr.roiName                = s.substring(0, Math.min(64, s.length()));
@@ -639,9 +671,28 @@ public class RtStructBuilder
                                              + shape.getDescription() + "'";
 					ssr.roiGenerationAlgorithm = ""; // Required field but can be empty.
 					ssr.derivationCodeList     = new ArrayList<>();
-					
-					rcl.add(rc);
-					ssrl.add(ssr);
+               
+               SortedMap<String, etherj.aim.Code> etherCodeMap = ia.getTypeCodeMap();
+               etherj.aim.Code etherCode           = etherCodeMap.get(etherCodeMap.firstKey());
+               dataRepresentations.dicom.Code code = new Code();
+               code.codeValue                      = etherCode.getCode();
+               code.codingSchemeDesignator         = etherCode.getCodeSystemName();
+               code.codingSchemeVersion            = etherCode.getCodeSystemVersion();
+               ssr.derivationCodeList.add(code);
+               
+               if (oneRoiPerMarkup)
+               {
+                  rcl.add(rc);
+                  ssrl.add(ssr);
+                  roiCount++;
+               }
+            }
+            
+            if (oneRoiPerAnnotation)
+            {
+               rcl.add(rc);
+               ssrl.add(ssr);
+               roiCount++;
             }
          }
 			ss.structureSetRoiList = ssrl;

@@ -56,15 +56,12 @@ public class SimpleColourTable
 
       colourMap.put("red",         Color.RED       );
       colourMap.put("blue",        Color.BLUE      );
-      colourMap.put("cyan",        Color.CYAN      );
-      colourMap.put("dark grey",   Color.DARK_GRAY );
-      colourMap.put("red",         Color.GRAY      );
       colourMap.put("green",       Color.GREEN     );
-      colourMap.put("light grey",  Color.LIGHT_GRAY);
+      colourMap.put("cyan",        Color.CYAN      );
       colourMap.put("magenta",     Color.MAGENTA   );
+      colourMap.put("yellow",      Color.YELLOW    );
       colourMap.put("orange",      Color.ORANGE    );
       colourMap.put("pink",        Color.PINK      );
-      colourMap.put("yellow",      Color.YELLOW    );
       colourMap.put("XNAT yellow", new Color(246, 220, 255));
       colourMap.put("XNAT green",  new Color(  0, 205,   0));
       colourMap.put("XNAT blue",   new Color(  2, 103, 255));
@@ -74,6 +71,9 @@ public class SimpleColourTable
       colourMap.put("Apple Finder selected row", new Color(41, 118, 206));
       colourMap.put("black",       Color.BLACK     );
       colourMap.put("white",       Color.WHITE     );
+      colourMap.put("dark grey",   Color.DARK_GRAY );
+      colourMap.put("mid grey",    Color.GRAY      );
+      colourMap.put("light grey",  Color.LIGHT_GRAY);
       cMap = colourMap;
    }
    
@@ -116,5 +116,18 @@ public class SimpleColourTable
       rgb[2] = c.getBlue();
       
       return rgb;
+   }
+   
+   
+   public static void listColours()
+   {
+      int i = 0;
+      for (Map.Entry<String, Color> entry : cMap.entrySet())
+      {
+         Color c = entry.getValue();
+         System.out.println(i + "  " + entry.getKey() + "  " + c.getRed() + " "
+                                        + c.getGreen() + " " + c.getBlue());
+         i++;
+      }
    }
 }

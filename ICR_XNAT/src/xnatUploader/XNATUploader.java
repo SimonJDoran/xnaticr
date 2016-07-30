@@ -113,7 +113,6 @@ public final class XNATUploader extends XNATGUI
    public XNATUploader(java.awt.Frame parent, boolean modal)
    {
       super(parent, modal);
-
       initComponents();
       versionJLabel.setText("Version " + version); 
       addListeners();
