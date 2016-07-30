@@ -1051,9 +1051,9 @@ public final class XNATUploader extends XNATGUI
          logger.debug("Upload successful for " + uploader.getUploadFile().getPath() + "\n\n");
       }
       
+      // Create a new uploader for the next file and reset the MetadataPanel.
       useSubtype(subtype, subtypes, subtypeAlias);
       uploadJButton.setText(UPLOAD);
-		enableUpload(false);
       chooseFileJButton.setEnabled(true);
    }
    
@@ -1127,6 +1127,12 @@ public final class XNATUploader extends XNATGUI
          logger.debug("Upload successful for " + uploader.getUploadFile().getPath() + "\n\n");
       }
       
+      // Create a new uploader for the next file and reset the MetadataPanel.
+      DataUploader oldUploader = uploader;
+      useSubtype(subtype, subtypes, subtypeAlias);
+      
+      // Copy the required user fields from the old to the new uploader.
+      uploader.copyVariablesForEditableFields(oldUploader);
       invokeGetNextMatchingFileDuringBatchUpload();
    }
 
@@ -1216,7 +1222,7 @@ public final class XNATUploader extends XNATGUI
 					}
             }
          });
-         clearDisplay();
+         metadataJPanel.putClientProperty("enableUpload", false);
       }
    }
   

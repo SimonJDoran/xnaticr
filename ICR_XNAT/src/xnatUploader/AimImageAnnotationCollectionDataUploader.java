@@ -940,6 +940,18 @@ public class AimImageAnnotationCollectionDataUploader extends DataUploader
 		labelPrefix = mdp.getJTextFieldContents("Label", key, source);
 		note        = mdp.getJTextFieldContents("Note", key, source);
 	}
+   
+   
+   @Override
+   protected void copyVariablesForEditableFields(DataUploader oldUploader)
+   {
+      if (oldUploader instanceof AimImageAnnotationCollectionDataUploader)
+      {
+         AimImageAnnotationCollectionDataUploader oldU = (AimImageAnnotationCollectionDataUploader) oldUploader;
+         labelPrefix = oldU.labelPrefix;
+         note        = oldU.note;
+      }
+   }        
 	
 	
 	@Override

@@ -733,6 +733,17 @@ public abstract class DataUploader
                                                    Object        source) {}
 	
 	
+   /**
+    * Transfer values for user-editable fields between uploaders.
+    * This is important in batch mode. Each time we load a file, a new uploader
+    * is created. However, we do not want to keep returning control to the user
+    * to re-enter essential editor fields, so this function allows these fields
+    * to be passed on.
+    * @param oldUploader - the uploader that loaded the previous file 
+    */
+   protected void copyVariablesForEditableFields(DataUploader oldUploader) {}
+   
+   
 	/**
     * Return a list of the fields that may be edited.
 	 * Allow the flexibility for each concrete class to define its own.

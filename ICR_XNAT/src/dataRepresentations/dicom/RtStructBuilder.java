@@ -61,6 +61,7 @@ import etherj.aim.TwoDimensionPoint;
 import etherj.aim.TwoDimensionPolyline;
 import exceptions.DataFormatException;
 import generalUtilities.DicomXnatDateTime;
+import generalUtilities.SimpleColourTable;
 import generalUtilities.UidGenerator;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -554,6 +555,7 @@ public class RtStructBuilder
 		int roiCount = 0;
       for (ImageAnnotation ia : iac.getAnnotationList())
       {
+         int colourCount = 1;
          for (Markup mku : ia.getMarkupList())
          {
             if (mku instanceof TwoDimensionGeometricShape)
@@ -567,10 +569,12 @@ public class RtStructBuilder
 					markupRegionMap.put(shape.getUid(), "Region_" + UidGenerator.createShortUnique());
 					roiCount++;
 					
-               //TODO: rc.roiDisplayColour = shape.getLineColour(); Not yet implemented in EtherJ
+               //shape.getLineColour(); No examples yet of line colour to check
                rc.roiDisplayColour = new ArrayList<>();
-               Integer[] a = {255, 0, 0};
-               Collections.addAll(rc.roiDisplayColour, a);
+               Integer[] aI = new Integer[3];
+               int[]     ai = SimpleColourTable.getRGB(colourCount++);
+               for (int i=0; i<3; i++) aI[i] = ai[i];
+               Collections.addAll(rc.roiDisplayColour, aI);
                
                List<TwoDimensionCoordinate> d2l = shape.getCoordinateList();
                

@@ -44,16 +44,17 @@
 package generalUtilities;
 
 import java.awt.Color;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 public class SimpleColourTable
 {
-   public static Color getColour(String nickname)
+   private static final LinkedHashMap<String, Color> cMap;
+   static
    {
-      HashMap<String, Color> colourMap = new HashMap<String, Color>();
+      LinkedHashMap<String, Color> colourMap = new LinkedHashMap<String, Color>();
 
       colourMap.put("red",         Color.RED       );
-      colourMap.put("black",       Color.BLACK     );
       colourMap.put("blue",        Color.BLUE      );
       colourMap.put("cyan",        Color.CYAN      );
       colourMap.put("dark grey",   Color.DARK_GRAY );
@@ -63,7 +64,6 @@ public class SimpleColourTable
       colourMap.put("magenta",     Color.MAGENTA   );
       colourMap.put("orange",      Color.ORANGE    );
       colourMap.put("pink",        Color.PINK      );
-      colourMap.put("white",       Color.WHITE     );
       colourMap.put("yellow",      Color.YELLOW    );
       colourMap.put("XNAT yellow", new Color(246, 220, 255));
       colourMap.put("XNAT green",  new Color(  0, 205,   0));
@@ -72,7 +72,49 @@ public class SimpleColourTable
       colourMap.put("light blue",  new Color(102, 204, 255));
       colourMap.put("Apple Finder alternate line highlight blue", new Color(236, 243, 254));
       colourMap.put("Apple Finder selected row", new Color(41, 118, 206));
-
-      return colourMap.get(nickname);
+      colourMap.put("black",       Color.BLACK     );
+      colourMap.put("white",       Color.WHITE     );
+      cMap = colourMap;
+   }
+   
+   public static Color getColour(String nickname)
+   {
+      return cMap.get(nickname);
+   }
+   
+   
+   public static Color getColour(int n)
+   {
+      int i = 0;
+      for (Map.Entry<String, Color> entry : cMap.entrySet())
+      {
+         Color c = entry.getValue();
+         if (i == n) return c;
+         i++;
+      }
+      return null;
+   }
+   
+   
+   public static int[] getRGB(String nickname)
+   {
+      return getRGB(getColour(nickname));
+   }
+   
+   
+   public static int[] getRGB(int n)
+   {
+      return getRGB(getColour(n));
+   }
+   
+   
+   public static int[] getRGB(Color c)
+   {
+      int[] rgb = new int[3];
+      rgb[0] = c.getRed();
+      rgb[1] = c.getGreen();
+      rgb[2] = c.getBlue();
+      
+      return rgb;
    }
 }
