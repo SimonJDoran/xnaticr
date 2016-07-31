@@ -86,6 +86,12 @@ public class IcrAimImageAnnotationDataMdComplexType extends IcrGenericImageAsses
 	protected Integer      nCalculationEntity;
 	protected Integer      nImagingObservationEntity;
 	protected Integer      nImagingPhysicalEntity;
+   protected String       typeCode;
+	protected String       typeCodeSystemUid;
+	protected String       typeCodeSystemName;
+	protected String       typeCodeSystemVersion;
+   protected String       precedentReferencedUid;
+   protected String       templateUid;
 	
 	@Override
 	public void insertXml() throws IOException, XMLException
@@ -129,7 +135,13 @@ public class IcrAimImageAnnotationDataMdComplexType extends IcrGenericImageAsses
 				.delayedWriteEntityWithText("nAnnotationRoleEntity",     nAnnotationRoleEntity)
 				.delayedWriteEntityWithText("nCalculationEntity",        nCalculationEntity)
 				.delayedWriteEntityWithText("nImagingObservationEntity", nImagingObservationEntity)
-				.delayedWriteEntityWithText("nImagingPhysicalEntity",    nImagingPhysicalEntity);
+				.delayedWriteEntityWithText("nImagingPhysicalEntity",    nImagingPhysicalEntity)
+            .delayedWriteEntityWithText("typeCode",                  typeCode)
+            .delayedWriteEntityWithText("typeCodeSystemUid",         typeCodeSystemUid)
+            .delayedWriteEntityWithText("typeCodeSystemName",        typeCodeSystemName)
+            .delayedWriteEntityWithText("typeCodeSystemVersion",     typeCodeSystemVersion)
+            .delayedWriteEntityWithText("precedentReferencedUid",    precedentReferencedUid)
+            .delayedWriteEntityWithText("templateUid",               templateUid);
 	}
 	
 	
@@ -281,4 +293,34 @@ public class IcrAimImageAnnotationDataMdComplexType extends IcrGenericImageAsses
 	{
 		nImagingPhysicalEntity = n;
 	}
+   
+	public void setTypeCode(String s)
+	{
+		typeCode = s;
+	}
+   
+	public void setTypeCodeSystemUid(String s)
+	{
+		typeCodeSystemUid = s;
+	}
+   
+	public void setTypeCodeSystemName(String s)
+	{
+		typeCodeSystemName = s;
+	}
+   
+	public void setTypeCodeSystemVersion(String s)
+	{
+		typeCodeSystemVersion = s;
+	}
+   
+   public void setPrecedentReferencedUid(String s)
+   {
+      precedentReferencedUid = s;
+   }
+   
+   public void setTemplateUid(String s)
+   {
+      templateUid = s;
+   }
 }

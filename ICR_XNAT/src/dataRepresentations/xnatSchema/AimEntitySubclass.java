@@ -63,7 +63,7 @@ public class AimEntitySubclass extends XnatSchemaElement
    public String       subclassType;
 	public String       comment;
 	public String       description;
-	public String       typeCode;
+   public String       typeCode;
 	public String       typeCodeSystemUid;
 	public String       typeCodeSystemName;
 	public String       typeCodeSystemVersion;

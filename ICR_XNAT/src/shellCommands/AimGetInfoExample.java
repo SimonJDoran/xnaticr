@@ -4,7 +4,7 @@
 * First created on Jun 22, 2016 at 3:39:22 PM
 *********************************************************************/
 
-package examples;
+package shellCommands;
 
 import exceptions.XMLException;
 import java.io.File;

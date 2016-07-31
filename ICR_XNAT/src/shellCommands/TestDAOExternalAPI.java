@@ -44,7 +44,10 @@
 * Data Access Object a.k.a. XNAT_DAO)
 *********************************************************************/
 
-package xnatDAO;
+package shellCommands;
+
+import xnatDAO.DAOSearchCriteriaSet;
+import xnatDAO.XNATDAO;
 
 public class TestDAOExternalAPI
 {

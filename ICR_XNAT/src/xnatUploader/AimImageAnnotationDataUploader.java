@@ -51,6 +51,7 @@
 
 package xnatUploader;
 
+import dataRepresentations.dicom.Code;
 import dataRepresentations.xnatSchema.AbstractResource;
 import dataRepresentations.xnatSchema.AdditionalField;
 import dataRepresentations.xnatSchema.AimEntitySubclass;
@@ -83,6 +84,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.SortedMap;
 import org.dcm4che2.data.DicomObject;
 import org.w3c.dom.Document;
 import xnatDAO.XNATProfile;
@@ -256,10 +258,21 @@ public class AimImageAnnotationDataUploader extends DataUploader
       iad.setNCalculationEntity(       ia.getCalculationList().size());
       iad.setNImagingObservationEntity(ia.getImagingObservationList().size());
       iad.setNImagingPhysicalEntity(   ia.getImagingPhysicalList().size());
-		
+      
+      // TODO: The following section is commented out pending update of the 
+      // relevant XNAT schema.
+      /*
+      SortedMap<String, etherj.aim.Code> etherCodeMap = ia.getTypeCodeMap();
+      etherj.aim.Code etherCode = etherCodeMap.get(etherCodeMap.firstKey());
+      iad.setTypeCode(                  etherCode.getCode());
+      iad.setTypeCodeSystemUid(         etherCode.getCodeSystem());
+      iad.setTypeCodeSystemName(        etherCode.getCodeSystemName());
+      iad.setTypeCodeSystemVersion(     etherCode.getCodeSystemVersion());
+		*/
+      
       // IcrAimImageAnnotationDataMdComplexType inherits from IcrGenericImageAssessmentDataMdComplexType.
 		
-		// iacd.setType();  Not currently sure what should go here.
+		// iad.setType();  Not currently sure what should go here.
 		iad.setXnatSubjId(XNATSubjectID);
 	   iad.setDicomSubjName(dicomSubjNameParent);
 		

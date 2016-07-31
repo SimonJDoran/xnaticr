@@ -45,6 +45,7 @@
 
 package xnatDAO;
 
+import shellCommands.TestDAOExternalAPI;
 import configurationLists.DAODefaultSearchesList;
 import fileDownloads.DAOOutput;
 import configurationLists.DAOSearchableElementsList;
