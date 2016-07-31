@@ -436,6 +436,13 @@ public class XNATServerConnection
       connected  = false;
    }
 
+   public InputStream doRESTDelete(String RESTCommand)
+          throws FailedToConnectException, XMLException, Exception
+   {
+      return doRESTCommand(RESTCommand, "DELETE", null, null, null);
+   }
+
+
    public InputStream doRESTGet(String RESTCommand)
           throws FailedToConnectException, XMLException, Exception
    {

@@ -128,8 +128,8 @@ public class DeleteAnnotations
          try
          {
             String restCommand = "/data/archive" +
-                                 "/projects/" + xnatProject +
-                                 "/subjects/" + xnatSubjLabel +
+                                 "/projects/"    + xnatProject   +
+                                 "/subjects/"    + xnatSubjLabel +
                                  "/experiments?format=xml";
 
             result             = xnrt.RESTGetResultSet(restCommand);
@@ -149,9 +149,9 @@ public class DeleteAnnotations
             try
             {
                String restCommand = "/data/archive" +
-                                    "/projects/" + xnatProject +
-                                    "/subjects/" + xnatSubjLabel +
-                                    "/experiments/" + xnatExpLabel +
+                                    "/projects/"    + xnatProject   +
+                                    "/subjects/"    + xnatSubjLabel +
+                                    "/experiments/" + xnatExpLabel  +
                                     "/assessors?format=xml";
 
                result             = xnrt.RESTGetResultSet(restCommand);
@@ -166,7 +166,25 @@ public class DeleteAnnotations
             for (int j=0; j<result.size(); j++)
             {
                String xnatAssLabel = result.atom(5, j);
-               System.out.println(cumIndent + xnatAssLabel);
+               System.out.println(cumIndent + "Deleting assessor " + xnatAssLabel);
+               
+               try
+               {
+                  String restCommand = "/data/archive" +
+                                       "/projects/"    + xnatProject   +
+                                       "/subjects/"    + xnatSubjLabel +
+                                       "/experiments/" + xnatExpLabel  +
+                                       "/assessors/"   + xnatAssLabel  +
+                                       "?removeFiles=true";
+
+                  xnprf.doRESTDelete(restCommand);
+               }
+               catch (XNATException exXNAT)
+               {
+                  throw new XNATException(XNATException.RETRIEVING_LIST, "Problem checking for list of assessors: "
+                                           + exXNAT.getMessage());
+               }
+
             }
          }
          
