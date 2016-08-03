@@ -73,13 +73,16 @@ import xnatRestToolkit.XNATRESTToolkit;
 import exceptions.XMLException;
 import java.awt.Component;
 import java.io.IOException;
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Vector;
 import xnatMetadataCreators.CatCatalogMdComplexType;
 import xnatRestToolkit.XnatResource;
+import static xnatUploader.NextMatchingFileWorker.logger;
 
 
 public abstract class DataUploader
@@ -743,6 +746,31 @@ public abstract class DataUploader
     * @param oldUploader - the uploader that loaded the previous file 
     */
    protected void copyVariablesForEditableFields(DataUploader oldUploader) {}
+   
+   
+   /**
+    * Create a fresh copy of the uploader that is blank except for a few
+    * selected fields.
+    * @return A data uploader of the same type as is being used currently.
+    * @throws InstantiationException
+    * @throws IllegalAccessException
+    * @throws IllegalArgumentException
+    * @throws InvocationTargetException 
+    */
+   protected DataUploader getFreshCopyForBatchUpload()
+             throws InstantiationException,   IllegalAccessException,
+                    IllegalArgumentException, InvocationTargetException
+   {
+      DataUploader   freshUploader;
+      Constructor<?> con;
+      
+      con = (this.getClass().getDeclaredConstructors())[0];
+      freshUploader = (DataUploader) con.newInstance(xnprf);              
+      freshUploader.copyVariablesForEditableFields(this);
+      freshUploader.setBatchModeEnabled(true);
+      
+      return freshUploader;
+   }
    
    
 	/**

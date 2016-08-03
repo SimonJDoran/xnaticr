@@ -73,6 +73,7 @@ import configurationLists.DAOSearchableElementsList;
 import org.apache.commons.lang.WordUtils;
 import xnatDAO.XNATGUI;
 import xnatDAO.XNATProfile;
+import static xnatUploader.NextMatchingFileWorker.logger;
 
 /**
  *
@@ -793,6 +794,18 @@ public final class XNATUploader extends XNATGUI
    {
       dataFilenameJLabel.setText("<Scanning directory tree for next file>");
       downloadIcon.start();
+      
+      // Create a new uploader for the next file.
+      try
+      {
+         uploader = uploader.getFreshCopyForBatchUpload();
+      }
+      catch (InstantiationException   | IllegalAccessException |
+             IllegalArgumentException | InvocationTargetException ex)
+      {
+         logger.error(ex.getMessage());
+      }
+
       nmfWorker = new NextMatchingFileWorker(contextRoot, searchProgress, uploader);
       nmfWorker.addPropertyChangeListener(new PropertyChangeListener()
       {
@@ -848,7 +861,6 @@ public final class XNATUploader extends XNATGUI
 
       if (searchProgress == null) return;
 
-      uploader.setUploadFile(searchProgress);
       invokeBatchUpload();
    }
    
@@ -1004,8 +1016,10 @@ public final class XNATUploader extends XNATGUI
          uploadJButton.setText(UPLOAD);
          
          // Clear and reset the uploader, by re-executing the initial code.
-         uploader.populateFields(metadataJPanel, true);
-         //useSubtype(subtype, subtypes, subtypeAlias);
+         // Create a new uploader for the next file and reset the MetadataPanel.
+         useSubtype(subtype, subtypes, subtypeAlias);
+         uploadJButton.setText(UPLOAD);
+         chooseFileJButton.setEnabled(true);
          return;
       }
    }
@@ -1062,14 +1076,9 @@ public final class XNATUploader extends XNATGUI
       dataFilenameJLabel.setText(
          getAbbreviatedString(uploader.getUploadFile().getName(), 30)
             + "  " + UPLOADING);
+      uploader.populateFields(metadataJPanel, false);
       downloadIcon.start();
       chooseFileJButton.setEnabled(false);
-      
-      // The only items not catered for by the upload preparation are the
-      // label and note elements. For batch upload, note will be taken to apply
-      // to all the datasets, whilst label will be taken from the text that the
-      // user enters, followed by the current value of System.nanoTime(), which
-      // should be unique.
       
       uploadWorker = new UploadToXNATWorker(uploader);
       uploadWorker.addPropertyChangeListener(new PropertyChangeListener()
@@ -1123,13 +1132,6 @@ public final class XNATUploader extends XNATGUI
          logger.debug("Upload successful for " + uploader.getUploadFile().getPath() + "\n\n");
       }
       
-      // Create a new uploader for the next file and reset the MetadataPanel.
-      DataUploader oldUploader = uploader;
-      useSubtype(subtype, subtypes, subtypeAlias);
-      
-      // Copy the required user fields from the old to the new uploader.
-      uploader.copyVariablesForEditableFields(oldUploader);
-		uploader.setBatchModeEnabled(true);
       invokeGetNextMatchingFileDuringBatchUpload();
    }
 
