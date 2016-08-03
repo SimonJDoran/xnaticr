@@ -44,7 +44,7 @@
 * a given DataUploader. For use with xnatUploader package.
 *********************************************************************/
 
-package generalUtilities;
+package xnatUploader;
 
 import java.io.File;
 import java.util.ArrayList;

@@ -44,7 +44,6 @@
 
 package xnatUploader;
 
-import generalUtilities.NextMatchingFileWorker;
 import generalUtilities.SimpleColourTable;
 import imageUtilities.DownloadIcon;
 import java.awt.Font;
@@ -951,8 +950,6 @@ public final class XNATUploader extends XNATGUI
       
       if (modeLabel.getText().equals("Batch mode"))
       {
-         uploader.setBatchLabelPrefix(uploader.getStringField("Label"));
-         uploader.setBatchNote(uploader.getStringField("Note"));
          uploader.setBatchModeEnabled(true);
          uploadJButton.setText(ABORT);
          invokeBatchUpload();
@@ -1132,6 +1129,7 @@ public final class XNATUploader extends XNATGUI
       
       // Copy the required user fields from the old to the new uploader.
       uploader.copyVariablesForEditableFields(oldUploader);
+		uploader.setBatchModeEnabled(true);
       invokeGetNextMatchingFileDuringBatchUpload();
    }
 
