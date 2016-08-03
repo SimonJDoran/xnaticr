@@ -93,6 +93,9 @@ public class DeleteAnnotations
    private void delete(XNATProfile xnprf)
            throws XNATException
    {
+      // This line is important, because it establishes the JSESSIONID.
+      // If this isn't in here, then 
+      xnprf.connect();
       String xnatProject = xnprf.getProjectList().get(0);
       String indent      = "   ";
       String cumIndent   = "";
@@ -100,12 +103,12 @@ public class DeleteAnnotations
       System.out.println("Retrieving and sorting subject list");
 
       XNATRESTToolkit  xnrt = new XNATRESTToolkit(xnprf);
-      Vector2D<String> result;
+      Vector2D<String> resultSubj;
       try
       {
          String restCommand = "/data/archive/projects/" + xnatProject +
                                 "/subjects?format=xml";
-         result             = xnrt.RESTGetResultSet(restCommand);
+         resultSubj         = xnrt.RESTGetResultSet(restCommand);
       }
       catch (XNATException exXNAT)
       {
@@ -114,9 +117,9 @@ public class DeleteAnnotations
       }
       
       List<String> subjList = new ArrayList<>(); 
-      for (int j=0; j<result.size(); j++)
+      for (int j=0; j<resultSubj.size(); j++)
       {
-         subjList.add(result.atom(2, j));
+         subjList.add(resultSubj.atom(2, j));
       }
       Collections.sort(subjList);
       
@@ -124,7 +127,7 @@ public class DeleteAnnotations
       for (String xnatSubjLabel : subjList)
       {
          System.out.println("Getting list of experiments for subject " + xnatSubjLabel);
-         
+         Vector2D<String> resultExp;
          try
          {
             String restCommand = "/data/archive" +
@@ -132,7 +135,7 @@ public class DeleteAnnotations
                                  "/subjects/"    + xnatSubjLabel +
                                  "/experiments?format=xml";
 
-            result             = xnrt.RESTGetResultSet(restCommand);
+            resultExp          = xnrt.RESTGetResultSet(restCommand);
          }
          catch (XNATException exXNAT)
          {
@@ -141,11 +144,11 @@ public class DeleteAnnotations
          }
          
          cumIndent += indent;
-         for (int i=0; i<result.size(); i++)
+         for (int i=0; i<resultExp.size(); i++)
          {
-            String xnatExpLabel = result.atom(5, i);
+            String xnatExpLabel = resultExp.atom(5, i);
             System.out.println(cumIndent + "Getting AIM assessors for experiment " + xnatExpLabel);
-            
+            Vector2D<String> resultAss;
             try
             {
                String restCommand = "/data/archive" +
@@ -154,7 +157,7 @@ public class DeleteAnnotations
                                     "/experiments/" + xnatExpLabel  +
                                     "/assessors?format=xml";
 
-               result             = xnrt.RESTGetResultSet(restCommand);
+               resultAss          = xnrt.RESTGetResultSet(restCommand);
             }
             catch (XNATException exXNAT)
             {
@@ -163,31 +166,35 @@ public class DeleteAnnotations
             }
             
             cumIndent += indent;
-            for (int j=0; j<result.size(); j++)
+            for (int j=0; j<resultAss.size(); j++)
             {
-               String xnatAssLabel = result.atom(5, j);
-               System.out.println(cumIndent + "Deleting assessor " + xnatAssLabel);
-               
-               try
+               String xnatAssLabel = resultAss.atom(5, j);
+               if (xnatAssLabel.contains("AIM")) // Currently this is the case, but this might change.
                {
-                  String restCommand = "/data/archive" +
-                                       "/projects/"    + xnatProject   +
-                                       "/subjects/"    + xnatSubjLabel +
-                                       "/experiments/" + xnatExpLabel  +
-                                       "/assessors/"   + xnatAssLabel  +
-                                       "?removeFiles=true";
+                  System.out.println(cumIndent + "Deleting assessor " + xnatAssLabel);
 
-                  xnprf.doRESTDelete(restCommand);
-               }
-               catch (XNATException exXNAT)
-               {
-                  throw new XNATException(XNATException.RETRIEVING_LIST, "Problem checking for list of assessors: "
-                                           + exXNAT.getMessage());
-               }
+                  try
+                  {
+                     String restCommand = "/data/archive" +
+                                          "/projects/"    + xnatProject   +
+                                          "/subjects/"    + xnatSubjLabel +
+                                          "/experiments/" + xnatExpLabel  +
+                                          "/assessors/"   + xnatAssLabel  +
+                                          "?removeFiles=true";
 
+                     xnprf.doRESTDelete(restCommand);
+                  }
+                  catch (Exception ex)
+                  {
+                     throw new XNATException(XNATException.DELETION, "Problem deleting assessors: "
+                                              + ex.getMessage());
+                  }
+               }               
             }
+            cumIndent = cumIndent.substring(0, cumIndent.length()-indent.length());
          }
-         
+         System.out.println(" ");
+         cumIndent = cumIndent.substring(0, cumIndent.length()-indent.length());
       }
       
    }
