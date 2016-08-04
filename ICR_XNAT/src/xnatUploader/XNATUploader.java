@@ -888,6 +888,17 @@ public final class XNATUploader extends XNATGUI
 
       uploader.copyVariablesForEditableFields(oldUploader);
       uploader.setBatchModeEnabled(true);
+      uploader.setUploadFile(searchProgress);
+      
+      // We know that this will succeed, because otherwise the file would not come
+      // back from the the GetNextMatchingFileWorker.
+      uploader.prepareUpload();
+      if (uploader.errorOccurred())
+      {
+         throw new RuntimeException("Programming error: call to prepareUpload"
+                                    + "should be successful.");
+      }
+      uploader.populateFields(metadataJPanel, false);
       invokeBatchUpload();
    }
    
