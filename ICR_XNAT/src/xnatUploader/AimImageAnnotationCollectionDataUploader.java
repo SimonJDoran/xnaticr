@@ -156,10 +156,6 @@ public class AimImageAnnotationCollectionDataUploader extends DataUploader
 	@Override
    public boolean parseFile()
    {
-if (uploadFile.getPath().contains("1.884"))
-{
-   System.out.println("Here");
-}
 		try
 		{
 			iac = (AimToolkit.getToolkit().createXmlParser()).parse(uploadFile);

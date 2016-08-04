@@ -126,10 +126,6 @@ public class NextMatchingFileWorker extends SwingWorker<File, Void>
             // Check whether file satisfies criteria to return.
             logger.debug("Checking " + current.getPath());
             uploader.setUploadFile(current);
-if (current.getPath().contains("1.884"))
-{
-   System.out.println("Here");
-}
             uploader.prepareUpload();
             if (uploader.isPreparedForUpload()) return current;
             logger.warn(current.getPath() + " : file unsuitable for upload");
