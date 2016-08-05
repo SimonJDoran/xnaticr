@@ -47,10 +47,14 @@
 package xnatUploader;
 
 import java.io.File;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import javax.swing.SwingWorker;
 import org.apache.log4j.Logger;
 import xnatUploader.DataUploader;
+import static xnatUploader.DataUploader.logger;
+import static xnatUploader.XNATUploader.logger;
 
 
 public class NextMatchingFileWorker extends SwingWorker<File, Void>
@@ -120,10 +124,27 @@ public class NextMatchingFileWorker extends SwingWorker<File, Void>
          else if (current.isFile())
          {
             // Check whether file satisfies criteria to return.
-            logger.debug("Checking " + current);
+            logger.debug("Checking " + current.getPath());
             uploader.setUploadFile(current);
             uploader.prepareUpload();
             if (uploader.isPreparedForUpload()) return current;
+            logger.warn(current.getPath() + " : file unsuitable for upload");
+            
+            // A crucial point here is that, if the file fails the test,
+            // the uploader.prepareUpload() call might have set some variables
+            // in the uploader instance. Hence, we get a fresh copy, whilst
+            // remembering to copy any variables that we *do* want to preserve.
+            try
+            {
+               uploader = uploader.getFreshCopyForBatchUpload();
+            }
+            catch (InstantiationException   | IllegalAccessException |
+                   IllegalArgumentException | InvocationTargetException ex)
+            {
+               logger.error(ex.getMessage());
+               throw new Exception(ex.getMessage());
+            }
+            
             current = getNextSibling(current);
          }            
       }

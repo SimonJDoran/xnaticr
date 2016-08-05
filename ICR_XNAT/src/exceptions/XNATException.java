@@ -73,6 +73,7 @@ public class XNATException extends CodedException
    public static final int DATA_INCONSISTENT = 19;
    public static final int DATA_AMBIGUOUS    = 20;
 	public static final int RETRIEVING_LIST   = 21;
+   public static final int DELETION          = 22;
 
 	private static final HashMap<Integer, String> messages;
 	
@@ -102,6 +103,7 @@ public class XNATException extends CodedException
 		messages.put(DATA_INCONSISTENT, "Inconsistent data");
 		messages.put(DATA_AMBIGUOUS,    "Ambiguous data");
 		messages.put(RETRIEVING_LIST,   "Problem retrieving list of files");
+      messages.put(DELETION,          "Problem during resource deletion");
 	};
 
 

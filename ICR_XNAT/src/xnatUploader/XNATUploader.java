@@ -73,6 +73,7 @@ import configurationLists.DAOSearchableElementsList;
 import org.apache.commons.lang.WordUtils;
 import xnatDAO.XNATGUI;
 import xnatDAO.XNATProfile;
+import static xnatUploader.NextMatchingFileWorker.logger;
 
 /**
  *
@@ -773,8 +774,16 @@ public final class XNATUploader extends XNATGUI
               + "below the selected root directory",
               "No matching files",
               JOptionPane.ERROR_MESSAGE);
-         clearDisplay();
+         
+         // Clear and reset the uploader, by re-executing the initial code.
+         // Create a new uploader for the next file and reset the MetadataPanel.
+         useSubtype(subtype, subtypes, subtypeAlias);
+         uploadJButton.setText(UPLOAD);
+         chooseFileJButton.setEnabled(true);
+         dataFilenameJLabel.setText(NONE_SELECTED);
+         dirRootNameJLabel.setText(NONE_SELECTED);
          modeLabel.setText(" ");
+         
          return;
       }
 
@@ -791,6 +800,13 @@ public final class XNATUploader extends XNATGUI
     */
    private void invokeGetNextMatchingFileDuringBatchUpload()
    {
+      // Reset the MetadataPanel and create a new uploader, copying the settings required
+      // to persist the user entries. Don't reset any other bits of the UI.
+      DataUploader oldUploader = uploader;
+      useSubtype(subtype, subtypes, subtypeAlias);
+      uploader.copyVariablesForEditableFields(oldUploader);
+      uploader.setBatchModeEnabled(true);
+         
       dataFilenameJLabel.setText("<Scanning directory tree for next file>");
       downloadIcon.start();
       nmfWorker = new NextMatchingFileWorker(contextRoot, searchProgress, uploader);
@@ -822,33 +838,67 @@ public final class XNATUploader extends XNATGUI
       // to "STARTED".
       if (evt.getOldValue().equals(SwingWorker.StateValue.PENDING)) return;
 
+      searchProgress = null;
+      
+      // Create a new uploader for the next file and reset the MetadataPanel.
+      DataUploader oldUploader = uploader;
+      useSubtype(subtype, subtypes, subtypeAlias);
+         
       try
       {
          searchProgress = nmfWorker.get();
       }
-      catch (InterruptedException exIE)
+      catch (InterruptedException | ExecutionException ex)
       {
-         return;
-      }
-      catch (ExecutionException exEE)
-      {
-         JOptionPane.showMessageDialog(XNATUploader.this,
+         // In both cases, the UI is completely reset.
+         uploadJButton.setText(UPLOAD);
+         chooseFileJButton.setEnabled(true);
+         dataFilenameJLabel.setText(NONE_SELECTED);
+         dirRootNameJLabel.setText(NONE_SELECTED);
+         modeLabel.setText(" ");
+         downloadIcon.stop();
+         
+         if (ex instanceof InterruptedException)
+            logger.debug("Batch upload cancelled by user. \n");
+         
+         if (ex instanceof ExecutionException)
+         {
+            JOptionPane.showMessageDialog(XNATUploader.this,
               "I was unable to retrieve any valid filenames\n"
                   + "for the following reason:\n"
-                  + exEE.getMessage(),
+                  + ex.getMessage(),
               "Failed to retrieve filenames",
               JOptionPane.ERROR_MESSAGE);
+         }
+
+         return;
+         
+      }
+
+      if (searchProgress == null) // Finished! No more files have been found
+      {      
+         uploadJButton.setText(UPLOAD);
+         chooseFileJButton.setEnabled(true);
+         dataFilenameJLabel.setText(NONE_SELECTED);
+         dirRootNameJLabel.setText(NONE_SELECTED);
+         modeLabel.setText(" ");
+         downloadIcon.stop();
          return;
       }
-      finally
-      {
-         downloadIcon.stop();
-         chooseFileJButton.setEnabled(true);
-      }
 
-      if (searchProgress == null) return;
-
+      uploader.copyVariablesForEditableFields(oldUploader);
+      uploader.setBatchModeEnabled(true);
       uploader.setUploadFile(searchProgress);
+      
+      // We know that this will succeed, because otherwise the file would not come
+      // back from the the GetNextMatchingFileWorker.
+      uploader.prepareUpload();
+      if (uploader.errorOccurred())
+      {
+         throw new RuntimeException("Programming error: call to prepareUpload"
+                                    + "should be successful.");
+      }
+      uploader.populateFields(metadataJPanel, false);
       invokeBatchUpload();
    }
    
@@ -909,8 +959,14 @@ public final class XNATUploader extends XNATGUI
          JOptionPane.showMessageDialog(this, uploader.getUploadFile().getName() +
                  "\n\n" + err,
                  "File-open error", JOptionPane.ERROR_MESSAGE);
+         
+         // Create a new uploader for the next file and reset the UI.
+         useSubtype(subtype, subtypes, subtypeAlias);
+         uploadJButton.setText(UPLOAD);
+         chooseFileJButton.setEnabled(true);
          dataFilenameJLabel.setText(NONE_SELECTED);
-         clearDisplay();
+         dirRootNameJLabel.setText(NONE_SELECTED);
+         
          logger.debug(uploader.getUploadFile().getName() +
                       "\n" + uploader.getErrorMessage() + "\n");
          return;
@@ -1004,8 +1060,10 @@ public final class XNATUploader extends XNATGUI
          uploadJButton.setText(UPLOAD);
          
          // Clear and reset the uploader, by re-executing the initial code.
-         uploader.populateFields(metadataJPanel, true);
-         //useSubtype(subtype, subtypes, subtypeAlias);
+         // Create a new uploader for the next file and reset the MetadataPanel.
+         useSubtype(subtype, subtypes, subtypeAlias);
+         uploadJButton.setText(UPLOAD);
+         chooseFileJButton.setEnabled(true);
          return;
       }
    }
@@ -1060,16 +1118,9 @@ public final class XNATUploader extends XNATGUI
       uploadJButton.setText(ABORT);
       
       dataFilenameJLabel.setText(
-         getAbbreviatedString(uploader.getUploadFile().getName(), 30)
-            + "  " + UPLOADING);
+         getAbbreviatedString(uploader.getUploadFile().getName(), 30) + "  " + UPLOADING);
       downloadIcon.start();
       chooseFileJButton.setEnabled(false);
-      
-      // The only items not catered for by the upload preparation are the
-      // label and note elements. For batch upload, note will be taken to apply
-      // to all the datasets, whilst label will be taken from the text that the
-      // user enters, followed by the current value of System.nanoTime(), which
-      // should be unique.
       
       uploadWorker = new UploadToXNATWorker(uploader);
       uploadWorker.addPropertyChangeListener(new PropertyChangeListener()
@@ -1092,6 +1143,7 @@ public final class XNATUploader extends XNATGUI
 
          logger.debug("FAILED to upload "
             + uploader.getUploadFile().getPath() + "\n" + ex.getMessage() + "\n\n");
+         
          
          invokeGetNextMatchingFileDuringBatchUpload();
 
@@ -1123,24 +1175,17 @@ public final class XNATUploader extends XNATGUI
          logger.debug("Upload successful for " + uploader.getUploadFile().getPath() + "\n\n");
       }
       
-      // Create a new uploader for the next file and reset the MetadataPanel.
-      DataUploader oldUploader = uploader;
-      useSubtype(subtype, subtypes, subtypeAlias);
-      
-      // Copy the required user fields from the old to the new uploader.
-      uploader.copyVariablesForEditableFields(oldUploader);
-		uploader.setBatchModeEnabled(true);
       invokeGetNextMatchingFileDuringBatchUpload();
    }
 
    
 
-   private void clearDisplay()
-   {
-      dataFilenameJLabel.setText(NONE_SELECTED);
-      dirRootNameJLabel.setText(NONE_SELECTED);
-      uploader.clearFields(metadataJPanel);
-   }
+//   private void clearDisplay()
+//   {
+//      dataFilenameJLabel.setText(NONE_SELECTED);
+//      dirRootNameJLabel.setText(NONE_SELECTED);
+//      uploader.clearFields(metadataJPanel);
+//   }
    
 
    // End of invocation section

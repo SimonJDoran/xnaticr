@@ -155,7 +155,7 @@ public class AimImageAnnotationCollectionDataUploader extends DataUploader
     */
 	@Override
    public boolean parseFile()
-   {     
+   {
 		try
 		{
 			iac = (AimToolkit.getToolkit().createXmlParser()).parse(uploadFile);
@@ -170,9 +170,11 @@ public class AimImageAnnotationCollectionDataUploader extends DataUploader
 		
 		// Initially, the label of the XNAT assessor will be set to the same
 		// as the image annotation collection label, but this can be changed on
-		// the upload screen.
-      //TODO
-		labelPrefix = iac.getDescription();
+		// the upload screen. If we are running in batch mode, the label prefix
+      // has been passed in from the previous data uploader and originally
+      // input from the interaction with the user that kicked off the batch
+      // upload.
+		if (!isBatchMode) labelPrefix = iac.getDescription();
       
       try
       {
