@@ -1254,7 +1254,6 @@ public final class XNATUploader extends XNATGUI
             @Override
             public void propertyChange(PropertyChangeEvent evt)
             {
-					System.out.println(evt.getPropertyName());
                if (evt.getPropertyName().equals("enableUpload"))
 					{
 						if (evt.getNewValue() instanceof Boolean )
