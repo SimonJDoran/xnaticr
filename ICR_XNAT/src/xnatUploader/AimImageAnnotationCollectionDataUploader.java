@@ -274,7 +274,6 @@ public class AimImageAnnotationCollectionDataUploader extends DataUploader
 		// TODO: refactor code to remove need for labelPrefix and labelSuffix.
 		String labelSuffix = "_" + "_" + UidGenerator.createShortUnique();
 		label = isBatchMode ? labelPrefix + labelSuffix : labelPrefix;
-      label = labelPrefix;
 		
       return true;
    }

@@ -266,7 +266,7 @@ public abstract class DataUploader
 			label = label.replace("$SESSION$",      XNATExperimentLabel)
 			             .replace("$SUBJECT$",      XNATSubjectLabel)
 					       .replace("$DATE_TIME$",    date + "_" + time)
-							 .replace("$FILENAME$",     uploadFile.getName())
+						//	 .replace("$FILENAME$",     uploadFile.getName())
 					       .replace("$UPLOADER_UID$", UidGenerator.createShortUnique())
                       .replaceAll("[^A-Za-z0-9_]", "");
 		}
@@ -409,7 +409,10 @@ public abstract class DataUploader
     */
    public void uploadResourcesToRepository() throws XNATException
    {
-		if (uploadFile != null) createPrimaryResource();
+		if (uploadFile != null)
+      {
+         createPrimaryResource();
+      }
 		createAuxiliaryResources();
 		createXnatResources();
 
