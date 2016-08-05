@@ -168,7 +168,7 @@ public class DeleteAnnotations
                String xnatAssLabel = result.atom(5, j);
                System.out.println(cumIndent + "Deleting assessor " + xnatAssLabel);
                
-               try
+					try
                {
                   String restCommand = "/data/archive" +
                                        "/projects/"    + xnatProject   +
