@@ -532,7 +532,7 @@ public class RtStructBuilder
       
 		StructureSet ss = new StructureSet();
       ss.structureSetLabel           = "RT-STRUCT_AIM";
-		String s                       = "AIM_" + iac.getUid(); 
+		String s                       = iac.getUid(); 
       ss.structureSetName            = s.substring(0, Math.min(64, s.length()));
       ss.structureSetDescription     = "ROIs from AIM instance document with UID "
                                         + iac.getUid() + " and AIM description '"
@@ -663,7 +663,7 @@ public class RtStructBuilder
 					}
                rc.contourList.add(c);
 	
-					s                          = "AIM_" + ia.getName(); 
+					s                          = ia.getName(); 
 					ssr.roiName                = s.substring(0, Math.min(64, s.length()));
 					ssr.roiDescription         = "ROI from AIM ImageMarkupEntity with UID "
                                              + shape.getUid() + ", with AIM label '"

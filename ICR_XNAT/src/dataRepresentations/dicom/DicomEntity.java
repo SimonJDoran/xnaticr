@@ -47,6 +47,7 @@ package dataRepresentations.dicom;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -546,15 +547,18 @@ public abstract class DicomEntity implements TextRepresentation
 		Field[] fields = cls.getDeclaredFields();
 		for (Field fld : fields)
 		{
-			try
+			if (!Modifier.isStatic(fld.getModifiers()))
 			{
-				Object a = fld.get(this);
-            Object b = deepCopyField(a);
-				fld.set(dest, b);
-			}
-			catch (IllegalAccessException | IllegalArgumentException | NullPointerException | ExceptionInInitializerError ex)
-			{
-				throw new RuntimeException("Programming issue: " + ex.getMessage());
+				try
+				{
+					Object a = fld.get(this);
+					Object b = deepCopyField(a);
+					fld.set(dest, b);
+				}
+				catch (IllegalAccessException | IllegalArgumentException | NullPointerException | ExceptionInInitializerError ex)
+				{
+					throw new RuntimeException("Programming issue: " + ex.getMessage());
+				}
 			}
 		}
 		return dest;

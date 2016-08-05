@@ -263,9 +263,11 @@ public abstract class DataUploader
       // only characters valid for XNAT experiment labels make it through.
 		if (label != null)
 		{
-			label = label.replace("$SESSION$",   XNATExperimentLabel)
-			             .replace("$SUBJECT$",   XNATSubjectLabel)
-					       .replace("$DATE_TIME$", date + "_" + time)
+			label = label.replace("$SESSION$",      XNATExperimentLabel)
+			             .replace("$SUBJECT$",      XNATSubjectLabel)
+					       .replace("$DATE_TIME$",    date + "_" + time)
+							 .replace("$FILENAME$",     uploadFile.getName())
+					       .replace("$UPLOADER_UID$", UidGenerator.createShortUnique())
                       .replaceAll("[^A-Za-z0-9_]", "");
 		}
       Document metaDoc = createMetadataXml();

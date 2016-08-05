@@ -270,9 +270,12 @@ public class AimImageAnnotationCollectionDataUploader extends DataUploader
 			return false;
 		}
       
-      String labelSuffix = "_" + uploadFile.getName() + "_" + UidGenerator.createShortUnique();
+      // I changed the way of doing this.
+		// TODO: refactor code to remove need for labelPrefix and labelSuffix.
+		String labelSuffix = "_" + "_" + UidGenerator.createShortUnique();
 		label = isBatchMode ? labelPrefix + labelSuffix : labelPrefix;
-      
+      label = labelPrefix;
+		
       return true;
    }
   
