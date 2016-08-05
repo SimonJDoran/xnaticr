@@ -61,7 +61,7 @@ public class DeleteAnnotations
    {
       ArrayList<String> projectList = new ArrayList<>();
 		
-		projectList.add("BRC_RADMETA");
+		projectList.add("BRC_RADPRIM");
 		URL XnatServerUrl;
 		try
 		{
