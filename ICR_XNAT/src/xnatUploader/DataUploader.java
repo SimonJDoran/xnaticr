@@ -102,7 +102,7 @@ public abstract class DataUploader
    protected String                        date;
    protected String                        time;
 	protected String                        label;
-	protected String                        labelPrefix;
+	protected String                        labelTemplate;
    protected String                        note;
 	protected String                        visit;
    protected String                        visitID;
@@ -126,7 +126,6 @@ public abstract class DataUploader
    protected boolean                       errorOccurred;
    protected String                        errorMessage;
    protected File                          mostRecentSuccessfulPrep;
-   protected String                        batchLabelPrefix;
    protected String                        batchNote;
    protected boolean                       isBatchMode;
    protected String                        version;
@@ -967,16 +966,36 @@ public abstract class DataUploader
    
    
    /**
-    * Set the batchLabelPrefix, which stays constant between multiple uploads
+    * Set the label template, which stays constant between multiple uploads
     * batch mode.
     * @param prefix
     */
-   public void setBatchLabelPrefix(String prefix)
+   public void setLabelTemplate(String s)
    {
-      batchLabelPrefix = prefix;
+      labelTemplate = s;
    }
    
    
+   protected String expandLabelTemplate(String template)
+   {
+      // The replacement throws an error if any of the replacement
+      // values are null, so check these just in case.
+      String s = template;
+      if (XNATExperimentLabel != null)      s = s.replace("$SESSION$",   XNATExperimentLabel);
+      if (XNATSubjectLabel    != null)      s = s.replace("$SUBJECT$",   XNATSubjectLabel);
+      if ((date != null) && (time != null)) s = s.replace("$DATE_TIME$", date + "_" + time);
+      if (uploadFile          != null)      s = s.replace("$FILENAME$",  uploadFile.getName());
+ 
+      // Note this setting will return something different every time the
+      // method is called.
+      s = s.replace("$GENERATED_UID$" , UidGenerator.createShortUnique());
+
+      // Remove characters that are invalid in labels.
+      s = s.replaceAll("[^A-Za-z0-9_]", "");
+      
+      return s;
+   }
+  
    
    /**
     * Set the batchNote, which stays constant between multiple uploads

@@ -166,7 +166,7 @@ class RtStructDataUploader extends DataUploader
 		
 		// Initially, the label of the XNAT assessor will be set to the same
 		// as the structure set label, but this can be changed on the upload screen.
-		labelPrefix = rts.structureSet.structureSetLabel;
+		if (!isBatchMode) labelTemplate = rts.structureSet.structureSetLabel;
       
 		
 		// Generate a single Set of all studies referenced for later use
@@ -252,9 +252,8 @@ class RtStructDataUploader extends DataUploader
       if (XNATAccessionID == null)
          XNATAccessionID = getRootElement() + "_" + UidGenerator.createShortUnique();
       
-      if (labelPrefix == null) labelPrefix = labelParent;
-      String labelSuffix = "_" + uploadFile.getName() + "_" + UidGenerator.createShortUnique();
-		label = isBatchMode ? labelPrefix + labelSuffix : labelPrefix;
+      if (labelTemplate == null) labelTemplate = labelParent;
+      label = expandLabelTemplate(labelTemplate);
 		
 		// Create separate accession IDs for all the individual ROI's.
 		nRois = rts.structureSet.structureSetRoiList.size();
@@ -623,8 +622,8 @@ class RtStructDataUploader extends DataUploader
    @Override
 	public void updateVariablesForEditableFields(MetadataPanel mdp, Character key, Object source)
 	{
-		labelPrefix = mdp.getJTextFieldContents("Label", key, source);
-		note        = mdp.getJTextFieldContents("Note", key, source);
+		labelTemplate = mdp.getJTextFieldContents("Label", key, source);
+		note          = mdp.getJTextFieldContents("Note", key, source);
 	}
 	
 	
@@ -652,9 +651,9 @@ class RtStructDataUploader extends DataUploader
    @Override
    public boolean rightMetadataPresent()
    {
-      return (!labelPrefix.equals("")) &&
-             (!XNATSubjectID.equals(""))           &&
-             (!XNATExperimentID.equals(""))        &&
+      return (!labelTemplate.equals(""))      &&
+             (!XNATSubjectID.equals(""))      &&
+             (!XNATExperimentID.equals(""))   &&
              (!XNATScanIdSet.isEmpty());
    }
    

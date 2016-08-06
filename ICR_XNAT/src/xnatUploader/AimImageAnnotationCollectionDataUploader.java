@@ -174,7 +174,7 @@ public class AimImageAnnotationCollectionDataUploader extends DataUploader
       // has been passed in from the previous data uploader and originally
       // input from the interaction with the user that kicked off the batch
       // upload.
-		if (!isBatchMode) labelPrefix = iac.getDescription();
+		if (!isBatchMode) labelTemplate = iac.getDescription();
       
       try
       {
@@ -270,10 +270,7 @@ public class AimImageAnnotationCollectionDataUploader extends DataUploader
 			return false;
 		}
       
-      // I changed the way of doing this.
-		// TODO: refactor code to remove need for labelPrefix and labelSuffix.
-		String labelSuffix = "_" + "_" + UidGenerator.createShortUnique();
-		label = isBatchMode ? labelPrefix + labelSuffix : labelPrefix;
+		label = expandLabelTemplate(labelTemplate);
 		
       return true;
    }
@@ -438,8 +435,7 @@ public class AimImageAnnotationCollectionDataUploader extends DataUploader
 			}
 			if (nMarkups > 0)
 			{
-				String labelSuffix = "_" + uid;
-				label = isBatchMode ? labelPrefix + labelSuffix : labelPrefix;
+				label = expandLabelTemplate(labelTemplate);
 				RtStructDataUploader rtsu = new RtStructDataUploader(xnprf);
 				try
 				{
@@ -941,7 +937,7 @@ public class AimImageAnnotationCollectionDataUploader extends DataUploader
 	@Override
 	public void updateVariablesForEditableFields(MetadataPanel mdp, Character key, Object source)
 	{
-		labelPrefix = mdp.getJTextFieldContents("Label", key, source);
+      labelTemplate = mdp.getJTextFieldContents("Label", key, source);
 		note        = mdp.getJTextFieldContents("Note", key, source);
 	}
    
@@ -952,7 +948,7 @@ public class AimImageAnnotationCollectionDataUploader extends DataUploader
       if (oldUploader instanceof AimImageAnnotationCollectionDataUploader)
       {
          AimImageAnnotationCollectionDataUploader oldU = (AimImageAnnotationCollectionDataUploader) oldUploader;
-         labelPrefix = oldU.labelPrefix;
+         labelTemplate = oldU.labelTemplate;
          note        = oldU.note;
       }
    }        
@@ -982,8 +978,7 @@ public class AimImageAnnotationCollectionDataUploader extends DataUploader
 	@Override
    public boolean rightMetadataPresent()
    {
-		//System.out.println("labelPrefix = " + labelPrefix);
-      return (!labelPrefix.equals("")) &&
+		return (!labelTemplate.equals("")) &&
              (!XNATSubjectID.equals(""))           &&
              (!XNATExperimentID.equals(""))        &&
              (!XNATScanIdSet.isEmpty());
