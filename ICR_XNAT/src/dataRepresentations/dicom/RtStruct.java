@@ -122,7 +122,7 @@ public class RtStruct extends DicomEntity
 	@Override
 	public void writeToDicom(DicomObject rtsDo)
 	{
-      final String EXPLICIT_VR_LITTLE_ENDIAN = "1.2.840.10008.1.2.";
+      final String EXPLICIT_VR_LITTLE_ENDIAN = "1.2.840.10008.1.2.1";
       writeString(rtsDo, Tag.TransferSyntaxUID, VR.UI, 1, EXPLICIT_VR_LITTLE_ENDIAN);
 		sopCommon.writeToDicom(rtsDo);
 		patient.writeToDicom(rtsDo);

@@ -61,7 +61,7 @@ public class DeleteAnnotations
    {
       ArrayList<String> projectList = new ArrayList<>();
 		
-		projectList.add("BRC_RADMETA");
+		projectList.add("BRC_RADMETA2");
 		URL XnatServerUrl;
 		try
 		{
@@ -94,7 +94,8 @@ public class DeleteAnnotations
            throws XNATException
    {
       // This line is important, because it establishes the JSESSIONID.
-      // If this isn't in here, then 
+      // If this isn't in here, then each REST call becomes a separate session
+		// and when too many sessions build up, access fails.
       xnprf.connect();
       String xnatProject = xnprf.getProjectList().get(0);
       String indent      = "   ";

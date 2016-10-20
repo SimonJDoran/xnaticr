@@ -77,7 +77,7 @@ public class SopCommon extends DicomEntity
    
    public void writeToDicom(DicomObject scDo)
    {
-      writeString(scDo, Tag.MediaStorageSOPInstanceUID, VR.AE, 1, mediaStorageSopClassUid);
+      writeString(scDo, Tag.MediaStorageSOPClassUID,    VR.AE, 1, mediaStorageSopClassUid);
       writeString(scDo, Tag.SOPClassUID,                VR.UI, 1, sopClassUid);
       writeString(scDo, Tag.SOPInstanceUID,             VR.UI, 1, sopInstanceUid);
       writeString(scDo, Tag.SpecificCharacterSet,       VR.CS, "1C", specificCharacterSet);

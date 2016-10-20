@@ -175,6 +175,7 @@ public class AimImageAnnotationCollectionDataUploader extends DataUploader
       // input from the interaction with the user that kicked off the batch
       // upload.
 		if (!isBatchMode) labelTemplate = iac.getDescription();
+		note = "";
       
       try
       {
@@ -270,7 +271,8 @@ public class AimImageAnnotationCollectionDataUploader extends DataUploader
 			return false;
 		}
       
-		label = expandLabelTemplate(labelTemplate);
+		if (labelTemplate == null) label = "";
+		else label = expandLabelTemplate(labelTemplate);
 		
       return true;
    }

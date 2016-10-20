@@ -325,7 +325,7 @@ public class XNATServerConnection
       Document    doc = null;
       try
       {
-         is = doRESTPost("/REST/JSESSION");
+         is = doRESTPost("/data/JSESSION");
       }
       catch (XMLException exXML)
       {
@@ -574,7 +574,10 @@ public class XNATServerConnection
          connection.setDoOutput(true);
          connection.setDoInput(true);
          connection.setRequestMethod(RESTMethod);
-         if (JSessionID == null) connection.setRequestProperty("Authorization", getAuthorization());
+         if (JSessionID == null)
+			{
+				connection.setRequestProperty("Authorization", getAuthorization());
+			}
          else connection.setRequestProperty("Cookie", "JSESSIONID=" + JSessionID);
          connection.setConnectTimeout(5000); // 5 seconds
 

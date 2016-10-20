@@ -75,7 +75,7 @@ public class StructureSetRoi extends DicomEntity
 		roiGenerationAlgorithm        = readString(ssrDo, Tag.ROIGenerationAlgorithm, 2);
 		roiGenerationDescription      = readString(ssrDo, Tag.ROIGenerationDescription, 3);
 		
-		derivationCodeList = readSequence(Code.class, ssrDo, Tag.DerivationCodeSequence, 1);
+		derivationCodeList = readSequence(Code.class, ssrDo, Tag.DerivationCodeSequence, 3);
 	}
 	
 	
@@ -89,6 +89,6 @@ public class StructureSetRoi extends DicomEntity
 		if (roiVolume != null) writeFloat(ssrDo,    Tag.ROIName,   VR.DS, 3, roiVolume);
 		writeString(ssrDo,   Tag.ROIGenerationAlgorithm, VR.CS, 3, roiGenerationAlgorithm);
 		writeString(ssrDo,   Tag.ROIGenerationDescription, VR.LO, 3, roiGenerationDescription);
-		writeSequence(ssrDo, Tag.DerivationCodeSequence, VR.SQ, 1, derivationCodeList);
+		writeSequence(ssrDo, Tag.DerivationCodeSequence, VR.SQ, 3, derivationCodeList);
 	}
 }
