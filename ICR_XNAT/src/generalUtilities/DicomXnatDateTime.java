@@ -256,11 +256,22 @@ public class DicomXnatDateTime
     */
    public static String convertAimToXnatDate(String dateTime) throws DataFormatException
    {
-		if (dateTime.length() < 19) throw new DataFormatException(DataFormatException.TIME);
-      //TODO Better input checking: will currently return non-valid dates
-		//     if input is not a bona fide MRIW time.
+		// ePAD v1 formatting
+		if (dateTime.length() == 19) return dateTime.substring(0, 10);
 		
-		return dateTime.substring(0, 10);
+		// ePAD v2 formatting
+		if (dateTime.length() == 14)
+		{
+			String year  = dateTime.substring(0, 4);
+			String month = dateTime.substring(4, 6);
+			String day   = dateTime.substring(6, 8);
+			return year + "-" + month + "-" + day;
+		}
+		
+      //TODO Better input checking: will currently return non-valid dates
+		//     if input is not a bona fide AIM time.
+			
+		throw new DataFormatException(DataFormatException.DATE);
    }
    
    
@@ -274,11 +285,22 @@ public class DicomXnatDateTime
     */
    public static String convertAimToXnatTime(String dateTime) throws DataFormatException
    {
-		if (dateTime.length() < 19) throw new DataFormatException(DataFormatException.TIME);
-      //TODO Better input checking: will currently return non-valid dates
-		//     if input is not a bona fide MRIW time.
+		// ePAD v1 formatting
+		if (dateTime.length() == 19) return dateTime.substring(11, 19);
 		
-		return dateTime.substring(11, 19);
+		// ePAD v2 formatting
+		if (dateTime.length() == 14)
+		{
+			String hour  = dateTime.substring(8,  10);
+			String min   = dateTime.substring(10, 12);
+			String sec   = dateTime.substring(12, 14);
+			return hour + ":" + min + ":" + sec;
+		}
+		
+      //TODO Better input checking: will currently return non-valid dates
+		//     if input is not a bona fide AIM time.
+			
+		throw new DataFormatException(DataFormatException.TIME);
    }
      
 }

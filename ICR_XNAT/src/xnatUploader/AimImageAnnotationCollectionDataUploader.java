@@ -820,7 +820,7 @@ public class AimImageAnnotationCollectionDataUploader extends DataUploader
 		String                 iacSv    = DEFAULT;	
 		ProcessStep.Platform   plat2    = new Platform(iacMn, iacSv);
    
-      String                 ts2      = iac.getDateTime();
+      String                 ts2      = date + "T" + time;
       
       String                 cvs2     = DEFAULT;
 			
