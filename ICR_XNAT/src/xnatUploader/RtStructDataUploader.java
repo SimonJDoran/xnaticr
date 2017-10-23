@@ -447,9 +447,10 @@ class RtStructDataUploader extends DataUploader
       
       List<Resource> inList = new ArrayList<>();
 		inList.add(r);
+		List<Resource> outList = new ArrayList<>();
 	
       regionSet.setInList(inList);  // should be inList
-      regionSet.setOutList(new ArrayList<>()); // should be outList
+      regionSet.setOutList(outList); // should be outList
 		
 		regionSet.setImageSessionId(XNATExperimentID);
 		
