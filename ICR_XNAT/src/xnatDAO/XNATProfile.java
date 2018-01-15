@@ -46,11 +46,17 @@
 
 package xnatDAO;
 
+import dataRepresentations.xnatSchema.InvestigatorList;
+import exceptions.XMLException;
 import generalUtilities.Vector2D;
 import java.awt.Dialog;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
+import org.w3c.dom.Document;
+import org.w3c.dom.NodeList;
+import xmlUtilities.XMLUtilities;
+import xnatRestToolkit.XNATNamespaceContext;
 import xnatRestToolkit.XNATRESTToolkit;
 import xnatRestToolkit.XNATServerConnection;
 
@@ -88,6 +94,7 @@ public class XNATProfile extends XNATServerConnection
       XNATProfileAuthenticator a = new XNATProfileAuthenticator(parent,
                                         "Authentication required", this);
       a.setVisible(true);
+      analytics(this);
    }
    
    
@@ -137,6 +144,8 @@ public class XNATProfile extends XNATServerConnection
  */
 	private void analytics(XNATProfile xnprf)
 	{
+      final XNATNamespaceContext xnatNs  = new XNATNamespaceContext();
+      String xpe;
 		try
 		{
 			XNATRESTToolkit    xnrt      = new XNATRESTToolkit(xnprf);
@@ -147,6 +156,16 @@ public class XNATProfile extends XNATServerConnection
 			for (int i=0; i<v2dProj.size(); i++)
 			{
 				String proj = v2dProj.atom(0, i);
+            int    nSessionsProject = 0;
+            
+            // Get the project's PI.
+            InvestigatorList.Investigator  pi = new InvestigatorList.Investigator();
+            Document projDoc = xnrt.RESTGetDoc("/data/archive/projects/" + proj +  "?format=xml");
+            xpe    = "/xnat:Project/xnat:PI/xnat:firstname";
+            String firstName = XMLUtilities.getFirstXPathResult(projDoc, xnatNs, xpe);
+	
+            xpe    = "/xnat:Project/xnat:PI/xnat:lastname";
+            String lastName = XMLUtilities.getFirstXPathResult(projDoc, xnatNs, xpe);            
 				
 				// Loop over all subjects within a project.
 				Vector2D<String> v2dSubj = xnrt.RESTGetResultSet("/data/archive/projects/" + proj + "/subjects?format=xml");
@@ -166,9 +185,12 @@ public class XNATProfile extends XNATServerConnection
 							++nUniqueDates;
 							oldDates.add(d);
 					}
+               nSessionsProject += nUniqueDates;
 					nSessions.add(nUniqueDates);
 					//System.out.println("Project = " + proj + "  Subject =  " + subj + "  nUniqueDates = " + nUniqueDates);
 				}
+               
+            System.out.println(proj + "  " + firstName + " " + lastName + "   " + nSessionsProject);
 			}
 			System.out.println("Combined results for " + v2dProj.size() + " projects and " + nSessions.size() + " subjects:");
 		   
@@ -186,5 +208,4 @@ public class XNATProfile extends XNATServerConnection
 			System.out.println("Caught exception " + ex.getMessage());
 		}
 	}
-
 }
