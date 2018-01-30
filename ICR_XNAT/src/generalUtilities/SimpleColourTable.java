@@ -46,6 +46,7 @@ package generalUtilities;
 import java.awt.Color;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Random;
 
 public class SimpleColourTable
 {
@@ -92,7 +93,14 @@ public class SimpleColourTable
          if (i == n) return c;
          i++;
       }
-      return null;
+      // If we get here then n is greater than the number of colours in the predifined map.
+		String nickname = "Colour " + n;
+		Random randGen  = new Random();
+		Color  col      = new Color(randGen.nextInt(256), randGen.nextInt(256), randGen.nextInt(256));
+		
+		LinkedHashMap<String, Color> extraMap = new LinkedHashMap<String, Color>();
+		extraMap.put(nickname, col);
+		return extraMap.get(nickname);
    }
    
    

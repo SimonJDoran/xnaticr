@@ -559,21 +559,49 @@ public class RtStructBuilder
       // This interpretation matches the current output from ePad,
       // but will need to be revised if we start receiving individual markups
       // that are 3-D shapes.
+		boolean oneRoiPerAnnotationCollection = true;
+		boolean oneRoiPerAnnotation           = false;
+		boolean oneRoiPerMarkup               = false;
+
+		if (iac.getDescription().contains("One ROI per annotation"))
+		{
+			oneRoiPerAnnotationCollection = false;
+			oneRoiPerAnnotation           = true;
+			oneRoiPerMarkup               = false;
+		}
+
+		if (iac.getDescription().contains("One ROI per markup"))
+		{
+			oneRoiPerAnnotationCollection = false;
+			oneRoiPerAnnotation           = false;
+			oneRoiPerMarkup               = true;
+		}
+			
 		List<StructureSetRoi> ssrl = new ArrayList<>();
 		List<RoiContour>      rcl  = new ArrayList<>();
+		StructureSetRoi       ssr  = null;
+		RoiContour            rc   = null;		  
 		int roiCount = 0;
+		
+		if (oneRoiPerAnnotationCollection)
+		{
+			ssr = new StructureSetRoi();              
+         rc  = new RoiContour();
+			rc.referencedRoiNumber = 0;
+         rc.contourList         = new ArrayList<>();
+         ssr.roiNumber          = 0;
+			rc.roiDisplayColour    = new ArrayList<>();
+         int[] a = SimpleColourTable.getRGB(0);
+         for (int i=0; i<3; i++) rc.roiDisplayColour.add(a[i]);
+         markupRegionMap.put(iac.getUid(), "Region_" + UidGenerator.createShortUnique());
+		}
+		
       for (ImageAnnotation ia : iac.getAnnotationList())
       {
-         boolean oneRoiPerMarkup = true;
-         if (ia.getComment().contains("One ROI per annotation (multiple markups)"))
-            oneRoiPerMarkup = false;
-         boolean oneRoiPerAnnotation = !oneRoiPerMarkup;
-         
-         StructureSetRoi ssr = new StructureSetRoi();              
-         RoiContour      rc  = new RoiContour(); 
-         
-         if (oneRoiPerAnnotation)
-         {
+			if (oneRoiPerAnnotation)
+			{
+				ssr = new StructureSetRoi();              
+				rc  = new RoiContour(); 
             rc.referencedRoiNumber = roiCount;
             rc.contourList         = new ArrayList<>();
             ssr.roiNumber          = roiCount;
@@ -629,7 +657,10 @@ public class RtStructBuilder
                // AIM doesn't store all the information that we need. To get it,
 					// we need to find the corresponding DICOM object.
                bdo = sopDoMap.get(shape.getImageReferenceUid());
-               if (bdo == null) throw new DataFormatException(DataFormatException.BUILDER);
+               if (bdo == null)
+					{
+						throw new DataFormatException(DataFormatException.BUILDER);
+					}
                ci.referencedSopClassUid = bdo.getString(Tag.SOPClassUID);
 					ssr.referencedFrameOfReferenceUid = bdo.getString(Tag.FrameOfReferenceUID);
                
@@ -695,10 +726,18 @@ public class RtStructBuilder
                roiCount++;
             }
          }
-			ss.structureSetRoiList = ssrl;
-			rts.structureSet       = ss;
-			rts.roiContourList     = rcl;
+			
+			if (oneRoiPerAnnotationCollection)
+			{
+				rcl.add(rc);
+				ssrl.add(ssr);
+			}
+
       }
+		
+		ss.structureSetRoiList = ssrl;
+		rts.structureSet       = ss;
+		rts.roiContourList     = rcl;
 
 		
 		return ss;
