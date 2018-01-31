@@ -383,7 +383,7 @@ public class AnonymiseAndSend extends xnatDAO.XNATGUI implements ProjectGetter
 			String         dasName = homeDir + sep + ".XNAT_DAO" + sep + "temp"
 			                         + sep + "anonSendSessionTemp.das";
 			
-         for (String session:)
+         for (String session : srcSessIDs)
          FileWriter     dasWrt  = new FileWriter(dasName);
 			dasWrt.write(a);
 			dasWrt.close();
