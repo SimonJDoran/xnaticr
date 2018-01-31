@@ -63,6 +63,9 @@ public class XNATProfile extends XNATServerConnection
    protected String            profileName;
    protected ArrayList<String> projectList;
    protected long              lastAuthenticationTime;
+   protected String            dicomReceiverHost;
+   protected int               dicomReceiverPort;
+   protected String            dicomReceiverAeTitle;
 
    
    public XNATProfile()
@@ -73,12 +76,16 @@ public class XNATProfile extends XNATServerConnection
    }
    
    public XNATProfile(String profileName, URL serverURL, String userid,
-                      String password, ArrayList<String> projectList, long authTime)
+                      String password, ArrayList<String> projectList, long authTime,
+                      String dicomHost, int dicomPort, String aetitle)
    {
       super(serverURL, userid, password);
       this.profileName            = profileName;
       this.projectList            = projectList;
       this.lastAuthenticationTime = authTime;
+      this.dicomReceiverHost      = dicomHost;
+      this.dicomReceiverPort      = dicomPort;
+      this.dicomReceiverAeTitle   = aetitle;
    }
 
 
@@ -110,6 +117,24 @@ public class XNATProfile extends XNATServerConnection
    }
    
    
+   public String getDicomReceiverHost()
+   {
+      return dicomReceiverHost;
+   }
+
+
+   public int getDicomReceiverPort()
+   {
+      return dicomReceiverPort;
+   }
+   
+   
+   public String getDicomReceiverAeTitle()
+   {
+      return dicomReceiverAeTitle;
+   }
+   
+   
    public void setProfileName(String profileName)
    {
       this.profileName = profileName;
@@ -125,6 +150,24 @@ public class XNATProfile extends XNATServerConnection
    public void updateAuthenticationTime()
    {
       lastAuthenticationTime = System.currentTimeMillis();
+   }
+   
+   
+   public void setDicomReceiverHost(String dicomHost)
+   {
+      dicomReceiverHost = dicomHost;
+   }
+   
+   
+   public void setDicomReceiverPort(int dicomPort)
+   {
+      dicomReceiverPort = dicomPort;
+   }
+   
+   
+   public void setDicomReceiverAeTitle(String aetitle)
+   {
+      dicomReceiverAeTitle = aetitle;
    }
 	
 	

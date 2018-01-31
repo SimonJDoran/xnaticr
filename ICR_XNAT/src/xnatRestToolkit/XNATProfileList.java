@@ -174,6 +174,9 @@ public class XNATProfileList extends ArrayList<XNATProfile>
       String[] serverURLs;
       String[] userids;
       ArrayList<ArrayList<String>> projectLists;
+      String[] dicomHosts;
+      String[] dicomPorts;
+      String[] aetitles;
       String[] preferred;
 
       XNATNamespaceContext XNATns = new XNATNamespaceContext();
@@ -187,7 +190,10 @@ public class XNATProfileList extends ArrayList<XNATProfile>
 
          profileNames = XMLUtilities.getAttribute(  DOMDoc, XNATns, "XNATProfile", "profileName");
          serverURLs   = XMLUtilities.getElementText(DOMDoc, XNATns, "serverURL");
-         userids      = XMLUtilities.getElementText(DOMDoc, XNATns, "userid");
+         dicomHosts   = XMLUtilities.getElementText(DOMDoc, XNATns, "userid");
+         dicomPorts   = XMLUtilities.getElementText(DOMDoc, XNATns, "dicomReceiverHost");
+         aetitles     = XMLUtilities.getElementText(DOMDoc, XNATns, "dicomReceiverPort");
+         userids      = XMLUtilities.getElementText(DOMDoc, XNATns, "dicomReceiverAeTitle");   
          preferred    = XMLUtilities.getElementText(DOMDoc, XNATns, "preferredProfile");
       }
       catch (FileNotFoundException exFNF)
@@ -225,6 +231,9 @@ public class XNATProfileList extends ArrayList<XNATProfile>
             xnprf.setServerURL(new URL(serverURLs[i]));
             xnprf.setUserid(userids[i]);
             xnprf.setProjectList(projectList);
+            xnprf.setDicomReceiverHost(dicomHosts[i]);
+            xnprf.setDicomReceiverPort(Integer.parseInt(dicomPorts[i]));
+            xnprf.setDicomReceiverAeTitle(aetitles[i]);
             add(xnprf);
             ++validURL;
          }
@@ -319,6 +328,18 @@ public class XNATProfileList extends ArrayList<XNATProfile>
                        .endEntity();
                
                   pp.endEntity()
+                    .writeEntity("dicomReceiverHost")
+                    .writeText(ip.getDicomReceiverHost())
+                    .endEntity()
+                          
+                    .writeEntity("dicomReceiverPort")
+                    .writeText(ip.getDicomReceiverPort())
+                    .endEntity()
+                          
+                    .writeEntity("dicomReceiverAeTitle")
+                    .writeText(ip.getDicomReceiverAeTitle())
+                    .endEntity()
+                          
                  .endEntity();
             }
          }
