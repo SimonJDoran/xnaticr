@@ -29,20 +29,25 @@ public class ProxyTests
 			System.out.println("\n\nTests on server " + server);
 			
 			System.out.println("\nTest 1: authentication, no chunking");
-			String JSessionID = testAuthenticate(server, false);
+			String JSessionID = testAuthenticate(server, false, false);
 			System.out.println("JSESSIONID = " + JSessionID);
 			
-			System.out.println("\nTest 2: authentication, chunking");
-			JSessionID = testAuthenticate(server, true);
+         System.out.println("\nTest 3: authentication, explicit setting of Content Length");
+			JSessionID = testAuthenticate(server, false, true);
 			System.out.println("JSESSIONID = " + JSessionID);
+         
+         System.out.println("\nTest 2: authentication, chunking");
+			JSessionID = testAuthenticate(server, true, false);
+			System.out.println("JSESSIONID = " + JSessionID);
+         
 			
-			System.out.println("\nTest 3: GET");
+			System.out.println("\nTest 4: GET");
 			String outputXml = testGet(server, JSessionID);
 			System.out.println("Project XML = " + outputXml.substring(0, 100) + "...");
 		}
 	}
 	
-	private static String testAuthenticate(String server, boolean useChunkedStreaming)
+	private static String testAuthenticate(String server, boolean useChunkedStreaming, boolean setContentLength)
 	{
       InputStream bis;
 		
@@ -62,7 +67,10 @@ public class ProxyTests
 			connection.setRequestProperty("Authorization", auth);
 			connection.setConnectTimeout(5000); // 5 seconds
 			
+         String urlWithoutHost = restUrl.getPath();
+         int contentLength = restUrl.getPath().length();
 			if (useChunkedStreaming) connection.setChunkedStreamingMode(-1);
+         if (setContentLength)    connection.setRequestProperty("Content-Length", Integer.toString(contentLength));
 			
 			connection.connect();
          int    responseCode    = connection.getResponseCode();
@@ -105,7 +113,6 @@ public class ProxyTests
          connection.setRequestMethod("GET");
 			connection.setRequestProperty("Cookie", "JSESSIONID=" + JSessionID);
 			connection.setConnectTimeout(5000); // 5 seconds
-		//	connection.setChunkedStreamingMode(-1);
 			
 			connection.connect();
          int    responseCode    = connection.getResponseCode();
