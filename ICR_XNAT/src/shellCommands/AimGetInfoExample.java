@@ -122,14 +122,21 @@ public class AimGetInfoExample
 		{
 			XnatServerUrl = new URL("https://bifrost.icr.ac.uk:8443/XNAT_ROI");
 		}
-		catch (MalformedURLException exMFU) {return;}
+      catch (MalformedURLException exMFU) {return;}
 		
+      String dicomReceiverHost    = "bifrost.icr.ac.uk";
+      int    dicomReceiverPort    = 8104;
+      String dicomReceiverAeTitle = "XNAT";
+      
 		XNATProfile xnprf = new XNATProfile("myProfile",
 				                              XnatServerUrl,
 				                              args[0],
 				                              args[1],				                              
 		                                    projectList,
-		                                    System.currentTimeMillis());
+		                                    System.currentTimeMillis(),
+                                          dicomReceiverHost,
+                                          dicomReceiverPort,
+                                          dicomReceiverAeTitle);
 		
       AimGetInfoExample agie = new AimGetInfoExample();
             
