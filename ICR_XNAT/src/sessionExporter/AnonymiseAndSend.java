@@ -235,28 +235,7 @@ public class AnonymiseAndSend extends xnatDAO.XNATGUI implements ProjectGetter
 			}
     });
 		
-		aeTitleJTextField.addActionListener(new ActionListener()
-		{
-			@Override
-			public void actionPerformed(ActionEvent e)
-			{
-				respondToAeTitleChange();
-			}
-		});
-		
-		aeTitleJTextField.addFocusListener(new FocusListener()
-		{
-			@Override
-			public void focusGained(FocusEvent e){}
-			
-			@Override
-			public void focusLost(FocusEvent e)
-			{
-				respondToAeTitleChange();
-			}
-		});	
-
-	}
+}
 	
 		
 	
@@ -374,16 +353,19 @@ public class AnonymiseAndSend extends xnatDAO.XNATGUI implements ProjectGetter
 			return;
 		}
 		
-		String templateScript = asw.getScriptText();		
-		String destProj       = (String) destProjectJComboBox.getSelectedItem();	
-		int    destPort       = Integer.getInteger(portJTextField.getText());
-		String destAeTitle    = aeTitleJTextField.getText();
+		String templateScript = asw.getScriptText();
 		
 		try
 		{
-			DicomRemapAndSend remapper = new DicomRemapAndSend(elw, destProf, destPort,
-				                  destAeTitle, destProj, destSubjCodes, templateScript);
-		}
+         /* Attempting to use Kevin's DicomEdit library natively
+            is currently on hold.
+			DicomRemapAndSend remapper = new DicomRemapAndSend(elw, destProf, destProj,
+                                                    destSubjCodes, templateScript);
+		   */
+         
+         exportViaDicomRemap(templateScript, )
+         
+         }
 		catch (Exception exIO){}
 		
 		
@@ -421,7 +403,9 @@ public class AnonymiseAndSend extends xnatDAO.XNATGUI implements ProjectGetter
 			cl.add("-d");
 			cl.add(dasName);
 			cl.add("-o");
-			cl.add("dicom://172.16.14.8:8104/XNAT");
+			cl.add("dicom://" + destProf.getDicomReceiverHost()
+                 + ":" + destProf.getDicomReceiverPort()
+                 + "/" + destProf.getDicomReceiverAeTitle());
 			
 			
 			ProcessBuilder pb = new ProcessBuilder(cl);
@@ -643,10 +627,6 @@ public class AnonymiseAndSend extends xnatDAO.XNATGUI implements ProjectGetter
       anonCodeSameJCheckBox = new javax.swing.JCheckBox();
       jScrollPane1 = new javax.swing.JScrollPane();
       anonTwoColourJTable = new generalUtilities.TwoColourJTable();
-      aetitleJLabel = new javax.swing.JLabel();
-      aeTitleJTextField = new javax.swing.JTextField();
-      portJLabel = new javax.swing.JLabel();
-      portJTextField = new javax.swing.JTextField();
 
       setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
@@ -712,15 +692,6 @@ public class AnonymiseAndSend extends xnatDAO.XNATGUI implements ProjectGetter
       ));
       jScrollPane1.setViewportView(anonTwoColourJTable);
 
-      aetitleJLabel.setFont(aetitleJLabel.getFont());
-      aetitleJLabel.setText("AETITLE");
-
-      aeTitleJTextField.setText("jTextField1");
-
-      portJLabel.setText("Port no.");
-
-      portJTextField.setText("jTextField2");
-
       javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
       getContentPane().setLayout(layout);
       layout.setHorizontalGroup(
@@ -761,22 +732,13 @@ public class AnonymiseAndSend extends xnatDAO.XNATGUI implements ProjectGetter
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                            .addComponent(destProfileJComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, 317, javax.swing.GroupLayout.PREFERRED_SIZE)
                            .addGroup(layout.createSequentialGroup()
-                              .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                                 .addGroup(layout.createSequentialGroup()
-                                    .addComponent(aeTitleJTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 117, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                    .addComponent(portJLabel)
-                                    .addGap(18, 18, 18)
-                                    .addComponent(portJTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 69, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                 .addComponent(destProjectJComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, 317, javax.swing.GroupLayout.PREFERRED_SIZE))
+                              .addComponent(destProjectJComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, 317, javax.swing.GroupLayout.PREFERRED_SIZE)
                               .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                               .addComponent(checkAccessJLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 216, javax.swing.GroupLayout.PREFERRED_SIZE))))
                      .addComponent(dataDestinationJLabel))
                   .addContainerGap(20, Short.MAX_VALUE))
                .addGroup(layout.createSequentialGroup()
-                  .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                     .addComponent(aetitleJLabel)
-                     .addComponent(anonCodeSameJCheckBox))
+                  .addComponent(anonCodeSameJCheckBox)
                   .addGap(0, 0, Short.MAX_VALUE))))
       );
       layout.setVerticalGroup(
@@ -805,13 +767,7 @@ public class AnonymiseAndSend extends xnatDAO.XNATGUI implements ProjectGetter
                .addComponent(destProjectJComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                .addComponent(destProjectJLabel)
                .addComponent(checkAccessJLabel))
-            .addGap(18, 18, 18)
-            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-               .addComponent(aetitleJLabel)
-               .addComponent(aeTitleJTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-               .addComponent(portJLabel)
-               .addComponent(portJTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 36, Short.MAX_VALUE)
+            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 37, Short.MAX_VALUE)
             .addComponent(exportProgressJLabel)
             .addGap(18, 18, 18)
             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
@@ -872,8 +828,6 @@ public class AnonymiseAndSend extends xnatDAO.XNATGUI implements ProjectGetter
 //	}
 
    // Variables declaration - do not modify//GEN-BEGIN:variables
-   private javax.swing.JTextField aeTitleJTextField;
-   private javax.swing.JLabel aetitleJLabel;
    private javax.swing.JCheckBox anonCodeSameJCheckBox;
    private generalUtilities.TwoColourJTable anonTwoColourJTable;
    private javax.swing.JButton cancelJButton;
@@ -889,8 +843,6 @@ public class AnonymiseAndSend extends xnatDAO.XNATGUI implements ProjectGetter
    private javax.swing.JLabel exportProgressJLabel;
    private javax.swing.JLabel fileProgressJLabel;
    private javax.swing.JScrollPane jScrollPane1;
-   private javax.swing.JLabel portJLabel;
-   private javax.swing.JTextField portJTextField;
    private javax.swing.JLabel srcProfileJLabel;
    private javax.swing.JLabel srcProfileJTextField;
    private generalUtilities.TwoColourJTable twoColourJTable1;

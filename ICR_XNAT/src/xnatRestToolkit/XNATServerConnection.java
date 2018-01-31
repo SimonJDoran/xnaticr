@@ -583,7 +583,8 @@ public class XNATServerConnection
          connection.setDoOutput(true);
          connection.setDoInput(true);
          connection.setRequestMethod(RESTMethod);
-			//connection.setChunkedStreamingMode(-1);
+         if (RESTMethod.equals("POST")) connection.setChunkedStreamingMode(-1);
+         
          if (JSessionID == null)
 			{
 				connection.setRequestProperty("Authorization", getAuthorization());

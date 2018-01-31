@@ -68,16 +68,7 @@
                               <Group type="103" groupAlignment="0" attributes="0">
                                   <Component id="destProfileJComboBox" min="-2" pref="317" max="-2" attributes="0"/>
                                   <Group type="102" alignment="0" attributes="0">
-                                      <Group type="103" groupAlignment="1" max="-2" attributes="0">
-                                          <Group type="102" attributes="0">
-                                              <Component id="aeTitleJTextField" min="-2" pref="117" max="-2" attributes="0"/>
-                                              <EmptySpace max="32767" attributes="0"/>
-                                              <Component id="portJLabel" min="-2" max="-2" attributes="0"/>
-                                              <EmptySpace type="separate" max="-2" attributes="0"/>
-                                              <Component id="portJTextField" min="-2" pref="69" max="-2" attributes="0"/>
-                                          </Group>
-                                          <Component id="destProjectJComboBox" min="-2" pref="317" max="-2" attributes="0"/>
-                                      </Group>
+                                      <Component id="destProjectJComboBox" min="-2" pref="317" max="-2" attributes="0"/>
                                       <EmptySpace type="unrelated" max="-2" attributes="0"/>
                                       <Component id="checkAccessJLabel" min="-2" pref="216" max="-2" attributes="0"/>
                                   </Group>
@@ -88,10 +79,7 @@
                       <EmptySpace pref="20" max="32767" attributes="0"/>
                   </Group>
                   <Group type="102" attributes="0">
-                      <Group type="103" groupAlignment="0" attributes="0">
-                          <Component id="aetitleJLabel" min="-2" max="-2" attributes="0"/>
-                          <Component id="anonCodeSameJCheckBox" min="-2" max="-2" attributes="0"/>
-                      </Group>
+                      <Component id="anonCodeSameJCheckBox" min="-2" max="-2" attributes="0"/>
                       <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
                   </Group>
               </Group>
@@ -127,14 +115,7 @@
                   <Component id="destProjectJLabel" alignment="3" min="-2" max="-2" attributes="0"/>
                   <Component id="checkAccessJLabel" alignment="3" min="-2" max="-2" attributes="0"/>
               </Group>
-              <EmptySpace type="separate" max="-2" attributes="0"/>
-              <Group type="103" groupAlignment="3" attributes="0">
-                  <Component id="aetitleJLabel" alignment="3" min="-2" max="-2" attributes="0"/>
-                  <Component id="aeTitleJTextField" alignment="3" min="-2" max="-2" attributes="0"/>
-                  <Component id="portJLabel" alignment="3" min="-2" max="-2" attributes="0"/>
-                  <Component id="portJTextField" alignment="3" min="-2" max="-2" attributes="0"/>
-              </Group>
-              <EmptySpace pref="36" max="32767" attributes="0"/>
+              <EmptySpace pref="37" max="32767" attributes="0"/>
               <Component id="exportProgressJLabel" min="-2" max="-2" attributes="0"/>
               <EmptySpace type="separate" max="-2" attributes="0"/>
               <Group type="103" groupAlignment="1" attributes="0">
@@ -303,30 +284,5 @@
         </Component>
       </SubComponents>
     </Container>
-    <Component class="javax.swing.JLabel" name="aetitleJLabel">
-      <Properties>
-        <Property name="font" type="java.awt.Font" editor="org.netbeans.modules.form.editors2.FontEditor">
-          <FontInfo relative="true">
-            <Font component="aetitleJLabel" property="font" relativeSize="true" size="0"/>
-          </FontInfo>
-        </Property>
-        <Property name="text" type="java.lang.String" value="AETITLE"/>
-      </Properties>
-    </Component>
-    <Component class="javax.swing.JTextField" name="aeTitleJTextField">
-      <Properties>
-        <Property name="text" type="java.lang.String" value="jTextField1"/>
-      </Properties>
-    </Component>
-    <Component class="javax.swing.JLabel" name="portJLabel">
-      <Properties>
-        <Property name="text" type="java.lang.String" value="Port no."/>
-      </Properties>
-    </Component>
-    <Component class="javax.swing.JTextField" name="portJTextField">
-      <Properties>
-        <Property name="text" type="java.lang.String" value="jTextField2"/>
-      </Properties>
-    </Component>
   </SubComponents>
 </Form>
