@@ -146,7 +146,7 @@
         <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
           <Image iconType="3" name="/xnatDAO/projectResources/ICR_DataExporter_large.png"/>
         </Property>
-        <Property name="text" type="java.lang.String" value="2.01 alpha (20/10/2015)"/>
+        <Property name="text" type="java.lang.String" value="2.2 alpha (31/01/2018)"/>
         <Property name="alignmentX" type="float" value="0.5"/>
         <Property name="alignmentY" type="float" value="1.0"/>
         <Property name="horizontalTextPosition" type="int" value="0"/>
