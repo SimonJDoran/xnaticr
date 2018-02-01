@@ -397,6 +397,15 @@ public class XNATServerConnection
       }
       catch (Exception ex)
       {
+			// Starting from version 1.7, this call has been removed from the REST
+			// API and returns a 404 Not Found http error.
+			if (ex.getMessage().contains("Not Found"))
+			{
+				logger.warn(ex.getMessage() + "\n assumed due to this being version 1.7+");
+				XNATVersion = "1.7+";
+				return;
+			}
+			
          logger.error(ex.getMessage()
             + ": This should never happen, as we should be connected and XNAT ought to return the value!");
          XNATVersion = null;
@@ -574,6 +583,7 @@ public class XNATServerConnection
          connection.setDoOutput(true);
          connection.setDoInput(true);
          connection.setRequestMethod(RESTMethod);
+         connection.setChunkedStreamingMode(-1);
          if (JSessionID == null)
 			{
 				connection.setRequestProperty("Authorization", getAuthorization());

@@ -160,7 +160,7 @@ public class AimImageAnnotationCollectionDataUploader extends DataUploader
 		{
 			iac = (AimToolkit.getToolkit().createXmlParser()).parse(uploadFile);
 		}
-		catch (XmlException | IOException ex)
+		catch (XmlException | IOException | IllegalArgumentException ex)
 		{
 			errorMessage = "Problem reading AIM instance file: " + ex.getMessage();
 			logger.error(errorMessage);
@@ -471,6 +471,7 @@ public class AimImageAnnotationCollectionDataUploader extends DataUploader
 					// in the provenance section of the metadata XML document.
 					rtsu.setUploadFile(new File(assocRegionSetId + ".dcm"));
 
+					/* Disable temporarily.
 					rtsu.uploadMetadataAndCascade();
 
 					String description = "DICOM RT-STRUCT file auto-created by ICR XNAT uploader from AIM instance file";
@@ -493,6 +494,7 @@ public class AimImageAnnotationCollectionDataUploader extends DataUploader
 
 					rtsu.setPrimaryResource(xr);
 					rtsu.uploadResourcesToRepository();
+							  */
 				}
 				catch (Exception ex)
 			//   catch (XNATException | DataFormatException | IOException ex)
@@ -515,6 +517,7 @@ public class AimImageAnnotationCollectionDataUploader extends DataUploader
 		//         individual image annotations. Upload each of these in the form
 		//         of an icr:aimImageAnnotationData.
 		// -----------------------------------------------------------------------	
+		/* Temporarily diable.
       for (ImageAnnotation ia : iac.getAnnotationList())
 		{
 			AimImageAnnotationDataUploader iau = new AimImageAnnotationDataUploader(xnprf);
@@ -552,7 +555,8 @@ public class AimImageAnnotationCollectionDataUploader extends DataUploader
 				errorMessage  = ex.getMessage();
 				throw ex;
 			}
-		}      
+		}
+				  */
       
 	}   
       

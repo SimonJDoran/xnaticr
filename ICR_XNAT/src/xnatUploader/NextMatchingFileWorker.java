@@ -130,6 +130,7 @@ public class NextMatchingFileWorker extends SwingWorker<File, Void>
             if (uploader.isPreparedForUpload()) return current;
             logger.warn(current.getPath() + " : file unsuitable for upload \n"
 						  + "Reason: " + uploader.getErrorMessage());
+				
             
             // A crucial point here is that, if the file fails the test,
             // the uploader.prepareUpload() call might have set some variables

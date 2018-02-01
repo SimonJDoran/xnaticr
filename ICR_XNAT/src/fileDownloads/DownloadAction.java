@@ -44,9 +44,6 @@
 
 package fileDownloads;
 
-import java.io.File;
-import java.util.ArrayList;
-
 public interface DownloadAction
 {
 	void executeAction(FileListWorker caller) throws Exception;
