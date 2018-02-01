@@ -69,12 +69,19 @@ public class DeleteAnnotations
 		}
 		catch (MalformedURLException exMFU) {return;}
 		
+      String dicomReceiverHost    = "bifrost.icr.ac.uk";
+      int    dicomReceiverPort    = 8104;
+      String dicomReceiverAeTitle = "XNAT";
+      
 		XNATProfile xnprf = new XNATProfile("deleteAnnotationsProfile",
 				                              XnatServerUrl,
 				                              args[0],
 				                              args[1],				                              
 		                                    projectList,
-		                                    System.currentTimeMillis());
+		                                    System.currentTimeMillis(),
+                                          dicomReceiverHost,
+                                          dicomReceiverPort,
+                                          dicomReceiverAeTitle);
 		
       DeleteAnnotations da = new DeleteAnnotations();
       

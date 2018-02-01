@@ -111,7 +111,7 @@ public class FileListWorker extends SwingWorker<ArrayList<ArrayList<File>>, Stri
 	protected ArrayList<String>          sessionIDList        = new ArrayList<>();
 	protected ArrayList<String>          sessionLabelList     = new ArrayList<>();
 	protected ArrayList<String>          sessionSubjectList   = new ArrayList<>();
-   
+   protected ArrayList<PreFetchStore>   pfsList              = new ArrayList<>();
    /**
     * Create a worker thread to return a list of files corresponding to the resources
     * selected in the XNAT_DAO tree table.
@@ -144,13 +144,12 @@ public class FileListWorker extends SwingWorker<ArrayList<ArrayList<File>>, Stri
    @Override
    protected ArrayList<ArrayList<File>> doInBackground() throws Exception
    {
-		Map od = getOutputDefinition();
-		
+		Map od = getOutputDefinition();		
 		getPreFetchResources(od);
 		performPreFetchActions(od);
 		
 		sourceListAllRows = downloadResources(od);
-		if (!isCancelled()) performPostFetchActions(od);
+		if (!isCancelled()) performPostFetchActions(od, pfsList);
 		
 		// outputList is built up by the executeAction() method of the concrete
 		// DownloadAction classes created as part of the performPostFetchActions(od) method.
@@ -249,7 +248,7 @@ public class FileListWorker extends SwingWorker<ArrayList<ArrayList<File>>, Stri
 		return odl.getMap().get(formatChosen);
 	}
 	
-	
+
 	protected void getPreFetchResources(Map<String, String> od)
 			         throws InterruptedException, IOException, XNATException
 	{
@@ -320,7 +319,7 @@ public class FileListWorker extends SwingWorker<ArrayList<ArrayList<File>>, Stri
 				
 				// We can't do this in the same loop as above, because we need to have the
 				// total number of files to download calculated for all scans before
-				// so that any downloads happen, so that the progress bar works properly.
+				// any downloads happen, so that the progress bar works properly.
 				for (String scanID : scanIDs)
 				{
 					String restPrefix = constructRestPrefix("source", od, modelRow, scanID);
@@ -706,10 +705,20 @@ public class FileListWorker extends SwingWorker<ArrayList<ArrayList<File>>, Stri
 		return restPrefix.toString();
 	}
 	
-	
-	protected void performPreFetchActions(Map<String, String> od) throws Exception
+   /**
+    * 
+    * @param od output definition entries for the particular form of output chosen by the user
+    * @return pfsList List<PreFetchStore> with the possibility of
+    * storing arbitrary objects, allowing the preFetch actions to
+    * communicate object references forward to be used by the final output
+    * methods after all the data have been fetched.
+    * @throws Exception 
+    */
+	protected List<PreFetchStore> performPreFetchActions(Map<String, String> od)
+             throws Exception
 	{
 		outputListAllRows = new ArrayList<ArrayList<File>>();
+      ArrayList<PreFetchStore> pfsList = new ArrayList<>();
 		
 		// Get all action entries in the output definition.
 		Set<String>       keys    = od.keySet();
@@ -721,12 +730,17 @@ public class FileListWorker extends SwingWorker<ArrayList<ArrayList<File>>, Stri
 		for (String action : actions)
 		{
 			String actionName = od.get(action);
-			af.getAction(actionName).executeAction(this);
+         // The return type of the executeAction() method is Object.
+         // If the action wants to pass anything forward then it
+         // should return a non-null object.
+			pfsList.add(af.getAction(actionName).executeAction(this));
 		}
 	}
 	
 	
-	protected void performPostFetchActions(Map<String, String> od) throws Exception
+	protected void performPostFetchActions(Map<String, String> od,
+                                          ArrayList<Object> preFetchStore)
+             throws Exception
 	{
 		for (int i=0; i<nTableRows; i++)
 		{	

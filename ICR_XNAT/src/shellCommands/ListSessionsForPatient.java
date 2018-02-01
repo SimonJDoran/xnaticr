@@ -70,13 +70,20 @@ public class ListSessionsForPatient
 		}
 		catch (MalformedURLException exMFU) {return;}
 		
-		XNATProfile xnprf = new XNATProfile("listSessionsProfile",
+		String dicomReceiverHost    = "bifrost.icr.ac.uk";
+      int    dicomReceiverPort    = 8104;
+      String dicomReceiverAeTitle = "XNAT";
+      
+		XNATProfile xnprf = new XNATProfile("deleteAnnotationsProfile",
 				                              XnatServerUrl,
 				                              args[0],
 				                              args[1],				                              
 		                                    projectList,
-		                                    System.currentTimeMillis());
-		
+		                                    System.currentTimeMillis(),
+                                          dicomReceiverHost,
+                                          dicomReceiverPort,
+                                          dicomReceiverAeTitle);
+      
       ListSessionsForPatient lsp = new ListSessionsForPatient();
       
 		List<String> patientList = new ArrayList<>();

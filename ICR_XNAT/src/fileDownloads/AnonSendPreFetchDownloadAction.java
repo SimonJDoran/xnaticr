@@ -52,12 +52,14 @@ import sessionExporter.AnonymiseAndSend;
 public class AnonSendPreFetchDownloadAction implements DownloadAction
 {
 @Override
-	public void executeAction(FileListWorker caller) throws IOException
+	public PreFetchStore executeAction(FileListWorker caller) throws IOException
 	{
 		// Although the action is executed for every row, because of the generalised
 		// nature of the performPostFetchActions method in FileListWorker.java, the anonymise
 		// and send operation is actually done only once for all the table lines.
-		if (caller.getOutputListAllRows().isEmpty())
+		AnonSendPreFetchStore pfs = null;
+      
+      if (caller.getOutputListAllRows().isEmpty())
 		{
 			// Add a dummy value to the list to avoid the routine being called
 			// multiple times. Note that the property "outputCardinality" is set
@@ -66,13 +68,18 @@ public class AnonSendPreFetchDownloadAction implements DownloadAction
 			caller.addAllToOutputListAllRows(caller.getSourceListAllRows());
 		
 			caller.publishFromOutsidePackage("Launching anonymise-and-send GUI ...");
-			AnonymiseAndSend as = new AnonymiseAndSend(new javax.swing.JFrame(),
+			
+         pfs = new AnonSendPreFetchStore();
+         AnonymiseAndSend as = new AnonymiseAndSend(new javax.swing.JFrame(),
 					                                     true,
 			                                           caller.xndao.getProfile(),
 			                                           caller.sessionIDList,
 					                                     caller.sessionLabelList,
-			                                           caller.sessionSubjectList);
+			                                           caller.sessionSubjectList,
+                                                    pfs);
 			as.setVisible(true);
 		}
+      
+      return pfs;
 	}
 }

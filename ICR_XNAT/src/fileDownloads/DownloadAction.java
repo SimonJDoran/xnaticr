@@ -46,5 +46,5 @@ package fileDownloads;
 
 public interface DownloadAction
 {
-	void executeAction(FileListWorker caller) throws Exception;
+	PreFetchStore executeAction(FileListWorker caller) throws Exception;
 }
