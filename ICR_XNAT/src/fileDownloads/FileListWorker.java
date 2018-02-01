@@ -111,7 +111,7 @@ public class FileListWorker extends SwingWorker<ArrayList<ArrayList<File>>, Stri
 	protected ArrayList<String>          sessionIDList        = new ArrayList<>();
 	protected ArrayList<String>          sessionLabelList     = new ArrayList<>();
 	protected ArrayList<String>          sessionSubjectList   = new ArrayList<>();
-   protected ArrayList<PreFetchStore>   pfsList              = new ArrayList<>();
+
    /**
     * Create a worker thread to return a list of files corresponding to the resources
     * selected in the XNAT_DAO tree table.
@@ -146,10 +146,10 @@ public class FileListWorker extends SwingWorker<ArrayList<ArrayList<File>>, Stri
    {
 		Map od = getOutputDefinition();		
 		getPreFetchResources(od);
-		performPreFetchActions(od);
+		Map<Class, PreFetchStore> pfsMap = performPreFetchActions(od);
 		
 		sourceListAllRows = downloadResources(od);
-		if (!isCancelled()) performPostFetchActions(od, pfsList);
+		if (!isCancelled()) performPostFetchActions(od, pfsMap);
 		
 		// outputList is built up by the executeAction() method of the concrete
 		// DownloadAction classes created as part of the performPostFetchActions(od) method.
@@ -714,11 +714,11 @@ public class FileListWorker extends SwingWorker<ArrayList<ArrayList<File>>, Stri
     * methods after all the data have been fetched.
     * @throws Exception 
     */
-	protected List<PreFetchStore> performPreFetchActions(Map<String, String> od)
+	protected Map<Class, PreFetchStore> performPreFetchActions(Map<String, String> od)
              throws Exception
 	{
 		outputListAllRows = new ArrayList<ArrayList<File>>();
-      ArrayList<PreFetchStore> pfsList = new ArrayList<>();
+      Map<Class, PreFetchStore> pfsMap = new HashMap<>();
 		
 		// Get all action entries in the output definition.
 		Set<String>       keys    = od.keySet();
@@ -726,20 +726,23 @@ public class FileListWorker extends SwingWorker<ArrayList<ArrayList<File>>, Stri
 		for (String key : keys) if (key.startsWith("preFetchAction")) actions.add(key);
 
 		// Perform the actions.
-		DownloadActionFactory af = new DownloadActionFactory();
+		PreFetchActionFactory af = new PreFetchActionFactory();
 		for (String action : actions)
 		{
 			String actionName = od.get(action);
          // The return type of the executeAction() method is Object.
          // If the action wants to pass anything forward then it
          // should return a non-null object.
-			pfsList.add(af.getAction(actionName).executeAction(this));
+			PreFetchStore pfs = af.getAction(actionName).executeAction(this);
+         pfsMap.put(pfs.getClass(), pfs);
 		}
+      
+      return pfsMap;
 	}
 	
 	
 	protected void performPostFetchActions(Map<String, String> od,
-                                          ArrayList<Object> preFetchStore)
+                                          Map<Class, PreFetchStore> pfsMap)
              throws Exception
 	{
 		for (int i=0; i<nTableRows; i++)
@@ -753,11 +756,11 @@ public class FileListWorker extends SwingWorker<ArrayList<ArrayList<File>>, Stri
 			for (String key : keys) if (key.startsWith("postFetchAction")) actions.add(key);
 		
 			// Perform the actions.
-			DownloadActionFactory af = new DownloadActionFactory();
+			PostFetchActionFactory af = new PostFetchActionFactory();
 			for (String action : actions)
 			{
 				String actionName = od.get(action);
-				af.getAction(actionName).executeAction(this);
+				af.getAction(actionName).executeAction(this, pfsMap);
 			}
 			
 			String cardinality = od.get("outputCardinality");

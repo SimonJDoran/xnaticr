@@ -63,7 +63,8 @@
       <DAO_outputFormatProperty name="sourceName">DICOM</DAO_outputFormatProperty> 
 		<DAO_outputFormatProperty name="sourceFormat">DICOM</DAO_outputFormatProperty>
 		<DAO_outputFormatProperty name="preFetchAction1">anonSendGUI</DAO_outputFormatProperty>
-		<DAO_outputFormatProperty name="deScript">anonSendSession.das</DAO_outputFormatProperty>
+		<DAO_outputFormatProperty name="postFetchAction1">anonSend</DAO_outputFormatProperty>
+      <DAO_outputFormatProperty name="deScript">anonSendSession.das</DAO_outputFormatProperty>
 		<DAO_outputFormatProperty name="thumbnailName">DICOM</DAO_outputFormatProperty>
 		<DAO_outputFormatProperty name="thumbnailFormat">DICOM</DAO_outputFormatProperty>
 		<DAO_outputFormatProperty name="outputCardinality">None</DAO_outputFormatProperty>

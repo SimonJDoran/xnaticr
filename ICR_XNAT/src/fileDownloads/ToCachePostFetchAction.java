@@ -1,5 +1,5 @@
 /********************************************************************
-* Copyright (c) 2015, Institute of Cancer Research
+* Copyright (c) 2014, Institute of Cancer Research
 * All rights reserved.
 * 
 * Redistribution and use in source and binary forms, with or without
@@ -33,53 +33,32 @@
 * OF THE POSSIBILITY OF SUCH DAMAGE.
 *********************************************************************/
 
-/********************************************************************
+/*********************************************************************
 * @author Simon J Doran
-* Java class: AnonSendDownloadAction.java
-* First created on Feb 6, 2015 at 9:50:35 AM
+* Java interface: ToCachePostFetchAction.java
+* First created on December 16, 2014 at 12.07 PM
 * 
-* Launch the anonymisation and send GUI to allow users to route the
-* downloaded session to a different XNAT instance and project.
+* Files have already been created in the cache by either download of
+* resources or previous actions. This action merely routes
+* the filename list to the appropriate place.
 *********************************************************************/
 
 package fileDownloads;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
-import sessionExporter.AnonymiseAndSend;
+import java.util.List;
 
-public class AnonSendPreFetchDownloadAction implements DownloadAction
+public class ToCachePostFetchAction implements PostFetchAction
 {
-@Override
-	public PreFetchStore executeAction(FileListWorker caller) throws IOException
+
+	@Override
+	public void executeAction(FileListWorker caller, List<PreFetchStore> pfsList)
 	{
-		// Although the action is executed for every row, because of the generalised
-		// nature of the performPostFetchActions method in FileListWorker.java, the anonymise
-		// and send operation is actually done only once for all the table lines.
-		AnonSendPreFetchStore pfs = null;
-      
-      if (caller.getOutputListAllRows().isEmpty())
-		{
-			// Add a dummy value to the list to avoid the routine being called
-			// multiple times. Note that the property "outputCardinality" is set
-			// to "None" for this type of action, so no action will be taken
-			// by FileListWorker in response.
-			caller.addAllToOutputListAllRows(caller.getSourceListAllRows());
-		
-			caller.publishFromOutsidePackage("Launching anonymise-and-send GUI ...");
-			
-         pfs = new AnonSendPreFetchStore();
-         AnonymiseAndSend as = new AnonymiseAndSend(new javax.swing.JFrame(),
-					                                     true,
-			                                           caller.xndao.getProfile(),
-			                                           caller.sessionIDList,
-					                                     caller.sessionLabelList,
-			                                           caller.sessionSubjectList,
-                                                    pfs);
-			as.setVisible(true);
-		}
-      
-      return pfs;
+      // Note that this action does not need to make use of any information
+      // from the pre-fetch stage, so the pfsList argument is entirely formal,
+      // to comply with the general interface, and is unused.
+		caller.addAllToOutputListCurrentRow(caller.getWorkingListCurrentRow());
 	}
+
 }

@@ -53,15 +53,20 @@ import java.nio.file.FileSystem;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
-public class GenerateZipDownloadAction implements DownloadAction
+public class GenerateZipPostFetchAction implements PostFetchAction
 {
 
 	@Override
-	public void executeAction(FileListWorker caller) throws IOException
+	public void executeAction(FileListWorker caller, List<PreFetchStore> pfsList) throws IOException
 	{
+      // Note that this action does not need to make use of any information
+      // from the pre-fetch stage, so the pfsList argument is entirely formal,
+      // to comply with the general interface, and is unused.
+      
 		// Although the action is executed for every row, because of the generalised
 		// nature of the performPostFetchActions method in FileListWorker.java, the zip
 		// generation is actually done only once for all the table lines.

@@ -1,5 +1,5 @@
 /********************************************************************
-* Copyright (c) 2014, Institute of Cancer Research
+* Copyright (c) 2018, Institute of Cancer Research
 * All rights reserved.
 * 
 * Redistribution and use in source and binary forms, with or without
@@ -35,16 +35,25 @@
 
 /*********************************************************************
 * @author Simon J Doran
-* Java interface: DownloadAction.java
-* First created on December 16, 2014 at 11.29 AM
+* Java class: PreFetchActionFactory.java
+* First created on December 16, 2014 at 11.32 AM
 * 
-* Interface for actions to be taken during download of data from
-* XNAT. See also DownloadActionFactory.java.
+* Create the appropriate classes for taking actions during the
+* download of data from XNAT via XNATDataChooser.
 *********************************************************************/
 
 package fileDownloads;
 
-public interface DownloadAction
+public class PreFetchActionFactory
 {
-	PreFetchStore executeAction(FileListWorker caller) throws Exception;
+	public PreFetchAction getAction(String actionName)
+			                throws UnsupportedOperationException
+	{
+		switch(actionName)
+		{
+			case "anonSendGUI"              : return new AnonSendPreFetchAction();
+				
+			default                         : throw new UnsupportedOperationException();
+		}
+	}
 }

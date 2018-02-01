@@ -157,7 +157,13 @@ public class AnonymiseAndSend extends xnatDAO.XNATGUI
 		{
 			@Override
 			public void actionPerformed(ActionEvent e)
-			{            
+			{
+            if (asw == null)
+            {
+               JOptionPane.showMessageDialog(AnonymiseAndSend.this, "Please view the anonymisation script before exporting data\n"
+								+ "to confirm that it meets your requirements.");
+               return;
+            }
 				pfs.setCancelled(false);
             pfs.setAnonScriptTemplate(asw.getScriptText());
             pfs.setDestProfile(destProf);
@@ -340,96 +346,8 @@ public class AnonymiseAndSend extends xnatDAO.XNATGUI
 			(new PermissionsWorker(this, false)).execute();
 	}
 	
-	
-	
-	
-	
-	protected void exportData()
-	{
-		if (asw == null)
-		{
-			JOptionPane.showMessageDialog(this, "Please view the anonymisation script before exporting data\n"
-								+ "to confirm that it meets your requirements.");
-			return;
-		}
-		
-		try
-		{
-         /* Attempting to use Kevin Archie's DicomEdit library natively
-            is currently on hold, either by using Kevin's code directly
-            or developing my own variants.
-         
-			DicomRemapAndSend remapper = new DicomRemapAndSend(elw, destProf, destProj,
-                                                    destSubjCodes, templateScript);
-		   
-         exportViaCustomCode(anonScript, sourceList));
-         */
-         
-         exportViaDicomRemap();
-         
-         }
-		catch (Exception exIO){}
-		
-		
-	}
-	/*
-	private void 
-	{
-		
-	}
-	*/
-	
-	/**
-	 * Export the DICOM files by calling a command line process.
-	 * This mechanism was coded but then abandoned on the basis that it is not optimal
-	 * to expect DicomBrowser to be installed on every machine that runs this application.
-	 * Replacement function is exportViaCustomCode.
-	 * @param anonScript DicomEdit-compatible anonymisation script
-	 * @param sourceList list of DICOM files
-	 */
-	private void exportViaDicomRemap()
-	{
-		InputStream is = null;
-		try
-		{
-			String         homeDir = System.getProperty("user.home");
-			String         sep     = System.getProperty("file.separator");
-			String         dasName = homeDir + sep + ".XNAT_DAO" + sep + "temp"
-			                         + sep + "anonSendSessionTemp.das";
-			
-         FileWriter     dasWrt  = new FileWriter(dasName);
-		//	dasWrt.write(a);
-			dasWrt.close();
-			
-			List<String>	cl      = new ArrayList<String>();
-			cl.add("/Applications/DicomBrowser-1.5.2/bin/DicomRemap");
-			cl.add("-d");
-			cl.add(dasName);
-			cl.add("-o");
-			cl.add("dicom://" + destProf.getDicomReceiverHost()
-                 + ":" + destProf.getDicomReceiverPort()
-                 + "/" + destProf.getDicomReceiverAeTitle());
-			
-			
-			ProcessBuilder pb = new ProcessBuilder(cl);
-			Process        p  = pb.start();
-			StringBuilder  sb = new StringBuilder();
-         int            b;
-			is = p.getInputStream();
-         while ((b = is.read()) != -1) sb.append((char) b);
-			elw.updateLogWindow(sb.toString());
-		}
-		catch (IOException exIO)
-		{
-			elw.updateLogWindow("Error initiating send process: " + exIO.getMessage());
-      }
-		finally
-      {
-         try {is.close();} catch (IOException exIOignore) {}
-      }
-	}
 
-	
+
 	
 	@Override
 	public void populateProjectJComboBox(ArrayList<String> accessible)

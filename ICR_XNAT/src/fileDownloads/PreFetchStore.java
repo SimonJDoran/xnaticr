@@ -60,5 +60,5 @@ public abstract class PreFetchStore
    public void setCancelled(boolean flag)
    {
       cancelled = flag;
-   }  
+   }   
 }
