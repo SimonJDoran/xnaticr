@@ -198,6 +198,15 @@ public class XNATProfileEditor extends javax.swing.JDialog implements ProjectGet
       
       jPasswordField.addActionListener(submitAL);
       jPasswordField.addKeyListener(enableSubmitButtonKL);
+      
+      dicomReceiverHostJTextField.addActionListener(submitAL);
+      dicomReceiverHostJTextField.addKeyListener(enableSubmitButtonKL);
+      
+      dicomReceiverPortJTextField.addActionListener(submitAL);
+      dicomReceiverPortJTextField.addKeyListener(enableSubmitButtonKL);
+      
+      dicomReceiverAeTitleJTextField.addActionListener(submitAL);
+      dicomReceiverAeTitleJTextField.addKeyListener(enableSubmitButtonKL);
    }
    
    
@@ -209,11 +218,18 @@ public class XNATProfileEditor extends javax.swing.JDialog implements ProjectGet
          String serverName  = serverJTextField.getText();
          String userid      = useridJTextField.getText();
          String password    = new String(jPasswordField.getPassword());
+         String dicomHost   = dicomReceiverHostJTextField.getText();
+         int dicomPort      = Integer.parseInt(dicomReceiverPortJTextField.getText());
+         String aetitle     = dicomReceiverAeTitleJTextField.getText();
          
          if ((profileName.length() == 0) ||
              (serverName.length()  == 0) ||
              (userid.length()      == 0) ||
-             (password.length()    == 0)) return false; 
+             (password.length()    == 0) ||
+             (dicomHost.length()   == 0) ||
+             (dicomPort<1 || dicomPort > 65535) ||
+             (aetitle.length()     == 0))
+             return false; 
       }
       
       // I don't quite understand the JTextField (JTextComponent) documentation.
@@ -237,22 +253,25 @@ public class XNATProfileEditor extends javax.swing.JDialog implements ProjectGet
          String userid              = useridJTextField.getText();
          String password            = new String(jPasswordField.getPassword());
          ArrayList<String> nullList = new ArrayList<String>();
+         String dicomHost           = dicomReceiverHostJTextField.getText();
+         int dicomPort              = Integer.parseInt(dicomReceiverPortJTextField.getText());
+         String aetitle             = dicomReceiverAeTitleJTextField.getText();
          
          nullList.add(PermissionsWorker.NOT_CONNECTED);
          
          if (xnprf == null)
-            xnprf = new XNATProfile(profileName,
-                                    serverURL,
-                                    userid,
-                                    password,
-                                    nullList,
-                                    0);
+            xnprf = new XNATProfile(profileName, serverURL, userid, password,
+                                    nullList, 0, dicomHost, dicomPort, aetitle);
+                                    
          else
          {
             xnprf.setProfileName(profileName);
             xnprf.setServerURL(serverURL);
             xnprf.setUserid(userid);
             xnprf.setPassword(password);
+            xnprf.setDicomReceiverHost(dicomHost);
+            xnprf.setDicomReceiverPort(dicomPort);
+            xnprf.setDicomReceiverAeTitle(aetitle);
          }
          xnprf.connect();
        }
@@ -285,6 +304,9 @@ public class XNATProfileEditor extends javax.swing.JDialog implements ProjectGet
       profileNameJTextField.setEnabled(false);
       serverJTextField.setEnabled(false);
       useridJTextField.setEnabled(false);
+      dicomReceiverHostJTextField.setEnabled(false);
+      dicomReceiverPortJTextField.setEnabled(false);
+      dicomReceiverAeTitleJTextField.setEnabled(false);
       projectJComboBox.setEnabled(false);
       checkAccessJButton.setEnabled(false);
       submitJButton.setEnabled(false);
@@ -310,6 +332,9 @@ public class XNATProfileEditor extends javax.swing.JDialog implements ProjectGet
       profileNameJTextField.setEnabled(true);
       serverJTextField.setEnabled(true);
       useridJTextField.setEnabled(true);
+      dicomReceiverHostJTextField.setEnabled(true);
+      dicomReceiverPortJTextField.setEnabled(true);
+      dicomReceiverAeTitleJTextField.setEnabled(true);
       projectJComboBox.setEnabled(true);
       checkAccessJButton.setEnabled(true);
       submitJButton.setEnabled(true);
@@ -380,7 +405,8 @@ public class XNATProfileEditor extends javax.swing.JDialog implements ProjectGet
      */
     @SuppressWarnings("unchecked")
    // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
-   private void initComponents() {
+   private void initComponents()
+   {
 
       messageJLabel = new javax.swing.JLabel();
       useridJLabel = new javax.swing.JLabel();
@@ -398,6 +424,12 @@ public class XNATProfileEditor extends javax.swing.JDialog implements ProjectGet
       serverJLabel = new javax.swing.JLabel();
       profileNameJTextField = new javax.swing.JTextField();
       passwordInfoJLabel = new javax.swing.JLabel();
+      dicomReceiverHostJLabel = new javax.swing.JLabel();
+      dicomReceiverPortJLabel = new javax.swing.JLabel();
+      dicomReceiverAeTitleJLabel = new javax.swing.JLabel();
+      dicomReceiverHostJTextField = new javax.swing.JTextField();
+      dicomReceiverPortJTextField = new javax.swing.JTextField();
+      dicomReceiverAeTitleJTextField = new javax.swing.JTextField();
 
       setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
@@ -426,18 +458,26 @@ public class XNATProfileEditor extends javax.swing.JDialog implements ProjectGet
 
       serverJLabel.setText("XNAT server");
 
-      passwordInfoJLabel.setFont(new java.awt.Font("Lucida Grande", 0, 10));
+      passwordInfoJLabel.setFont(new java.awt.Font("Lucida Grande", 0, 10)); // NOI18N
       passwordInfoJLabel.setText("Valid password and connection needed to verify project access");
+
+      dicomReceiverHostJLabel.setText("DICOM host");
+
+      dicomReceiverPortJLabel.setText("DICOM port");
+
+      dicomReceiverAeTitleJLabel.setText("AETITLE");
+
+      dicomReceiverPortJTextField.setText("8104");
 
       org.jdesktop.layout.GroupLayout layout = new org.jdesktop.layout.GroupLayout(getContentPane());
       getContentPane().setLayout(layout);
       layout.setHorizontalGroup(
          layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
          .add(layout.createSequentialGroup()
-            .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-               .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING, false)
-                  .add(layout.createSequentialGroup()
-                     .add(37, 37, 37)
+            .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING, false)
+               .add(layout.createSequentialGroup()
+                  .add(36, 36, 36)
+                  .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.TRAILING)
                      .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
                         .add(profileNameJLabel)
                         .add(layout.createSequentialGroup()
@@ -446,30 +486,39 @@ public class XNATProfileEditor extends javax.swing.JDialog implements ProjectGet
                               .add(serverJLabel)
                               .add(useridJLabel)))
                         .add(passwordJLabel))
-                     .add(26, 26, 26)
-                     .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.TRAILING, false)
-                        .add(org.jdesktop.layout.GroupLayout.LEADING, jPasswordField)
-                        .add(org.jdesktop.layout.GroupLayout.LEADING, useridJTextField)
-                        .add(org.jdesktop.layout.GroupLayout.LEADING, serverJTextField)
-                        .add(org.jdesktop.layout.GroupLayout.LEADING, profileNameJTextField, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 308, Short.MAX_VALUE)
-                        .add(layout.createSequentialGroup()
-                           .add(cancelJButton)
-                           .addPreferredGap(org.jdesktop.layout.LayoutStyle.UNRELATED)
-                           .add(checkAccessJButton)
-                           .addPreferredGap(org.jdesktop.layout.LayoutStyle.UNRELATED)
-                           .add(submitJButton))
-                        .add(org.jdesktop.layout.GroupLayout.LEADING, passwordInfoJLabel)))
-                  .add(layout.createSequentialGroup()
-                     .addContainerGap()
-                     .add(messageJLabel, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                     .add(layout.createSequentialGroup()
+                        .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.TRAILING, false)
+                           .add(dicomReceiverHostJLabel)
+                           .add(org.jdesktop.layout.GroupLayout.LEADING, dicomReceiverPortJLabel, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                           .add(org.jdesktop.layout.GroupLayout.LEADING, dicomReceiverAeTitleJLabel, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .add(18, 18, 18)))
+                  .add(26, 26, 26)
+                  .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.TRAILING, false)
+                     .add(org.jdesktop.layout.GroupLayout.LEADING, jPasswordField)
+                     .add(org.jdesktop.layout.GroupLayout.LEADING, useridJTextField)
+                     .add(org.jdesktop.layout.GroupLayout.LEADING, serverJTextField)
+                     .add(org.jdesktop.layout.GroupLayout.LEADING, profileNameJTextField)
+                     .add(layout.createSequentialGroup()
+                        .add(cancelJButton)
+                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.UNRELATED)
+                        .add(checkAccessJButton)
+                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.UNRELATED)
+                        .add(submitJButton))
+                     .add(org.jdesktop.layout.GroupLayout.LEADING, passwordInfoJLabel)
+                     .add(org.jdesktop.layout.GroupLayout.LEADING, dicomReceiverHostJTextField)
+                     .add(org.jdesktop.layout.GroupLayout.LEADING, dicomReceiverPortJTextField)
+                     .add(org.jdesktop.layout.GroupLayout.LEADING, dicomReceiverAeTitleJTextField)))
+               .add(layout.createSequentialGroup()
+                  .addContainerGap()
+                  .add(messageJLabel, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                .add(layout.createSequentialGroup()
                   .add(38, 38, 38)
                   .add(projectJLabel)
-                  .add(41, 41, 41)
+                  .add(37, 37, 37)
                   .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
                      .add(checkAccessJLabel, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 250, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                     .add(projectJComboBox, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 351, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))))
-            .add(21, 21, 21))
+                     .add(projectJComboBox, 0, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
+            .addContainerGap(29, Short.MAX_VALUE))
       );
       layout.setVerticalGroup(
          layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
@@ -480,21 +529,33 @@ public class XNATProfileEditor extends javax.swing.JDialog implements ProjectGet
             .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
                .add(profileNameJLabel)
                .add(profileNameJTextField, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
-            .add(26, 26, 26)
+            .add(18, 18, 18)
             .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
                .add(serverJTextField, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
                .add(serverJLabel))
-            .add(24, 24, 24)
+            .add(18, 18, 18)
             .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
-               .add(useridJLabel)
-               .add(useridJTextField, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
-            .add(26, 26, 26)
+               .add(useridJTextField, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+               .add(useridJLabel))
+            .add(18, 18, 18)
             .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
                .add(jPasswordField, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
                .add(passwordJLabel))
-            .addPreferredGap(org.jdesktop.layout.LayoutStyle.UNRELATED)
+            .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
             .add(passwordInfoJLabel)
-            .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED, 27, Short.MAX_VALUE)
+            .add(18, 18, 18)
+            .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
+               .add(dicomReceiverHostJLabel)
+               .add(dicomReceiverHostJTextField, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
+            .add(18, 18, 18)
+            .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
+               .add(dicomReceiverPortJLabel)
+               .add(dicomReceiverPortJTextField, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
+            .add(18, 18, 18)
+            .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
+               .add(dicomReceiverAeTitleJLabel)
+               .add(dicomReceiverAeTitleJTextField, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
+            .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED, 30, Short.MAX_VALUE)
             .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
                .add(projectJComboBox, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
                .add(projectJLabel))
@@ -544,6 +605,12 @@ public class XNATProfileEditor extends javax.swing.JDialog implements ProjectGet
    private javax.swing.JButton cancelJButton;
    private javax.swing.JButton checkAccessJButton;
    private javax.swing.JLabel checkAccessJLabel;
+   private javax.swing.JLabel dicomReceiverAeTitleJLabel;
+   private javax.swing.JTextField dicomReceiverAeTitleJTextField;
+   private javax.swing.JLabel dicomReceiverHostJLabel;
+   private javax.swing.JTextField dicomReceiverHostJTextField;
+   private javax.swing.JLabel dicomReceiverPortJLabel;
+   private javax.swing.JTextField dicomReceiverPortJTextField;
    private javax.swing.JPasswordField jPasswordField;
    private javax.swing.JLabel messageJLabel;
    private javax.swing.JLabel passwordInfoJLabel;

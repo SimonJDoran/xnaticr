@@ -1,5 +1,5 @@
 /********************************************************************
-* Copyright (c) 2015, Institute of Cancer Research
+* Copyright (c) 2018, Institute of Cancer Research
 * All rights reserved.
 * 
 * Redistribution and use in source and binary forms, with or without
@@ -33,46 +33,32 @@
 * OF THE POSSIBILITY OF SUCH DAMAGE.
 *********************************************************************/
 
-/********************************************************************
+/*********************************************************************
 * @author Simon J Doran
-* Java class: AnonSendDownloadAction.java
-* First created on Feb 6, 2015 at 9:50:35 AM
+* Java class: PreFetchActionFactory.java
+* First created on December 16, 2014 at 11.32 AM
 * 
-* Launch the anonymisation and send GUI to allow users to route the
-* downloaded session to a different XNAT instance and project.
+* Create the appropriate classes for taking actions during the
+* download of data from XNAT via XNATDataChooser.
 *********************************************************************/
 
 package fileDownloads;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import sessionExporter.AnonymiseAndSend;
-
-public class AnonSendPreFetchDownloadAction implements DownloadAction
+public class PostFetchActionFactory
 {
-@Override
-	public void executeAction(FileListWorker caller) throws IOException
+	public PostFetchAction getAction(String actionName)
+			                throws UnsupportedOperationException
 	{
-		// Although the action is executed for every row, because of the generalised
-		// nature of the performPostFetchActions method in FileListWorker.java, the anonymise
-		// and send operation is actually done only once for all the table lines.
-		if (caller.getOutputListAllRows().isEmpty())
+		switch(actionName)
 		{
-			// Add a dummy value to the list to avoid the routine being called
-			// multiple times. Note that the property "outputCardinality" is set
-			// to "None" for this type of action, so no action will be taken
-			// by FileListWorker in response.
-			caller.addAllToOutputListAllRows(caller.getSourceListAllRows());
-		
-			caller.publishFromOutsidePackage("Launching anonymise-and-send GUI ...");
-			AnonymiseAndSend as = new AnonymiseAndSend(new javax.swing.JFrame(),
-					                                     true,
-			                                           caller.xndao.getProfile(),
-			                                           caller.sessionIDList,
-					                                     caller.sessionLabelList,
-			                                           caller.sessionSubjectList);
-			as.setVisible(true);
+         case "anonSend"                 : return new AnonSendPostFetchAction();
+			case "generateZip"              : return new GenerateZipPostFetchAction();
+			case "toCache"                  : return new ToCachePostFetchAction();
+			case "generateNii"              : throw new UnsupportedOperationException();
+			case "generateSingleRtStruct"   : throw new UnsupportedOperationException();
+			case "generateMultipleRtStruct" : throw new UnsupportedOperationException();
+				
+			default                         : throw new UnsupportedOperationException();
 		}
 	}
 }

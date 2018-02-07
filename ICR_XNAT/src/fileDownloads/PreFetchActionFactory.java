@@ -1,5 +1,5 @@
 /********************************************************************
-* Copyright (c) 2014, Institute of Cancer Research
+* Copyright (c) 2018, Institute of Cancer Research
 * All rights reserved.
 * 
 * Redistribution and use in source and binary forms, with or without
@@ -35,7 +35,7 @@
 
 /*********************************************************************
 * @author Simon J Doran
-* Java interface: DownloadAction.java
+* Java class: PreFetchActionFactory.java
 * First created on December 16, 2014 at 11.32 AM
 * 
 * Create the appropriate classes for taking actions during the
@@ -44,19 +44,14 @@
 
 package fileDownloads;
 
-public class DownloadActionFactory
+public class PreFetchActionFactory
 {
-	public DownloadAction getAction(String actionName)
+	public PreFetchAction getAction(String actionName)
 			                throws UnsupportedOperationException
 	{
 		switch(actionName)
 		{
-			case "anonSendGUI"              : return new AnonSendPreFetchDownloadAction();
-			case "generateZip"              : return new GenerateZipDownloadAction();
-			case "toCache"                  : return new ToCacheDownloadAction();
-			case "generateNii"              : throw new UnsupportedOperationException();
-			case "generateSingleRtStruct"   : throw new UnsupportedOperationException();
-			case "generateMultipleRtStruct" : throw new UnsupportedOperationException();
+			case "anonSendGUI"              : return new AnonSendPreFetchAction();
 				
 			default                         : throw new UnsupportedOperationException();
 		}

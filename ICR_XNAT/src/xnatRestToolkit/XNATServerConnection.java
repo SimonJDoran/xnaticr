@@ -583,7 +583,8 @@ public class XNATServerConnection
          connection.setDoOutput(true);
          connection.setDoInput(true);
          connection.setRequestMethod(RESTMethod);
-         connection.setChunkedStreamingMode(-1);
+         if (RESTMethod.equals("POST")) connection.setChunkedStreamingMode(-1);
+         
          if (JSessionID == null)
 			{
 				connection.setRequestProperty("Authorization", getAuthorization());
@@ -596,9 +597,14 @@ public class XNATServerConnection
             OutputStreamWriter osw = new OutputStreamWriter(connection.getOutputStream());
             osw.write(xmlString);
             osw.close();
+				
+				// Calculate the content length.
+				//byte[] 
+				//connection.setRequestProperty("Content-Length", );
          }
 
-         if ((file != null) || (is != null))
+         
+			if ((file != null) || (is != null))
          {
             connection.setRequestProperty("Cache-Control", "no-cache");
 			   connection.setRequestProperty("Connection", "Keep-Alive");

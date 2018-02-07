@@ -35,16 +35,16 @@
 
 /*********************************************************************
 * @author Simon J Doran
-* Java interface: DownloadAction.java
-* First created on December 16, 2014 at 11.29 AM
+* Java interface: PreFetchAction.java
+* First created on Feb 1, 2018 at 8.56 AM
 * 
-* Interface for actions to be taken during download of data from
-* XNAT. See also DownloadActionFactory.java.
+* Interface for actions to be taken prior to download of data from
+* XNAT. See also PreFetchActionFactory.java.
 *********************************************************************/
 
 package fileDownloads;
 
-public interface DownloadAction
+public interface PreFetchAction
 {
-	void executeAction(FileListWorker caller) throws Exception;
+	PreFetchStore executeAction(FileListWorker caller) throws Exception;
 }

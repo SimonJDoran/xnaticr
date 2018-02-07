@@ -43,11 +43,6 @@
                               <EmptySpace min="-2" pref="45" max="-2" attributes="0"/>
                               <Component id="srcProfileJTextField" min="-2" max="-2" attributes="0"/>
                           </Group>
-                          <Group type="102" alignment="0" attributes="0">
-                              <Component id="exportJProgressBar" min="-2" pref="355" max="-2" attributes="0"/>
-                              <EmptySpace min="-2" pref="50" max="-2" attributes="0"/>
-                              <Component id="fileProgressJLabel" min="-2" max="-2" attributes="0"/>
-                          </Group>
                           <Group type="103" alignment="0" groupAlignment="1" attributes="0">
                               <Group type="102" attributes="0">
                                   <Component id="viewAnonScriptJButton" min="-2" max="-2" attributes="0"/>
@@ -61,23 +56,13 @@
                               <Component id="jScrollPane1" alignment="1" min="-2" pref="645" max="-2" attributes="0"/>
                           </Group>
                           <Component id="destProjectJLabel" min="-2" max="-2" attributes="0"/>
-                          <Component id="exportProgressJLabel" min="-2" max="-2" attributes="0"/>
                           <Group type="102" alignment="0" attributes="0">
                               <Component id="destProfileJLabel" min="-2" max="-2" attributes="0"/>
                               <EmptySpace min="-2" pref="31" max="-2" attributes="0"/>
                               <Group type="103" groupAlignment="0" attributes="0">
                                   <Component id="destProfileJComboBox" min="-2" pref="317" max="-2" attributes="0"/>
                                   <Group type="102" alignment="0" attributes="0">
-                                      <Group type="103" groupAlignment="1" max="-2" attributes="0">
-                                          <Group type="102" attributes="0">
-                                              <Component id="aeTitleJTextField" min="-2" pref="117" max="-2" attributes="0"/>
-                                              <EmptySpace max="32767" attributes="0"/>
-                                              <Component id="portJLabel" min="-2" max="-2" attributes="0"/>
-                                              <EmptySpace type="separate" max="-2" attributes="0"/>
-                                              <Component id="portJTextField" min="-2" pref="69" max="-2" attributes="0"/>
-                                          </Group>
-                                          <Component id="destProjectJComboBox" min="-2" pref="317" max="-2" attributes="0"/>
-                                      </Group>
+                                      <Component id="destProjectJComboBox" min="-2" pref="317" max="-2" attributes="0"/>
                                       <EmptySpace type="unrelated" max="-2" attributes="0"/>
                                       <Component id="checkAccessJLabel" min="-2" pref="216" max="-2" attributes="0"/>
                                   </Group>
@@ -88,10 +73,7 @@
                       <EmptySpace pref="20" max="32767" attributes="0"/>
                   </Group>
                   <Group type="102" attributes="0">
-                      <Group type="103" groupAlignment="0" attributes="0">
-                          <Component id="aetitleJLabel" min="-2" max="-2" attributes="0"/>
-                          <Component id="anonCodeSameJCheckBox" min="-2" max="-2" attributes="0"/>
-                      </Group>
+                      <Component id="anonCodeSameJCheckBox" min="-2" max="-2" attributes="0"/>
                       <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
                   </Group>
               </Group>
@@ -127,21 +109,7 @@
                   <Component id="destProjectJLabel" alignment="3" min="-2" max="-2" attributes="0"/>
                   <Component id="checkAccessJLabel" alignment="3" min="-2" max="-2" attributes="0"/>
               </Group>
-              <EmptySpace type="separate" max="-2" attributes="0"/>
-              <Group type="103" groupAlignment="3" attributes="0">
-                  <Component id="aetitleJLabel" alignment="3" min="-2" max="-2" attributes="0"/>
-                  <Component id="aeTitleJTextField" alignment="3" min="-2" max="-2" attributes="0"/>
-                  <Component id="portJLabel" alignment="3" min="-2" max="-2" attributes="0"/>
-                  <Component id="portJTextField" alignment="3" min="-2" max="-2" attributes="0"/>
-              </Group>
-              <EmptySpace pref="36" max="32767" attributes="0"/>
-              <Component id="exportProgressJLabel" min="-2" max="-2" attributes="0"/>
-              <EmptySpace type="separate" max="-2" attributes="0"/>
-              <Group type="103" groupAlignment="1" attributes="0">
-                  <Component id="exportJProgressBar" min="-2" max="-2" attributes="0"/>
-                  <Component id="fileProgressJLabel" min="-2" max="-2" attributes="0"/>
-              </Group>
-              <EmptySpace type="separate" max="-2" attributes="0"/>
+              <EmptySpace pref="53" max="32767" attributes="0"/>
               <Group type="103" groupAlignment="3" attributes="0">
                   <Component id="viewAnonScriptJButton" alignment="3" min="-2" max="-2" attributes="0"/>
                   <Component id="viewExportLogJButton" alignment="3" min="-2" max="-2" attributes="0"/>
@@ -165,7 +133,7 @@
         <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
           <Image iconType="3" name="/xnatDAO/projectResources/ICR_DataExporter_large.png"/>
         </Property>
-        <Property name="text" type="java.lang.String" value="2.01 alpha (20/10/2015)"/>
+        <Property name="text" type="java.lang.String" value="2.2 alpha (31/01/2018)"/>
         <Property name="alignmentX" type="float" value="0.5"/>
         <Property name="alignmentY" type="float" value="1.0"/>
         <Property name="horizontalTextPosition" type="int" value="0"/>
@@ -240,8 +208,6 @@
         <Property name="text" type="java.lang.String" value="Export"/>
       </Properties>
     </Component>
-    <Component class="javax.swing.JProgressBar" name="exportJProgressBar">
-    </Component>
     <Component class="javax.swing.JLabel" name="checkAccessJLabel">
       <Properties>
         <Property name="font" type="java.awt.Font" editor="org.netbeans.modules.form.editors2.FontEditor">
@@ -261,19 +227,6 @@
     <Component class="javax.swing.JButton" name="viewAnonScriptJButton">
       <Properties>
         <Property name="text" type="java.lang.String" value="View anonymisation script ..."/>
-      </Properties>
-    </Component>
-    <Component class="javax.swing.JLabel" name="exportProgressJLabel">
-      <Properties>
-        <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
-          <Font name="Lucida Grande" size="18" style="1"/>
-        </Property>
-        <Property name="text" type="java.lang.String" value="Export progress"/>
-      </Properties>
-    </Component>
-    <Component class="javax.swing.JLabel" name="fileProgressJLabel">
-      <Properties>
-        <Property name="text" type="java.lang.String" value="Inactive"/>
       </Properties>
     </Component>
     <Component class="javax.swing.JCheckBox" name="anonCodeSameJCheckBox">
@@ -303,30 +256,5 @@
         </Component>
       </SubComponents>
     </Container>
-    <Component class="javax.swing.JLabel" name="aetitleJLabel">
-      <Properties>
-        <Property name="font" type="java.awt.Font" editor="org.netbeans.modules.form.editors2.FontEditor">
-          <FontInfo relative="true">
-            <Font component="aetitleJLabel" property="font" relativeSize="true" size="0"/>
-          </FontInfo>
-        </Property>
-        <Property name="text" type="java.lang.String" value="AETITLE"/>
-      </Properties>
-    </Component>
-    <Component class="javax.swing.JTextField" name="aeTitleJTextField">
-      <Properties>
-        <Property name="text" type="java.lang.String" value="jTextField1"/>
-      </Properties>
-    </Component>
-    <Component class="javax.swing.JLabel" name="portJLabel">
-      <Properties>
-        <Property name="text" type="java.lang.String" value="Port no."/>
-      </Properties>
-    </Component>
-    <Component class="javax.swing.JTextField" name="portJTextField">
-      <Properties>
-        <Property name="text" type="java.lang.String" value="jTextField2"/>
-      </Properties>
-    </Component>
   </SubComponents>
 </Form>

@@ -35,26 +35,19 @@
 
 /*********************************************************************
 * @author Simon J Doran
-* Java interface: ToCacheDownloadAction.java
-* First created on December 16, 2014 at 12.07 PM
+* Java interface: DownloadAction.java
+* First created on December 16, 2014 at 11.29 AM
 * 
-* Files have already been created in the cache by either download of
-* resources or previous DownloadActions. This action merely routes
-* the filename list to the appropriate place.
+* Interface for actions to be taken during download of data from
+* XNAT. See also DownloadActionFactory.java.
 *********************************************************************/
 
 package fileDownloads;
 
-import java.io.File;
-import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
-public class ToCacheDownloadAction implements DownloadAction
+public interface PostFetchAction
 {
-
-	@Override
-	public void executeAction(FileListWorker caller)
-	{
-		caller.addAllToOutputListCurrentRow(caller.getWorkingListCurrentRow());
-	}
-
+	void executeAction(FileListWorker caller, Map<Class, PreFetchStore> pfsMap) throws Exception;
 }
