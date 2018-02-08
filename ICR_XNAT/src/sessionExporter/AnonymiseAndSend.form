@@ -35,7 +35,7 @@
           <Group type="102" alignment="0" attributes="0">
               <EmptySpace min="25" pref="25" max="-2" attributes="0"/>
               <Group type="103" groupAlignment="0" attributes="0">
-                  <Group type="102" alignment="0" attributes="0">
+                  <Group type="102" attributes="0">
                       <Group type="103" groupAlignment="0" attributes="0">
                           <Component id="dataToExportJLabel" alignment="0" min="-2" max="-2" attributes="0"/>
                           <Group type="102" attributes="0">
@@ -43,40 +43,39 @@
                               <EmptySpace min="-2" pref="45" max="-2" attributes="0"/>
                               <Component id="srcProfileJTextField" min="-2" max="-2" attributes="0"/>
                           </Group>
-                          <Group type="103" alignment="0" groupAlignment="1" attributes="0">
-                              <Group type="102" attributes="0">
-                                  <Component id="viewAnonScriptJButton" min="-2" max="-2" attributes="0"/>
-                                  <EmptySpace max="-2" attributes="0"/>
-                                  <Component id="viewExportLogJButton" min="-2" max="-2" attributes="0"/>
-                                  <EmptySpace max="-2" attributes="0"/>
-                                  <Component id="exportJButton" min="-2" pref="101" max="-2" attributes="0"/>
-                                  <EmptySpace max="-2" attributes="0"/>
-                                  <Component id="cancelJButton" min="-2" pref="95" max="-2" attributes="0"/>
-                              </Group>
-                              <Component id="jScrollPane1" alignment="1" min="-2" pref="645" max="-2" attributes="0"/>
-                          </Group>
                           <Component id="destProjectJLabel" min="-2" max="-2" attributes="0"/>
-                          <Group type="102" alignment="0" attributes="0">
-                              <Component id="destProfileJLabel" min="-2" max="-2" attributes="0"/>
-                              <EmptySpace min="-2" pref="31" max="-2" attributes="0"/>
-                              <Group type="103" groupAlignment="0" attributes="0">
-                                  <Component id="destProfileJComboBox" min="-2" pref="317" max="-2" attributes="0"/>
-                                  <Group type="102" alignment="0" attributes="0">
-                                      <Component id="destProjectJComboBox" min="-2" pref="317" max="-2" attributes="0"/>
-                                      <EmptySpace type="unrelated" max="-2" attributes="0"/>
-                                      <Component id="checkAccessJLabel" min="-2" pref="216" max="-2" attributes="0"/>
-                                  </Group>
-                              </Group>
-                          </Group>
                           <Component id="dataDestinationJLabel" alignment="0" min="-2" max="-2" attributes="0"/>
                       </Group>
-                      <EmptySpace pref="20" max="32767" attributes="0"/>
+                      <EmptySpace pref="393" max="32767" attributes="0"/>
                   </Group>
-                  <Group type="102" attributes="0">
-                      <Component id="anonCodeSameJCheckBox" min="-2" max="-2" attributes="0"/>
-                      <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
+                  <Group type="103" groupAlignment="1" attributes="0">
+                      <Group type="102" attributes="0">
+                          <Component id="viewAnonScriptJButton" min="-2" max="-2" attributes="0"/>
+                          <EmptySpace type="unrelated" max="-2" attributes="0"/>
+                          <Component id="exportJButton" min="-2" pref="101" max="-2" attributes="0"/>
+                          <EmptySpace max="-2" attributes="0"/>
+                          <Component id="cancelJButton" min="-2" pref="95" max="-2" attributes="0"/>
+                          <EmptySpace max="-2" attributes="0"/>
+                      </Group>
+                      <Group type="102" attributes="0">
+                          <Component id="destProfileJLabel" min="-2" max="-2" attributes="0"/>
+                          <EmptySpace min="-2" pref="31" max="-2" attributes="0"/>
+                          <Group type="103" groupAlignment="0" attributes="0">
+                              <Component id="destProfileJComboBox" min="-2" pref="317" max="-2" attributes="0"/>
+                              <Group type="102" alignment="0" attributes="0">
+                                  <Component id="destProjectJComboBox" min="-2" pref="317" max="-2" attributes="0"/>
+                                  <EmptySpace type="unrelated" max="-2" attributes="0"/>
+                                  <Component id="checkAccessJLabel" min="-2" pref="216" max="-2" attributes="0"/>
+                              </Group>
+                          </Group>
+                      </Group>
                   </Group>
               </Group>
+          </Group>
+          <Group type="102" alignment="1" attributes="0">
+              <EmptySpace max="32767" attributes="0"/>
+              <Component id="jScrollPane1" min="-2" pref="724" max="-2" attributes="0"/>
+              <EmptySpace max="32767" attributes="0"/>
           </Group>
       </Group>
     </DimensionLayout>
@@ -92,9 +91,7 @@
                   <Component id="srcProfileJTextField" alignment="0" min="-2" max="-2" attributes="0"/>
                   <Component id="srcProfileJLabel" alignment="0" min="-2" max="-2" attributes="0"/>
               </Group>
-              <EmptySpace min="-2" pref="14" max="-2" attributes="0"/>
-              <Component id="anonCodeSameJCheckBox" min="-2" max="-2" attributes="0"/>
-              <EmptySpace type="separate" max="-2" attributes="0"/>
+              <EmptySpace min="-2" pref="61" max="-2" attributes="0"/>
               <Component id="jScrollPane1" min="-2" pref="234" max="-2" attributes="0"/>
               <EmptySpace min="-2" pref="27" max="-2" attributes="0"/>
               <Component id="dataDestinationJLabel" min="-2" max="-2" attributes="0"/>
@@ -109,10 +106,9 @@
                   <Component id="destProjectJLabel" alignment="3" min="-2" max="-2" attributes="0"/>
                   <Component id="checkAccessJLabel" alignment="3" min="-2" max="-2" attributes="0"/>
               </Group>
-              <EmptySpace pref="53" max="32767" attributes="0"/>
+              <EmptySpace pref="54" max="32767" attributes="0"/>
               <Group type="103" groupAlignment="3" attributes="0">
                   <Component id="viewAnonScriptJButton" alignment="3" min="-2" max="-2" attributes="0"/>
-                  <Component id="viewExportLogJButton" alignment="3" min="-2" max="-2" attributes="0"/>
                   <Component id="exportJButton" alignment="3" min="-2" max="-2" attributes="0"/>
                   <Component id="cancelJButton" alignment="3" min="-2" max="-2" attributes="0"/>
               </Group>
@@ -218,21 +214,9 @@
         <Property name="text" type="java.lang.String" value="Checking project access"/>
       </Properties>
     </Component>
-    <Component class="javax.swing.JButton" name="viewExportLogJButton">
-      <Properties>
-        <Property name="text" type="java.lang.String" value="View export log ..."/>
-        <Property name="actionCommand" type="java.lang.String" value="View download log ..."/>
-      </Properties>
-    </Component>
     <Component class="javax.swing.JButton" name="viewAnonScriptJButton">
       <Properties>
         <Property name="text" type="java.lang.String" value="View anonymisation script ..."/>
-      </Properties>
-    </Component>
-    <Component class="javax.swing.JCheckBox" name="anonCodeSameJCheckBox">
-      <Properties>
-        <Property name="text" type="java.lang.String" value="Force anonymisation code to be the same for all sessions from the same patient."/>
-        <Property name="iconTextGap" type="int" value="8"/>
       </Properties>
     </Component>
     <Container class="javax.swing.JScrollPane" name="jScrollPane1">

@@ -101,7 +101,7 @@ public class XNATProfile extends XNATServerConnection
       XNATProfileAuthenticator a = new XNATProfileAuthenticator(parent,
                                         "Authentication required", this);
       a.setVisible(true);
-      analytics(this);
+     // analytics(this);
    }
    
    

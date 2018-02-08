@@ -147,6 +147,12 @@ public class FileListWorker extends SwingWorker<ArrayList<ArrayList<File>>, Stri
 		Map od = getOutputDefinition();		
 		getPreFetchResources(od);
 		Map<Class, PreFetchStore> pfsMap = performPreFetchActions(od);
+      
+      // Check whether any of the prefetch actions caused cancellation of the download.
+      for (PreFetchStore pfs : pfsMap.values())
+      {
+         if (pfs.isCancelled()) return outputListAllRows;
+      }
 		
 		sourceListAllRows = downloadResources(od);
 		if (!isCancelled()) performPostFetchActions(od, pfsMap);

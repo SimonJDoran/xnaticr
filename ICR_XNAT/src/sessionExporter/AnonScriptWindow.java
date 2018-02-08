@@ -58,7 +58,8 @@ import javax.swing.filechooser.FileFilter;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
-import static sessionExporter.AnonymiseAndSend.DEFAULT_SUBJ_CODE;
+import static sessionExporter.AnonymiseAndSend.DEFAULT_SUBJ_NAME;
+import static sessionExporter.AnonymiseAndSend.DEFAULT_SUBJ_ID;
 import xnatDAO.XNATProfile;
 
 public class AnonScriptWindow extends javax.swing.JDialog

@@ -54,7 +54,7 @@ public class ToCachePostFetchAction implements PostFetchAction
 {
 
 	@Override
-	public void executeAction(FileListWorker caller, Map<Class, PreFetchStore> pfsList)
+	public void executeAction(FileListWorker caller, Map<Class, PreFetchStore> pfsMap)
 	{
       // Note that this action does not need to make use of any information
       // from the pre-fetch stage, so the pfsList argument is entirely formal,

@@ -32,18 +32,25 @@ public class ProxyTests
 			String JSessionID = testAuthenticate(server, false, false);
 			System.out.println("JSESSIONID = " + JSessionID);
 			
-         System.out.println("\nTest 3: authentication, explicit setting of Content Length");
+         System.out.println("\nTest 2: authentication, explicit setting of Content Length");
 			JSessionID = testAuthenticate(server, false, true);
 			System.out.println("JSESSIONID = " + JSessionID);
          
-         System.out.println("\nTest 2: authentication, chunking");
+         System.out.println("\nTest 3: authentication, chunking");
 			JSessionID = testAuthenticate(server, true, false);
 			System.out.println("JSESSIONID = " + JSessionID);
          
 			
 			System.out.println("\nTest 4: GET");
 			String outputXml = testGet(server, JSessionID);
-			System.out.println("Project XML = " + outputXml.substring(0, 100) + "...");
+			if (outputXml == null)
+         {
+            System.out.println("GET failed, No output");
+         }
+         else
+         {
+            System.out.println("Project XML = " + outputXml.substring(0, 100) + "...");
+         }
 		}
 	}
 	

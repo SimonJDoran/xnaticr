@@ -80,10 +80,10 @@ public class AnonSendPostFetchAction implements PostFetchAction
       {
          String sessionDir = caller.getCacheDirName() + "/experiments/" + session;
          
-         for (String subject : aspfs.getDestSubjCodes())
-         {
-            
-         }
+//         for (String subject : aspfs.getDestSubjCodes())
+//         {
+//            System.out.println(caller.get);
+//         }
       }
 			
 	}

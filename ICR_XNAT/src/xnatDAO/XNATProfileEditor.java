@@ -100,6 +100,29 @@ public class XNATProfileEditor extends javax.swing.JDialog implements ProjectGet
             xnprf.setUserid(xnprfOrig.getUserid());
             useridJTextField.setText(xnprf.getUserid());
          }
+         
+         if (xnprfOrig.getDicomReceiverHost()!= null)
+         {
+            xnprf.setDicomReceiverHost(xnprfOrig.getDicomReceiverHost());
+            dicomReceiverHostJTextField.setText(xnprf.getDicomReceiverHost());
+         }
+         
+         if (xnprf.getDicomReceiverPort() == 0)
+         {
+            xnprf.setDicomReceiverPort(8104);
+            dicomReceiverPortJTextField.setText("8104");
+         }
+         else
+         {
+            xnprf.setDicomReceiverPort(xnprfOrig.getDicomReceiverPort());
+            dicomReceiverPortJTextField.setText(Integer.toString(xnprf.getDicomReceiverPort()));
+         }
+            
+         if (xnprfOrig.getDicomReceiverAeTitle()!= null)
+         {
+            xnprf.setDicomReceiverAeTitle(xnprfOrig.getDicomReceiverAeTitle());
+            dicomReceiverAeTitleJTextField.setText(xnprf.getDicomReceiverAeTitle());
+         }
       }
       
       // We can't populate the project box until we have a password and database

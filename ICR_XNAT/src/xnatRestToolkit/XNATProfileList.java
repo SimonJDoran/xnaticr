@@ -190,10 +190,10 @@ public class XNATProfileList extends ArrayList<XNATProfile>
 
          profileNames = XMLUtilities.getAttribute(  DOMDoc, XNATns, "XNATProfile", "profileName");
          serverURLs   = XMLUtilities.getElementText(DOMDoc, XNATns, "serverURL");
-         dicomHosts   = XMLUtilities.getElementText(DOMDoc, XNATns, "userid");
-         dicomPorts   = XMLUtilities.getElementText(DOMDoc, XNATns, "dicomReceiverHost");
-         aetitles     = XMLUtilities.getElementText(DOMDoc, XNATns, "dicomReceiverPort");
-         userids      = XMLUtilities.getElementText(DOMDoc, XNATns, "dicomReceiverAeTitle");   
+         userids      = XMLUtilities.getElementText(DOMDoc, XNATns, "userid");
+         dicomHosts   = XMLUtilities.getElementText(DOMDoc, XNATns, "dicomReceiverHost");
+         dicomPorts   = XMLUtilities.getElementText(DOMDoc, XNATns, "dicomReceiverPort");
+         aetitles     = XMLUtilities.getElementText(DOMDoc, XNATns, "dicomReceiverAeTitle");   
          preferred    = XMLUtilities.getElementText(DOMDoc, XNATns, "preferredProfile");
       }
       catch (FileNotFoundException exFNF)
