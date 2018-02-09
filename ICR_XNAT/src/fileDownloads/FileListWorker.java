@@ -100,9 +100,6 @@ public class FileListWorker extends SwingWorker<ArrayList<ArrayList<File>>, Stri
    protected int                        nFileFailures;
 	protected int                        nFilesToGenerate;
 	protected int                        nFilesToOutput;
-	protected int[]                      selTableRows;
-	protected int[]                      selModelRows;
-	protected int                        nTableRows;
 	protected ArrayList<File>            workingListCurrentRow;
 	protected ArrayList<File>            outputListCurrentRow;
 	protected ArrayList<File>            sourceListCurrentRow = new ArrayList<>();
@@ -145,7 +142,7 @@ public class FileListWorker extends SwingWorker<ArrayList<ArrayList<File>>, Stri
    protected ArrayList<ArrayList<File>> doInBackground() throws Exception
    {
 		Map od = getOutputDefinition();		
-		getPreFetchResources(od);
+		getPreFetchPrerequisites(od);
 		Map<Class, PreFetchStore> pfsMap = performPreFetchActions(od);
       
       // Check whether any of the prefetch actions caused cancellation of the download.
@@ -255,14 +252,15 @@ public class FileListWorker extends SwingWorker<ArrayList<ArrayList<File>>, Stri
 	}
 	
 
-	protected void getPreFetchResources(Map<String, String> od)
+	protected void getPreFetchPrerequisites(Map<String, String> od)
 			         throws InterruptedException, IOException, XNATException
 	{
 		// At present, the only thing that we need is a list of session
 		// labels for the anonymise and send GUI.
-		selTableRows       = outline.getSelectedRows();
-		nTableRows         = selTableRows.length;
-      selModelRows = new int[nTableRows];		
+		int[] selTableRows  = outline.getSelectedRows();
+		int   nTableRows    = selTableRows.length;
+      int[] selModelRows  = new int[nTableRows];
+      
 		for (int i=0; i<nTableRows; i++)
 		{
 			selModelRows[i] = outline.convertRowIndexToModel(selTableRows[i]);
@@ -285,6 +283,15 @@ public class FileListWorker extends SwingWorker<ArrayList<ArrayList<File>>, Stri
 	protected ArrayList<ArrayList<File>> downloadResources(Map<String, String> od)
 			         throws InterruptedException, IOException, XNATException
 	{
+      // The next few lines are a repeat of what is done in getPreFetchPrerequisites
+      // but I removed the use of global variables for the following three
+      // lines to improve encapsulation.
+      int[] selTableRows  = outline.getSelectedRows();
+		int   nTableRows    = selTableRows.length;
+      int[] selModelRows  = new int[nTableRows];
+      for (int i=0; i<nTableRows; i++)
+         selModelRows[i] = outline.convertRowIndexToModel(selTableRows[i]);
+      
       for (int j=0; j<nTableRows; j++)
       {
          // While the selection is being retrieved (potentially from a remote
@@ -751,6 +758,9 @@ public class FileListWorker extends SwingWorker<ArrayList<ArrayList<File>>, Stri
                                           Map<Class, PreFetchStore> pfsMap)
              throws Exception
 	{
+      int[] selTableRows  = outline.getSelectedRows();
+		int   nTableRows    = selTableRows.length;
+      
 		for (int i=0; i<nTableRows; i++)
 		{	
 			outputListCurrentRow      = new ArrayList<File>();
