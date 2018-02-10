@@ -50,7 +50,7 @@ package fileDownloads;
 import fileDownloads.ROIFileListWorker;
 import fileDownloads.MRIWOutputFileListWorker;
 import fileDownloads.FileListWorker;
-import fileDownloads.DICOMFileListWorker;
+import obselete.DICOMFileListWorker;
 import exceptions.XNATException;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
@@ -218,13 +218,13 @@ public class DAOOutput
       currentStatus = "Download succeeded - awaiting selection by user";
       retrievedFiles = fileList;
       
-      if (fileListWorker.nFileFailures != 0)
+      if (fileListWorker.getNFileFailures() != 0)
       {
-         currentStatus = fileListWorker.nFileFailures
+         currentStatus = fileListWorker.getNFileFailures()
                  + " files failed to download correctly or are otherwise not valid";
          JOptionPane.showMessageDialog(
             xndao,
-            fileListWorker.nFileFailures + " files failed to download correctly from XNAT\n" +
+            fileListWorker.getNFileFailures() + " files failed to download correctly from XNAT\n" +
             "or were not valid when downloaded.",
             "File download error", JOptionPane.ERROR_MESSAGE);
       }

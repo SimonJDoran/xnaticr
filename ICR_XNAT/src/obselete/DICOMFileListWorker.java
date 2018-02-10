@@ -46,9 +46,11 @@
 * when the task is completed.
 *********************************************************************/
 
-package fileDownloads;
+package obselete;
 
 import exceptions.XNATException;
+import fileDownloads.DAOOutput;
+import fileDownloads.FileListWorker;
 import generalUtilities.Vector2D;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -84,7 +86,7 @@ public class DICOMFileListWorker extends FileListWorker
       super(xndao, daoo, xnsc, outline, preview, rootElement, cacheDirName);
    }
    
-   
+ /*  
    
 	protected ArrayList<File> generateCacheFiles(int            tableRow,
 			                                       Vector<String> tableColumnElements,
@@ -125,7 +127,7 @@ public class DICOMFileListWorker extends FileListWorker
       return nFrames;
    }
    
-   
+*/   
 
    /**
     * Get the URL where we need to go to obtain the list of filenames.
@@ -138,7 +140,7 @@ public class DICOMFileListWorker extends FileListWorker
     * @param isLocal
     * @return required URL as a String
     */
-   protected String constructRESTCommand(Vector<String> tableColumnElements,
+ /*  protected String constructRESTCommand(Vector<String> tableColumnElements,
                                          int            tableRow,
                                          boolean        isLocal)
    {
@@ -331,6 +333,6 @@ public class DICOMFileListWorker extends FileListWorker
       return scanFileList;
    }
 
-
+*/
    
 }

@@ -52,6 +52,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import org.apache.log4j.Logger;
+import sessionExporter.AnonSessionInfo;
 import sessionExporter.AnonymiseAndSend;
 
 public class AnonSendPostFetchAction implements PostFetchAction
@@ -66,7 +67,7 @@ public class AnonSendPostFetchAction implements PostFetchAction
       
       // From the list of pre-fetch stores, extract the one containing
       // the anonymisation information.
-      PreFetchStore pfs = pfsMap.get(AnonSendPreFetchStore.class);
+      AnonSendPreFetchStore pfs = (AnonSendPreFetchStore) pfsMap.get(AnonSendPreFetchStore.class);
       if (pfs == null)
       {
          logger.error("No pre-fetch store information. Programming error - this shouldn't happen.");
@@ -76,9 +77,9 @@ public class AnonSendPostFetchAction implements PostFetchAction
       AnonSendPreFetchStore aspfs = (AnonSendPreFetchStore) pfs;
       
       
-      for (String session : caller.sessionIDList)
+      for (AnonSessionInfo asi : pfs.getAnonSessionInfo() )
       {
-         String sessionDir = caller.getCacheDirName() + "/experiments/" + session;
+         String sessionDir = caller.getCacheDirName() + "/experiments/" + asi.getSessionId();
          
 //         for (String subject : aspfs.getDestSubjCodes())
 //         {

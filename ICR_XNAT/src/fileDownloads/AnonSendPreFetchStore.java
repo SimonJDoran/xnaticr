@@ -38,7 +38,7 @@
 * Java class: PreFetchStore.java
 * First created on Jan 31, 2018
 * 
-* Container class for return data from the anonymise and send GUI
+* Container class for return data from the anonymise-and-send GUI
 *********************************************************************/
 
 package fileDownloads;
@@ -46,17 +46,16 @@ package fileDownloads;
 
 import exceptions.DataFormatException;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
+import sessionExporter.AnonSessionInfo;
 import xnatDAO.XNATProfile;
 
 public class AnonSendPreFetchStore extends PreFetchStore
 {
-   private String              anonScriptTemplate;
-   private Map<String, String> subjIdMap;
-   private Map<String, String> subjNameMap;
-   private XNATProfile         destProf;
-  
-   
+   private List<AnonSessionInfo> asiList;
+   private XNATProfile           destProf;
+   private String                anonScriptTemplate; 
 
    public String getAnonScriptTemplate()
    {
@@ -68,30 +67,19 @@ public class AnonSendPreFetchStore extends PreFetchStore
       anonScriptTemplate = template;
    }
    
-
-   public Map<String, String> getSubjIdMap()
-   {
-      return subjIdMap;
-   } 
    
-   public void setSubjIdMap(Map<String, String> map)
+   public void setAnonSessionInfo(List<AnonSessionInfo> asiList)
    {
-      subjIdMap = map;
+      this.asiList = asiList; 
    }
    
-
-   public Map<String, String> getSubjNameMap()
+   public List<AnonSessionInfo> getAnonSessionInfo()
    {
-      return subjNameMap;
-   } 
-   
-   public void setSubjNameMap(Map<String, String> map)
-   {
-      subjNameMap = map;
+      return asiList; 
    }
    
    
-  public XNATProfile getDestProfile()
+   public XNATProfile getDestProfile()
    {
       return destProf;
    } 

@@ -44,26 +44,24 @@
 
 package fileDownloads;
 
+import java.awt.Frame;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import javax.swing.JFrame;
 import sessionExporter.AnonymiseAndSend;
 
 public class AnonSendPreFetchAction implements PreFetchAction
 {
-@Override
+   public Frame frame = new JFrame();
+   
+   @Override
 	public PreFetchStore executeAction(FileListWorker caller) throws IOException
 	{				
 		caller.publishFromOutsidePackage("Launching anonymise-and-send GUI ...");
 			
       AnonSendPreFetchStore pfs = new AnonSendPreFetchStore();
-      AnonymiseAndSend as = new AnonymiseAndSend(new javax.swing.JFrame(),
-					                                     true,
-			                                           caller.xndao.getProfile(),
-			                                           caller.sessionIDList,
-					                                     caller.sessionLabelList,
-			                                           caller.sessionSubjectList,
-                                                    pfs);
+      AnonymiseAndSend as = new AnonymiseAndSend(frame, true, caller, pfs);
 		as.setVisible(true);
       
       return pfs;

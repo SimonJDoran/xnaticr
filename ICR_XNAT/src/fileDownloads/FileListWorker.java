@@ -84,30 +84,27 @@ import xnatRestToolkit.XNATServerConnection;
 
 public class FileListWorker extends SwingWorker<ArrayList<ArrayList<File>>, String>
 {
-   static    Logger                     logger = Logger.getLogger(FileListWorker.class);
-   protected XNATDAO                    xndao;
-   protected DAOOutput                  daoo;
-   protected XNATServerConnection       xnsc;
-   protected DAOOutline                 outline;
-   protected ThumbnailPreview           preview;
-   protected String                     rootElement;
-   protected String                     cacheDirName;
-   protected DownloadIcon               icon;
-   protected boolean                    iconCycling;
-   protected int                        downloadIconRow;
-   protected int                        nFilesToDownload;
-   protected int                        nFilesDownloaded;
-   protected int                        nFileFailures;
-	protected int                        nFilesToGenerate;
-	protected int                        nFilesToOutput;
-	protected ArrayList<File>            workingListCurrentRow;
-	protected ArrayList<File>            outputListCurrentRow;
-	protected ArrayList<File>            sourceListCurrentRow = new ArrayList<>();
-	protected ArrayList<ArrayList<File>> sourceListAllRows    = new ArrayList<>();
-	protected ArrayList<ArrayList<File>> outputListAllRows    = new ArrayList<>();
-	protected ArrayList<String>          sessionIDList        = new ArrayList<>();
-	protected ArrayList<String>          sessionLabelList     = new ArrayList<>();
-	protected ArrayList<String>          sessionSubjectList   = new ArrayList<>();
+   static    Logger                   logger = Logger.getLogger(FileListWorker.class);
+   private XNATDAO                    xndao;
+   private DAOOutput                  daoo;
+   private XNATServerConnection       xnsc;
+   private DAOOutline                 outline;
+   private ThumbnailPreview           preview;
+   private String                     rootElement;
+   private String                     cacheDirName;
+   private DownloadIcon               icon;
+   private boolean                    iconCycling;
+   private int                        downloadIconRow;
+   private int                        nFilesToDownload;
+   private int                        nFilesDownloaded;
+   private int                        nFileFailures;
+	private int                        nFilesToGenerate;
+	private int                        nFilesToOutput;
+	private ArrayList<File>            workingListCurrentRow;
+	private ArrayList<File>            outputListCurrentRow;
+	private ArrayList<File>            sourceListCurrentRow = new ArrayList<>();
+	private ArrayList<ArrayList<File>> sourceListAllRows    = new ArrayList<>();
+	private ArrayList<ArrayList<File>> outputListAllRows    = new ArrayList<>();
 
    /**
     * Create a worker thread to return a list of files corresponding to the resources
@@ -142,7 +139,6 @@ public class FileListWorker extends SwingWorker<ArrayList<ArrayList<File>>, Stri
    protected ArrayList<ArrayList<File>> doInBackground() throws Exception
    {
 		Map od = getOutputDefinition();		
-		getPreFetchPrerequisites(od);
 		Map<Class, PreFetchStore> pfsMap = performPreFetchActions(od);
       
       // Check whether any of the prefetch actions caused cancellation of the download.
@@ -250,35 +246,7 @@ public class FileListWorker extends SwingWorker<ArrayList<ArrayList<File>>, Stri
 		
 		return odl.getMap().get(formatChosen);
 	}
-	
-
-	protected void getPreFetchPrerequisites(Map<String, String> od)
-			         throws InterruptedException, IOException, XNATException
-	{
-		// At present, the only thing that we need is a list of session
-		// labels for the anonymise and send GUI.
-		int[] selTableRows  = outline.getSelectedRows();
-		int   nTableRows    = selTableRows.length;
-      int[] selModelRows  = new int[nTableRows];
-      
-		for (int i=0; i<nTableRows; i++)
-		{
-			selModelRows[i] = outline.convertRowIndexToModel(selTableRows[i]);
-			
-			// Sessions need to be handled differently from other items, as they
-			// are further up the hierarchy and do not have resources directly
-			// underneath.
-			if (rootElement.contains("Session"))
-			{
-				sessionIDList.add(getIDForRow(selModelRows[i]));
-				sessionLabelList.add(getLabelForRow(selModelRows[i]));
-				String subj = getSubjectForRow(selModelRows[i]);
-				if (subj != null) sessionSubjectList.add(subj);
-			}
-		}
-	}
-	
-	
+		
 	
 	protected ArrayList<ArrayList<File>> downloadResources(Map<String, String> od)
 			         throws InterruptedException, IOException, XNATException
@@ -315,7 +283,7 @@ public class FileListWorker extends SwingWorker<ArrayList<ArrayList<File>>, Stri
 			// underneath.
 			if (rootElement.contains("Session"))
 			{
-				sessionLabelList.add(getSubjectForRow(modelRow));
+				//sessionLabelList.add(getSubjectForRow(modelRow));
 				
 				boolean downloadThumbnailsSeparately = !od.get("sourceName").equals(od.get("thumbnailName"));
 				nFilesDownloaded = 0;
@@ -599,9 +567,21 @@ public class FileListWorker extends SwingWorker<ArrayList<ArrayList<File>>, Stri
 	}
 
 	
-	protected String getIDForRow(int modelRow) throws IOException		  
+	protected String getIDForRow(int modelRow)		  
 	{
-		DAOSearchableElementsList sel      = DAOSearchableElementsList.getSingleton();
+      DAOSearchableElementsList sel;
+      try
+      {
+         sel = DAOSearchableElementsList.getSingleton();
+      }
+      catch (IOException exIO)
+      {
+         // This really shouldn't happen. By the time we get this far into the
+         // application, things will already have gone wrong, so it should be
+         // safe to assume we won't ever get here in reality.
+         logger.error(exIO.getMessage());
+         return "Error";
+      }
       Vector<String> tableColumnElements = sel.getSearchableXNATElements().get(rootElement);
 		OutlineModel  omdl                 = outline.getOutlineModel();
 		String        expXPath             = rootElement + "/ID";
@@ -614,7 +594,20 @@ public class FileListWorker extends SwingWorker<ArrayList<ArrayList<File>>, Stri
 	
 	protected String getLabelForRow(int modelRow) throws IOException
 	{
-		DAOSearchableElementsList sel      = DAOSearchableElementsList.getSingleton();
+      DAOSearchableElementsList sel;
+      try
+      {
+         sel = DAOSearchableElementsList.getSingleton();
+      }
+      catch (IOException exIO)
+      {
+         // This really shouldn't happen. By the time we get this far into the
+         // application, things will already have gone wrong, so it should be
+         // safe to assume we won't ever get here in reality.
+         logger.error(exIO.getMessage());
+         return "Error";
+      }
+
       Vector<String> tableColumnElements = sel.getSearchableXNATElements().get(rootElement);
 		OutlineModel  omdl                 = outline.getOutlineModel();
 		String        expXPath             = rootElement + "/label";
@@ -626,7 +619,19 @@ public class FileListWorker extends SwingWorker<ArrayList<ArrayList<File>>, Stri
 	
 	protected String getSubjectForRow(int modelRow) throws IOException
 	{
-		DAOSearchableElementsList sel      = DAOSearchableElementsList.getSingleton();
+      DAOSearchableElementsList sel;
+      try
+      {
+         sel = DAOSearchableElementsList.getSingleton();
+      }
+      catch (IOException exIO)
+      {
+         // This really shouldn't happen. By the time we get this far into the
+         // application, things will already have gone wrong, so it should be
+         // safe to assume we won't ever get here in reality.
+         logger.error(exIO.getMessage());
+         return "Error";
+      }
       Vector<String> tableColumnElements = sel.getSearchableXNATElements().get(rootElement);
 		OutlineModel  omdl                 = outline.getOutlineModel();
 		String        expXPath             = rootElement + "/subject_ID";
@@ -796,6 +801,27 @@ public class FileListWorker extends SwingWorker<ArrayList<ArrayList<File>>, Stri
 	{
 		return cacheDirName;
 	}
+   
+   
+   public DAOOutline getOutline()
+   {
+      return outline;
+   }  
+   
+   public String getRootElement()
+   {
+      return rootElement;
+   }
+   
+   public XNATServerConnection getXNATServerConnection()
+   {
+      return xnsc;
+   }
+   
+   public int getNFileFailures()
+   {
+      return nFileFailures;
+   }
 	
 	
 	public ArrayList<File> getOutputListCurrentRow()

@@ -47,6 +47,7 @@ package sessionExporter;
 public class AnonSessionInfo
 {
    private String sessionId;
+   private String sessionLabel;
    private String subjXnatId;
    private String subjLabel;
    private String subjDicomAnonName;
@@ -58,6 +59,16 @@ public class AnonSessionInfo
    }
 
    public void setSessionId(String sessionId)
+   {
+      this.sessionId = sessionId;
+   }
+
+   public String getSessionLabel()
+   {
+      return sessionId;
+   }
+
+   public void setSessionLabel(String sessionLabel)
    {
       this.sessionId = sessionId;
    }

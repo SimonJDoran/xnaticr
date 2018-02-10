@@ -60,7 +60,7 @@ public class DAOSearchableElementsList extends SingletonListFromTwoLevelXML
    /** Creates a new instance of DAOSearchableElementList
     *  Note that this is never called directly - but rather via getSingleton().
 	 */
-	protected DAOSearchableElementsList() throws IOException
+	public DAOSearchableElementsList() throws IOException
 	{
       super();
    }
