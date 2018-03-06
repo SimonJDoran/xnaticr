@@ -70,7 +70,7 @@ public class AnonSessionInfo
 
    public void setSessionLabel(String sessionLabel)
    {
-      this.sessionId = sessionId;
+      this.sessionLabel = sessionLabel;
    }
 
    public String getSubjXnatId()

@@ -75,9 +75,13 @@ import javax.swing.event.TableModelListener;
 import javax.swing.table.DefaultTableModel;
 import org.apache.log4j.Logger;
 import org.netbeans.swing.outline.OutlineModel;
+import org.w3c.dom.Document;
+import xmlUtilities.XMLUtilities;
 import xnatDAO.PermissionsWorker;
 import xnatDAO.ProjectGetter;
 import xnatDAO.XNATProfile;
+import xnatRestToolkit.XNATNamespaceContext;
+import xnatRestToolkit.XNATRESTToolkit;
 import xnatRestToolkit.XNATServerConnection;
 
 /**
@@ -142,7 +146,6 @@ public class AnonymiseAndSend extends xnatDAO.XNATGUI
       
       int[] selTableRows  = flw.getOutline().getSelectedRows();
 		int   nTableRows    = selTableRows.length;
-      int[] selModelRows  = new int[nTableRows];
       
       DAOSearchableElementsList sel;
       try
@@ -167,19 +170,19 @@ public class AnonymiseAndSend extends xnatDAO.XNATGUI
          int             expIndex;
          AnonSessionInfo asi = new AnonSessionInfo();
          
-         selModelRows[i] = flw.getOutline().convertRowIndexToModel(selTableRows[i]);
+         int row = flw.getOutline().convertRowIndexToModel(selTableRows[i]);
          
          expXPath = flw.getRootElement() + "/ID";
 	      expIndex = tableColumnElements.indexOf(expXPath);
-         asi.setSessionId((String) omdl.getValueAt(i, expIndex+1));
+         asi.setSessionId((String) omdl.getValueAt(row, expIndex+1));
          
          expXPath = flw.getRootElement() + "/label";
 	      expIndex = tableColumnElements.indexOf(expXPath);
-         asi.setSessionLabel((String) omdl.getValueAt(i, expIndex+1));
+         asi.setSessionLabel((String) omdl.getValueAt(row, expIndex+1));
          
-         expXPath = flw.getRootElement() + "/subjectID";
+         expXPath = flw.getRootElement() + "/subject_ID";
 	      expIndex = tableColumnElements.indexOf(expXPath);
-         asi.setSubjXnatId((String) omdl.getValueAt(i, expIndex+1));
+         asi.setSubjXnatId((String) omdl.getValueAt(row, expIndex+1));
          
          XNATServerConnection xnsc = flw.getXNATServerConnection();
          asi.setSubjLabel(getSubjXnatLabelFromId(asi.getSubjXnatId(), xnsc));
@@ -202,24 +205,25 @@ public class AnonymiseAndSend extends xnatDAO.XNATGUI
       // It takes more work to retrieve this value than one might expect, because
       // only the subject ID is part of the session information. To get the subject
       // label, we need to retrieve the xnat:subjectData as an XML and parse it.
-      String restCommand = xnsc.getServerURL().toString() + "/data/subjects/label";
-      StringBuilder sb = new StringBuilder();
+      String restCommand = "/data/subjects/" + subjXnatId + "?format=xml";
+      String subjXnatLabel = "";
       try
       {
-         InputStream is = xnsc.doRESTGet(restCommand);
-         int b;
-         while ((b = is.read()) != -1) sb.append((char) b);
+         Document resultDoc = new XNATRESTToolkit(xnsc).RESTGetDoc(restCommand);
+         String[] attrs = XMLUtilities.getAttribute(resultDoc, new XNATNamespaceContext(),
+                                                   "xnat:Subject", "label");
+         if (attrs != null) subjXnatLabel = attrs[0];
       }
       catch (Exception ex)
       {
-         logger.error("Not connected");
+         logger.error("Error retrieving subject label");
          JOptionPane.showMessageDialog(this.getParent(), "Error retrieving subject name\n"
-                                       + "Has your login timed out?",
+                                       + "Can't match a subject label with subject ID " + subjXnatId,
                                        "Data retrieval error", JOptionPane.ERROR_MESSAGE);
          // TODO : Work out how to recover from here!
       }
       
-      return sb.toString();
+      return subjXnatLabel;
    }
 	
 	
