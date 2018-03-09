@@ -73,9 +73,7 @@ public class AnonSendPostFetchAction implements PostFetchAction
          logger.error("No pre-fetch store information. Programming error - this shouldn't happen.");
          caller.publishFromOutsidePackage("Output failed - check system logs.");
          return;
-      }
-      AnonSendPreFetchStore aspfs = (AnonSendPreFetchStore) pfs;
-      
+      }     
       
       for (AnonSessionInfo asi : pfs.getAnonSessionInfo() )
       {

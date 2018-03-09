@@ -38,7 +38,9 @@
                       <Component id="loadJButton" min="-2" max="-2" attributes="0"/>
                       <EmptySpace type="separate" max="-2" attributes="0"/>
                       <Component id="saveJButton" min="-2" max="-2" attributes="0"/>
-                      <EmptySpace type="separate" max="-2" attributes="0"/>
+                      <EmptySpace type="unrelated" max="-2" attributes="0"/>
+                      <Component id="verifyJButton" min="-2" max="-2" attributes="0"/>
+                      <EmptySpace type="unrelated" max="-2" attributes="0"/>
                       <Component id="cancelJButton" min="-2" max="-2" attributes="0"/>
                   </Group>
               </Group>
@@ -61,6 +63,7 @@
                   <Component id="cancelJButton" alignment="3" min="-2" max="-2" attributes="0"/>
                   <Component id="saveJButton" alignment="3" min="-2" max="-2" attributes="0"/>
                   <Component id="loadJButton" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="verifyJButton" alignment="3" min="-2" max="-2" attributes="0"/>
               </Group>
               <EmptySpace max="32767" attributes="0"/>
           </Group>
@@ -113,6 +116,11 @@
     <Component class="javax.swing.JButton" name="loadJButton">
       <Properties>
         <Property name="text" type="java.lang.String" value="Load ..."/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JButton" name="verifyJButton">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Verify"/>
       </Properties>
     </Component>
   </SubComponents>

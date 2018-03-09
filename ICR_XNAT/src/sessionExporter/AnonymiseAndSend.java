@@ -66,6 +66,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Vector;
 import javax.swing.DefaultComboBoxModel;
+import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JOptionPane;
 import javax.swing.event.PopupMenuEvent;
@@ -93,8 +94,8 @@ public class AnonymiseAndSend extends xnatDAO.XNATGUI
 {
 	private String                anonVersion = "2.1 alpha 8/2/2018";
 	private XNATProfile           destProf;
-	private XNATProfile           srcProf;
 	private boolean               tableChangeLock;
+   public boolean                anonScriptVerified = false;
 	private List<AnonSessionInfo> asiList;
 	private List<List<File>>      srcFileList;
    private FileListWorker        flw;
@@ -130,6 +131,7 @@ public class AnonymiseAndSend extends xnatDAO.XNATGUI
       
       asiList = getSessionInfo(); 	
 		populateComponents();
+      exportJButton.setEnabled(false);
       addListeners();
       implementRestrictions();
 	}
@@ -251,15 +253,10 @@ public class AnonymiseAndSend extends xnatDAO.XNATGUI
 			@Override
 			public void actionPerformed(ActionEvent e)
 			{
-            if (asw == null)
-            {
-               JOptionPane.showMessageDialog(AnonymiseAndSend.this, "Please view the anonymisation script before exporting data\n"
-								+ "to confirm that it meets your requirements.");
-               return;
-            }
 				pfs.setCancelled(false);
             pfs.setAnonScriptTemplate(asw.getScriptText());
             pfs.setDestProfile(destProf);
+            pfs.setDestProject((String) destProjectJComboBox.getSelectedItem());
             pfs.setAnonSessionInfo(asiList);
             
             dispose();
@@ -272,12 +269,10 @@ public class AnonymiseAndSend extends xnatDAO.XNATGUI
 			@Override
 			public void actionPerformed(ActionEvent e)
 			{            
-				if (asw == null)
-					asw = new AnonScriptWindow(new javax.swing.JFrame(), true);
-				asw.setVisible(true);
-			}	  
-		});
-		
+            asw = new AnonScriptWindow(new javax.swing.JFrame(), true, AnonymiseAndSend.this);
+            checkExport();
+         }
+      });
 		
 		
 		destProfileJComboBox.addItemListener(new ItemListener()
@@ -319,9 +314,7 @@ public class AnonymiseAndSend extends xnatDAO.XNATGUI
 		
 	
 	protected void populateComponents()
-	{
-		srcProfileJTextField.setText(srcProf.getProfileName());
-		
+	{	
 		Object[] colNames = {"Session label", "Orig. subj. name", "Anonymised name", "Anonymised DICOM ID" }; 
 		
 		anonModel = new DefaultTableModel(colNames, 0)
@@ -355,6 +348,8 @@ public class AnonymiseAndSend extends xnatDAO.XNATGUI
                          asi.getSubjDicomAnonName(), asi.getSubjDicomAnonId()};
          
 			anonModel.addRow(row);
+         
+         exportEnableJTextArea.setText("Note: The export button is enabled only after you have chosen a destination profile and project, and viewed and approved the anonymisation script.");
 		}
 		
 		
@@ -409,6 +404,7 @@ public class AnonymiseAndSend extends xnatDAO.XNATGUI
 			                                  ItemEvent.SELECTED);
 			profileJComboBoxItemStateChanged(fakeEvt, false);
 			retrieveProjectList();
+         checkExport();
 		}		
 	}
 	
@@ -487,13 +483,21 @@ public class AnonymiseAndSend extends xnatDAO.XNATGUI
 	
 		
 		
-	protected String getSessionsAsString()
+	private String getSessionsAsString()
 	{
 		StringBuilder sb = new StringBuilder();
 		for (AnonSessionInfo asi : asiList) sb.append(asi.getSessionLabel()).append("\n");
 		// Last newline character is never needed.
 		return sb.substring(0, sb.length()-1);
 	}
+   
+   /**
+    * Check whether the the export button should be enabled or not.
+    */
+   private void checkExport()
+   {
+      exportJButton.setEnabled(destProf.isConnected() && anonScriptVerified);
+   }
 	
 	
 	@Override
@@ -537,8 +541,7 @@ public class AnonymiseAndSend extends xnatDAO.XNATGUI
 	 */
 	@SuppressWarnings("unchecked")
    // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
-   private void initComponents()
-   {
+   private void initComponents() {
 
       twoColourJTable1 = new generalUtilities.TwoColourJTable();
       versionJLabel = new javax.swing.JLabel();
@@ -547,8 +550,6 @@ public class AnonymiseAndSend extends xnatDAO.XNATGUI
       destProjectJLabel = new javax.swing.JLabel();
       destProjectJComboBox = new javax.swing.JComboBox();
       dataToExportJLabel = new javax.swing.JLabel();
-      srcProfileJLabel = new javax.swing.JLabel();
-      srcProfileJTextField = new javax.swing.JLabel();
       dataDestinationJLabel = new javax.swing.JLabel();
       cancelJButton = new javax.swing.JButton();
       exportJButton = new javax.swing.JButton();
@@ -556,6 +557,8 @@ public class AnonymiseAndSend extends xnatDAO.XNATGUI
       viewAnonScriptJButton = new javax.swing.JButton();
       jScrollPane1 = new javax.swing.JScrollPane();
       anonTwoColourJTable = new generalUtilities.TwoColourJTable();
+      jScrollPane2 = new javax.swing.JScrollPane();
+      exportEnableJTextArea = new javax.swing.JTextArea();
 
       setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
@@ -579,10 +582,6 @@ public class AnonymiseAndSend extends xnatDAO.XNATGUI
       dataToExportJLabel.setFont(dataToExportJLabel.getFont().deriveFont(dataToExportJLabel.getFont().getStyle() | java.awt.Font.BOLD, dataToExportJLabel.getFont().getSize()+7));
       dataToExportJLabel.setText("Data source and anonymisation");
 
-      srcProfileJLabel.setText("XNAT Profile");
-
-      srcProfileJTextField.setText("No profile specified");
-
       dataDestinationJLabel.setFont(dataDestinationJLabel.getFont().deriveFont(dataDestinationJLabel.getFont().getStyle() | java.awt.Font.BOLD, dataDestinationJLabel.getFont().getSize()+7));
       dataDestinationJLabel.setText("Data destination");
 
@@ -596,20 +595,28 @@ public class AnonymiseAndSend extends xnatDAO.XNATGUI
       viewAnonScriptJButton.setText("View anonymisation script ...");
 
       anonTwoColourJTable.setModel(new javax.swing.table.DefaultTableModel(
-         new Object [][]
-         {
+         new Object [][] {
             {null, null, null, null},
             {null, null, null, null},
             {null, null, null, null},
             {null, null, null, null}
          },
-         new String []
-         {
+         new String [] {
             "Title 1", "Title 2", "Title 3", "Title 4"
          }
       ));
       anonTwoColourJTable.setRowHeight(24);
       jScrollPane1.setViewportView(anonTwoColourJTable);
+
+      jScrollPane2.setHorizontalScrollBarPolicy(javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+      jScrollPane2.setVerticalScrollBarPolicy(javax.swing.ScrollPaneConstants.VERTICAL_SCROLLBAR_NEVER);
+      jScrollPane2.setFocusable(false);
+
+      exportEnableJTextArea.setColumns(20);
+      exportEnableJTextArea.setLineWrap(true);
+      exportEnableJTextArea.setRows(5);
+      exportEnableJTextArea.setBorder(null);
+      jScrollPane2.setViewportView(exportEnableJTextArea);
 
       javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
       getContentPane().setLayout(layout);
@@ -617,10 +624,6 @@ public class AnonymiseAndSend extends xnatDAO.XNATGUI
          layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
          .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
             .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-            .addComponent(versionJLabel)
-            .addGap(205, 205, 205))
-         .addGroup(layout.createSequentialGroup()
-            .addGap(25, 25, 25)
             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                   .addComponent(viewAnonScriptJButton)
@@ -628,27 +631,28 @@ public class AnonymiseAndSend extends xnatDAO.XNATGUI
                   .addComponent(exportJButton, javax.swing.GroupLayout.PREFERRED_SIZE, 101, javax.swing.GroupLayout.PREFERRED_SIZE)
                   .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                   .addComponent(cancelJButton, javax.swing.GroupLayout.PREFERRED_SIZE, 95, javax.swing.GroupLayout.PREFERRED_SIZE)
-                  .addGap(18, 18, 18))
+                  .addContainerGap())
+               .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                  .addComponent(versionJLabel)
+                  .addGap(205, 205, 205))))
+         .addGroup(layout.createSequentialGroup()
+            .addGap(25, 25, 25)
+            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+               .addComponent(destProjectJLabel)
+               .addComponent(dataDestinationJLabel)
                .addGroup(layout.createSequentialGroup()
+                  .addComponent(destProfileJLabel)
+                  .addGap(31, 31, 31)
                   .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                     .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 724, javax.swing.GroupLayout.PREFERRED_SIZE)
-                     .addComponent(dataToExportJLabel)
+                     .addComponent(destProfileJComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, 317, javax.swing.GroupLayout.PREFERRED_SIZE)
                      .addGroup(layout.createSequentialGroup()
-                        .addComponent(srcProfileJLabel)
-                        .addGap(45, 45, 45)
-                        .addComponent(srcProfileJTextField))
-                     .addComponent(destProjectJLabel)
-                     .addComponent(dataDestinationJLabel)
-                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(destProfileJLabel)
-                        .addGap(31, 31, 31)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                           .addComponent(destProfileJComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, 317, javax.swing.GroupLayout.PREFERRED_SIZE)
-                           .addGroup(layout.createSequentialGroup()
-                              .addComponent(destProjectJComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, 317, javax.swing.GroupLayout.PREFERRED_SIZE)
-                              .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                              .addComponent(checkAccessJLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 216, javax.swing.GroupLayout.PREFERRED_SIZE)))))
-                  .addContainerGap(38, Short.MAX_VALUE))))
+                        .addComponent(destProjectJComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, 317, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(checkAccessJLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 216, javax.swing.GroupLayout.PREFERRED_SIZE))))
+               .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 724, Short.MAX_VALUE)
+               .addComponent(dataToExportJLabel)
+               .addComponent(jScrollPane2))
+            .addContainerGap(38, Short.MAX_VALUE))
       );
       layout.setVerticalGroup(
          layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -658,12 +662,8 @@ public class AnonymiseAndSend extends xnatDAO.XNATGUI
             .addGap(33, 33, 33)
             .addComponent(dataToExportJLabel)
             .addGap(18, 18, 18)
-            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-               .addComponent(srcProfileJTextField)
-               .addComponent(srcProfileJLabel))
-            .addGap(61, 61, 61)
             .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 234, javax.swing.GroupLayout.PREFERRED_SIZE)
-            .addGap(27, 27, 27)
+            .addGap(46, 46, 46)
             .addComponent(dataDestinationJLabel)
             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
@@ -674,12 +674,14 @@ public class AnonymiseAndSend extends xnatDAO.XNATGUI
                .addComponent(destProjectJComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                .addComponent(destProjectJLabel)
                .addComponent(checkAccessJLabel))
-            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 54, Short.MAX_VALUE)
+            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+            .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 49, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 64, Short.MAX_VALUE)
             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                .addComponent(viewAnonScriptJButton)
                .addComponent(exportJButton)
                .addComponent(cancelJButton))
-            .addContainerGap())
+            .addGap(41, 41, 41))
       );
 
       pack();
@@ -737,10 +739,10 @@ public class AnonymiseAndSend extends xnatDAO.XNATGUI
    private javax.swing.JLabel destProfileJLabel;
    private javax.swing.JComboBox destProjectJComboBox;
    private javax.swing.JLabel destProjectJLabel;
+   private javax.swing.JTextArea exportEnableJTextArea;
    private javax.swing.JButton exportJButton;
    private javax.swing.JScrollPane jScrollPane1;
-   private javax.swing.JLabel srcProfileJLabel;
-   private javax.swing.JLabel srcProfileJTextField;
+   private javax.swing.JScrollPane jScrollPane2;
    private generalUtilities.TwoColourJTable twoColourJTable1;
    private javax.swing.JLabel versionJLabel;
    private javax.swing.JButton viewAnonScriptJButton;

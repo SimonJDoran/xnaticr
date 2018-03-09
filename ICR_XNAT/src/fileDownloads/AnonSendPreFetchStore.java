@@ -55,6 +55,7 @@ public class AnonSendPreFetchStore extends PreFetchStore
 {
    private List<AnonSessionInfo> asiList;
    private XNATProfile           destProf;
+   private String                destProj;
    private String                anonScriptTemplate; 
 
    public String getAnonScriptTemplate()
@@ -87,6 +88,17 @@ public class AnonSendPreFetchStore extends PreFetchStore
    public void setDestProfile(XNATProfile xnprf)
    {
       destProf = xnprf;
+   }
+   
+   
+   public String getDestProject()
+   {
+      return destProj;
+   } 
+   
+   public void setDestProject(String proj)
+   {
+      destProj = proj;
    }
    
 }

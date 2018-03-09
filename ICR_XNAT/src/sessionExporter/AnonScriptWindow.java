@@ -52,6 +52,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.filechooser.FileFilter;
@@ -64,9 +65,10 @@ import xnatDAO.XNATProfile;
 
 public class AnonScriptWindow extends javax.swing.JDialog
 {
-	protected File            chooserCurrentDir = null;
-	protected File            anonScriptFile    = null;
-	protected static Logger   logger = Logger.getLogger(AnonymiseAndSend.class);
+	private File             chooserCurrentDir = null;
+	private File             anonScriptFile    = null;
+	protected static Logger  logger = Logger.getLogger(AnonymiseAndSend.class);
+   private AnonymiseAndSend caller;
 	
 	/**
 	 * Create a new instance of the anonymisation script editing window
@@ -74,13 +76,15 @@ public class AnonScriptWindow extends javax.swing.JDialog
 	 * @param modal
 	 * @param anonScriptFile 
 	 */
-	public AnonScriptWindow(java.awt.Frame parent, boolean modal)
+	public AnonScriptWindow(java.awt.Frame parent, boolean modal, AnonymiseAndSend caller)
 	{
 		super(parent, modal);
-
+      this.caller = caller;
+      
       initComponents();	
       addListeners();
       populateAnonScriptTextArea();
+      setVisible(true);
 	}
 
 	/**
@@ -99,6 +103,7 @@ public class AnonScriptWindow extends javax.swing.JDialog
       cancelJButton = new javax.swing.JButton();
       saveJButton = new javax.swing.JButton();
       loadJButton = new javax.swing.JButton();
+      verifyJButton = new javax.swing.JButton();
 
       setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
@@ -116,6 +121,8 @@ public class AnonScriptWindow extends javax.swing.JDialog
       saveJButton.setText("Save ...");
 
       loadJButton.setText("Load ...");
+
+      verifyJButton.setText("Verify");
 
       javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
       getContentPane().setLayout(layout);
@@ -135,7 +142,9 @@ public class AnonScriptWindow extends javax.swing.JDialog
                   .addComponent(loadJButton)
                   .addGap(18, 18, 18)
                   .addComponent(saveJButton)
-                  .addGap(18, 18, 18)
+                  .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                  .addComponent(verifyJButton)
+                  .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                   .addComponent(cancelJButton)))
             .addContainerGap())
       );
@@ -152,8 +161,9 @@ public class AnonScriptWindow extends javax.swing.JDialog
             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                .addComponent(cancelJButton)
                .addComponent(saveJButton)
-               .addComponent(loadJButton))
-            .addContainerGap(13, Short.MAX_VALUE))
+               .addComponent(loadJButton)
+               .addComponent(verifyJButton))
+            .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
       );
 
       pack();
@@ -166,7 +176,18 @@ public class AnonScriptWindow extends javax.swing.JDialog
 			@Override
 			public void actionPerformed(ActionEvent e)
 			{            
-				setVisible(false);
+            dispose();
+			}	  
+		});
+      
+      
+      verifyJButton.addActionListener(new ActionListener()
+		{
+			@Override
+			public void actionPerformed(ActionEvent e)
+			{
+            caller.anonScriptVerified = true;
+            dispose();
 			}	  
 		});
 		
@@ -364,6 +385,11 @@ public class AnonScriptWindow extends javax.swing.JDialog
 		
 		anonScriptJTextArea.setText(anonScript);
 	}
+   
+   public JButton getVerifyJButton()
+   {
+      return verifyJButton; 
+   }
 	
 	
 	public String getScriptText()
@@ -380,5 +406,6 @@ public class AnonScriptWindow extends javax.swing.JDialog
    private javax.swing.JScrollPane jScrollPane1;
    private javax.swing.JButton loadJButton;
    private javax.swing.JButton saveJButton;
+   private javax.swing.JButton verifyJButton;
    // End of variables declaration//GEN-END:variables
 }
