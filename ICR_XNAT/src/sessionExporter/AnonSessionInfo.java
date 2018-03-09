@@ -48,6 +48,7 @@ public class AnonSessionInfo
 {
    private String sessionId;
    private String sessionLabel;
+   private String destSessionLabel;
    private String subjXnatId;
    private String subjLabel;
    private String subjDicomAnonName;
@@ -65,12 +66,22 @@ public class AnonSessionInfo
 
    public String getSessionLabel()
    {
-      return sessionId;
+      return sessionLabel;
    }
 
    public void setSessionLabel(String sessionLabel)
    {
       this.sessionLabel = sessionLabel;
+   }
+   
+   public String getDestSessionLabel()
+   {
+      return destSessionLabel;
+   }
+
+   public void setDestSessionLabel(String destSessionLabel)
+   {
+      this.destSessionLabel = destSessionLabel;
    }
 
    public String getSubjXnatId()

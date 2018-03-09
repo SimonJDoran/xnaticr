@@ -77,12 +77,13 @@ public class AnonSendPostFetchAction implements PostFetchAction
       
       for (AnonSessionInfo asi : pfs.getAnonSessionInfo() )
       {
-         String sessionDir = caller.getCacheDirName() + "/experiments/" + asi.getSessionId();
+         String sessionDir = caller.getCacheDirName() + "data/experiments/" + asi.getSessionId();
          
-//         for (String subject : aspfs.getDestSubjCodes())
-//         {
-//            System.out.println(caller.get);
-//         }
+         // Edit the template anonymisation script to substitute the patient name and
+         // session details and save it to a temporary file.
+         String editedScript = pfs.getAnonScriptTemplate()
+                                  .replaceAll(AnonymiseAndSend.PROJ_ID_TOKEN, pfs.getDestProject()
+                                  .replaceAll(AnonymiseAndSend.SUBJ_ID_TOKEN, sessionDir));
       }
 			
 	}

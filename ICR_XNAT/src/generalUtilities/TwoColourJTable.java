@@ -63,8 +63,16 @@ public class TwoColourJTable extends JTable
               SimpleColourTable.getColour("white"));
 
       // Selected cell
-      if (isCellSelected(row, col)) comp.setBackground(
-              SimpleColourTable.getColour("Apple Finder selected row"));
+      if (isColumnSelected(col) && isRowSelected(row))
+      {
+         comp.setBackground(SimpleColourTable.getColour("Apple Finder selected row"));
+      
+         if (isCellEditable(row, col))
+         {
+            comp.setBackground(SimpleColourTable.getColour("white"));
+            comp.setForeground(SimpleColourTable.getColour("black"));
+         }
+      }
 
       return comp;
    }
