@@ -31,15 +31,17 @@
                       <Component id="iconJLabel" min="-2" max="-2" attributes="0"/>
                       <EmptySpace min="-2" pref="30" max="-2" attributes="0"/>
                       <Component id="anonScriptJLabel" min="-2" max="-2" attributes="0"/>
-                      <EmptySpace min="0" pref="159" max="32767" attributes="0"/>
+                      <EmptySpace min="0" pref="336" max="32767" attributes="0"/>
                   </Group>
                   <Group type="102" alignment="1" attributes="0">
-                      <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
+                      <EmptySpace min="-2" pref="25" max="-2" attributes="0"/>
+                      <Component id="scriptJComboBox" min="-2" pref="239" max="-2" attributes="0"/>
+                      <EmptySpace max="32767" attributes="0"/>
                       <Component id="loadJButton" min="-2" max="-2" attributes="0"/>
                       <EmptySpace type="separate" max="-2" attributes="0"/>
                       <Component id="saveJButton" min="-2" max="-2" attributes="0"/>
                       <EmptySpace type="unrelated" max="-2" attributes="0"/>
-                      <Component id="verifyJButton" min="-2" max="-2" attributes="0"/>
+                      <Component id="approveJButton" min="-2" max="-2" attributes="0"/>
                       <EmptySpace type="unrelated" max="-2" attributes="0"/>
                       <Component id="cancelJButton" min="-2" max="-2" attributes="0"/>
                   </Group>
@@ -63,7 +65,8 @@
                   <Component id="cancelJButton" alignment="3" min="-2" max="-2" attributes="0"/>
                   <Component id="saveJButton" alignment="3" min="-2" max="-2" attributes="0"/>
                   <Component id="loadJButton" alignment="3" min="-2" max="-2" attributes="0"/>
-                  <Component id="verifyJButton" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="approveJButton" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="scriptJComboBox" alignment="3" min="-2" max="-2" attributes="0"/>
               </Group>
               <EmptySpace max="32767" attributes="0"/>
           </Group>
@@ -118,10 +121,25 @@
         <Property name="text" type="java.lang.String" value="Load ..."/>
       </Properties>
     </Component>
-    <Component class="javax.swing.JButton" name="verifyJButton">
+    <Component class="javax.swing.JButton" name="approveJButton">
       <Properties>
-        <Property name="text" type="java.lang.String" value="Verify"/>
+        <Property name="text" type="java.lang.String" value="Approve"/>
       </Properties>
+    </Component>
+    <Component class="javax.swing.JComboBox" name="scriptJComboBox">
+      <Properties>
+        <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
+          <StringArray count="4">
+            <StringItem index="0" value="Item 1"/>
+            <StringItem index="1" value="Item 2"/>
+            <StringItem index="2" value="Item 3"/>
+            <StringItem index="3" value="Item 4"/>
+          </StringArray>
+        </Property>
+      </Properties>
+      <AuxValues>
+        <AuxValue name="JavaCodeGenerator_TypeParameters" type="java.lang.String" value="&lt;String&gt;"/>
+      </AuxValues>
     </Component>
   </SubComponents>
 </Form>

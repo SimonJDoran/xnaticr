@@ -52,9 +52,12 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
+import javax.swing.event.PopupMenuEvent;
+import javax.swing.event.PopupMenuListener;
 import javax.swing.filechooser.FileFilter;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import org.apache.commons.io.IOUtils;
@@ -83,7 +86,10 @@ public class AnonScriptWindow extends javax.swing.JDialog
       
       initComponents();	
       addListeners();
-      populateAnonScriptTextArea();
+      populateScriptJComboBox();
+      loadJButton.setEnabled(false);
+      saveJButton.setEnabled(true);
+      populateAnonScriptJTextArea();
       setVisible(true);
 	}
 
@@ -94,7 +100,8 @@ public class AnonScriptWindow extends javax.swing.JDialog
 	 */
 	@SuppressWarnings("unchecked")
    // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
-   private void initComponents() {
+   private void initComponents()
+   {
 
       jScrollPane1 = new javax.swing.JScrollPane();
       anonScriptJTextArea = new javax.swing.JTextArea();
@@ -103,7 +110,8 @@ public class AnonScriptWindow extends javax.swing.JDialog
       cancelJButton = new javax.swing.JButton();
       saveJButton = new javax.swing.JButton();
       loadJButton = new javax.swing.JButton();
-      verifyJButton = new javax.swing.JButton();
+      approveJButton = new javax.swing.JButton();
+      scriptJComboBox = new javax.swing.JComboBox<>();
 
       setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
@@ -122,7 +130,9 @@ public class AnonScriptWindow extends javax.swing.JDialog
 
       loadJButton.setText("Load ...");
 
-      verifyJButton.setText("Verify");
+      approveJButton.setText("Approve");
+
+      scriptJComboBox.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
 
       javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
       getContentPane().setLayout(layout);
@@ -136,14 +146,16 @@ public class AnonScriptWindow extends javax.swing.JDialog
                   .addComponent(iconJLabel)
                   .addGap(30, 30, 30)
                   .addComponent(anonScriptJLabel)
-                  .addGap(0, 159, Short.MAX_VALUE))
+                  .addGap(0, 336, Short.MAX_VALUE))
                .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                  .addGap(0, 0, Short.MAX_VALUE)
+                  .addGap(25, 25, 25)
+                  .addComponent(scriptJComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, 239, javax.swing.GroupLayout.PREFERRED_SIZE)
+                  .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                   .addComponent(loadJButton)
                   .addGap(18, 18, 18)
                   .addComponent(saveJButton)
                   .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                  .addComponent(verifyJButton)
+                  .addComponent(approveJButton)
                   .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                   .addComponent(cancelJButton)))
             .addContainerGap())
@@ -162,7 +174,8 @@ public class AnonScriptWindow extends javax.swing.JDialog
                .addComponent(cancelJButton)
                .addComponent(saveJButton)
                .addComponent(loadJButton)
-               .addComponent(verifyJButton))
+               .addComponent(approveJButton)
+               .addComponent(scriptJComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
             .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
       );
 
@@ -181,7 +194,7 @@ public class AnonScriptWindow extends javax.swing.JDialog
 		});
       
       
-      verifyJButton.addActionListener(new ActionListener()
+      approveJButton.addActionListener(new ActionListener()
 		{
 			@Override
 			public void actionPerformed(ActionEvent e)
@@ -210,9 +223,101 @@ public class AnonScriptWindow extends javax.swing.JDialog
 				loadAnonymisationScript();
 			}	  
 		});
+      
+      
+
+      scriptJComboBox.addPopupMenuListener(new PopupMenuListener()
+		{
+			@Override
+			public void popupMenuWillBecomeVisible(PopupMenuEvent e)
+         {
+            
+            populateAnonScriptJTextArea();
+			}
+         			
+			@Override
+			public void popupMenuWillBecomeInvisible(PopupMenuEvent e){}
+			
+			@Override
+			public void popupMenuCanceled(PopupMenuEvent e){}
+      });
 	}
 
 	
+   private void populateScriptJComboBox()
+   {
+      DefaultComboBoxModel scriptDcbm  = new DefaultComboBoxModel();
+      scriptDcbm.addElement("Simple (retain significant metadata)");
+      scriptDcbm.addElement("Internal ICR (thorough)");
+      scriptDcbm.addElement("External use (very thorough)");
+      scriptDcbm.addElement("Custom");
+      scriptDcbm.setSelectedItem(1);
+      scriptJComboBox.setModel(scriptDcbm);
+      scriptJComboBox.setSelectedIndex(0);
+   }
+   
+   
+   private void populateAnonScriptJTextArea()
+	{
+		String resourceErrMsg   = "Couldn't read default anonymisation script.\n"
+                                + "This shouldn't happen as it resource is supposed"
+				                    + "to be packaged with the application jar!";
+		String      fileErrMesg = "Couldn't read selected anonymisation script file.\n";
+		String      anonScript;
+		InputStream resourceIs;
+		
+		int selectedScript = scriptJComboBox.getSelectedIndex();
+      
+      if (selectedScript < scriptJComboBox.getItemCount()-1)
+		{
+         // One of the default scripts
+         
+         String[] defaultScriptNames = {"anonScriptSimple.das", "anonScriptInternal.das", "anonScriptExternal.das"};
+			resourceIs = AnonymiseAndSend.class.getResourceAsStream(defaultScriptNames[selectedScript]);
+			if (resourceIs == null)
+			{
+				logger.error(resourceErrMsg);
+				throw new RuntimeException(resourceErrMsg);
+			}
+			try
+			{
+				anonScript = IOUtils.toString(resourceIs, "UTF-8");		
+			}
+			catch (IOException exIO)
+			{
+				logger.error(resourceErrMsg + "\n" + exIO.getMessage());
+				throw new RuntimeException(resourceErrMsg + "\n" + exIO.getMessage());
+			}
+		}		
+		
+      else
+		{
+         // A custom script
+         
+         if (anonScriptFile == null) anonScript = "";
+         else
+         {
+            try
+            {
+               FileInputStream fis = new FileInputStream(anonScriptFile);
+               anonScript = IOUtils.toString(fis, "UTF-8");		
+            }
+            catch (IOException exIO)
+            {
+               JOptionPane.showMessageDialog(this,
+                                             "Error reading anonymisation script file" + anonScriptFile.getName(),
+                                             "File open error",
+                                             JOptionPane.ERROR_MESSAGE);
+               anonScript = "";
+            }
+         }
+		}
+		
+		anonScriptJTextArea.setText(anonScript);
+	}
+   
+      
+      
 	protected void loadAnonymisationScript()
 	{
 		Object[] options = {"Cancel", "Reselect...", "Confirm"};
@@ -264,23 +369,11 @@ public class AnonScriptWindow extends javax.swing.JDialog
                     null, options, options[1]);
 				
 				if ((choice == 0) || (choice == JOptionPane.CLOSED_OPTION)) return;
-				if (choice == 2)
-				{
-					try
-					{
-						anonScript = IOUtils.toString(fis, "UTF-8");
-					}
-					catch (IOException exIO)
-					{
-						logger.error(fileErrMsg);
-						throw new RuntimeException(fileErrMsg);
-					}
-				}
 			}
 		}
 		while (choice != 2);
 		
-		populateAnonScriptTextArea();
+		populateAnonScriptJTextArea();
 	}
 	
 	protected void saveAnonymisationScript()
@@ -342,53 +435,10 @@ public class AnonScriptWindow extends javax.swing.JDialog
 	}
 	
 	
-	protected void populateAnonScriptTextArea()
-	{
-		String resourceErrMsg   = "Couldn't read default anonymisation script.\n"
-                                + "This shouldn't happen as it resource is supposed"
-				                    + "to be packaged with the application jar!";
-		String      fileErrMesg = "Couldn't read selected anonymisation script file.\n";
-		String      anonScript;
-		InputStream resourceIs;
-		
-		if (anonScriptFile == null)
-		{
-			resourceIs = AnonymiseAndSend.class.getResourceAsStream("anonSendSession.das");
-			if (resourceIs == null)
-			{
-				logger.error(resourceErrMsg);
-				throw new RuntimeException(resourceErrMsg);
-			}
-			try
-			{
-				anonScript = IOUtils.toString(resourceIs, "UTF-8");		
-			}
-			catch (IOException exIO)
-			{
-				logger.error(resourceErrMsg + "\n" + exIO.getMessage());
-				throw new RuntimeException(resourceErrMsg + "\n" + exIO.getMessage());
-			}
-		}		
-		else
-		{
-			try
-			{
-				FileInputStream fis = new FileInputStream(anonScriptFile);
-				anonScript = IOUtils.toString(fis, "UTF-8");		
-			}
-			catch (IOException exIO)
-			{
-				logger.error(resourceErrMsg + "\n" + exIO.getMessage());
-				throw new RuntimeException(resourceErrMsg + "\n" + exIO.getMessage());
-			}
-		}
-		
-		anonScriptJTextArea.setText(anonScript);
-	}
-   
+
    public JButton getVerifyJButton()
    {
-      return verifyJButton; 
+      return approveJButton; 
    }
 	
 	
@@ -401,11 +451,12 @@ public class AnonScriptWindow extends javax.swing.JDialog
    // Variables declaration - do not modify//GEN-BEGIN:variables
    private javax.swing.JLabel anonScriptJLabel;
    private javax.swing.JTextArea anonScriptJTextArea;
+   private javax.swing.JButton approveJButton;
    private javax.swing.JButton cancelJButton;
    private javax.swing.JLabel iconJLabel;
    private javax.swing.JScrollPane jScrollPane1;
    private javax.swing.JButton loadJButton;
    private javax.swing.JButton saveJButton;
-   private javax.swing.JButton verifyJButton;
+   private javax.swing.JComboBox<String> scriptJComboBox;
    // End of variables declaration//GEN-END:variables
 }

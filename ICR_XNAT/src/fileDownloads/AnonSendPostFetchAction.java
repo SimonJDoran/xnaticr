@@ -82,8 +82,11 @@ public class AnonSendPostFetchAction implements PostFetchAction
          // Edit the template anonymisation script to substitute the patient name and
          // session details and save it to a temporary file.
          String editedScript = pfs.getAnonScriptTemplate()
-                                  .replaceAll(AnonymiseAndSend.PROJ_ID_TOKEN, pfs.getDestProject()
-                                  .replaceAll(AnonymiseAndSend.SUBJ_ID_TOKEN, sessionDir));
+                                  .replaceAll(AnonymiseAndSend.PROJ_ID_TOKEN,   pfs.getDestProject())
+                                  .replaceAll(AnonymiseAndSend.SUBJ_NAME_TOKEN, asi.getSubjDicomAnonName())
+                                  .replaceAll(AnonymiseAndSend.SUBJ_ID_TOKEN,   asi.getSubjDicomAnonName())
+                                  .replaceAll(AnonymiseAndSend.SUBJ_ID_TOKEN,   asi.getSubjDicomAnonName());
+         System.out.println("Here");
       }
 			
 	}
