@@ -45,6 +45,8 @@ package sessionExporter;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
@@ -54,8 +56,11 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import javax.swing.event.PopupMenuEvent;
 import javax.swing.event.PopupMenuListener;
 import javax.swing.filechooser.FileFilter;
@@ -72,6 +77,8 @@ public class AnonScriptWindow extends javax.swing.JDialog
 	private File             anonScriptFile    = null;
 	protected static Logger  logger = Logger.getLogger(AnonymiseAndSend.class);
    private AnonymiseAndSend caller;
+   private String           deselectedItem;
+   private String           TEMP_SCRIPT = "$temp_script_0001$";  // unique string
 	
 	/**
 	 * Create a new instance of the anonymisation script editing window
@@ -88,7 +95,8 @@ public class AnonScriptWindow extends javax.swing.JDialog
       addListeners();
       populateScriptJComboBox();
       loadJButton.setEnabled(false);
-      saveJButton.setEnabled(true);
+      saveJButton.setEnabled(false);
+      saveAsJButton.setEnabled(false);
       populateAnonScriptJTextArea();
       setVisible(true);
 	}
@@ -104,7 +112,7 @@ public class AnonScriptWindow extends javax.swing.JDialog
    {
 
       jScrollPane1 = new javax.swing.JScrollPane();
-      anonScriptJTextArea = new javax.swing.JTextArea();
+      scriptJTextArea = new javax.swing.JTextArea();
       anonScriptJLabel = new javax.swing.JLabel();
       iconJLabel = new javax.swing.JLabel();
       cancelJButton = new javax.swing.JButton();
@@ -112,12 +120,13 @@ public class AnonScriptWindow extends javax.swing.JDialog
       loadJButton = new javax.swing.JButton();
       approveJButton = new javax.swing.JButton();
       scriptJComboBox = new javax.swing.JComboBox<>();
+      saveAsJButton = new javax.swing.JButton();
 
       setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
-      anonScriptJTextArea.setColumns(20);
-      anonScriptJTextArea.setRows(5);
-      jScrollPane1.setViewportView(anonScriptJTextArea);
+      scriptJTextArea.setColumns(20);
+      scriptJTextArea.setRows(5);
+      jScrollPane1.setViewportView(scriptJTextArea);
 
       anonScriptJLabel.setFont(anonScriptJLabel.getFont().deriveFont(anonScriptJLabel.getFont().getStyle() | java.awt.Font.BOLD, anonScriptJLabel.getFont().getSize()+7));
       anonScriptJLabel.setText("Anonymisation Script");
@@ -126,13 +135,15 @@ public class AnonScriptWindow extends javax.swing.JDialog
 
       cancelJButton.setText("Cancel");
 
-      saveJButton.setText("Save ...");
+      saveJButton.setText("Save");
 
       loadJButton.setText("Load ...");
 
       approveJButton.setText("Approve");
 
       scriptJComboBox.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+
+      saveAsJButton.setText("Save As...");
 
       javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
       getContentPane().setLayout(layout);
@@ -143,20 +154,23 @@ public class AnonScriptWindow extends javax.swing.JDialog
             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                .addComponent(jScrollPane1)
                .addGroup(layout.createSequentialGroup()
+                  .addGap(198, 198, 198)
                   .addComponent(iconJLabel)
-                  .addGap(30, 30, 30)
+                  .addGap(18, 18, 18)
                   .addComponent(anonScriptJLabel)
-                  .addGap(0, 336, Short.MAX_VALUE))
+                  .addGap(0, 0, Short.MAX_VALUE))
                .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                   .addGap(25, 25, 25)
-                  .addComponent(scriptJComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, 239, javax.swing.GroupLayout.PREFERRED_SIZE)
-                  .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                  .addComponent(scriptJComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, 258, javax.swing.GroupLayout.PREFERRED_SIZE)
+                  .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 53, Short.MAX_VALUE)
                   .addComponent(loadJButton)
-                  .addGap(18, 18, 18)
+                  .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                   .addComponent(saveJButton)
-                  .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                  .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                  .addComponent(saveAsJButton)
+                  .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                   .addComponent(approveJButton)
-                  .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                  .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                   .addComponent(cancelJButton)))
             .addContainerGap())
       );
@@ -175,7 +189,8 @@ public class AnonScriptWindow extends javax.swing.JDialog
                .addComponent(saveJButton)
                .addComponent(loadJButton)
                .addComponent(approveJButton)
-               .addComponent(scriptJComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+               .addComponent(scriptJComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+               .addComponent(saveAsJButton))
             .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
       );
 
@@ -226,20 +241,30 @@ public class AnonScriptWindow extends javax.swing.JDialog
       
       
 
-      scriptJComboBox.addPopupMenuListener(new PopupMenuListener()
-		{
-			@Override
-			public void popupMenuWillBecomeVisible(PopupMenuEvent e)
+      scriptJComboBox.addItemListener(new ItemListener()
+      {
+         @Override
+         public void itemStateChanged(ItemEvent evt)
          {
-            
-            populateAnonScriptJTextArea();
-			}
-         			
-			@Override
-			public void popupMenuWillBecomeInvisible(PopupMenuEvent e){}
-			
-			@Override
-			public void popupMenuCanceled(PopupMenuEvent e){}
+            scriptJComboBoxItemStateChanged(evt);
+         }
+      });
+      
+      
+      scriptJTextArea.getDocument().addDocumentListener(new DocumentListener()
+      {
+         @Override
+         public void insertUpdate(DocumentEvent e) {}
+
+         @Override
+         public void removeUpdate(DocumentEvent e) {}
+
+         @Override
+         public void changedUpdate(DocumentEvent e)
+         {
+            scriptJTextAreaChanged();
+         }
+                 
       });
 	}
 
@@ -251,9 +276,8 @@ public class AnonScriptWindow extends javax.swing.JDialog
       scriptDcbm.addElement("Internal ICR (thorough)");
       scriptDcbm.addElement("External use (very thorough)");
       scriptDcbm.addElement("Custom");
-      scriptDcbm.setSelectedItem(1);
       scriptJComboBox.setModel(scriptDcbm);
-      scriptJComboBox.setSelectedIndex(0);
+      scriptJComboBox.setSelectedIndex(1);
    }
    
    
@@ -267,6 +291,9 @@ public class AnonScriptWindow extends javax.swing.JDialog
 		InputStream resourceIs;
 		
 		int selectedScript = scriptJComboBox.getSelectedIndex();
+      
+      // While the combo box is being populated, do nothing.
+      if (selectedScript == -1) return;
       
       if (selectedScript < scriptJComboBox.getItemCount()-1)
 		{
@@ -295,6 +322,11 @@ public class AnonScriptWindow extends javax.swing.JDialog
          // A custom script
          
          if (anonScriptFile == null) anonScript = "";
+
+         else if (anonScriptFile.equals(TEMP_SCRIPT))
+         {
+            
+         }
          else
          {
             try
@@ -313,12 +345,12 @@ public class AnonScriptWindow extends javax.swing.JDialog
          }
 		}
 		
-		anonScriptJTextArea.setText(anonScript);
+		scriptJTextArea.setText(anonScript);
 	}
-   
+
       
       
-	protected void loadAnonymisationScript()
+	private void loadAnonymisationScript()
 	{
 		Object[] options = {"Cancel", "Reselect...", "Confirm"};
 		int      choice;
@@ -376,7 +408,7 @@ public class AnonScriptWindow extends javax.swing.JDialog
 		populateAnonScriptJTextArea();
 	}
 	
-	protected void saveAnonymisationScript()
+	private void saveAnonymisationScript()
 	{
 		String   fileErrMsg = "Couldn't write anonymisation script file chosen.";
 		File     chosenFile;	
@@ -419,7 +451,7 @@ public class AnonScriptWindow extends javax.swing.JDialog
 		try
 		{
 			writer = new BufferedWriter(new FileWriter(chosenFile));
-			writer.write(anonScriptJTextArea.getText());
+			writer.write(scriptJTextArea.getText());
 		}
 		catch (IOException exIO)
 		{
@@ -435,8 +467,29 @@ public class AnonScriptWindow extends javax.swing.JDialog
 	}
 	
 	
+   private void scriptJComboBoxItemStateChanged(ItemEvent evt)
+   {
+      // Note: There are two passes through this method per click: once to tell you
+      // that an item has been deselected and once to say that a new item has been chosen.
+      // Do something only on the selection pass.
+      if (evt.getStateChange() == ItemEvent.SELECTED)
+      {
+         populateAnonScriptJTextArea();
+      }
+   }
+      
+   
+   private void scriptJTextAreaChanged()
+   {
+      if 
+      scriptJComboBox.setSelectedItem("Custom");
+      saveAsJButton.setEnabled(true);
+      loadJButton.setEnabled(true);
+   }
+   
+   
 
-   public JButton getVerifyJButton()
+   public JButton getApproveJButton()
    {
       return approveJButton; 
    }
@@ -444,19 +497,20 @@ public class AnonScriptWindow extends javax.swing.JDialog
 	
 	public String getScriptText()
 	{
-		return anonScriptJTextArea.getText();
+		return scriptJTextArea.getText();
 	}
 	
 	
    // Variables declaration - do not modify//GEN-BEGIN:variables
    private javax.swing.JLabel anonScriptJLabel;
-   private javax.swing.JTextArea anonScriptJTextArea;
    private javax.swing.JButton approveJButton;
    private javax.swing.JButton cancelJButton;
    private javax.swing.JLabel iconJLabel;
    private javax.swing.JScrollPane jScrollPane1;
    private javax.swing.JButton loadJButton;
+   private javax.swing.JButton saveAsJButton;
    private javax.swing.JButton saveJButton;
    private javax.swing.JComboBox<String> scriptJComboBox;
+   private javax.swing.JTextArea scriptJTextArea;
    // End of variables declaration//GEN-END:variables
 }
