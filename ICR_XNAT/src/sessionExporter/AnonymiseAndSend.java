@@ -507,7 +507,10 @@ public class AnonymiseAndSend extends xnatDAO.XNATGUI
     */
    private void checkExport()
    {
-      if (destProf == null) exportJButton.setEnabled(false);
+      if (destProf == null) {
+         exportJButton.setEnabled(false);
+         return;
+      }
       
       exportJButton.setEnabled(destProf.isConnected() && anonScriptVerified);
    }

@@ -98,7 +98,6 @@ public class AnonScriptWindow extends javax.swing.JDialog
       loadJButton.setEnabled(false);
       saveJButton.setEnabled(false);
       saveAsJButton.setEnabled(false);
-      populateAnonScriptJTextArea();
       setVisible(true);
 	}
 
@@ -226,7 +225,7 @@ public class AnonScriptWindow extends javax.swing.JDialog
 			@Override
 			public void actionPerformed(ActionEvent e)
 			{            
-				saveAnonymisationScript();
+				scriptSave();
 			}	  
 		});
       
@@ -236,7 +235,7 @@ public class AnonScriptWindow extends javax.swing.JDialog
 			@Override
 			public void actionPerformed(ActionEvent e)
 			{            
-				saveAsAnonymisationScript();
+				scriptSaveAs();
 			}	  
 		});
 		
@@ -246,7 +245,7 @@ public class AnonScriptWindow extends javax.swing.JDialog
 			@Override
 			public void actionPerformed(ActionEvent e)
 			{            
-				loadAnonymisationScript();
+				scriptLoad();
 			}	  
 		});
       
@@ -298,7 +297,7 @@ public class AnonScriptWindow extends javax.swing.JDialog
    }
    
    
-   private void populateAnonScriptJTextArea()
+   private void populateScriptJTextArea()
 	{
 		String resourceErrMsg   = "Couldn't read default anonymisation script.\n"
                                 + "This shouldn't happen as it resource is supposed"
@@ -325,7 +324,7 @@ public class AnonScriptWindow extends javax.swing.JDialog
 			}
 			try
 			{
-				anonScript = IOUtils.toString(resourceIs, "UTF-8");		
+				anonScript = IOUtils.toString(resourceIs, "UTF-8");
 			}
 			catch (IOException exIO)
 			{
@@ -364,7 +363,7 @@ public class AnonScriptWindow extends javax.swing.JDialog
 
       
       
-	private void loadAnonymisationScript()
+	private void scriptLoad()
 	{
 		Object[] options = {"Cancel", "Reselect...", "Confirm"};
 		int      choice;
@@ -419,10 +418,10 @@ public class AnonScriptWindow extends javax.swing.JDialog
 		}
 		while (choice != 2);
 		
-		populateAnonScriptJTextArea();
+		populateScriptJTextArea();
 	}
 	
-	private void saveAsAnonymisationScript()
+	private void scriptSaveAs()
 	{
 		String   fileErrMsg = "Couldn't write anonymisation script file chosen.";
 		File     chosenFile;	
@@ -485,7 +484,7 @@ public class AnonScriptWindow extends javax.swing.JDialog
 	}
    
    
-   private void saveAnonymisationScript()
+   private void scriptSave()
    {
       BufferedWriter writer = null;
 		try
@@ -510,6 +509,43 @@ public class AnonScriptWindow extends javax.swing.JDialog
 			catch (IOException exIgnore){}		
 		}
    }
+
+   
+   private String getDefaultScript(int n)
+   {
+      String resourceErrMsg   = "Couldn't read default anonymisation script.\n"
+                                + "This shouldn't happen as it resource is supposed"
+				                    + "to be packaged with the application jar!";
+		String      anonScript = "";
+      
+      String[] defaultScriptNames = {"anonScriptSimple.das", "anonScriptInternal.das", "anonScriptExternal.das"};
+      
+      if ((n < 0) || (n > defaultScriptNames.length-1))
+      {
+         logger.error("Chosen input script number (" + n + ") out of range.");
+      }
+      
+      else
+      {
+         InputStream is = AnonymiseAndSend.class.getResourceAsStream(defaultScriptNames[n]);
+
+         if (is == null) logger.error(resourceErrMsg);
+         else
+         {
+            try
+            {
+               anonScript = IOUtils.toString(is, "UTF-8");
+            }
+            catch (IOException exIO)
+            {
+               logger.error(resourceErrMsg + "\n" + exIO.getMessage());
+            }
+         }
+      }
+      
+      return anonScript;
+   }
+   
 	
 	
 	
@@ -546,7 +582,7 @@ public class AnonScriptWindow extends javax.swing.JDialog
             saveAsJButton.setEnabled(false);
          }
          
-         populateAnonScriptJTextArea();
+         populateScriptJTextArea();
 
       }
    }
@@ -554,6 +590,11 @@ public class AnonScriptWindow extends javax.swing.JDialog
    
    private void scriptJTextAreaChanged()
    {
+      if (ignoreTextAreaEvent)
+      {
+         ignoreTextAreaEvent = false;
+         return;
+      }
       unsavedScript = scriptJTextArea.getText();
       ignoreTextAreaEvent = true;
       scriptJComboBox.setSelectedItem("Custom");
