@@ -83,7 +83,8 @@ public class AnonScriptWindow extends javax.swing.JDialog
    private String           unsavedScript = null;
    private boolean          ignoreTextAreaEvent = false;
    private boolean          isSaved = false;
-	
+   private boolean          isApproved = false;
+  
 	/**
 	 * Create a new instance of the anonymisation script editing window
 	 * @param parent
@@ -206,8 +207,8 @@ public class AnonScriptWindow extends javax.swing.JDialog
 		{
 			@Override
 			public void actionPerformed(ActionEvent e)
-			{            
-            dispose();
+			{
+            doCancel();
 			}	  
 		});
       
@@ -288,6 +289,26 @@ public class AnonScriptWindow extends javax.swing.JDialog
 	}
 
 	
+   private void doCancel()
+   {
+      if (!isSaved)
+      {
+         Object[] options = {"Yes", "No"};
+         int      choice = JOptionPane.showOptionDialog(this,
+                 "You haven't saved the edits you made to the"
+                    + "anonymisation script, Do you want to continue?",
+                 JOptionPane.DEFAULT_OPTION, JOptionPane.WARNING_MESSAGE,
+                 null, options, options[1]);
+
+         if ((choice == 0) || (choice == JOptionPane.CLOSED_OPTION)) return;
+      }
+      
+      if (!isApproved)
+      {
+         
+      }
+      dispose();
+   }
    private void populateScriptJComboBox()
    {
       DefaultComboBoxModel scriptDcbm  = new DefaultComboBoxModel();
@@ -327,7 +348,11 @@ public class AnonScriptWindow extends javax.swing.JDialog
             try
             {
                fis = new FileInputStream(anonScriptFile);
-               anonScript = IOUtils.toString(fis, "UTF-8");	
+               anonScript = IOUtils.toString(fis, "UTF-8");
+               
+               // If the file loads correctly, then set the "Save" button to
+               // allow subsequent edits to be saved.
+               saveJButton.setEnabled(true);
             }
             catch (IOException exIO)
             {
@@ -351,60 +376,20 @@ public class AnonScriptWindow extends javax.swing.JDialog
       
       
 	private void scriptLoad()
-	{
-		Object[] options = {"Cancel", "Reselect...", "Confirm"};
-		int      choice;
-		String   anonScript;
-		do
-		{
-			choice  = 2;
-			
-			JFileChooser chooser = new JFileChooser();
-		
-			FileFilter   filter  = new FileNameExtensionFilter("Anon script (*.das)","das");
-			chooser.addChoosableFileFilter(filter);
-			chooser.setFileFilter(filter);
-			chooser.setCurrentDirectory(chooserCurrentDir);
-			chooser.setApproveButtonText("Open");
-			chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+	{		
+      JFileChooser chooser = new JFileChooser();
+      FileFilter   filter  = new FileNameExtensionFilter("Anon script (*.das)","das");
+      chooser.addChoosableFileFilter(filter);
+      chooser.setFileFilter(filter);
+      chooser.setCurrentDirectory(chooserCurrentDir);
+      chooser.setApproveButtonText("Open");
+      chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
 
-			int returnVal  = chooser.showOpenDialog(this);
-			chooserCurrentDir = chooser.getCurrentDirectory();
-			if (returnVal != JFileChooser.APPROVE_OPTION) return;
-			
-			String          fileErrMsg = "Couldn't open anonymisation script file chosen.\n";
-			File            chosenFile = chooser.getSelectedFile();
-			FileInputStream fis;
-			try
-			{
-				fis = new FileInputStream(chooser.getSelectedFile());
-				if (chosenFile.length() < 10000) anonScript = IOUtils.toString(fis, "UTF-8");
-				else anonScript = null;
-			}
-			catch (IOException exIO)
-			{
-				logger.error(fileErrMsg);
-				throw new RuntimeException(fileErrMsg);
-			}
-			
-			// Check for pathological case of user selecting a very large non-text
-			// file by mistake.
-			if (chosenFile.length() >= 10000)
-			{
-				logger.warn("Script file larger than expected.");
-				
-				choice  = JOptionPane.showOptionDialog(this,
-						  "The anonymisation script file was larger than expected.\n"
-						  + "Please confirm that this file is correct or reselect",
-						  "Script larger than expected",
-						  JOptionPane.DEFAULT_OPTION, JOptionPane.WARNING_MESSAGE,
-                    null, options, options[1]);
-				
-				if ((choice == 0) || (choice == JOptionPane.CLOSED_OPTION)) return;
-			}
-		}
-		while (choice != 2);
-		
+      int returnVal  = chooser.showOpenDialog(this);
+      chooserCurrentDir = chooser.getCurrentDirectory();
+      if (returnVal != JFileChooser.APPROVE_OPTION) return;
+
+      anonScriptFile = chooser.getSelectedFile();	
 		populateScriptJTextArea();
 	}
 	
@@ -451,17 +436,21 @@ public class AnonScriptWindow extends javax.swing.JDialog
 		try
 		{
 			writer = new BufferedWriter(new FileWriter(chosenFile));
-			writer.write(scriptJTextArea.getText());
-         
-         // If write successful, then next time we can just press save.
+			writer.write(scriptJTextArea.getText());        
          anonScriptFile = chosenFile;
-         saveJButton.setEnabled(true);
+         isSaved = true;
+         
+         // Can't do "Save" again until there is another change.
+         saveJButton.setEnabled(false);
+         
 		}
 		catch (IOException exIO)
 		{
 			JOptionPane.showConfirmDialog(this, "There was an error writing out your anonymisation\n"
 					                              + "script to file. Please check your file permissions.");
 			logger.error(exIO.getMessage());
+         saveJButton.setEnabled(false);
+         isSaved = false;
 		}
 		finally
 		{
@@ -478,6 +467,8 @@ public class AnonScriptWindow extends javax.swing.JDialog
 		{
 			writer = new BufferedWriter(new FileWriter(anonScriptFile));
 			writer.write(scriptJTextArea.getText());
+         saveJButton.setEnabled(false);
+         isSaved = true;
 		}
 		catch (IOException exIO)
 		{
@@ -489,6 +480,8 @@ public class AnonScriptWindow extends javax.swing.JDialog
          // this save option for next time round.
          anonScriptFile = null;
          saveJButton.setEnabled(false);
+         isSaved = false;
+
 		}
 		finally
 		{
@@ -589,6 +582,7 @@ public class AnonScriptWindow extends javax.swing.JDialog
       scriptJComboBox.setSelectedItem("Custom");
       saveAsJButton.setEnabled(true);
       loadJButton.setEnabled(true);
+      isSaved = false;
    }
    
    
