@@ -1,3 +1,4 @@
+// anonScriptExternal.das
 // DicomBrowser anonymization script
 // by Kevin Archie, karchie@npg.wustl.edu
 // removes all attributes specified in the
