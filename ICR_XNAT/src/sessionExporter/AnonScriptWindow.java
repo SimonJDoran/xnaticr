@@ -306,33 +306,12 @@ public class AnonScriptWindow extends javax.swing.JDialog
 		String      anonScript;
 		InputStream resourceIs;
 		
-		int selectedScript = scriptJComboBox.getSelectedIndex();
+		int n = scriptJComboBox.getSelectedIndex();
       
       // While the combo box is being populated, do nothing.
-      if (selectedScript == -1) return;
+      if (n == -1) return;
       
-      if (selectedScript < scriptJComboBox.getItemCount()-1)
-		{
-         // One of the default scripts
-         
-         String[] defaultScriptNames = {"anonScriptSimple.das", "anonScriptInternal.das", "anonScriptExternal.das"};
-			resourceIs = AnonymiseAndSend.class.getResourceAsStream(defaultScriptNames[selectedScript]);
-			if (resourceIs == null)
-			{
-				logger.error(resourceErrMsg);
-				throw new RuntimeException(resourceErrMsg);
-			}
-			try
-			{
-				anonScript = IOUtils.toString(resourceIs, "UTF-8");
-			}
-			catch (IOException exIO)
-			{
-				logger.error(resourceErrMsg + "\n" + exIO.getMessage());
-				throw new RuntimeException(resourceErrMsg + "\n" + exIO.getMessage());
-			}
-		}		
-		
+      if (n < scriptJComboBox.getItemCount()-1) anonScript = getDefaultScript(n);
       else
 		{
          // A custom script
@@ -342,9 +321,10 @@ public class AnonScriptWindow extends javax.swing.JDialog
 
          else
          {
+            FileInputStream fis;
             try
             {
-               FileInputStream fis = new FileInputStream(anonScriptFile);
+               fis = new FileInputStream(anonScriptFile);
                anonScript = IOUtils.toString(fis, "UTF-8");		
             }
             catch (IOException exIO)
@@ -354,6 +334,11 @@ public class AnonScriptWindow extends javax.swing.JDialog
                                              "File open error",
                                              JOptionPane.ERROR_MESSAGE);
                anonScript = "";
+            }
+            finally
+            {
+               try {fis.close();}
+               catch (IOException exIgnore){}		
             }
          }
 		}
@@ -365,13 +350,10 @@ public class AnonScriptWindow extends javax.swing.JDialog
       
 	private void scriptLoad()
 	{
-		Object[] options = {"Cancel", "Reselect...", "Confirm"};
-		int      choice;
-		String   anonScript;
+		String anonScript;
+      int    choice = 2;
 		do
-		{
-			choice  = 2;
-			
+		{			
 			JFileChooser chooser = new JFileChooser();
 		
 			FileFilter   filter  = new FileNameExtensionFilter("Anon script (*.das)","das");
@@ -385,19 +367,27 @@ public class AnonScriptWindow extends javax.swing.JDialog
 			chooserCurrentDir = chooser.getCurrentDirectory();
 			if (returnVal != JFileChooser.APPROVE_OPTION) return;
 			
-			String          fileErrMsg = "Couldn't open anonymisation script file chosen.\n";
-			File            chosenFile = chooser.getSelectedFile();
+			String fileErrMsg = "The following error was encountered when \n"
+                             + "trying to load the chosen anonymisation script: \n";
+         
+			File   chosenFile = chooser.getSelectedFile();
 			FileInputStream fis;
 			try
 			{
 				fis = new FileInputStream(chooser.getSelectedFile());
 				if (chosenFile.length() < 10000) anonScript = IOUtils.toString(fis, "UTF-8");
-				else anonScript = null;
+				else anonScript = "";
 			}
 			catch (IOException exIO)
 			{
-				logger.error(fileErrMsg);
-				throw new RuntimeException(fileErrMsg);
+				logger.error(fileErrMsg + exIO.getMessage());
+				
+            JOptionPane.showMessageDialog(this,
+                          "The following error was encountered when trying \n"
+                        + "to load the chosen anonymisation script:\n"
+                        + exIO.getMessage(),
+                        "File open error",
+                        JOptionPane.ERROR_MESSAGE);
 			}
 			
 			// Check for pathological case of user selecting a very large non-text
@@ -405,7 +395,9 @@ public class AnonScriptWindow extends javax.swing.JDialog
 			if (chosenFile.length() >= 10000)
 			{
 				logger.warn("Script file larger than expected.");
-				
+            
+            Object[] options = {"Cancel", "Reselect...", "Confirm"};
+            
 				choice  = JOptionPane.showOptionDialog(this,
 						  "The anonymisation script file was larger than expected.\n"
 						  + "Please confirm that this file is correct or reselect",
@@ -513,28 +505,27 @@ public class AnonScriptWindow extends javax.swing.JDialog
    
    private String getDefaultScript(int n)
    {
-      String resourceErrMsg   = "Couldn't read default anonymisation script.\n"
+      String   resourceErrMsg   = "Couldn't read default anonymisation script.\n"
                                 + "This shouldn't happen as it resource is supposed"
 				                    + "to be packaged with the application jar!";
-		String      anonScript = "";
+		String   script = "";  
+      String[] names  = {"anonScriptSimple.das", "anonScriptInternal.das", "anonScriptExternal.das"};
       
-      String[] defaultScriptNames = {"anonScriptSimple.das", "anonScriptInternal.das", "anonScriptExternal.das"};
-      
-      if ((n < 0) || (n > defaultScriptNames.length-1))
+      if ((n < 0) || (n > names.length-1))
       {
          logger.error("Chosen input script number (" + n + ") out of range.");
       }
       
       else
       {
-         InputStream is = AnonymiseAndSend.class.getResourceAsStream(defaultScriptNames[n]);
+         InputStream is = AnonymiseAndSend.class.getResourceAsStream(names[n]);
 
          if (is == null) logger.error(resourceErrMsg);
          else
          {
             try
             {
-               anonScript = IOUtils.toString(is, "UTF-8");
+               script = IOUtils.toString(is, "UTF-8");
             }
             catch (IOException exIO)
             {
@@ -543,7 +534,7 @@ public class AnonScriptWindow extends javax.swing.JDialog
          }
       }
       
-      return anonScript;
+      return script;
    }
    
 	
