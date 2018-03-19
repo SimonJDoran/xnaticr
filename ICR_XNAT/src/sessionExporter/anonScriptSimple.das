@@ -1,3 +1,4 @@
+// anonScriptSimple.das
 // DicomEdit anonymization script
 // DICOM Basic Application Level Confidentiality Profile
 

@@ -42,7 +42,6 @@
 *********************************************************************/
 package sessionExporter;
 
-import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
@@ -53,23 +52,16 @@ import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
-import javax.swing.JComboBox;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
-import javax.swing.event.PopupMenuEvent;
-import javax.swing.event.PopupMenuListener;
 import javax.swing.filechooser.FileFilter;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
-import static sessionExporter.AnonymiseAndSend.DEFAULT_SUBJ_NAME;
-import static sessionExporter.AnonymiseAndSend.DEFAULT_SUBJ_ID;
-import xnatDAO.XNATProfile;
 
 public class AnonScriptWindow extends javax.swing.JDialog
 {
@@ -77,6 +69,9 @@ public class AnonScriptWindow extends javax.swing.JDialog
 	private File             anonScriptFile    = null;
 	protected static Logger  logger = Logger.getLogger(AnonymiseAndSend.class);
    private AnonymiseAndSend caller;
+   private String[]         defaultScriptNames = {"anonScriptSimple.das",
+                                                  "anonScriptInternal.das",
+                                                  "anonScriptExternal.das"};
    private String           unsavedScript = null;
    private boolean          ignoreTextAreaEvent = false;
    private boolean          isSaved = false;
@@ -311,21 +306,20 @@ public class AnonScriptWindow extends javax.swing.JDialog
       // While the combo box is being populated, do nothing.
       if (n == -1) return;
       
-      if (n < scriptJComboBox.getItemCount()-1) anonScript = getDefaultScript(n);
+      if (n < getNumberOfDefaultScripts()) anonScript = getDefaultScript(n);	
       else
 		{
-         // A custom script
-         
+         // A custom script       
          if (anonScriptFile == null)
             anonScript = (unsavedScript == null) ? "" : unsavedScript;
 
          else
          {
-            FileInputStream fis;
+            FileInputStream fis = null;
             try
             {
                fis = new FileInputStream(anonScriptFile);
-               anonScript = IOUtils.toString(fis, "UTF-8");		
+               anonScript = IOUtils.toString(fis, "UTF-8");	
             }
             catch (IOException exIO)
             {
@@ -337,8 +331,8 @@ public class AnonScriptWindow extends javax.swing.JDialog
             }
             finally
             {
-               try {fis.close();}
-               catch (IOException exIgnore){}		
+               if (fis != null)
+               try{fis.close();} catch (IOException exIOa){}
             }
          }
 		}
@@ -509,16 +503,15 @@ public class AnonScriptWindow extends javax.swing.JDialog
                                 + "This shouldn't happen as it resource is supposed"
 				                    + "to be packaged with the application jar!";
 		String   script = "";  
-      String[] names  = {"anonScriptSimple.das", "anonScriptInternal.das", "anonScriptExternal.das"};
       
-      if ((n < 0) || (n > names.length-1))
+      if ((n < 0) || (n > defaultScriptNames.length-1))
       {
          logger.error("Chosen input script number (" + n + ") out of range.");
       }
       
       else
       {
-         InputStream is = AnonymiseAndSend.class.getResourceAsStream(names[n]);
+         InputStream is = AnonymiseAndSend.class.getResourceAsStream(defaultScriptNames[n]);
 
          if (is == null) logger.error(resourceErrMsg);
          else
@@ -581,12 +574,16 @@ public class AnonScriptWindow extends javax.swing.JDialog
    
    private void scriptJTextAreaChanged()
    {
-      if (ignoreTextAreaEvent)
+      unsavedScript = getScriptText();
+      
+      // We only want to act on genuine edits of the script, not
+      // the text change that comes about when one of the default scripts
+      // is loaded up.
+      for (int i=0; i<getNumberOfDefaultScripts(); i++)
       {
-         ignoreTextAreaEvent = false;
-         return;
+         if (unsavedScript.equals(getDefaultScript(i))) return;
+         if (unsavedScript.equals("")) return;
       }
-      unsavedScript = scriptJTextArea.getText();
       ignoreTextAreaEvent = true;
       scriptJComboBox.setSelectedItem("Custom");
       saveAsJButton.setEnabled(true);
@@ -605,6 +602,12 @@ public class AnonScriptWindow extends javax.swing.JDialog
 	{
 		return scriptJTextArea.getText();
 	}
+   
+   
+   public int getNumberOfDefaultScripts()
+   {
+      return defaultScriptNames.length;
+   }
 	
 	
    // Variables declaration - do not modify//GEN-BEGIN:variables
