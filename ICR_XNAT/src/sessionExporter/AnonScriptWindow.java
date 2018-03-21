@@ -591,6 +591,12 @@ public class AnonScriptWindow extends javax.swing.JDialog
    }
    
    
+   private void setButtonStates()
+   {
+      
+   }
+   
+   
 
    public JButton getApproveJButton()
    {
