@@ -75,7 +75,8 @@ public class AnonScriptWindow extends javax.swing.JDialog
    private String           unsavedScript = null;
    private boolean          ignoreTextAreaEvent = false;
    private boolean          isSaved = false;
-	
+   private boolean          isApproved = false;
+  
 	/**
 	 * Create a new instance of the anonymisation script editing window
 	 * @param parent
@@ -198,8 +199,8 @@ public class AnonScriptWindow extends javax.swing.JDialog
 		{
 			@Override
 			public void actionPerformed(ActionEvent e)
-			{            
-            dispose();
+			{
+            doCancel();
 			}	  
 		});
       
@@ -280,6 +281,26 @@ public class AnonScriptWindow extends javax.swing.JDialog
 	}
 
 	
+   private void doCancel()
+   {
+      if (!isSaved)
+      {
+         Object[] options = {"Yes", "No"};
+         int      choice = JOptionPane.showOptionDialog(this,
+                 "You haven't saved the edits you made to the"
+                    + "anonymisation script, Do you want to continue?",
+                 JOptionPane.DEFAULT_OPTION, JOptionPane.WARNING_MESSAGE,
+                 null, options, options[1]);
+
+         if ((choice == 0) || (choice == JOptionPane.CLOSED_OPTION)) return;
+      }
+      
+      if (!isApproved)
+      {
+         
+      }
+      dispose();
+   }
    private void populateScriptJComboBox()
    {
       DefaultComboBoxModel scriptDcbm  = new DefaultComboBoxModel();
@@ -319,7 +340,11 @@ public class AnonScriptWindow extends javax.swing.JDialog
             try
             {
                fis = new FileInputStream(anonScriptFile);
-               anonScript = IOUtils.toString(fis, "UTF-8");	
+               anonScript = IOUtils.toString(fis, "UTF-8");
+               
+               // If the file loads correctly, then set the "Save" button to
+               // allow subsequent edits to be saved.
+               saveJButton.setEnabled(true);
             }
             catch (IOException exIO)
             {
@@ -450,17 +475,21 @@ public class AnonScriptWindow extends javax.swing.JDialog
 		try
 		{
 			writer = new BufferedWriter(new FileWriter(chosenFile));
-			writer.write(scriptJTextArea.getText());
-         
-         // If write successful, then next time we can just press save.
+			writer.write(scriptJTextArea.getText());        
          anonScriptFile = chosenFile;
-         saveJButton.setEnabled(true);
+         isSaved = true;
+         
+         // Can't do "Save" again until there is another change.
+         saveJButton.setEnabled(false);
+         
 		}
 		catch (IOException exIO)
 		{
 			JOptionPane.showConfirmDialog(this, "There was an error writing out your anonymisation\n"
 					                              + "script to file. Please check your file permissions.");
 			logger.error(exIO.getMessage());
+         saveJButton.setEnabled(false);
+         isSaved = false;
 		}
 		finally
 		{
@@ -477,6 +506,8 @@ public class AnonScriptWindow extends javax.swing.JDialog
 		{
 			writer = new BufferedWriter(new FileWriter(anonScriptFile));
 			writer.write(scriptJTextArea.getText());
+         saveJButton.setEnabled(false);
+         isSaved = true;
 		}
 		catch (IOException exIO)
 		{
@@ -488,6 +519,8 @@ public class AnonScriptWindow extends javax.swing.JDialog
          // this save option for next time round.
          anonScriptFile = null;
          saveJButton.setEnabled(false);
+         isSaved = false;
+
 		}
 		finally
 		{
@@ -588,6 +621,7 @@ public class AnonScriptWindow extends javax.swing.JDialog
       scriptJComboBox.setSelectedItem("Custom");
       saveAsJButton.setEnabled(true);
       loadJButton.setEnabled(true);
+      isSaved = false;
    }
    
    
