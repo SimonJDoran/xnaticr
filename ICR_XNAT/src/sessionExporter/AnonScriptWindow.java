@@ -288,7 +288,7 @@ public class AnonScriptWindow extends javax.swing.JDialog
          Object[] options = {"Yes", "No"};
          int      choice = JOptionPane.showOptionDialog(this,
                  "You haven't saved the edits you made to the"
-                    + "anonymisation script, Do you want to continue?",
+                    + "anonymisation script.", "Do you want to continue?",
                  JOptionPane.DEFAULT_OPTION, JOptionPane.WARNING_MESSAGE,
                  null, options, options[1]);
 

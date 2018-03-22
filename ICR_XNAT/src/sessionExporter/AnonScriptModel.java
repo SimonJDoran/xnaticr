@@ -69,10 +69,14 @@ public class AnonScriptModel
    }
    
    protected static Logger logger = Logger.getLogger(AnonScriptModel.class);
+
+   private String          currentFile;
    private String          currentName;
+   private String          currentScript;
    private String          unsavedScript;  
-   private boolean         saved;
    private boolean         approved;
+   private boolean         cancelled;
+   private boolean         saved;
    private final Map<String, ScriptDetails> scriptMap;
    
    // There always needs to be a "Custom" entry, but the name might change.
@@ -81,6 +85,7 @@ public class AnonScriptModel
    public AnonScriptModel()
    {
       currentName   = null;
+      currentScript = null;
       unsavedScript = null;
       scriptMap    = new HashMap<>();
       scriptMap.put("Simple",   new ScriptDetails("anonScriptSimple.das",   "Simple (retain significant metadata)") );
@@ -153,7 +158,65 @@ public class AnonScriptModel
       return script;
    }
    
+   public String getCurrentFile()
+   {
+      return currentFile;
+   }
+
+   public void setCurrentFile(String currentFile)
+   {
+      this.currentFile = currentFile;
+   }
+
+   public String getCurrentName()
+   {
+      return currentName;
+   }
+
+   public void setCurrentName(String currentName)
+   {
+      this.currentName = currentName;
+   }
+
+   public String getCurrentScript()
+   {
+      return currentScript;
+   }
+
+   public void setCurrentScript(String currentScript)
+   {
+      this.currentScript = currentScript;
+   }
    
+   public String getUnsavedScript()
+   {
+      return unsavedScript;
+   }
+
+   public void setUnsavedScript(String unsavedScript)
+   {
+      this.unsavedScript = unsavedScript;
+   }
+
+   public boolean isApproved()
+   {
+      return approved;
+   }
+
+   public void setApproved(boolean approved)
+   {
+      this.approved = approved; 
+   }
+   
+public boolean isCancelled()
+   {
+      return cancelled;
+   }
+
+   public void setCancelled(boolean cancelled)
+   {
+      this.cancelled = cancelled; 
+   }
 }
 
 

@@ -47,124 +47,55 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import javax.swing.DefaultComboBoxModel;
+import javax.swing.JButton;
+import javax.swing.JComboBox;
+import javax.swing.JFileChooser;
+import javax.swing.JOptionPane;
+import javax.swing.JTextArea;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
+import javax.swing.filechooser.FileFilter;
+import javax.swing.filechooser.FileNameExtensionFilter;
+import org.apache.commons.io.IOUtils;
+import static sessionExporter.AnonScriptWindow.logger;
 
-/**
- *
- * @author simond
- */
 public class AnonScriptView extends javax.swing.JDialog
 {
-
-   /**
-    * Creates new form AnonScriptView
-    */
+   AnonScriptModel      asm;
+   AnonScriptController asc;
+   private File         chooserCurrentDir = new File(System.getProperty("user.home"));
+   
    public AnonScriptView(java.awt.Frame parent, boolean modal)
    {
       super(parent, modal);
       initComponents();
-      AnonScriptModel      asm = new AnonScriptModel();
-      AnonScriptController asc = new AnonScriptController();
+      asm = new AnonScriptModel();
+      asc = new AnonScriptController(this);
       addListeners();
-      populateScriptJComboBox(asm);
+      populateScriptJComboBox();
       setVisible(true);
    }
-   
-   
+     
    private void addListeners()
    {
-      	cancelJButton.addActionListener(new ActionListener()
-		{
-			@Override
-			public void actionPerformed(ActionEvent e)
-			{            
-            dispose();
-			}	  
-		});
-      
-      
-      approveJButton.addActionListener(new ActionListener()
-		{
-			@Override
-			public void actionPerformed(ActionEvent e)
-			{
-            caller.anonScriptVerified = true;
-            dispose();
-			}	  
-		});
-		
-		
-		saveJButton.addActionListener(new ActionListener()
-		{
-			@Override
-			public void actionPerformed(ActionEvent e)
-			{            
-				scriptSave();
-			}	  
-		});
-      
-      
-      saveAsJButton.addActionListener(new ActionListener()
-		{
-			@Override
-			public void actionPerformed(ActionEvent e)
-			{            
-				scriptSaveAs();
-			}	  
-		});
-		
-		
-		loadJButton.addActionListener(new ActionListener()
-		{
-			@Override
-			public void actionPerformed(ActionEvent e)
-			{            
-				scriptLoad();
-			}	  
-		});
-      
-      
-
-      scriptJComboBox.addItemListener(new ItemListener()
-      {
-         @Override
-         public void itemStateChanged(ItemEvent evt)
-         {
-            scriptJComboBoxItemStateChanged(evt);
-         }
-      });
-      
-      
-      scriptJTextArea.getDocument().addDocumentListener(new DocumentListener()
-      {
-         @Override
-         public void insertUpdate(DocumentEvent e)
-         {
-            scriptJTextAreaChanged();
-         }
-
-         @Override
-         public void removeUpdate(DocumentEvent e)
-         {
-            scriptJTextAreaChanged();
-         }
-
-         @Override
-         public void changedUpdate(DocumentEvent e)
-         {
-            scriptJTextAreaChanged();
-         }
-                 
-      });
+      approveJButton.addActionListener(asc);
+		cancelJButton.addActionListener(asc);     
+      loadJButton.addActionListener(asc);
+      saveJButton.addActionListener(asc);
+      saveAsJButton.addActionListener(asc);	  
+      scriptJComboBox.addItemListener(asc); 
+      scriptJTextArea.getDocument().addDocumentListener(asc);
    }
    
-   private void populateScriptJComboBox(AnonScriptModel asm)
+   private void populateScriptJComboBox()
    {
-      Map<String, AnonScriptModel.ScriptDetails> scriptMap = new HashMap<>();
+      Map<String, AnonScriptModel.ScriptDetails> scriptMap = asm.getScriptDetails();
       
       DefaultComboBoxModel scriptDcbm  = new DefaultComboBoxModel();
       for (String name : scriptMap.keySet())
@@ -174,6 +105,137 @@ public class AnonScriptView extends javax.swing.JDialog
       }
       scriptJComboBox.setModel(scriptDcbm);
       scriptJComboBox.setSelectedItem(AnonScriptModel.CUSTOM);
+   }
+   
+   
+   public void setText(String text)
+   {
+      scriptJTextArea.setText(text);
+   }
+   
+   
+   public boolean showCancelWarning(int reason)
+   {
+      String message = "";
+      if (reason == AnonScriptController.NOT_SAVED)
+         message = "You haven't saved the edits you made to \n"
+                    + "the anonymisation script.";
+      
+      if (reason == AnonScriptController.NOT_APPROVED)
+         message = "You haven't approved the anonymisation script.";
+      
+      Object[] options = {"Yes", "No"};
+      int      choice = JOptionPane.showOptionDialog(this, message,
+                                                     "Do you want to continue?",
+                                                     JOptionPane.DEFAULT_OPTION,
+                                                     JOptionPane.WARNING_MESSAGE,
+                                                     null, options, options[1]);
+      if (choice == 0) return true;
+      else if ((choice == 1) || (choice == JOptionPane.CLOSED_OPTION)) return false;
+      else return false;
+   }
+   
+   
+   public String tryScriptLoad()
+   {
+      String anonScript = null;
+      int    choice = 2;
+		do
+		{			
+			JFileChooser chooser = new JFileChooser();
+		
+			FileFilter   filter  = new FileNameExtensionFilter("Anon script (*.das)","das");
+			chooser.addChoosableFileFilter(filter);
+			chooser.setFileFilter(filter);
+			chooser.setCurrentDirectory(chooserCurrentDir);
+			chooser.setApproveButtonText("Open");
+			chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+
+			int returnVal  = chooser.showOpenDialog(this);
+			chooserCurrentDir = chooser.getCurrentDirectory();
+			if (returnVal != JFileChooser.APPROVE_OPTION) return null;
+			
+			String fileErrMsg = "The following error was encountered when \n"
+                             + "trying to load the chosen anonymisation script: \n";
+         
+			File   chosenFile = chooser.getSelectedFile();
+			FileInputStream fis;
+			try
+			{
+				fis = new FileInputStream(chosenFile);
+				anonScript = IOUtils.toString(fis, "UTF-8");
+			}
+			catch (IOException exIO)
+			{
+				logger.error(fileErrMsg + exIO.getMessage());
+				
+            JOptionPane.showMessageDialog(this, fileErrMsg + exIO.getMessage(),
+                                          "File open error",
+                                          JOptionPane.ERROR_MESSAGE);
+			}
+			
+			// Check for pathological case of user selecting a very large non-text
+			// file by mistake.
+			if (chosenFile.length() >= 15000)
+			{
+				logger.warn("Script file larger than expected.");
+            
+            Object[] options = {"Cancel", "Reselect...", "Confirm"};
+            
+				choice  = JOptionPane.showOptionDialog(this,
+						  "The anonymisation script file was larger than expected.\n"
+						  + "Please confirm that this file is correct or reselect",
+						  "Script larger than expected",
+						  JOptionPane.DEFAULT_OPTION, JOptionPane.WARNING_MESSAGE,
+                    null, options, options[1]);
+				
+				if ((choice == 0) || (choice == JOptionPane.CLOSED_OPTION)) anonScript = null;
+			}
+		}
+		while (choice == 1);
+      
+      return anonScript;
+   }
+   
+   
+   public AnonScriptModel getModel()
+   {
+      return asm;
+   }
+   
+   public JButton getApproveJButton()
+   {
+      return approveJButton;
+   }
+   
+   public JButton getCancelJButton()
+   {
+      return cancelJButton;
+   }
+   
+   public JButton getLoadJButton()
+   {
+      return loadJButton;
+   }
+   
+   public JButton getSaveJButton()
+   {
+      return saveJButton;
+   }
+   
+   public JButton getSaveAsJButton()
+   {
+      return saveAsJButton;
+   }
+   
+   public JComboBox getScriptJComboBox()
+   {
+      return scriptJComboBox;
+   }
+   
+   public JTextArea getScriptJTextArea()
+   {
+      return scriptJTextArea;
    }
 
    /**

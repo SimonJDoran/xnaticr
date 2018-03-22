@@ -43,7 +43,90 @@
  ******************************************************************** */
 package sessionExporter;
 
-public class AnonScriptController
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
+
+public class AnonScriptController implements ActionListener, ItemListener, DocumentListener
 {
+   AnonScriptView asv;
+   AnonScriptModel asm;
+   
+   public static final int NOT_SAVED    = 1;
+   public static final int NOT_APPROVED = 1;
+   
+   public AnonScriptController(AnonScriptView asv)
+   {
+      this.asv = asv;
+      asm = asv.getModel();
+   }
+   
+
+   @Override
+   public void actionPerformed(ActionEvent ae)
+   {
+      Object source = ae.getSource();
+
+      if (source == asv.getApproveJButton())
+      {
+         asm.setApproved(true);
+         asv.setVisible(false);
+      }
+      
+      
+      if (source == asv.getCancelJButton())
+      {
+         boolean proceedWithCancel = true;
+         if (!asm.isSaved()) proceedWithCancel = asv.showCancelWarning(NOT_SAVED);
+         asv.setVisible(proceedWithCancel);
+         asm.setCancelled(proceedWithCancel);
+      }
+      
+      
+      if (source == asv.getLoadJButton())
+      {
+         String newScript = asv.tryScriptLoad();
+         if (newScript != null)
+         {
+            asm.setCurrentScript(newScript);
+            asv.setText(newScript);
+         }
+      }
+      
+      
+      if (source == asv.getSaveJButton())
+      {
+         
+      }
+      
+      
+      if (source == asv.getSaveAsJButton())
+      {
+         
+      }
+   }
+
+   @Override
+   public void itemStateChanged(ItemEvent ie) {
+      throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+   }
+
+   @Override
+   public void insertUpdate(DocumentEvent de) {
+      throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+   }
+
+   @Override
+   public void removeUpdate(DocumentEvent de) {
+      throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+   }
+
+   @Override
+   public void changedUpdate(DocumentEvent de) {
+      throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+   }
    
 }
