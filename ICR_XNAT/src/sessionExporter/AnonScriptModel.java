@@ -43,6 +43,7 @@
  ******************************************************************** */
 package sessionExporter;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -70,7 +71,7 @@ public class AnonScriptModel
    
    protected static Logger logger = Logger.getLogger(AnonScriptModel.class);
 
-   private String          currentFile;
+   private File            currentFile;
    private String          currentName;
    private String          currentScript;
    private String          unsavedScript;  
@@ -94,10 +95,7 @@ public class AnonScriptModel
       scriptMap.put(CUSTOM,     new ScriptDetails(null,                     "Custom") );   
    }
    
-   public boolean isSaved()
-   {
-      return saved;
-   }
+   
    
    
    public boolean canLoad()
@@ -114,7 +112,7 @@ public class AnonScriptModel
    
    public boolean canSaveAs()
    {
-      return currentName.equals("Custom");
+      return currentName.equals("Custom") && (unsavedScript != null) );
    }
    
    
@@ -158,12 +156,12 @@ public class AnonScriptModel
       return script;
    }
    
-   public String getCurrentFile()
+   public File getCurrentFile()
    {
       return currentFile;
    }
 
-   public void setCurrentFile(String currentFile)
+   public void setCurrentFile(File currentFile)
    {
       this.currentFile = currentFile;
    }
@@ -208,7 +206,7 @@ public class AnonScriptModel
       this.approved = approved; 
    }
    
-public boolean isCancelled()
+   public boolean isCancelled()
    {
       return cancelled;
    }
@@ -216,6 +214,16 @@ public boolean isCancelled()
    public void setCancelled(boolean cancelled)
    {
       this.cancelled = cancelled; 
+   }
+   
+   public boolean isSaved()
+   {
+      return saved;
+   }
+   
+   public void setSaved(boolean saved)
+   {
+      this.cancelled = saved; 
    }
 }
 

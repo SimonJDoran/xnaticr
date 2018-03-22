@@ -47,8 +47,10 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
@@ -108,9 +110,19 @@ public class AnonScriptView extends javax.swing.JDialog
    }
    
    
-   public void setText(String text)
+   public void setText()
    {
-      scriptJTextArea.setText(text);
+      String current = asm.getCurrentScript();
+      scriptJTextArea.setText((current == null) ? "" : current);
+   }
+   
+   
+   public void setButtonStates()
+   {
+      approveJButton.setEnabled(!asm.isApproved());
+      loadJButton.setEnabled(asm.canLoad());
+      saveJButton.setEnabled(asm.canSave());
+      saveAsJButton.setEnabled(asm.canSaveAs());
    }
    
    
@@ -154,21 +166,20 @@ public class AnonScriptView extends javax.swing.JDialog
 			int returnVal  = chooser.showOpenDialog(this);
 			chooserCurrentDir = chooser.getCurrentDirectory();
 			if (returnVal != JFileChooser.APPROVE_OPTION) return null;
-			
-			String fileErrMsg = "The following error was encountered when \n"
-                             + "trying to load the chosen anonymisation script: \n";
-         
+			     
 			File   chosenFile = chooser.getSelectedFile();
-			FileInputStream fis;
-			try
+         
+			try (FileInputStream fis = new FileInputStream(chosenFile))
 			{
-				fis = new FileInputStream(chosenFile);
 				anonScript = IOUtils.toString(fis, "UTF-8");
 			}
 			catch (IOException exIO)
 			{
+            String fileErrMsg = "The following error was encountered when \n"
+                             + "trying to load the chosen anonymisation script: \n";
+            
 				logger.error(fileErrMsg + exIO.getMessage());
-				
+            
             JOptionPane.showMessageDialog(this, fileErrMsg + exIO.getMessage(),
                                           "File open error",
                                           JOptionPane.ERROR_MESSAGE);
@@ -195,6 +206,102 @@ public class AnonScriptView extends javax.swing.JDialog
 		while (choice == 1);
       
       return anonScript;
+   }
+   
+   
+   public boolean tryScriptSave()
+   {
+      boolean        success = true;
+      BufferedWriter writer = null;
+		try
+		{
+			writer = new BufferedWriter(new FileWriter(asm.getCurrentFile()));
+			assert asm.getUnsavedScript().equals(scriptJTextArea.getText());
+         writer.write(asm.getUnsavedScript());
+		}
+		catch (IOException exIO)
+		{
+			String fileErrMsg = "The following error was encountered when \n"
+                             + "trying to save the edited anonymisation script: \n";
+            
+			logger.error(fileErrMsg + exIO.getMessage());
+            
+         JOptionPane.showMessageDialog(this, fileErrMsg + exIO.getMessage(),
+                                       "File save error",
+                                       JOptionPane.ERROR_MESSAGE);
+         success = false;
+		}
+		finally
+		{
+			try {writer.close();}
+			catch (IOException exIgnore){}		
+		}
+      
+      return success;
+   }
+   
+   
+   public File tryScriptSaveAs()
+   {
+      File     chosenFile;	
+		int      choice;	
+		do
+		{
+			choice  = 2;
+			JFileChooser chooser = new JFileChooser();
+		
+			FileFilter   filter  = new FileNameExtensionFilter("Anon script (*.das)","das");
+			chooser.addChoosableFileFilter(filter);
+			chooser.setFileFilter(filter);
+			chooser.setApproveButtonText("Save");
+			chooser.setCurrentDirectory(chooserCurrentDir);
+			chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+			chooser.setDialogType(JFileChooser.SAVE_DIALOG);
+
+			int returnVal  = chooser.showSaveDialog(this);
+			chooserCurrentDir = chooser.getCurrentDirectory();
+			if (returnVal != JFileChooser.APPROVE_OPTION) return null;
+					  
+			chosenFile = chooser.getSelectedFile();		
+			if (chosenFile.exists())
+			{
+				Object[] options = {"Cancel", "Re-select...", "Overwrite"};
+            choice  = JOptionPane.showOptionDialog(this,
+						  "The anonymisation script file chosen already exists.\n"
+						  + "Do you want to overwrite it?",
+						  "File exists",
+						  JOptionPane.DEFAULT_OPTION, JOptionPane.WARNING_MESSAGE,
+                    null, options, options[1]);
+			}
+		}
+		while (choice == 1);
+      if ((choice == 0) || (choice == JOptionPane.CLOSED_OPTION)) return null; 
+		
+		BufferedWriter bw = null;
+		try
+		{
+			bw = new BufferedWriter(new FileWriter(chosenFile));
+			bw.write(scriptJTextArea.getText());                 
+		}
+		catch (IOException exIO)
+		{
+			String fileErrMsg = "The following error was encountered when \n"
+                             + "trying to save the edited anonymisation script: \n";
+            
+			logger.error(fileErrMsg + exIO.getMessage());
+            
+         JOptionPane.showMessageDialog(this, fileErrMsg + exIO.getMessage(),
+                                       "File save error",
+                                       JOptionPane.ERROR_MESSAGE);
+         chosenFile = null;
+		}
+		finally
+		{
+			try {if (bw !=null) bw.close();}
+			catch (IOException exIgnore){}		
+		}
+      
+      return chosenFile;
    }
    
    
