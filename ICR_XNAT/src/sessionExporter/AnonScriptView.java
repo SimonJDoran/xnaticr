@@ -43,6 +43,8 @@
  ******************************************************************** */
 package sessionExporter;
 
+import java.awt.Dialog;
+import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
@@ -65,17 +67,18 @@ import javax.swing.event.DocumentListener;
 import javax.swing.filechooser.FileFilter;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import org.apache.commons.io.IOUtils;
-import static sessionExporter.AnonScriptWindow.logger;
+import org.apache.log4j.Logger;
 
 public class AnonScriptView extends javax.swing.JDialog
 {
+   protected static Logger logger = Logger.getLogger(AnonScriptView.class);
    private AnonScriptModel      asm;
    private AnonScriptController asc;
    private File                 chooserCurrentDir;
    
-   public AnonScriptView(java.awt.Frame parent, boolean modal)
+   public AnonScriptView(Window caller, String title, Dialog.ModalityType modalityType)
    {
-      super(parent, modal);
+      super(caller, title, modalityType);
       initComponents();
       asm = new AnonScriptModel();
       asc = new AnonScriptController(this);
@@ -98,16 +101,16 @@ public class AnonScriptView extends javax.swing.JDialog
    
    private void populateScriptJComboBox()
    {
-      Map<String, AnonScriptModel.ScriptDetails> scriptMap = asm.getScriptDetails();
+      Map<String, String> scriptMap = asm.getScriptMap();
       
       DefaultComboBoxModel scriptDcbm  = new DefaultComboBoxModel();
-      for (String name : scriptMap.keySet())
-      {
-         String description = scriptMap.get(name).description;
-         scriptDcbm.addElement(description);
-      }
+      for (String name : scriptMap.keySet()) scriptDcbm.addElement(name);
       scriptJComboBox.setModel(scriptDcbm);
-      scriptJComboBox.setSelectedItem(AnonScriptModel.CUSTOM);
+      
+      // Note: the ItemEvent is not fired the very first time something a selection
+      // is set, so the scriptText has to be loaded into the JTextArea manually.
+      scriptJComboBox.setSelectedIndex(0);
+      asc.setScriptText();
    }
    
    
@@ -120,7 +123,7 @@ public class AnonScriptView extends javax.swing.JDialog
    
    public void setButtonStates()
    {
-      approveJButton.setEnabled(!asm.isApproved());
+      approveJButton.setEnabled(asm.canApprove());
       loadJButton.setEnabled(asm.canLoad());
       saveJButton.setEnabled(asm.canSave());
       saveAsJButton.setEnabled(asm.canSaveAs());
@@ -137,9 +140,12 @@ public class AnonScriptView extends javax.swing.JDialog
       if (reason == AnonScriptController.NOT_APPROVED)
          message = "You haven't approved the anonymisation script.";
       
+      message += "\nDo you really want to dismiss the script window?";
+                    
+      
       Object[] options = {"Yes", "No"};
       int      choice = JOptionPane.showOptionDialog(this, message,
-                                                     "Do you want to continue?",
+                                                     "Dismiss script window?",
                                                      JOptionPane.DEFAULT_OPTION,
                                                      JOptionPane.WARNING_MESSAGE,
                                                      null, options, options[1]);

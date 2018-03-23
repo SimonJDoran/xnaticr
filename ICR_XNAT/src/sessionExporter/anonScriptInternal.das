@@ -9,6 +9,9 @@
 // with more information left in. In particular, information that would be useful in research
 // that is personal (e.g., prescribing physician), but non patient-related is retained.
 
+// Modified by Simon J. Doran March 2018 for use in conjunction with batch processing
+// upload system for multiple patients
+
 //- (0008,0050)  // Accession Number
 //- (0018,4000)  // Acquisition Comments
 //- (0040,4035)  // Actual Human Performers Sequence
@@ -194,4 +197,5 @@ sessionName3 := replace[sessionName2, "DEFAULT", sessionName1]
 (0010,0010) := "<INSERTED-SUBJ-NAME>"
 (0010,0010) := "<INSERTED-SUBJ-ID>"
 (0010,4000) := "Project: <INSERTED-PROJ-NAME>; Subject: <INSERTED-SUBJ-NAME>; Session: {0}; AA:true" sessionName3 // Patient comments tag = XNAT routing info
+
 

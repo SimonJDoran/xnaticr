@@ -48,53 +48,47 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
-import static sessionExporter.AnonScriptWindow.logger;
-
 
 public class AnonScriptModel
-{
-   public class ScriptDetails
-   {
-      String resourceFile;
-      String description;
-      
-      public ScriptDetails(String rf, String d)
-      {
-         resourceFile = rf;
-         description = d;
-      }
-   }
-   
+{   
    protected static Logger logger = Logger.getLogger(AnonScriptModel.class);
 
-   private File            currentFile;
-   private String          currentName;
-   private String          currentScript;
-   private String          unsavedScript;  
-   private boolean         approved;
-   private boolean         saved;
-   private final Map<String, ScriptDetails> scriptMap;
+   private File    currentFile;
+   private String  currentName;
+   private String  currentScript;
+   private String  unsavedScript;  
+   private boolean approved;
+   private boolean saved;
+   private final Map<String, String> scriptMap;
    
    // There always needs to be a "Custom" entry, but the name might change.
    public static final String  CUSTOM = "Custom";
    
    public AnonScriptModel()
    {
+      currentFile   = null;
       currentName   = null;
       currentScript = null;
       unsavedScript = null;
-      scriptMap    = new HashMap<>();
-      scriptMap.put("Simple",   new ScriptDetails("anonScriptSimple.das",   "Simple (retain significant metadata)") );
-      scriptMap.put("Internal", new ScriptDetails("anonScriptInternal.das", "Internal ICR (thorough)") );
-      scriptMap.put("External", new ScriptDetails("anonScriptExternal.das", "External use (very thorough)") );
-      scriptMap.put(CUSTOM,     new ScriptDetails(null,                     "Custom") );   
+      scriptMap    = new LinkedHashMap<>();
+      scriptMap.put("Simple (retain significant metadata)", "anonScriptSimple.das");
+      scriptMap.put("Internal ICR (thorough)", "anonScriptInternal.das");
+      scriptMap.put("External use (very thorough)", "anonScriptExternal.das");
+      scriptMap.put(CUSTOM, "");   
    }
    
     
+   public boolean canApprove()
+   {
+      return (!approved && ((!currentName.equals("Custom") ||
+                             (currentName.equals("Custom") && saved))));
+   }
+   
    
    public boolean canLoad()
    {
@@ -104,7 +98,7 @@ public class AnonScriptModel
    
    public boolean canSave()
    {
-      return (currentName.equals("Custom") && !isSaved());
+      return (currentName.equals("Custom") && !isSaved() && currentFile != null);
    }
    
    
@@ -114,7 +108,7 @@ public class AnonScriptModel
    }
    
    
-   public Map<String, ScriptDetails> getScriptDetails()
+   public Map<String, String> getScriptMap()
    {
       return scriptMap;
    }
@@ -122,20 +116,19 @@ public class AnonScriptModel
    
    public String getDefaultScript(String name)
    {
-      String   resourceErrMsg   = "Couldn't read default anonymisation script.\n"
+      String resourceErrMsg = "Couldn't read default anonymisation script.\n"
                                 + "This shouldn't happen as it resource is supposed"
 				                    + "to be packaged with the application jar!";
-		String   script = "";  
+		String script = "";  
       
-      ScriptDetails sd = scriptMap.get(name);
-      if (sd == null)
+      String resource = scriptMap.get(name);
+      if (resource == null)
       {
          logger.error("Chosen default script does not exist");
       }
-      
-      else
+      else if (!resource.equals(""))
       {
-         InputStream is = AnonScriptModel.class.getResourceAsStream(sd.resourceFile);
+         InputStream is = AnonScriptModel.class.getResourceAsStream(resource);
 
          if (is == null) logger.error(resourceErrMsg);
          else

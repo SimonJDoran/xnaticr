@@ -44,12 +44,14 @@
 
 package sessionExporter;
 
+import obselete.AnonScriptWindow;
 import configurationLists.DAOSearchableElementsList;
 import fileDownloads.AnonSendPreFetchStore;
 import fileDownloads.FileListWorker;
 import fileDownloads.PreFetchStore;
 import generalUtilities.SimpleColourTable;
 import imageUtilities.DownloadIcon;
+import java.awt.Dialog;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
@@ -99,18 +101,19 @@ public class AnonymiseAndSend extends xnatDAO.XNATGUI
 	private XNATProfile           destProf;
 	private boolean               tableChangeLock;
    public boolean                scriptApproved = false;
+   public String                 scriptText = null;
 	private List<AnonSessionInfo> asiList;
 	private List<List<File>>      srcFileList;
    private FileListWorker        flw;
 	private DefaultTableModel     anonModel;
-	private AnonScriptWindow      asw;
+	private AnonScriptView        asv;
    private AnonSendPreFetchStore pfs;
 	protected static Logger       logger = Logger.getLogger(AnonymiseAndSend.class);
-	public static final String    DEFAULT_SUBJ_NAME = "Anonymised";
+	
+   public static final String    DEFAULT_SUBJ_NAME = "Anonymised";
    public static final String    DEFAULT_SUBJ_ID   = "Anonymised";
    public static final String    DEFAULT_SESS_NAME = "DEFAULT";
 	public static final String    SUBJ_NAME_TOKEN   = "<INSERTED-SUBJ-NAME>";
-   public static final String    PROJ_NAME_TOKEN   = "<INSERTED-PROJ-NAME>";
    public static final String    SUBJ_ID_TOKEN     = "<INSERTED-SUBJ-ID>";
 	public static final String    PROJ_ID_TOKEN     = "<INSERTED-PROJ-ID>";
    public static final String    SESS_NAME_TOKEN   = "<INSERTED-SESS-NAME>";
@@ -260,7 +263,7 @@ public class AnonymiseAndSend extends xnatDAO.XNATGUI
 			public void actionPerformed(ActionEvent e)
 			{
 				pfs.setCancelled(false);
-            pfs.setAnonScriptTemplate(asw.getScriptText());
+            pfs.setAnonScriptTemplate(scriptText);
             pfs.setDestProfile(destProf);
             pfs.setDestProject((String) destProjectJComboBox.getSelectedItem());
             pfs.setAnonSessionInfo(asiList);
@@ -276,9 +279,9 @@ public class AnonymiseAndSend extends xnatDAO.XNATGUI
 			public void actionPerformed(ActionEvent e)
 			{            
             //asw = new AnonScriptWindow(new javax.swing.JFrame(), true, AnonymiseAndSend.this);
-            AnonScriptView asv = new AnonScriptView(new JFrame(), true);
-            
-            //Will this work - previous line is modal!!
+            AnonymiseAndSend.this.asv = new AnonScriptView(AnonymiseAndSend.this,
+                                                    "Anonymisation Script Entry",
+                                                    Dialog.ModalityType.MODELESS);
             asv.addPropertyChangeListener(new PropertyChangeListener()
             {
                @Override
@@ -286,13 +289,13 @@ public class AnonymiseAndSend extends xnatDAO.XNATGUI
                {
                   if (pce.getPropertyName().equals("Approved"))
                   {
-                     if (pce.getNewValue().equals(0)) scriptApproved = false;
-                     if (pce.getNewValue().equals(1)) scriptApproved = true;
+                     scriptApproved = pce.getNewValue().equals(1L);
+                     if (scriptApproved) scriptText = asv.getModel().getCurrentScript();
+                     checkExport();
                   }
                }
                
             });
-            checkExport();
          }
       });
 		
@@ -313,6 +316,7 @@ public class AnonymiseAndSend extends xnatDAO.XNATGUI
 			public void popupMenuWillBecomeVisible(PopupMenuEvent e)
 			{
 				destProjectComboBoxClicked();
+            checkExport();
 			}
 			
 			@Override
@@ -526,7 +530,8 @@ public class AnonymiseAndSend extends xnatDAO.XNATGUI
     */
    private void checkExport()
    {
-      if (destProf == null) {
+      if (destProf == null)
+      {
          exportJButton.setEnabled(false);
          return;
       }

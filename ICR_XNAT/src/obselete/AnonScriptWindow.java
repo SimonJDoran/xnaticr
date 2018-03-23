@@ -40,7 +40,7 @@
 * 
 * Anonymisation script editing window
 *********************************************************************/
-package sessionExporter;
+package obselete;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -62,6 +62,7 @@ import javax.swing.filechooser.FileFilter;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
+import sessionExporter.AnonymiseAndSend;
 
 public class AnonScriptWindow extends javax.swing.JDialog
 {
