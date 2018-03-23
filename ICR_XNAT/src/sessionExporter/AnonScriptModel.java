@@ -76,7 +76,6 @@ public class AnonScriptModel
    private String          currentScript;
    private String          unsavedScript;  
    private boolean         approved;
-   private boolean         cancelled;
    private boolean         saved;
    private final Map<String, ScriptDetails> scriptMap;
    
@@ -95,8 +94,7 @@ public class AnonScriptModel
       scriptMap.put(CUSTOM,     new ScriptDetails(null,                     "Custom") );   
    }
    
-   
-   
+    
    
    public boolean canLoad()
    {
@@ -112,7 +110,7 @@ public class AnonScriptModel
    
    public boolean canSaveAs()
    {
-      return currentName.equals("Custom") && (unsavedScript != null) );
+      return currentName.equals("Custom") && (unsavedScript != null);
    }
    
    
@@ -203,17 +201,7 @@ public class AnonScriptModel
 
    public void setApproved(boolean approved)
    {
-      this.approved = approved; 
-   }
-   
-   public boolean isCancelled()
-   {
-      return cancelled;
-   }
-
-   public void setCancelled(boolean cancelled)
-   {
-      this.cancelled = cancelled; 
+      this.approved = approved;
    }
    
    public boolean isSaved()
@@ -223,7 +211,7 @@ public class AnonScriptModel
    
    public void setSaved(boolean saved)
    {
-      this.cancelled = saved; 
+      this.saved = saved; 
    }
 }
 

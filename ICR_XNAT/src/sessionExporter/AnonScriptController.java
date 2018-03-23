@@ -58,7 +58,7 @@ public class AnonScriptController implements ActionListener, ItemListener, Docum
    boolean         ignoreTextAreaEvent;
    
    public static final int NOT_SAVED    = 1;
-   public static final int NOT_APPROVED = 1;
+   public static final int NOT_APPROVED = 2;
    
    public AnonScriptController(AnonScriptView asv)
    {
@@ -76,16 +76,16 @@ public class AnonScriptController implements ActionListener, ItemListener, Docum
       if (source == asv.getApproveJButton())
       {
          asm.setApproved(true);
-         asv.setVisible(false);
+         asv.firePropertyChange("Approved", 0, 1);
       }
       
       
       if (source == asv.getCancelJButton())
       {
-         boolean proceedWithCancel = true;
-         if (!asm.isSaved()) proceedWithCancel = asv.showCancelWarning(NOT_SAVED);
-         asv.setVisible(proceedWithCancel);
-         asm.setCancelled(proceedWithCancel);
+         boolean proceedToCancel = true;
+         if (!asm.isApproved()) proceedToCancel = asv.showCancelWarning(NOT_APPROVED);
+         else if (!asm.isSaved()) proceedToCancel = asv.showCancelWarning(NOT_SAVED);
+         if (proceedToCancel) asv.dispose();
       }
       
       
@@ -107,6 +107,7 @@ public class AnonScriptController implements ActionListener, ItemListener, Docum
             asm.setSaved(true);
             asm.setCurrentScript(asm.getUnsavedScript());
             asm.setUnsavedScript(null);
+            asv.setButtonStates();
          }
       }
  
@@ -120,6 +121,7 @@ public class AnonScriptController implements ActionListener, ItemListener, Docum
             asm.setSaved(true);
             asm.setCurrentScript(asm.getUnsavedScript());
             asm.setUnsavedScript(null);
+            asv.setButtonStates();
          }
       }
    }
@@ -145,14 +147,15 @@ public class AnonScriptController implements ActionListener, ItemListener, Docum
                ignoreTextAreaEvent = false;
                return;
             }
-         }   
-      }
-      asm.setCurrentScript(asm.getDefaultScript(asm.getCurrentName()));
-      asv.setText();
-      asm.setUnsavedScript(null);
+         }
+         asm.setCurrentScript(asm.getDefaultScript(asm.getCurrentName()));
+         asv.setText();
+         asm.setUnsavedScript(null);
       
-      // Can't save until some changes take place.
-      asm.setSaved(true);
+         // Can't save until some changes take place.
+         asm.setSaved(true);
+         asv.setButtonStates();
+      }  
    }
 
    @Override
@@ -181,9 +184,27 @@ public class AnonScriptController implements ActionListener, ItemListener, Docum
       // We only want to act on genuine edits of the script, not
       // the text change that comes about when one of the default scripts
       // is loaded up.
-      for (String s : asm.getScriptDetails().keySet())
+      boolean matchesDefault = false;
+      for (String name : asm.getScriptDetails().keySet())
       {
-         
+         if (asv.getScriptJTextArea().getText().equals(asm.getDefaultScript(name)))
+            matchesDefault = true;
+      }
+      if (!matchesDefault)
+      {
+         // If a change to the text area has been detected, then by definition,
+         // this must be a custom script, so we need to change the setting on
+         // the combo box. However, in order to avoid getting into a loop with
+         // the text area firing a message to the combo box and the combo box
+         // firing a message to the text area because it has been changed, set
+         // the ignoreTextAreaEvent variable.
+         ignoreTextAreaEvent = true;
+         asv.getScriptJComboBox().setSelectedItem(AnonScriptModel.CUSTOM);
+         asm.setUnsavedScript(asv.getScriptJTextArea().getText());
+         asm.setSaved(false);
+         asv.firePropertyChange("Approved", asm.isApproved()?1:0, 0);
+         asm.setApproved(false);
+         asv.setButtonStates();
       }
    }
    

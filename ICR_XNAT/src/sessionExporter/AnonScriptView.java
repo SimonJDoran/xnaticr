@@ -69,9 +69,9 @@ import static sessionExporter.AnonScriptWindow.logger;
 
 public class AnonScriptView extends javax.swing.JDialog
 {
-   AnonScriptModel      asm;
-   AnonScriptController asc;
-   private File         chooserCurrentDir = new File(System.getProperty("user.home"));
+   private AnonScriptModel      asm;
+   private AnonScriptController asc;
+   private File                 chooserCurrentDir;
    
    public AnonScriptView(java.awt.Frame parent, boolean modal)
    {
@@ -79,6 +79,7 @@ public class AnonScriptView extends javax.swing.JDialog
       initComponents();
       asm = new AnonScriptModel();
       asc = new AnonScriptController(this);
+      chooserCurrentDir = new File(System.getProperty("user.home"));
       addListeners();
       populateScriptJComboBox();
       setVisible(true);
@@ -147,6 +148,7 @@ public class AnonScriptView extends javax.swing.JDialog
       else return false;
    }
    
+    
    
    public String tryScriptLoad()
    {

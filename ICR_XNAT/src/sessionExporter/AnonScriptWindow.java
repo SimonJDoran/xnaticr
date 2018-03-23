@@ -210,7 +210,7 @@ public class AnonScriptWindow extends javax.swing.JDialog
 			@Override
 			public void actionPerformed(ActionEvent e)
 			{
-            caller.anonScriptVerified = true;
+            caller.scriptApproved = true;
             dispose();
 			}	  
 		});
