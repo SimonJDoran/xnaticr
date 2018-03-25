@@ -48,6 +48,9 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -58,6 +61,8 @@ import sessionExporter.AnonymiseAndSend;
 public class AnonSendPostFetchAction implements PostFetchAction
 {
    static Logger logger = Logger.getLogger(AnonSendPostFetchAction.class);
+   
+   public final String SEP = System.getProperty("file.separator");
    
    @Override
 	public void executeAction(FileListWorker caller, Map<Class, PreFetchStore> pfsMap)
@@ -86,10 +91,24 @@ public class AnonSendPostFetchAction implements PostFetchAction
                                   .replaceAll(AnonymiseAndSend.SUBJ_NAME_TOKEN, asi.getSubjDicomAnonName())
                                   .replaceAll(AnonymiseAndSend.SUBJ_ID_TOKEN,   asi.getSubjDicomAnonName())
                                   .replaceAll(AnonymiseAndSend.SUBJ_ID_TOKEN,   asi.getSubjDicomAnonName());
-         System.out.println("Here");
+         if (!writeToFile(editedScript, caller.getCacheDirName())) return;
       }
 			
 	}
+   
+   private boolean writeToFile(String script, String cacheDirName)
+   {
+      try
+      {
+         File tempFile = new File(cacheDirName + SEP + "temp" + SEP + "tempAnonScript.das");
+         Path tempPath = Paths.get(tempFile.getAbsolutePath());
+         Files.createDirectories(tempPath);
+      }
+      catch (IOException exIO)
+      {
+         
+      }
+   }
    
    /**
 	 * Export the DICOM files by calling a command line process.
