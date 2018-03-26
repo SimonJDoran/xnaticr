@@ -48,6 +48,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.PrintWriter;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -57,6 +58,7 @@ import java.util.Map;
 import org.apache.log4j.Logger;
 import sessionExporter.AnonSessionInfo;
 import sessionExporter.AnonymiseAndSend;
+import xnatDAO.XNATProfile;
 
 public class AnonSendPostFetchAction implements PostFetchAction
 {
@@ -82,7 +84,9 @@ public class AnonSendPostFetchAction implements PostFetchAction
       
       for (AnonSessionInfo asi : pfs.getAnonSessionInfo() )
       {
-         String sessionDir = caller.getCacheDirName() + "data/experiments/" + asi.getSessionId();
+         String sessionDir   = caller.getCacheDirName() + "data/experiments/" + asi.getSessionId();
+         String tempDasFile  = caller.getCacheDirName() + SEP + "temp" + SEP + "tempAnonScript.das";
+         String dicomRemapEx = caller.getDicomRemapEx();
          
          // Edit the template anonymisation script to substitute the patient name and
          // session details and save it to a temporary file.
@@ -91,23 +95,92 @@ public class AnonSendPostFetchAction implements PostFetchAction
                                   .replaceAll(AnonymiseAndSend.SUBJ_NAME_TOKEN, asi.getSubjDicomAnonName())
                                   .replaceAll(AnonymiseAndSend.SUBJ_ID_TOKEN,   asi.getSubjDicomAnonName())
                                   .replaceAll(AnonymiseAndSend.SUBJ_ID_TOKEN,   asi.getSubjDicomAnonName());
-         if (!writeToFile(editedScript, caller.getCacheDirName())) return;
+         
+         boolean outputErr = false;
+         outputErr = !writeToFile(editedScript, tempDasFile);
+         outputErr = !runDicomRemapShellCommand(sessionDir, tempDasFile,
+                                                dicomRemapEx, pfs.getDestProfile())
+                     || outputErr;
+         if (outputErr)
+         {
+            caller.publishFromOutsidePackage("Output failed - check system logs.");
+            return;
+         }
       }
 			
 	}
    
-   private boolean writeToFile(String script, String cacheDirName)
+   private boolean writeToFile(String script, String tempDasFile)
    {
+      PrintWriter pw = null;
       try
       {
-         File tempFile = new File(cacheDirName + SEP + "temp" + SEP + "tempAnonScript.das");
-         Path tempPath = Paths.get(tempFile.getAbsolutePath());
+
+         Path tempPath = Paths.get(tempDasFile);
          Files.createDirectories(tempPath);
+         pw = new PrintWriter(tempDasFile);
+         pw.println(script);
       }
       catch (IOException exIO)
       {
-         
+         logger.error("Couldn't write temporary anonymisation script - this shouldn't happen.\n" + exIO.getMessage());       
+         return false;
       }
+      finally
+      {
+         if (pw != null) pw.close();
+      }
+      return true;
+   }
+   
+   
+   /**
+    * Export the DICOM files by calling a command line process.
+	 * This mechanism was coded but then abandoned on the basis that it is not optimal
+	 * to expect DicomBrowser to be installed on every machine that runs this application.
+	 * 
+    * However, I then restarted the development when it become clear
+    * that this was a quicker route to something workable in the 
+    * short term.
+    * 
+    * @param sessionDir
+    * @return 
+    */
+   private boolean runDicomRemapShellCommand(String sessionDir, String tempDasFile,
+                                             String dicomRemapEx, XNATProfile destProf)
+   {
+      InputStream is = null;
+		try
+		{	
+			List<String> cl = new ArrayList<String>();
+			cl.add(dicomRemapEx);
+			cl.add("-d");
+			cl.add(tempDasFile);
+			cl.add("-o");
+			cl.add("dicom://" + destProf.getDicomReceiverHost()
+                 + ":" + destProf.getDicomReceiverPort()
+                 + "/" + destProf.getDicomReceiverAeTitle());
+         cl.add(sessionDir);
+			
+			
+			ProcessBuilder pb = new ProcessBuilder(cl);
+			Process        p  = pb.start();
+			StringBuilder  sb = new StringBuilder();
+         int            b;
+			is = p.getInputStream();
+         while ((b = is.read()) != -1) sb.append((char) b);
+			elw.updateLogWindow(sb.toString());
+		}
+		catch (IOException exIO)
+		{
+			logger.error("Error initiating anonymise-and-send process: " + exIO.getMessage());
+         return false;
+      }
+		finally
+      {
+         if (is != null) try{is.close();} catch (IOException exIgnore){}
+      }
+      return true;
    }
    
    /**

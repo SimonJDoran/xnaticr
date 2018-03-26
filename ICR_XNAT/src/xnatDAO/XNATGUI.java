@@ -91,6 +91,7 @@ public abstract class XNATGUI extends javax.swing.JDialog implements ActionListe
    protected boolean           invokedByRun     = false;
    protected String            status;
    protected String            cacheDirName;
+   protected String            dicomRemapEx;
    protected String            log4jProps;
    protected boolean           authenticationInProgress = false;
    protected boolean           selectedProfileDidChange = false;
@@ -116,18 +117,19 @@ public abstract class XNATGUI extends javax.swing.JDialog implements ActionListe
     */
    private void parseConfigFile()
    {
-      String fileSep        = System.getProperty("file.separator");
-      String XNAT_DAO_HOME  = getHomeDir();
-      String FAILED         = "Cannot create file";
-      String configFilename = XNAT_DAO_HOME + "config" + fileSep
-                                                     + "XNAT_DAO_config.xml";
-      File   configFile     = new File(configFilename);
+      final String SEP                 = System.getProperty("file.separator");
+      final String XNAT_DAO_HOME       = getHomeDir();
+      final String DICOM_REMAP_DEFAULT = "/Applications/DicomBrowser-1.5.2/bin/DicomRemap";
+      final String FAILED              = "Cannot create file";
+      final String CONFIG_FILENAME     = XNAT_DAO_HOME + "config" + SEP + "XNAT_DAO_config.xml";
+      File  configFile                 = new File(CONFIG_FILENAME);
 
       
       // Step 1: Does the configuration file exist?      
       if (!configFile.exists())
       {
          cacheDirName = XNAT_DAO_HOME;
+         dicomRemapEx = DICOM_REMAP_DEFAULT;
          log4jProps   = null;
       }
      
@@ -139,8 +141,9 @@ public abstract class XNATGUI extends javax.swing.JDialog implements ActionListe
       //         modified file.)
       else
       {
-         String[] cacheDirs  = null;
-         String[] log4jFiles  = null;
+         String[] cacheDirs     = null;
+         String[] log4jFiles    = null;
+         String[] dicomRemapExs = null;
          try
          {
             BufferedInputStream bis
@@ -150,8 +153,9 @@ public abstract class XNATGUI extends javax.swing.JDialog implements ActionListe
             XNATNamespaceContext XNATns = new XNATNamespaceContext();
             Document DOMDoc             = XMLUtilities.getDOMDocument(bis);
 
-            cacheDirs  = XMLUtilities.getElementText(DOMDoc, XNATns, "cacheDirectory");
-            log4jFiles = XMLUtilities.getElementText(DOMDoc, XNATns, "log4jProps");
+            cacheDirs     = XMLUtilities.getElementText(DOMDoc, XNATns, "cacheDirectory");
+            dicomRemapExs = XMLUtilities.getElementText(DOMDoc, XNATns, "dicomRemapExecutable");
+            log4jFiles    = XMLUtilities.getElementText(DOMDoc, XNATns, "log4jProps");
          }
          catch (FileNotFoundException exFNF)
          {
@@ -212,20 +216,49 @@ public abstract class XNATGUI extends javax.swing.JDialog implements ActionListe
             }            
          }
          
+         // Step 4: Check DicomRemap is available on the system.
+         if (dicomRemapExs == null)
+         {
+            logger.warn("No DicomRemap information found in configuration file.\n"
+                        + "Trying default location ...");
+            dicomRemapEx = DICOM_REMAP_DEFAULT;
+         }
          
-         // Step 4: Check for valid log4j file.
+         if (dicomRemapExs.length == 1) dicomRemapEx = dicomRemapExs[0];
+         
+         
+         if (dicomRemapExs.length > 1)
+         {
+            logger.warn("More than one dicomRemap entry found in configuration file. \n"
+               + "Rewriting new config file using the first value found ...");
+            dicomRemapEx = dicomRemapExs[0];
+         }
+         
+         File f = new File(dicomRemapEx);
+         if (!(f.isFile() && f.canExecute()))
+         {
+            logger.error("No executable found for DicomRemap. The anonymise and send"
+                         + "function will not be available.");
+         }
+         
+         
+         
+         
+         
+         
+         // Step 5: Check for valid log4j file.
          if (log4jFiles == null) log4jFiles = new String[0];
          
          if (log4jFiles.length > 1)
          {
             logger.warn("More than one log4jFile entry found in configuration file. \n"
-               + "Rewriting new config file using the first value found. \n");
+               + "Rewriting new config file using the first value found ...");
          }
          
          if (log4jFiles.length == 0)
          {
             logger.warn("No log4j file information found in configuration file. \n"
-               + "Using application defaults.");
+               + "Using application defaults ...");
             log4jProps = null;
          }
          else log4jProps = log4jFiles[0];
@@ -235,14 +268,14 @@ public abstract class XNATGUI extends javax.swing.JDialog implements ActionListe
             if (!(new File(log4jProps)).canRead())
             {
                logger.warn("File " + log4jProps + " does not exist.\n"
-                             + "Using application default logging.");
+                             + "Using application default logging ...");
                          
                log4jProps = null;
             }
          }
       }
       
-      writeConfigFile(configFilename, cacheDirName, log4jProps);      
+      writeConfigFile(CONFIG_FILENAME, cacheDirName, log4jProps);      
    }
 
 
@@ -914,6 +947,12 @@ public abstract class XNATGUI extends javax.swing.JDialog implements ActionListe
    public String getVersion()
    {
       return version;
+   }
+   
+   
+   public String getDicomRemapEx()
+   {
+      return dicomRemapEx;
    }
    
    

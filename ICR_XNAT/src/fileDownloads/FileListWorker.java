@@ -803,6 +803,12 @@ public class FileListWorker extends SwingWorker<ArrayList<ArrayList<File>>, Stri
 	}
    
    
+   public String getDicomRemapEx()
+   {
+      return xndao.getDicomRemapEx();
+   }
+   
+   
    public DAOOutline getOutline()
    {
       return outline;

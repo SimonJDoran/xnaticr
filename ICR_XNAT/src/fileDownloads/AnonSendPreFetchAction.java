@@ -49,16 +49,25 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import javax.swing.JFrame;
+import org.apache.log4j.Logger;
 import sessionExporter.AnonymiseAndSend;
 
 public class AnonSendPreFetchAction implements PreFetchAction
 {
+   static Logger logger = Logger.getLogger(AnonSendPreFetchAction.class);
    public Frame frame = new JFrame();
+   
    
    @Override
 	public PreFetchStore executeAction(FileListWorker caller) throws IOException
-	{				
-		caller.publishFromOutsidePackage("Launching anonymise-and-send GUI ...");
+	{
+      File f  = new File(caller.getDicomRemapEx());
+      if (!(f.isFile() && f.canExecute()))
+      {
+         logger.error("No executable found for DicomRemap. The anonymise and send"
+                      + "function will not be available.");
+      }
+		caller.publishFromOutsidePackage("Anonymise-and-send not available - see system logs.");
 			
       AnonSendPreFetchStore pfs = new AnonSendPreFetchStore();
       AnonymiseAndSend as = new AnonymiseAndSend(frame, true, caller, pfs);
