@@ -169,7 +169,7 @@ public class AnonSendPostFetchAction implements PostFetchAction
          int            b;
 			is = p.getInputStream();
          while ((b = is.read()) != -1) sb.append((char) b);
-			elw.updateLogWindow(sb.toString());
+			//elw.updateLogWindow(sb.toString());
 		}
 		catch (IOException exIO)
 		{

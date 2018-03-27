@@ -53,6 +53,11 @@ import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.Vector;
 import javax.swing.SwingWorker;
 import javax.swing.tree.TreeNode;
@@ -117,6 +122,59 @@ public class RESTSearchWorker extends SwingWorker<Vector2D<String>, Void>
       try
       {
          XNATRESTToolkit xnrt       = new XNATRESTToolkit(xnsc);
+         
+         // Temporary code for calculating stats.
+         if (expansionNodePath.length == 4)
+         {
+            TreeNode[] expPath2 = new TreeNode[2];
+            expPath2[0] = expansionNodePath[0];
+            expPath2[1] = expansionNodePath[1];
+            
+            Document statsSearchDoc = xnrt.createSearchXML(rootElement,
+                                                           returnedFields,
+                                                           combinationOperator,
+                                                           searchCriteria,
+                                                           projectList,
+                                                           expPath2);
+            // This is going to be a big file!
+            is = xnsc.doRESTPost(RESTGetCommand, statsSearchDoc);
+            
+            try
+            {
+               parseOutputSAX(new BufferedInputStream(is), new XNATSearchSAXAdapter());
+            }
+
+            catch (XNATException exXNAT){throw exXNAT;}
+
+            catch (IOException exIO){throw exIO;}
+
+            finally
+            {
+               try {is.close();} catch (IOException exIOignore) {}
+            }
+
+            
+            Map<String, Map<String, List<String>>> statsTree = new HashMap<>();
+            
+            for (int j=0; j<RESTResult.size(); j++)
+            {
+               String manufacturer = (String) RESTResult.atom(1, j);
+               String scanType     = (String) RESTResult.atom(2, j);
+               String patientName  = (String) RESTResult.atom(3, j);
+               
+               if (!statsTree.containsKey(manufacturer))
+                  statsTree.put(manufacturer, new HashMap<String, List<String>>());
+               
+               Map<String, List<String>> m = statsTree.get(manufacturer);
+               if (!m.containsKey(scanType))
+                  m.put(scanType, new ArrayList<String>());
+               
+               List<String> l = m.get(scanType);
+               l.add(patientName);       
+            }
+            
+            System.out.println("Output for stats here.");
+         }
          Document        searchDoc  = xnrt.createSearchXML(rootElement,
                                                            returnedFields,
                                                            combinationOperator,

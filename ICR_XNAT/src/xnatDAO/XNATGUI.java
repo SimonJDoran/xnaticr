@@ -224,10 +224,10 @@ public abstract class XNATGUI extends javax.swing.JDialog implements ActionListe
             dicomRemapEx = DICOM_REMAP_DEFAULT;
          }
          
-         if (dicomRemapExs.length == 1) dicomRemapEx = dicomRemapExs[0];
+         else if (dicomRemapExs.length == 1) dicomRemapEx = dicomRemapExs[0];
          
          
-         if (dicomRemapExs.length > 1)
+         else if (dicomRemapExs.length > 1)
          {
             logger.warn("More than one dicomRemap entry found in configuration file. \n"
                + "Rewriting new config file using the first value found ...");
