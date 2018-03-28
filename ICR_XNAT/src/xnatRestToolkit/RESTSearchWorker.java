@@ -122,85 +122,17 @@ public class RESTSearchWorker extends SwingWorker<Vector2D<String>, Void>
       InputStream is;
       try
       {
-         XNATRESTToolkit xnrt       = new XNATRESTToolkit(xnsc);
+         XNATRESTToolkit xnrt = new XNATRESTToolkit(xnsc);
          
          // Temporary code for calculating stats.
-         if (expansionNodePath.length == 4)
-         {
-            TreeNode[] expPath2 = new TreeNode[2];
-            expPath2[0] = expansionNodePath[0];
-            expPath2[1] = expansionNodePath[1];
-            
-            Document statsSearchDoc = xnrt.createSearchXML(rootElement,
-                                                           returnedFields,
-                                                           combinationOperator,
-                                                           searchCriteria,
-                                                           projectList,
-                                                           expPath2);
-            // This is going to be a big file!
-            is = xnsc.doRESTPost(RESTGetCommand, statsSearchDoc);
-            
-            try
-            {
-               parseOutputSAX(new BufferedInputStream(is), new XNATSearchSAXAdapter());
-            }
+         //if (expansionNodePath.length == 4) reportStats(xnrt);
 
-            catch (XNATException exXNAT){throw exXNAT;}
-
-            catch (IOException exIO){throw exIO;}
-
-            finally
-            {
-               try {is.close();} catch (IOException exIOignore) {}
-            }
-
-            
-            Map<String, Map<String, Set<String>>> statsTree = new HashMap<>();
-            
-            // Extract the data needed from the tree structure.
-            for (int j=0; j<RESTResult.size(); j++)
-            {
-               String manufacturer = (String) RESTResult.atom(1, j);
-               String scanType     = (String) RESTResult.atom(2, j);
-               String patientName  = (String) RESTResult.atom(3, j);
-               
-               if (!statsTree.containsKey(manufacturer))
-                  statsTree.put(manufacturer, new HashMap<String, Set<String>>());
-               
-               Map<String, Set<String>> m = statsTree.get(manufacturer);
-               if (!m.containsKey(scanType))
-                  m.put(scanType, new HashSet<String>());
-               
-               Set<String> s = m.get(scanType);
-               s.add(patientName);       
-            }
-            
-            // Reduce the data into the form needed for a bar chart in Excel.
-            try (PrintWriter pw = new PrintWriter("/Users/simond/.XNAT_DAO/statsTemp.csv"))
-            {
-               for (String manufacturer : statsTree.keySet())
-               {
-                  pw.println(manufacturer + "\n");
-                  Map<String, Set<String>> m = statsTree.get(manufacturer);
-                  for (String scanType : m.keySet())
-                  {
-                     Set<String> s = m.get(scanType);
-                     pw.println(scanType + ", " + s.size());
-                  }
-               }
-            }
-            catch (IOException exIO)
-            {
-               logger.error("Can't write out stats: " + exIO.getMessage());
-            }
-            System.out.println("Output for stats here.");
-         }
-         Document        searchDoc  = xnrt.createSearchXML(rootElement,
-                                                           returnedFields,
-                                                           combinationOperator,
-                                                           searchCriteria,
-                                                           projectList,
-                                                           expansionNodePath);
+         Document searchDoc  = xnrt.createSearchXML(rootElement,
+                                                    returnedFields,
+                                                    combinationOperator,
+                                                    searchCriteria,
+                                                    projectList,
+                                                    expansionNodePath);
          is = xnsc.doRESTPost(RESTGetCommand, searchDoc);
       }
       catch (FailedToConnectException exFTC)
@@ -276,8 +208,85 @@ public class RESTSearchWorker extends SwingWorker<Vector2D<String>, Void>
          }
       }
    }
+   
+   
+   /**
+    * This is a very crude bit of ad hoc coding developed in response to a
+    * particular need for reporting some statistics. It is retained for
+    * possible future use/development, but currently not used as part of the
+    * basic build.
+    * @param xnrt XNATRESTToolkit for providing XNATSearchXML
+    */
+   private void reportStats(XNATRESTToolkit xnrt)
+   {
+      TreeNode[] expPath2 = new TreeNode[2];
+      expPath2[0] = expansionNodePath[0];
+      expPath2[1] = expansionNodePath[1];
+
+      String RESTGetCommand = "/data/search?format=xml";
+      InputStream is = null;
+      try
+      {
+         Document statsSearchDoc = xnrt.createSearchXML(rootElement,
+                                                        returnedFields,
+                                                        combinationOperator,
+                                                        searchCriteria,
+                                                        projectList,
+                                                        expPath2);
+         // This is going to be a big file!
+         is = xnsc.doRESTPost(RESTGetCommand, statsSearchDoc);
+         parseOutputSAX(new BufferedInputStream(is), new XNATSearchSAXAdapter());
+      }
+      catch (Exception ex)
+      {
+         logger.error(ex.getMessage());
+      }
+      finally
+      {
+         try {if (is !=null) is.close();} catch (IOException exIOignore) {}
+      }
 
 
+      Map<String, Map<String, Set<String>>> statsTree = new HashMap<>();
+
+      // Extract the data needed from the tree structure.
+      for (int j=0; j<RESTResult.size(); j++)
+      {
+         String manufacturer = (String) RESTResult.atom(1, j);
+         String scanType     = (String) RESTResult.atom(2, j);
+         String patientName  = (String) RESTResult.atom(3, j);
+
+         if (!statsTree.containsKey(manufacturer))
+            statsTree.put(manufacturer, new HashMap<String, Set<String>>());
+
+         Map<String, Set<String>> m = statsTree.get(manufacturer);
+         if (!m.containsKey(scanType))
+            m.put(scanType, new HashSet<String>());
+
+         Set<String> s = m.get(scanType);
+         s.add(patientName);       
+      }
+
+      // Reduce the data into the form needed for a bar chart in Excel.
+      try (PrintWriter pw = new PrintWriter("/Users/simond/.XNAT_DAO/statsTemp.csv"))
+      {
+         for (String manufacturer : statsTree.keySet())
+         {
+            pw.println(manufacturer + "\n");
+            Map<String, Set<String>> m = statsTree.get(manufacturer);
+            for (String scanType : m.keySet())
+            {
+               Set<String> s = m.get(scanType);
+               pw.println(scanType + ", " + s.size());
+            }
+         }
+      }
+      catch (IOException exIO)
+      {
+         logger.error("Can't write out stats: " + exIO.getMessage());
+      }
+      System.out.println("Output for stats here.");
+   }
 
    /**
     * An extension of the {@link DefaultHandler} class to provide the context-

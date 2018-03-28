@@ -44,10 +44,12 @@
 
 package fileDownloads;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -98,7 +100,7 @@ public class AnonSendPostFetchAction implements PostFetchAction
          
          boolean outputErr = false;
          outputErr = !writeToFile(editedScript, tempDasFile);
-         outputErr = !runDicomRemapShellCommand(sessionDir, tempDasFile,
+         outputErr = !runDicomRemapShellCommand(caller, sessionDir, tempDasFile,
                                                 dicomRemapEx, pfs.getDestProfile())
                      || outputErr;
          if (outputErr)
@@ -143,13 +145,19 @@ public class AnonSendPostFetchAction implements PostFetchAction
     * that this was a quicker route to something workable in the 
     * short term.
     * 
+    * Note that this class has been created by a FileListWorker and so long
+    * tasks are already off the Event Dispatch Thread. If the method below
+    * blocks or takes a long time, we can, in principle, cancel it.
+    * 
     * @param sessionDir
     * @return 
     */
-   private boolean runDicomRemapShellCommand(String sessionDir, String tempDasFile,
+   private boolean runDicomRemapShellCommand(FileListWorker caller,
+                                             String sessionDir, String tempDasFile,
                                              String dicomRemapEx, XNATProfile destProf)
    {
-      InputStream is = null;
+      InputStream    is = null;
+      BufferedReader br = null;
 		try
 		{	
 			List<String> cl = new ArrayList<String>();
@@ -164,20 +172,35 @@ public class AnonSendPostFetchAction implements PostFetchAction
 			
 			
 			ProcessBuilder pb = new ProcessBuilder(cl);
+         pb.redirectErrorStream(true);
 			Process        p  = pb.start();
-			StringBuilder  sb = new StringBuilder();
-         int            b;
+			String         line;
+         
+         // Get the input stream connected to the normal output of the process
+         // and display lines as they are generated, until the operation is finished.
 			is = p.getInputStream();
-         while ((b = is.read()) != -1) sb.append((char) b);
-			//elw.updateLogWindow(sb.toString());
+         br = new BufferedReader(new InputStreamReader(p.getInputStream()));
+
+         while ((line = br.readLine()) != null)
+         {
+            caller.publishFromOutsidePackage(line);
+            logger.info(line);
+         }
+         
+         // Opinion seems divided as to whether it is up to the programmer to
+         // close these three streams, but it shouldn't do any harm!
+         p.getInputStream().close();
+         p.getOutputStream().close();
+         p.getErrorStream().close();   
 		}
 		catch (IOException exIO)
 		{
-			logger.error("Error initiating anonymise-and-send process: " + exIO.getMessage());
+			logger.error("Error during anonymise-and-send process: " + exIO.getMessage());
          return false;
       }
 		finally
       {
+         if (br != null) try{br.close();} catch (IOException exIgnore){}
          if (is != null) try{is.close();} catch (IOException exIgnore){}
       }
       return true;

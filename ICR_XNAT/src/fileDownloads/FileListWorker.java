@@ -84,7 +84,7 @@ import xnatRestToolkit.XNATServerConnection;
 
 public class FileListWorker extends SwingWorker<ArrayList<ArrayList<File>>, String>
 {
-   static    Logger                   logger = Logger.getLogger(FileListWorker.class);
+   static  Logger                     logger = Logger.getLogger(FileListWorker.class);
    private XNATDAO                    xndao;
    private DAOOutput                  daoo;
    private XNATServerConnection       xnsc;
