@@ -52,6 +52,7 @@ import generalUtilities.Vector2D;
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -154,8 +155,9 @@ public class RESTSearchWorker extends SwingWorker<Vector2D<String>, Void>
             }
 
             
-            Map<String, Map<String, List<String>>> statsTree = new HashMap<>();
+            Map<String, Map<String, Set<String>>> statsTree = new HashMap<>();
             
+            // Extract the data needed from the tree structure.
             for (int j=0; j<RESTResult.size(); j++)
             {
                String manufacturer = (String) RESTResult.atom(1, j);
@@ -163,16 +165,34 @@ public class RESTSearchWorker extends SwingWorker<Vector2D<String>, Void>
                String patientName  = (String) RESTResult.atom(3, j);
                
                if (!statsTree.containsKey(manufacturer))
-                  statsTree.put(manufacturer, new HashMap<String, List<String>>());
+                  statsTree.put(manufacturer, new HashMap<String, Set<String>>());
                
-               Map<String, List<String>> m = statsTree.get(manufacturer);
+               Map<String, Set<String>> m = statsTree.get(manufacturer);
                if (!m.containsKey(scanType))
-                  m.put(scanType, new ArrayList<String>());
+                  m.put(scanType, new HashSet<String>());
                
-               List<String> l = m.get(scanType);
-               l.add(patientName);       
+               Set<String> s = m.get(scanType);
+               s.add(patientName);       
             }
             
+            // Reduce the data into the form needed for a bar chart in Excel.
+            try (PrintWriter pw = new PrintWriter("/Users/simond/.XNAT_DAO/statsTemp.csv"))
+            {
+               for (String manufacturer : statsTree.keySet())
+               {
+                  pw.println(manufacturer + "\n");
+                  Map<String, Set<String>> m = statsTree.get(manufacturer);
+                  for (String scanType : m.keySet())
+                  {
+                     Set<String> s = m.get(scanType);
+                     pw.println(scanType + ", " + s.size());
+                  }
+               }
+            }
+            catch (IOException exIO)
+            {
+               logger.error("Can't write out stats: " + exIO.getMessage());
+            }
             System.out.println("Output for stats here.");
          }
          Document        searchDoc  = xnrt.createSearchXML(rootElement,
