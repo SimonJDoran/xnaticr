@@ -17,6 +17,7 @@
 		<DAO_subtype alias="MR session">xnat:mrSessionData</DAO_subtype>
 		<DAO_subtype alias="PET session">xnat:petSessionData</DAO_subtype>
 		<DAO_subtype alias="CT session">xnat:ctSessionData</DAO_subtype>
+      <DAO_subtype alias="MG session">xnat:mgSessionData</DAO_subtype>
 		<DAO_subtype alias="US session">xnat:usSessionData</DAO_subtype>
 		<DAO_subtype alias="Arbitrary session">xnat:imageSessionData</DAO_subtype>
 	</DAO_datatype>

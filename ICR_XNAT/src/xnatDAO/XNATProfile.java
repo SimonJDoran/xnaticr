@@ -50,9 +50,16 @@ import dataRepresentations.xnatSchema.InvestigatorList;
 import exceptions.XMLException;
 import generalUtilities.Vector2D;
 import java.awt.Dialog;
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
+import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
 import xmlUtilities.XMLUtilities;
@@ -101,7 +108,7 @@ public class XNATProfile extends XNATServerConnection
       XNATProfileAuthenticator a = new XNATProfileAuthenticator(parent,
                                         "Authentication required", this);
       a.setVisible(true);
-     // analytics(this);
+      analytics(this);
    }
    
    
@@ -189,8 +196,14 @@ public class XNATProfile extends XNATServerConnection
 	{
       final XNATNamespaceContext xnatNs  = new XNATNamespaceContext();
       String xpe;
+      BufferedWriter out     = null;
 		try
 		{
+         // Open a file for writing the data to.
+         String         outName = "/Users/simond/temp/XNAT_analytics_" + xnprf.profileName + ".txt";
+         FileWriter     fstream = new FileWriter(outName);
+         out = new BufferedWriter(fstream);
+         
 			XNATRESTToolkit    xnrt      = new XNATRESTToolkit(xnprf);
 			ArrayList<Integer> nSessions = new ArrayList<>();   
 			
@@ -199,18 +212,17 @@ public class XNATProfile extends XNATServerConnection
 			for (int i=0; i<v2dProj.size(); i++)
 			{
 				String proj = v2dProj.atom(0, i);
+            String desc = v2dProj.atom(3, i);
             int    nSessionsProject = 0;
             
-            // Get the project's PI.
-            InvestigatorList.Investigator  pi = new InvestigatorList.Investigator();
-            Document projDoc = xnrt.RESTGetDoc("/data/archive/projects/" + proj +  "?format=xml");
-            xpe    = "/xnat:Project/xnat:PI/xnat:firstname";
-            String firstName = XMLUtilities.getFirstXPathResult(projDoc, xnatNs, xpe);
-	
-            xpe    = "/xnat:Project/xnat:PI/xnat:lastname";
-            String lastName = XMLUtilities.getFirstXPathResult(projDoc, xnatNs, xpe);            
-				
-				// Loop over all subjects within a project.
+            // Get the project's PI and co-investigators.
+            InvestigatorList invs = new InvestigatorList(proj, xnprf);
+           	
+				// Record experiment insertion dates as we go along so that we can
+            // report back on project activity.
+            TreeSet<String> sessionInsertionDates = new TreeSet<>();
+            
+            // Loop over all subjects within a project.
 				Vector2D<String> v2dSubj = xnrt.RESTGetResultSet("/data/archive/projects/" + proj + "/subjects?format=xml");
 				for (int j=0; j<v2dSubj.size(); j++)
 				{
@@ -218,23 +230,44 @@ public class XNATProfile extends XNATServerConnection
 					
 					// Loop over all sessions for a given subject.
 					Vector2D<String>  v2dExp   = xnrt.RESTGetResultSet("/data/archive/projects/" + proj + "/subjects/" + subj + "/experiments?format=xml");
-					ArrayList<String> oldDates = new ArrayList<>();
-					String           d;
-					int              nUniqueDates = 0;
+					TreeSet<String> sessionDates = new TreeSet<>();  
+
 					for (int k=0; k<v2dExp.size(); k++)
 					{
-					   d = v2dExp.atom(3, k);
-						if (!oldDates.contains(d))
-							++nUniqueDates;
-							oldDates.add(d);
+                  sessionDates.add(v2dExp.atom(3, k));
+                  sessionInsertionDates.add(v2dExp.atom(6,k));
 					}
-               nSessionsProject += nUniqueDates;
-					nSessions.add(nUniqueDates);
-					//System.out.println("Project = " + proj + "  Subject =  " + subj + "  nUniqueDates = " + nUniqueDates);
+               nSessionsProject += sessionDates.size();
+					nSessions.add(sessionDates.size());
+					//System.out.println("Project = " + proj + "  Subject =  " + subj + "  nUniqueDates = " + sessionDates.size());
 				}
-               
-            System.out.println(proj + "  " + firstName + " " + lastName + "   " + nSessionsProject);
+            
+            if (sessionInsertionDates.isEmpty()) sessionInsertionDates.add("None");
+
+            // Get the list of project users.
+            Vector2D<String> v2dUsers = xnrt.RESTGetResultSet("/data/projects/" + proj + "/users?format=xml");
+				List<String> userFullNames = new ArrayList<>();
+            for (int j=0; j<v2dUsers.size(); j++)
+            {
+               userFullNames.add(v2dUsers.atom(3, j) + " " + v2dUsers.atom(4, j));
+            }
+             
+            String outString = proj + "#" +
+                      invs.pi.firstName + " " +
+                      invs.pi.lastName  + "#" +
+                      v2dSubj.size()   + "#" +
+                      nSessionsProject + "#" +
+                      sessionInsertionDates.first() + "#" +
+                      sessionInsertionDates.last()  + "#" +
+                      userFullNames.size() + "#" +
+                      userFullNames.toString() + "#" +
+                      invs.getFullNames().toString() + "#" +
+                      desc + "\n";
+            
+            out.write(outString);
+            System.out.print(outString);
 			}
+         
 			System.out.println("Combined results for " + v2dProj.size() + " projects and " + nSessions.size() + " subjects:");
 		   
 			int mx = Collections.max(nSessions);
@@ -250,5 +283,15 @@ public class XNATProfile extends XNATServerConnection
 		{
 			System.out.println("Caught exception " + ex.getMessage());
 		}
+
+      finally
+      {
+         if(out != null)
+         {
+            try{out.close();}
+            catch (IOException exIO) {}
+         }
+      }
+      
 	}
 }

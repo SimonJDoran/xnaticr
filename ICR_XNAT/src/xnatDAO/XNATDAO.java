@@ -1519,6 +1519,7 @@ public final class XNATDAO extends XNATGUI
 		leafDef.put("xnat:subjectData",    "xnat:subjectData/ID");
 		leafDef.put("xnat:mrSessionData",  "xnat:mrSessionData/UID");
 		leafDef.put("xnat:ctSessionData",  "xnat:ctSessionData/UID");
+      leafDef.put("xnat:mgSessionData",  "xnat:mgSessionData/UID");
 		leafDef.put("xnat:imageSessionData",  "xnat:imageSessionData/UID");
       leafDef.put("xnat:mrScanData",     "xnat:mrScanData/UID");
       leafDef.put("xnat:petScanData",    "xnat:petScanData/UID");
@@ -1590,6 +1591,7 @@ public final class XNATDAO extends XNATGUI
    {
       if ((subtype.equals("MR session"))       ||
 			 (subtype.equals("CT session"))       ||
+          (subtype.equals("MG session"))       ||
 			 (subtype.equals("Arbitrary session"))||
 			 (subtype.equals("MR image set"))     ||
           (subtype.equals("PET image set"))    ||

@@ -59,7 +59,7 @@ public class DAOConstants
    public static final Color CONNECTED_COLOUR      = new Color(  0, 205,   0);
    public static final Color DISCONNECTED_COLOUR   = new Color(172,  18,  28);
 
-   public static final int  AUTHENTICATION_EXPIRY  = 10*60*1000; // 10 minutes
+   public static final int  AUTHENTICATION_EXPIRY  = 100*60*60*1000; // 100 hours
 
    public DAOConstants()
    {

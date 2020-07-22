@@ -188,7 +188,7 @@ scannerName2 := replace[scannerName1, "_null", ""]
 describe sessionName1 hidden
 describe sessionName2 hidden
 describe sessionName3 hidden
-sessionName1 := format["{0}_{1}{2}", scanDate2, scanTime2, scannerName2]
+sessionName1 := format["{0}_{1}{2}" scanDate2, scanTime2, scannerName2]
 sessionName2 := "<INSERTED-SESS-NAME>"
 sessionName3 := replace[sessionName2, "DEFAULT", sessionName1]
 

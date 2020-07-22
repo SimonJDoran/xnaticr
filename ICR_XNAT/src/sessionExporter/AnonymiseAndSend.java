@@ -298,6 +298,39 @@ public class AnonymiseAndSend extends xnatDAO.XNATGUI
             });
          }
       });
+      
+      
+      originalNamesJButton.addActionListener(new ActionListener()
+      {
+         @Override
+			public void actionPerformed(ActionEvent e)
+			{            
+            for (int i=0; i<asiList.size(); i++)
+            {
+               AnonSessionInfo asi = asiList.get(i);
+               asi.setSubjDicomAnonName(asi.getSubjLabel());
+               asi.setSubjDicomAnonId(asi.getSubjXnatId());
+               anonModel.setValueAt(asi.getSubjLabel(), i, 1);
+               anonModel.setValueAt(asi.getSubjLabel(), i, 2);
+            }
+         }
+      });
+      
+      
+      
+      projDefSessLabelJButton.addActionListener(new ActionListener()
+      {
+         @Override
+			public void actionPerformed(ActionEvent e)
+			{            
+            for (int i=0; i<asiList.size(); i++)
+            {
+               AnonSessionInfo asi = asiList.get(i);
+               asi.setDestSessionLabel("DEFAULT");
+               anonModel.setValueAt("DEFAULT", i, 4);
+            }
+         }
+      });
 		
 		
 		destProfileJComboBox.addItemListener(new ItemListener()
@@ -334,8 +367,7 @@ public class AnonymiseAndSend extends xnatDAO.XNATGUI
 				respondToTableChange(e.getFirstRow(), e.getColumn());
 			}
     });
-      
-      
+         
 		
 }
 	
@@ -371,10 +403,11 @@ public class AnonymiseAndSend extends xnatDAO.XNATGUI
          
          asi.setSubjDicomAnonId(subjAnonIdMap.get(subj));
          asi.setSubjDicomAnonName(subjAnonNameMap.get(subj));
+         asi.setDestSessionLabel(asi.getSessionLabel());
          
 			Object[] row = {asi.getSubjLabel(), asi.getSubjDicomAnonName(),
                          asi.getSubjDicomAnonId(), asi.getSessionLabel(),
-                         asi.getSessionLabel()};
+                         asi.getDestSessionLabel()};
          
 			anonModel.addRow(row);
          
@@ -391,6 +424,7 @@ public class AnonymiseAndSend extends xnatDAO.XNATGUI
 	/**
     * Method allowing subclasses to take specific action when the
     * profile has been changed.
+    *
     */
    @Override
    protected void profileChangeConcreteClassActions()
@@ -418,8 +452,8 @@ public class AnonymiseAndSend extends xnatDAO.XNATGUI
 	 * This little function is needed to cope with the first use of the tool
 	 * when the project combo box is not populated because the user is not
 	 * authenticated on the remote database
-	 */
-	protected void destProjectComboBoxClicked()
+	 */	
+   protected void destProjectComboBoxClicked()
 	{
 		destProf = profileList.getCurrentProfile();
 		if (!destProf.isConnected())
@@ -600,6 +634,8 @@ public class AnonymiseAndSend extends xnatDAO.XNATGUI
       anonTwoColourJTable = new generalUtilities.TwoColourJTable();
       jScrollPane2 = new javax.swing.JScrollPane();
       exportEnableJTextArea = new javax.swing.JTextArea();
+      originalNamesJButton = new javax.swing.JButton();
+      projDefSessLabelJButton = new javax.swing.JButton();
 
       setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
@@ -663,6 +699,17 @@ public class AnonymiseAndSend extends xnatDAO.XNATGUI
       exportEnableJTextArea.setBorder(null);
       jScrollPane2.setViewportView(exportEnableJTextArea);
 
+      originalNamesJButton.setText("Original names");
+      originalNamesJButton.addActionListener(new java.awt.event.ActionListener()
+      {
+         public void actionPerformed(java.awt.event.ActionEvent evt)
+         {
+            originalNamesJButtonActionPerformed(evt);
+         }
+      });
+
+      projDefSessLabelJButton.setText("Proj default session labels");
+
       javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
       getContentPane().setLayout(layout);
       layout.setHorizontalGroup(
@@ -689,6 +736,10 @@ public class AnonymiseAndSend extends xnatDAO.XNATGUI
                   .addGap(0, 31, Short.MAX_VALUE))
                .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                   .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                  .addComponent(projDefSessLabelJButton)
+                  .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                  .addComponent(originalNamesJButton)
+                  .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                   .addComponent(viewAnonScriptJButton)
                   .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                   .addComponent(exportJButton, javax.swing.GroupLayout.PREFERRED_SIZE, 101, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -726,12 +777,19 @@ public class AnonymiseAndSend extends xnatDAO.XNATGUI
             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                .addComponent(viewAnonScriptJButton)
                .addComponent(exportJButton)
-               .addComponent(cancelJButton))
+               .addComponent(cancelJButton)
+               .addComponent(originalNamesJButton)
+               .addComponent(projDefSessLabelJButton))
             .addGap(41, 41, 41))
       );
 
       pack();
    }// </editor-fold>//GEN-END:initComponents
+
+   private void originalNamesJButtonActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_originalNamesJButtonActionPerformed
+   {//GEN-HEADEREND:event_originalNamesJButtonActionPerformed
+      // TODO add your handling code here:
+   }//GEN-LAST:event_originalNamesJButtonActionPerformed
 
 //	/**
 //	 * @param args the command line arguments
@@ -789,6 +847,8 @@ public class AnonymiseAndSend extends xnatDAO.XNATGUI
    private javax.swing.JButton exportJButton;
    private javax.swing.JScrollPane jScrollPane1;
    private javax.swing.JScrollPane jScrollPane2;
+   private javax.swing.JButton originalNamesJButton;
+   private javax.swing.JButton projDefSessLabelJButton;
    private generalUtilities.TwoColourJTable twoColourJTable1;
    private javax.swing.JLabel versionJLabel;
    private javax.swing.JButton viewAnonScriptJButton;

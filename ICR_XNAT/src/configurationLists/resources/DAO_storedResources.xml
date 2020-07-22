@@ -42,6 +42,9 @@
 	
 	<DAO_subtype alias="CT session">
    </DAO_subtype>
+   
+   <DAO_subtype alias="MG session">
+   </DAO_subtype>
 	
 	<DAO_subtype alias="Arbitrary session">
    </DAO_subtype>

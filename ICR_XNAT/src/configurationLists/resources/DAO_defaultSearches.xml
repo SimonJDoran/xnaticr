@@ -93,6 +93,17 @@
       <DAO_defaultSearchProperty name="element1">Patient name</DAO_defaultSearchProperty>
    </DAO_subtype>
    
+   <DAO_subtype name="MG session">
+      <DAO_defaultSearchProperty name="useDefault">false</DAO_defaultSearchProperty>
+      <DAO_defaultSearchProperty name="nCriteria">2</DAO_defaultSearchProperty>
+		<DAO_defaultSearchProperty name="comparison0">LIKE</DAO_defaultSearchProperty>
+		<DAO_defaultSearchProperty name="string0">%</DAO_defaultSearchProperty>
+      <DAO_defaultSearchProperty name="element0">XNAT project</DAO_defaultSearchProperty>
+      <DAO_defaultSearchProperty name="comparison1">LIKE</DAO_defaultSearchProperty>
+		<DAO_defaultSearchProperty name="string1">%</DAO_defaultSearchProperty>
+      <DAO_defaultSearchProperty name="element1">Patient name</DAO_defaultSearchProperty>
+   </DAO_subtype>
+   
    <DAO_subtype name="Arbitrary session">
       <DAO_defaultSearchProperty name="useDefault">false</DAO_defaultSearchProperty>
       <DAO_defaultSearchProperty name="nCriteria">2</DAO_defaultSearchProperty>

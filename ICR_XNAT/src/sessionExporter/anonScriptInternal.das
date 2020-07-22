@@ -190,12 +190,12 @@ scannerName2 := replace[scannerName1, "_null", ""]
 describe sessionName1 hidden
 describe sessionName2 hidden
 describe sessionName3 hidden
-sessionName1 := "{0}_{1}{2}", scanDate2, scanTime2, scannerName2
-sessionName2 := "<INSERTED-SESSION-NAME>"
+sessionName1 := "{0}_{1}{2}" scanDate2, scanTime2, scannerName2
+sessionName2 := "<INSERTED-SESS-NAME>"
 sessionName3 := replace[sessionName2, "DEFAULT", sessionName1]
 
 (0010,0010) := "<INSERTED-SUBJ-NAME>"
 (0010,0010) := "<INSERTED-SUBJ-ID>"
-(0010,4000) := "Project: <INSERTED-PROJ-NAME>; Subject: <INSERTED-SUBJ-NAME>; Session: {0}; AA:true" sessionName3 // Patient comments tag = XNAT routing info
+(0010,4000) := "Project: <INSERTED-PROJ-ID>; Subject: <INSERTED-SUBJ-NAME>; Session: {0}; AA:true" sessionName3 // Patient comments tag = XNAT routing info
 
 

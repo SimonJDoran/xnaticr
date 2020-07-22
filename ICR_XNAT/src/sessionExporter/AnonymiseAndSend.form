@@ -54,6 +54,10 @@
                   </Group>
                   <Group type="102" alignment="1" attributes="0">
                       <EmptySpace max="32767" attributes="0"/>
+                      <Component id="projDefSessLabelJButton" min="-2" max="-2" attributes="0"/>
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Component id="originalNamesJButton" min="-2" max="-2" attributes="0"/>
+                      <EmptySpace max="-2" attributes="0"/>
                       <Component id="viewAnonScriptJButton" min="-2" max="-2" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
                       <Component id="exportJButton" min="-2" pref="101" max="-2" attributes="0"/>
@@ -99,6 +103,8 @@
                   <Component id="viewAnonScriptJButton" alignment="3" min="-2" max="-2" attributes="0"/>
                   <Component id="exportJButton" alignment="3" min="-2" max="-2" attributes="0"/>
                   <Component id="cancelJButton" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="originalNamesJButton" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="projDefSessLabelJButton" alignment="3" min="-2" max="-2" attributes="0"/>
               </Group>
               <EmptySpace min="-2" pref="41" max="-2" attributes="0"/>
           </Group>
@@ -245,5 +251,18 @@
         </Component>
       </SubComponents>
     </Container>
+    <Component class="javax.swing.JButton" name="originalNamesJButton">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Original names"/>
+      </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="originalNamesJButtonActionPerformed"/>
+      </Events>
+    </Component>
+    <Component class="javax.swing.JButton" name="projDefSessLabelJButton">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Proj default session labels"/>
+      </Properties>
+    </Component>
   </SubComponents>
 </Form>

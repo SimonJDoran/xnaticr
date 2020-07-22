@@ -234,6 +234,19 @@ public class Vector2D<E>
       
       return column;
    }
+   
+   
+   public List<E> getColumnAsList(int col)
+   {
+      List<E>   colAsList   = new ArrayList<>();
+      Vector<E> colAsVector = this.getColumn(col);
+      for (int i=0; i<colAsVector.size(); i++)
+      {
+         colAsList.add(colAsVector.get(i));
+      }
+      
+      return colAsList;
+   }
 
 
    /**

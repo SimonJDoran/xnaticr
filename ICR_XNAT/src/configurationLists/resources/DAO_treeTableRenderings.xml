@@ -704,6 +704,51 @@
       <property name="Colour">magenta</property>
       <property name="tooltip">Scan</property>
    </renderProperties>
+   
+   
+   <!-- MG (digital X-ray) properties -->
+
+   <renderProperties element="xnat:mgSessionData/project">
+      <property name="Letter">X</property>
+      <property name="Colour">XNAT green</property>
+      <property name="tooltip">ID of the XNAT project in which this subject resides</property>
+   </renderProperties>
+   
+   <renderProperties element="xnat:mgSessionData/dcmPatientName">
+      <property name="Letter">D</property>
+      <property name="Colour">orange</property>
+      <property name="tooltip">Subject demographics: name</property>
+   </renderProperties>
+   
+   <renderProperties element="xnat:mgSessionData/subject_ID">
+      <property name="Letter">X</property>
+      <property name="Colour">XNAT green</property>
+      <property name="tooltip">ID of the XNAT subject under which this MR scan is stored</property>
+   </renderProperties>
+   
+   <renderProperties element="xnat:mgSessionData/ID">
+      <property name="Letter">X</property>
+      <property name="Colour">XNAT green</property>
+      <property name="tooltip">Session ID in XNAT database</property>
+   </renderProperties>
+	
+	<renderProperties element="xnat:mgScanData/image_session_ID">
+      <property name="Letter">X</property>
+      <property name="Colour">XNAT green</property>
+      <property name="tooltip">Session ID in XNAT database</property>
+   </renderProperties>
+
+   <renderProperties element="xnat:mgSessionData/label">
+      <property name="Letter">X</property>
+      <property name="Colour">XNAT green</property>
+      <property name="tooltip">Session label in XNAT database</property>
+   </renderProperties>
+   
+   <renderProperties element="xnat:mgScanData/ID">
+      <property name="Letter">X</property>
+      <property name="Colour">XNAT green</property>
+      <property name="tooltip">Scan ID in XNAT database</property>
+   </renderProperties>
 
 
 <!-- General imageScan properties -->

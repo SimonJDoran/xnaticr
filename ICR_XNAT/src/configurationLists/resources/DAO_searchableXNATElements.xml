@@ -49,7 +49,21 @@
       <searchableXNATElement alias="Acquisition site">xnat:ctSessionData/acquisition_site</searchableXNATElement>       
    </XNATSearchRootElement>
 	
-	<XNATSearchRootElement element="xnat:imageSessionData">
+	<XNATSearchRootElement element="xnat:mgSessionData">
+      <searchableXNATElement alias="Patient name">xnat:mgSessionData/dcmPatientName</searchableXNATElement>
+		<searchableXNATElement alias="Session date">xnat:mgSessionData/date</searchableXNATElement>
+		<searchableXNATElement alias="Session time">xnat:mgSessionData/time</searchableXNATElement>
+		<searchableXNATElement alias="XNAT project">xnat:mgSessionData/project</searchableXNATElement>
+      <searchableXNATElement alias="XNAT Subject ID">xnat:mgSessionData/subject_ID</searchableXNATElement>
+      <searchableXNATElement alias="XNAT image session label">xnat:mgSessionData/label</searchableXNATElement>
+      <searchableXNATElement alias="DICOM session UID">xnat:mgSessionData/UID</searchableXNATElement>
+      <searchableXNATElement alias="DICOM patient ID">xnat:mgSessionData/dcmPatientID</searchableXNATElement>
+      <searchableXNATElement alias="Scanner manufacturer">xnat:mgSessionData/scanner/manufacturer</searchableXNATElement>
+      <searchableXNATElement alias="Scanner model">xnat:mgSessionData/scanner/model</searchableXNATElement>
+      <searchableXNATElement alias="Acquisition site">xnat:mgSessionData/acquisition_site</searchableXNATElement>       
+   </XNATSearchRootElement>
+   
+   <XNATSearchRootElement element="xnat:imageSessionData">
       <searchableXNATElement alias="Patient name">xnat:imageSessionData/dcmPatientName</searchableXNATElement>
 		<searchableXNATElement alias="Session date">xnat:imageSessionData/date</searchableXNATElement>
 		<searchableXNATElement alias="Session time">xnat:imageSessionData/time</searchableXNATElement>

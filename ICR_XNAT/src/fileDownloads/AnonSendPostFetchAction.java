@@ -87,7 +87,7 @@ public class AnonSendPostFetchAction implements PostFetchAction
       for (AnonSessionInfo asi : pfs.getAnonSessionInfo() )
       {
          String sessionDir   = caller.getCacheDirName() + "data/experiments/" + asi.getSessionId();
-         String tempDasFile  = caller.getCacheDirName() + SEP + "temp" + SEP + "tempAnonScript.das";
+         String tempDasFile  = caller.getCacheDirName() + "temp" + SEP + "tempAnonScript.das";
          String dicomRemapEx = caller.getDicomRemapEx();
          
          // Edit the template anonymisation script to substitute the patient name and
@@ -96,14 +96,17 @@ public class AnonSendPostFetchAction implements PostFetchAction
                                   .replaceAll(AnonymiseAndSend.PROJ_ID_TOKEN,   pfs.getDestProject())
                                   .replaceAll(AnonymiseAndSend.SUBJ_NAME_TOKEN, asi.getSubjDicomAnonName())
                                   .replaceAll(AnonymiseAndSend.SUBJ_ID_TOKEN,   asi.getSubjDicomAnonName())
-                                  .replaceAll(AnonymiseAndSend.SUBJ_ID_TOKEN,   asi.getSubjDicomAnonName());
+                                  .replaceAll(AnonymiseAndSend.SUBJ_ID_TOKEN,   asi.getSubjDicomAnonName())
+                                  .replaceAll(AnonymiseAndSend.SESS_NAME_TOKEN, asi.getDestSessionLabel());
          
-         boolean outputErr = false;
-         outputErr = !writeToFile(editedScript, tempDasFile);
-         outputErr = !runDicomRemapShellCommand(caller, sessionDir, tempDasFile,
-                                                dicomRemapEx, pfs.getDestProfile())
-                     || outputErr;
-         if (outputErr)
+         if (!writeToFile(editedScript, tempDasFile))
+         {
+            caller.publishFromOutsidePackage("Output failed - check system logs.");
+            return;
+         }
+         
+         if (!runDicomRemapShellCommand(caller, sessionDir, tempDasFile,
+                                        dicomRemapEx, pfs.getDestProfile()))
          {
             caller.publishFromOutsidePackage("Output failed - check system logs.");
             return;
@@ -119,7 +122,7 @@ public class AnonSendPostFetchAction implements PostFetchAction
       {
 
          Path tempPath = Paths.get(tempDasFile);
-         Files.createDirectories(tempPath);
+         Files.createDirectories(tempPath.getParent());
          pw = new PrintWriter(tempDasFile);
          pw.println(script);
       }
@@ -160,18 +163,25 @@ public class AnonSendPostFetchAction implements PostFetchAction
       BufferedReader br = null;
 		try
 		{	
-			List<String> cl = new ArrayList<String>();
-			cl.add(dicomRemapEx);
-			cl.add("-d");
-			cl.add(tempDasFile);
-			cl.add("-o");
-			cl.add("dicom://" + destProf.getDicomReceiverHost()
-                 + ":" + destProf.getDicomReceiverPort()
-                 + "/" + destProf.getDicomReceiverAeTitle());
-         cl.add(sessionDir);
+//			List<String> cl = new ArrayList<String>();
+//			cl.add(dicomRemapEx);
+//			cl.add("-d");
+//			cl.add(tempDasFile);
+//			cl.add("-o");
+//			cl.add("dicom://" + destProf.getDicomReceiverHost()
+//                 + ":" + destProf.getDicomReceiverPort()
+//                 + "/" + destProf.getDicomReceiverAeTitle());
+//         cl.add(sessionDir);
+         String remapCommand = dicomRemapEx
+                               + " -d " + tempDasFile
+                               + " -o dicom://" + destProf.getDicomReceiverHost()
+                               + ":" + destProf.getDicomReceiverPort()
+                               + "/" + destProf.getDicomReceiverAeTitle()
+                               + " " + sessionDir ;
 			
 			
-			ProcessBuilder pb = new ProcessBuilder(cl);
+			ProcessBuilder pb = new ProcessBuilder();
+         pb.command("sh", "-c", remapCommand);
          pb.redirectErrorStream(true);
 			Process        p  = pb.start();
 			String         line;
@@ -183,7 +193,10 @@ public class AnonSendPostFetchAction implements PostFetchAction
 
          while ((line = br.readLine()) != null)
          {
-            caller.publishFromOutsidePackage(line);
+            // The tiny log field at the bottom of the panel can't display
+            // more than about 25 characters.
+            int pos = Math.max(0, (line.length()-25));
+            caller.publishFromOutsidePackage(line.substring(pos));
             logger.info(line);
          }
          
